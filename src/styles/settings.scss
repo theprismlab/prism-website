@@ -1,0 +1,15 @@
+/**
+ * src/styles/settings.scss
+ *
+ * Configures SASS variables and Vuetify overwrites
+ */
+
+// https://vuetifyjs.com/features/sass-variables/`
+// @forward 'vuetify/settings' // to use variables scoped within a component
+
+@use 'vuetify/settings' with ( 
+    $ripple-animation-transition-in : 0s,
+    $ripple-animation-visible-opacity : 0,
+
+);
+
