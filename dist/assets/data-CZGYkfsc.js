@@ -1,0 +1,1 @@
+import{V as a}from"./VLayout-zWiRAUqR.js";import{H as e,J as o,G as r,N as s}from"./index-C6WGQZoo.js";import"./dimensions-BrmmBL1O.js";const _={__name:"data",setup(l){return(n,t)=>(r(),e(a,null,{default:o(()=>t[0]||(t[0]=[s("h1",null,"Data",-1)])),_:1}))}};export{_ as default};

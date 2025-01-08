@@ -1,0 +1,1 @@
+import{V as a}from"./VLayout-zWiRAUqR.js";import{H as e,J as t,G as r,N as o}from"./index-C6WGQZoo.js";import"./dimensions-BrmmBL1O.js";const m={__name:"assays-and-screens",setup(n){return(l,s)=>(r(),e(a,null,{default:t(()=>s[0]||(s[0]=[o("h1",null,"Assays & screens",-1)])),_:1}))}};export{m as default};
