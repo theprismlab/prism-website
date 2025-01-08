@@ -1,6 +1,7 @@
-@use 'vuetify';
 
 
-$primary: red; // example variable
+$body-font-family: 'Roboto', sans-serif !default;
 
-
+    $button-height:100;
+    // $ripple-animation-transition-in : 0s,
+    // $ripple-animation-visible-opacity : 0

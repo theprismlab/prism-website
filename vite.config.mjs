@@ -32,6 +32,14 @@ export default defineConfig({
         families: [{
           name: 'Roboto',
           styles: 'wght@100;300;400;500;700;900',
+        }, 
+        {
+          name: 'Inter',
+          styles: 'wght@400;500;600;700;800;900',
+        },
+        {
+          name: 'Inter Tight',
+          styles: 'wght@400;500;600;700;800;900',
         }],
       },
     }),

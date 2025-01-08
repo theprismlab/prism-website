@@ -6,6 +6,7 @@
         <v-tabs hide-slider>
           <v-spacer></v-spacer>
           <v-tab color="primary" id="home" to="/">Home</v-tab>
+
           <v-tab> About us <v-icon>mdi-menu-down</v-icon>
             <v-menu activator="parent">
               <v-list>
@@ -14,6 +15,22 @@
                 </v-list-item>
                 <v-list-item id="team" to="/about-us/team">
                   <v-list-item-title>Team</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-tab>
+
+            <v-tab>Screening<v-icon>mdi-menu-down</v-icon>
+            <v-menu activator="parent">
+              <v-list>
+                <v-list-item id="cell-line-collection" to="/screening/cell-line-collection">
+                  <v-list-item-title>Cell Line Collection</v-list-item-title>
+                </v-list-item>
+                <v-list-item id="assays-and-screens" to="/screening/assays-and-screens">
+                  <v-list-item-title>Assays & screens</v-list-item-title>
+                </v-list-item>
+                <v-list-item id="data" to="/screening/data">
+                  <v-list-item-title>Data</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -42,12 +59,7 @@
   };
   </script>
 
+<style lang="scss" scoped>
 
-<style lang="scss">
-  // @use '../styles/settings';
-
-  // .my-button {
-  //   height: settings.$button-height;
-  // }
 </style>
   
