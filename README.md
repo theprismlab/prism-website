@@ -1,3 +1,12 @@
+# PRISM Website
+
+
+## Deployment
+
+Currently deployed at dev.theprismlab.org/. Moving to the official URL can be done by changing the Load Balancer Rules to match theprismlab.org instead of dev.theprismlab.org
+
+Deployment can be done through Jenkins under DEPLOY-PORTAL > DEPLOY-PRISM-WEBSITE
+
 # Vuetify (Default)
 
 This is the official scaffolding tool for Vuetify, designed to give you a head start in building your new Vuetify application. It sets up a base template with all the necessary configurations and standard directory structure, enabling you to begin development without the hassle of setting up the project from scratch.
