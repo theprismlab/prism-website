@@ -4,8 +4,8 @@
       <v-container fluid class="container-basic" :style="{paddingTop: heroPadding, height: heroHeight, zIndex: 1}">
         <v-row>
           <v-col cols="12" xs="12" sm="8" md="6" lg="6" xl="6">
-            <h1>Accelerate the understanding of cancer treatments </h1>
-            <h3 class="text-subtitle-1">Rapid, comprehensive cancer drug-sensitivity screening enhanced by predictive modeling</h3>
+            <h1 class="text-h2">Accelerate the understanding of cancer treatments </h1>
+            <p class="text-subtitle-1">Rapid, comprehensive cancer drug-sensitivity screening enhanced by predictive modeling</p>
           </v-col>
         </v-row>
       </v-container>
@@ -13,7 +13,7 @@
    
     <div class="bg-gradient" style="position: relative;">
       <v-container fluid class="container-basic">
-        <h2 class="light">PRISM multiplexed viability screening with over 900 genomically characterized cell lines.</h2>
+        <p class="text-h4">PRISM multiplexed viability screening with over 900 genomically characterized cell lines.</p>
         <v-row>
             <v-col cols="auto" xs="12" sm="12" md="3" lg="3" xl="3">
               <v-card :style="{ height: cardHeight + 'px' }">
@@ -79,7 +79,7 @@
       </v-container>
     </div>
     <v-container fluid class="container-basic">
-        <h2 class="light">Over <span class="primary-text">150 leading academic and industry partners</span>  have trusted PRISM to transform their research.</h2>
+        <p class="text-h4">Over <span class="primary-text">150 leading academic and industry partners</span>  have trusted PRISM to transform their research.</p>
       </v-container>
 
 
@@ -90,6 +90,7 @@
     mounted () {
       console.log(this.$vuetify.display.mobile)
       console.log(this.$vuetify.theme.themes.light.colors.primary)
+      console.log(this.$vuetify.theme.themes.light)
     },
     computed: {
       mobile () {

@@ -5,8 +5,10 @@
  */
 
 // https://vuetifyjs.com/features/sass-variables/`
-@forward 'vuetify/settings' with ( 
+@use 'vuetify/settings' with ( 
     $ripple-animation-transition-in : 0s,
     $ripple-animation-visible-opacity : 0,
+    $body-font-family: 'Inter',
+    $font-size-root: 1rem,
 );
 
