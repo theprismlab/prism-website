@@ -13,8 +13,9 @@ import '@/styles/main.scss'
 import { createVuetify } from 'vuetify'
 
 
-const customTheme = {
+const prismTheme = {
   dark: false,
+
   colors: {
     background: '#FFFFFF',
     surface: '#FFFFFF',
@@ -22,7 +23,7 @@ const customTheme = {
     'surface-light': '#EEEEEE',
     'surface-variant': '#424242',
     'on-surface-variant': '#EEEEEE',
-    primary: '#3F51B5',
+    'primary': '#0E7AFF',
     'primary-darken-1': '#1F5592',
     secondary: '#48A9A6',
     'secondary-darken-1': '#018786',
@@ -32,6 +33,7 @@ const customTheme = {
     warning: '#FB8C00',
   },
   variables: {
+    
     'border-color': '#000000',
     'border-opacity': 0.12,
     'high-emphasis-opacity': 0.87,
@@ -55,16 +57,29 @@ const customTheme = {
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
-  // options: {
-  //   customProperties: true,
-  // },
+  options: {
+    customProperties: true,
+  },
   // theme: {
   //   defaultTheme: 'light',
+  //   themes: {
+  //     light: {
+  //       primary: '#0E7AFF',
+  //       secondary: '#b0bec5',
+  //       grey: "#999999",
+  //       accent:"#FFA427",   
+  //       error: '#FF5252',
+  //       info: '#2196F3',
+  //       success: '#4CAF50',
+  //       warning: '#FFC107',
+  //     }
+  //   }
   // },
   theme: {
-    defaultTheme: 'customTheme',
+    defaultTheme: 'prismTheme',
     themes: {
-      customTheme,
+      prismTheme,
     },
   },
 })
+
