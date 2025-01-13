@@ -20,14 +20,30 @@
             </v-menu>
           </v-tab>
 
+          <v-tab>Research<v-icon>mdi-menu-down</v-icon>
+            <v-menu activator="parent">
+              <v-list>
+                <v-list-item id="publications" to="/research/publications">
+                  <v-list-item-title>Publications</v-list-item-title>
+                </v-list-item>
+                <v-list-item id="white-papers" to="/research/white-papers">
+                  <v-list-item-title>White papers</v-list-item-title>
+                </v-list-item>
+                <v-list-item id="conference-abstracts" to="/research/conference-abstracts">
+                  <v-list-item-title>Conference abstracts</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-tab>
+
             <v-tab>Screening<v-icon>mdi-menu-down</v-icon>
             <v-menu activator="parent">
               <v-list>
                 <v-list-item id="cell-line-collection" to="/screening/cell-line-collection">
-                  <v-list-item-title>Cell Line Collection</v-list-item-title>
+                  <v-list-item-title>Cell line collection</v-list-item-title>
                 </v-list-item>
-                <v-list-item id="assays-and-screens" to="/screening/assays-and-screens">
-                  <v-list-item-title>Assays & screens</v-list-item-title>
+                <v-list-item id="screens" to="/screening/screens">
+                  <v-list-item-title>Screens</v-list-item-title>
                 </v-list-item>
                 <v-list-item id="data" to="/screening/data">
                   <v-list-item-title>Data</v-list-item-title>

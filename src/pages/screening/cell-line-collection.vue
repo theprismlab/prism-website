@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <h1>Cell Line Collection</h1>
+        <h1>Cell line collection</h1>
     </v-layout>
 </template>
 
