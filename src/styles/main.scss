@@ -1,57 +1,10 @@
-
-
-$body-font-family: 'Roboto', sans-serif !default;
-$body-font-size: 1rem !default;
-$body-font-weight: 400 !default;
-$header-margin-bottom: 2rem;
-
-$button-text-transform: none !default;
-
-$h1-font-size-sm: 2.8em;
-$h1-font-size-md: 3.2em;
-$h1-font-size-lg: 3.6em;
-
-body{
-    font-family: $body-font-family;
-    font-size: $body-font-size;
-    font-weight: $body-font-weight;
-}
-h2{
-    margin-bottom: $header-margin-bottom;
-}
-h3{
-    line-height: 1.4em;
-    font-weight: 800;
-    margin-bottom: $header-margin-bottom;
-}
-h1 {
-    line-height: 1em;
-    font-weight: 800;
-    font-size: $h1-font-size-md; // Default font size
-    margin-bottom: $header-margin-bottom;
-
-  @media (max-width: 600px) {
-    font-size: $h1-font-size-sm;
-  }
-
-  @media (min-width: 600px) and (max-width: 960px) {
-    font-size: $h1-font-size-sm;
-  }
-
-  @media (min-width: 960px) and (max-width: 1280px) {
-    font-size: $h1-font-size-md;
-  }
-
-  @media (min-width: 1280px) and (max-width: 1920px) {
-    font-size: $h1-font-size-lg;
-  }
-
-  @media (min-width: 1920px) {
-    font-size: $h1-font-size-lg;
-  }
+h1, h2, h3, h4, h5, h6, p {
+    margin-bottom: 24px !important;
+    margin-top:24px !important;
 }
 
-.light{
-    font-weight: 300;
-}
 
+
+.boldest {
+    font-weight: 800 !important;
+}

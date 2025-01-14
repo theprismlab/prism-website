@@ -23,23 +23,25 @@ export default defineConfig({
     Vuetify({
       autoImport: true,
       styles: {
-        configFile: 'src/styles/settings.scss',
+        configFile: 'src/styles/variables.scss',
+        
       },
     }),
     Components(),
     Fonts({
       google: {
-        families: [{
+        families: [
+          {
           name: 'Roboto',
           styles: 'wght@100;300;400;500;700;900',
         }, 
         {
           name: 'Inter',
-          styles: 'wght@400;500;600;700;800;900',
+          styles: 'wght@100;200;300;400;500;600;700;800;900',
         },
         {
           name: 'Inter Tight',
-          styles: 'wght@400;500;600;700;800;900',
+          styles: 'wght@100;200;300;400;500;600;700;800;900',
         }],
       },
     }),

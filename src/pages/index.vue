@@ -3,9 +3,9 @@
     <div class="bg-hero" style="position: relative;">
       <v-container fluid class="container-basic" :style="{paddingTop: heroPadding, height: heroHeight, zIndex: 1}">
         <v-row>
-          <v-col cols="12" xs="12" sm="8" md="6" lg="6" xl="6">
-            <h1>Accelerate the understanding of cancer treatments </h1>
-            <h3 class="text-subtitle-1">Rapid, comprehensive cancer drug-sensitivity screening enhanced by predictive modeling</h3>
+          <v-col cols="12" xs="12" sm="8" md="7" lg="7" xl="7">
+            <h1 class="text-h1">Accelerate the understanding of cancer treatments </h1>
+            <p class="text-h5">Rapid, comprehensive cancer drug-sensitivity screening enhanced by predictive modeling</p>
           </v-col>
         </v-row>
       </v-container>
@@ -13,35 +13,46 @@
    
     <div class="bg-gradient" style="position: relative;">
       <v-container fluid class="container-basic">
-        <h2 class="light">PRISM multiplexed viability screening with over 900 genomically characterized cell lines.</h2>
+        <h2 class="text-h2">PRISM multiplexed viability screening with over 900 genomically characterized cell lines.</h2>
         <v-row>
             <v-col cols="auto" xs="12" sm="12" md="3" lg="3" xl="3">
-              <v-card :style="{ height: cardHeight + 'px' }">
+              <v-card :style="{ minHeight: cardHeight + 'px' }">
                 <v-card-title> 900+ cancer cell lines barcoded and pooled</v-card-title>
                 <v-card-text>
                 Hematopoietic and solid tumor, covering 80 cancer subtypes
                 </v-card-text>
+                <v-img
+                  height="220"
+                  alt="prism cell lines graphic"
+                  src="../assets/prism-main-01-cell-lines.png"
+                ></v-img>
                 <v-card-actions>
-                  <v-btn class="text-subtitle-1" color="primary" variant="outlined" rounded>
-                    Learn more 
-                    <v-icon>mdi-arrow-right-thin</v-icon>
-                  </v-btn>
+                  <v-btn class="text-subtitle-1" color="primary" variant="outlined" rounded> Learn more <v-icon>mdi-arrow-right-thin</v-icon></v-btn>
                 </v-card-actions>
               </v-card>
             </v-col>
 
             <v-col cols="auto" xs="12" sm="12" md="3" lg="3" xl="3">
-              <v-card :style="{ height: cardHeight + 'px' }">
-                <v-card-title>Viability profile and genomic characterization</v-card-title>
+              <v-card :style="{ minHeight: cardHeight + 'px' }">
+                  <v-card-title>Viability profile and genomic characterization</v-card-title>
+         
                 <v-card-text>
                 Generate univariate and multivariate predictive models comparing PRISM viability profile with Dependency Map features
                 </v-card-text>
+
+                  <v-img
+                   height="220"
+                  alt="prism viability profile graphic"
+                  src="../assets/prism-main-02-viability.png"
+                  ></v-img>
+
+
                 <v-card-actions>
                   <v-btn class="text-subtitle-1" color="primary" variant="outlined" rounded>
                     Learn more 
                     <v-icon>mdi-arrow-right-thin</v-icon>
-                  </v-btn>
-                </v-card-actions>
+                </v-btn>
+              </v-card-actions>
               </v-card>
             </v-col>
 
@@ -51,6 +62,11 @@
                 <v-card-text>
                 Confirm hypothesis and establish biomarkers of sensitivity and resistance
                 </v-card-text>
+                <v-img
+                  height="220"
+                  alt="prism discover graphic"
+                  src="../assets/prism-main-03-discover.png"
+                ></v-img>
                 <v-card-actions>
                   <v-btn class="text-subtitle-1" color="primary" variant="outlined" rounded>
                     Learn more 
@@ -66,6 +82,11 @@
                 <v-card-text>
                 Securely browse and discover insights from your screening results with interactive visualizations
                 </v-card-text>
+                <v-img
+                  height="220"
+                  alt="prism portal graphic"
+                  src="../assets/prism-main-04-portal.png"
+                ></v-img>
                 <v-card-actions>
                   <v-btn color="primary" variant="outlined" rounded>
                     Learn more 
@@ -79,7 +100,7 @@
       </v-container>
     </div>
     <v-container fluid class="container-basic">
-        <h2 class="light">Over <span class="primary-text">150 leading academic and industry partners</span>  have trusted PRISM to transform their research.</h2>
+        <p class="text-h4">Over <span class="primary-text">150 leading academic and industry partners</span>  have trusted PRISM to transform their research.</p>
       </v-container>
 
 
@@ -90,16 +111,17 @@
     mounted () {
       console.log(this.$vuetify.display.mobile)
       console.log(this.$vuetify.theme.themes.light.colors.primary)
+      console.log(this.$vuetify.theme.themes.light)
     },
     computed: {
       mobile () {
         return this.$vuetify.display.mobile
       },
       heroPadding () {
-        return this.mobile ? '64px' : '128px'
+        return this.mobile ? '64px' : '64px'
       },
       heroHeight () {
-        return this.mobile ? 'calc(90vh - 64px)' : 'calc(90vh - 128px)'
+        return this.mobile ? 'calc(90vh - 64px)' : 'calc(90vh - 64px)' // this is arbitrary but will be adjusted
       },
       cardHeight () {
         return 500;
@@ -130,12 +152,15 @@
     padding-top:64px;
     padding-bottom:64px;
   }
-  .v-card > * {
-    text-overflow: visible;
-    white-space: normal;
-    word-break: normal;
-    word-wrap: initial;
-    hyphens: none;
-  }
 
+.v-card-title {
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+  text-overflow: visible;
+  white-space: normal;
+  word-break: normal;
+  word-wrap: initial;
+  hyphens: none;
+  line-height: 1.2em !important;
+}
 </style>

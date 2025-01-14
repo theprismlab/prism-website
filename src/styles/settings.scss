@@ -5,8 +5,26 @@
  */
 
 // https://vuetifyjs.com/features/sass-variables/`
-@forward 'vuetify/settings' with ( 
-    $ripple-animation-transition-in : 0s,
-    $ripple-animation-visible-opacity : 0,
-);
+// @use 'vuetify/settings' with ( 
+//     $color-pack: true,
+//     $ripple-animation-transition-in : 0s,
+//     $ripple-animation-visible-opacity : 0,
+//     $body-font-family: 'Inter',
+//     $font-size-root: 1rem,
+
+// );
+
+// .text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6 {
+//     margin-bottom: 64px !important;
+//     margin-top:32px !important;
+// }
+
+//  .v-card-title{
+//     line-height: 1.33em !important;
+// }
+
+// h1{
+//     font-weight: 800 !important;
+// }
+
 
