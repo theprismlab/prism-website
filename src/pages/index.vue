@@ -4,8 +4,8 @@
       <v-container fluid class="container-basic" :style="{paddingTop: heroPadding, height: heroHeight, zIndex: 1}">
         <v-row>
           <v-col cols="12" xs="12" sm="8" md="6" lg="6" xl="6">
-            <h1 class="text-h2">Accelerate the understanding of cancer treatments </h1>
-            <p class="text-subtitle-1">Rapid, comprehensive cancer drug-sensitivity screening enhanced by predictive modeling</p>
+            <h1 class="text-h1">Accelerate the understanding of cancer treatments </h1>
+            <p class="text-h5">Rapid, comprehensive cancer drug-sensitivity screening enhanced by predictive modeling</p>
           </v-col>
         </v-row>
       </v-container>
@@ -13,7 +13,7 @@
    
     <div class="bg-gradient" style="position: relative;">
       <v-container fluid class="container-basic">
-        <p class="text-h4">PRISM multiplexed viability screening with over 900 genomically characterized cell lines.</p>
+        <h2 class="text-h2">PRISM multiplexed viability screening with over 900 genomically characterized cell lines.</h2>
         <v-row>
             <v-col cols="auto" xs="12" sm="12" md="3" lg="3" xl="3">
               <v-card :style="{ height: cardHeight + 'px' }">

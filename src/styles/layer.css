@@ -1,0 +1,13 @@
+@layer module, state;
+
+@layer state {
+  h1 {
+   color: brown;
+  }
+}
+
+@layer module {
+  h1 {
+    color: white;
+  }
+}

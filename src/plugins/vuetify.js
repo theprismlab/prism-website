@@ -7,6 +7,7 @@
 // Styles
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
+import '@/styles/variables.scss'
 import '@/styles/main.scss'
 
 // Composables
@@ -17,23 +18,22 @@ const prismTheme = {
   dark: false,
 
   colors: {
-    background: '#FFFFFF',
-    surface: '#FFFFFF',
+    'background': '#FFFFFF',
+    'surface': '#FFFFFF',
     'surface-bright': '#FFFFFF',
     'surface-light': '#EEEEEE',
     'surface-variant': '#424242',
     'on-surface-variant': '#EEEEEE',
     'primary': '#0E7AFF',
     'primary-darken-1': '#1F5592',
-    secondary: '#48A9A6',
+    'secondary': '#48A9A6',
     'secondary-darken-1': '#018786',
-    error: '#B00020',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FB8C00',
+    'error': '#B00020',
+    'info': '#2196F3',
+    'success': '#4CAF50',
+    'warning': '#FB8C00',
   },
   variables: {
-    
     'border-color': '#000000',
     'border-opacity': 0.12,
     'high-emphasis-opacity': 0.87,
