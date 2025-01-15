@@ -27,7 +27,7 @@ export default {
 </script>
 <style scoped>
   section {
-    background: linear-gradient(300deg, rgba(190, 219, 255, .02), rgba(190, 219, 255, .5));
+    background: linear-gradient(300deg, rgba(190, 219, 255, .02), rgba(190, 219, 255, .25));
   }
 </style>
   

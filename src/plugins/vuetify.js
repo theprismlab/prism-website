@@ -16,7 +16,6 @@ import { createVuetify } from 'vuetify'
 
 const prismTheme = {
   dark: false,
-
   colors: {
     'background': '#FFFFFF',
     'surface': '#FFFFFF',
@@ -26,7 +25,7 @@ const prismTheme = {
     'on-surface-variant': '#EEEEEE',
     'primary': '#0E7AFF',
     'primary-darken-1': '#1F5592',
-    'secondary': '#48A9A6',
+    'secondary': 'orange',
     'secondary-darken-1': '#018786',
     'error': '#B00020',
     'info': '#2196F3',
