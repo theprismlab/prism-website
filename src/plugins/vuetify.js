@@ -34,6 +34,7 @@ const prismTheme = {
     'warning': '#FB8C00',
   },
   variables: {
+    'y-spacer': 48,
     'border-color': '#000000',
     'border-opacity': 0.12,
     'high-emphasis-opacity': 0.87,
