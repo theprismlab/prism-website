@@ -1,6 +1,6 @@
 <template>
 
-  <v-app-bar app dense color="white" light>
+  <v-navigation-drawer app v-model="open" dense color="white" light>
     <v-toolbar-title>
       <router-link to="/" tag="span" style="cursor: pointer">
         <img id="prism_logo" alt="PRISM Logo" width="130px" src="../assets/logo.png"/>
@@ -56,7 +56,7 @@
         </v-tabs>
 
 
-    </v-app-bar>
+    </v-navigation-drawer>
   </template>
   <script>
   // import Vue from 'vue';
@@ -64,7 +64,7 @@
     name: "AppBar",
   data(){
     return {
-
+        open: true
     }
   },
     methods: {
