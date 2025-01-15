@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="bg-hero" style="position: relative;">
-      <v-container fluid class="container-basic" :style="{paddingTop: heroPadding, height: heroHeight, zIndex: 1}">
+      <v-container fluid :style="{paddingTop: heroPadding, minHeight: heroMinHeight, zIndex: 1}">
         <v-row>
           <v-col cols="12" xs="12" sm="8" md="7" lg="7" xl="7">
             <h1 class="text-h1">Accelerate the understanding of cancer treatments </h1>
@@ -12,8 +12,8 @@
     </div>
    
     <div class="bg-gradient" style="position: relative;">
-      <v-container fluid class="container-basic">
-        <h2 class="text-h2">PRISM multiplexed viability screening with over 900 genomically characterized cell lines.</h2>
+      <v-container fluid>
+        <h2 class="text-h3">PRISM multiplexed viability screening with over 900 genomically characterized cell lines.</h2>
         <v-row>
             <v-col cols="auto" xs="12" sm="12" md="3" lg="3" xl="3">
               <v-card :style="{ minHeight: cardHeight + 'px' }">
@@ -35,11 +35,9 @@
             <v-col cols="auto" xs="12" sm="12" md="3" lg="3" xl="3">
               <v-card :style="{ minHeight: cardHeight + 'px' }">
                   <v-card-title>Viability profile and genomic characterization</v-card-title>
-         
                 <v-card-text>
                 Generate univariate and multivariate predictive models comparing PRISM viability profile with Dependency Map features
                 </v-card-text>
-
                   <v-img
                    height="220"
                   alt="prism viability profile graphic"
@@ -100,8 +98,8 @@
       </v-container>
     </div>
     <v-container fluid class="container-basic">
-        <p class="text-h4">Over <span class="primary-text">150 leading academic and industry partners</span>  have trusted PRISM to transform their research.</p>
-      </v-container>
+      <p class="text-h3">Over <span class="primary-text">150 leading academic and industry partners</span>  have trusted PRISM to transform their research.</p>
+    </v-container>
 
 
   </div>
@@ -120,8 +118,9 @@
       heroPadding () {
         return this.mobile ? '64px' : '64px'
       },
-      heroHeight () {
-        return this.mobile ? 'calc(90vh - 64px)' : 'calc(90vh - 64px)' // this is arbitrary but will be adjusted
+      heroMinHeight () {
+        return 'calc(75vh - 30px)' // update to include navbar?
+       // return this.mobile ? 'calc(90vh - 64px)' : 'calc(90vh - 64px)' // this is arbitrary but will be adjusted
       },
       cardHeight () {
         return 500;
@@ -147,7 +146,7 @@
     min-height: 70vh;
     background: linear-gradient(300deg, rgba(190, 219, 255, .02), rgba(190, 219, 255, .5));
   }
-  .container-basic{
+ .v-container{
     width:80%;
     padding-top:64px;
     padding-bottom:64px;

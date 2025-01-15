@@ -1,0 +1,112 @@
+@use 'vuetify/settings' with (
+    $color-pack: true,
+    $body-font-family: 'Inter',
+    $font-size-root: 1rem,
+    $heading-font-family: 'Inter',
+    $card-padding: 1.5rem,
+    $typography: (
+        'h1': (
+            'size': var(--h1-size, 5rem),
+            'weight': 800,
+            'line-height': 1em,
+            'letter-spacing': 0,
+            'text-transform': none,
+            'margin-bottom': 2.5em
+        ),
+        'h2': (
+            'size': var(--h2-size, 4rem),
+            'weight': 200,
+            'line-height': 1.2em,
+            'letter-spacing': 0,
+            'text-transform': none,
+        ),
+        'h3': (
+            'size': var(--h3-size, 3rem),
+            'weight': 400,
+            'line-height': 1.2em,
+            'letter-spacing': 0,
+            'text-transform': none,
+        ),
+        'h4': (
+            'size': var(--h4-size, 2.5rem),
+            'weight': 400,
+            'line-height': 1.2em,
+            'letter-spacing': 0,
+            'text-transform': none,
+        ),
+        'h5': (
+            'size': var(--h5-size, 2rem),
+            'weight': 400,
+            'line-height': 1.2em,
+            'letter-spacing': 0,
+            'text-transform': none,
+        ),
+    ),
+);
+
+
+$h1-size: 5rem;
+$h2-size: 4rem;
+$h3-size: 3rem;
+$h4-size: 2.5rem;
+$h5-size: 2rem;
+
+
+:root {
+    --h1-size: #{$h1-size};
+    --h2-size: #{$h2-size};
+    --h3-size: #{$h3-size};
+    --h4-size: #{$h4-size};
+    --h5-size: #{$h5-size};
+}
+
+$h-multiplier: 1.95;
+// @media (max-width: 1200px) {
+//     :root {
+//         --h1-size: calc(#{$h1-size} * #{h-multiplier});
+//         --h2-size: calc(#{$h2-size} * #{h-multiplier});
+//         --h3-size: calc(#{$h3-size} * #{h-multiplier});
+//         --h4-size: calc(#{$h4-size} * #{h-multiplier});
+//         --h5-size: calc(#{$h5-size} * #{h-multiplier});
+//     }
+// }
+
+@media (max-width: 1200px) {
+    :root {
+        --h1-size: calc(#{$h1-size} * 0.75);
+        --h2-size: calc(#{$h2-size} * 0.75);
+        --h3-size: calc(#{$h3-size} * 0.75);
+        --h4-size: calc(#{$h4-size} * 0.8);
+        --h5-size: calc(#{$h5-size} * 0.875);
+    }
+}
+
+// @media (max-width: 992px) {
+//     :root {
+//         --h1-size: 3.5rem;
+//         --h2-size: 2.5rem;
+//         --h3-size: 2rem;
+//         --h4-size: 1.75rem;
+//         --h5-size: 1.5rem;
+//     }
+// }
+
+// @media (max-width: 768px) {
+//     :root {
+//         --h1-size: 3rem;
+//         --h2-size: 2rem;
+//         --h3-size: 1.75rem;
+//         --h4-size: 1.5rem;
+//         --h5-size: 1.25rem;
+//     }
+// }
+
+// @media (max-width: 600px) {
+//     :root {
+//         --h1-size: 3rem;
+//         --h2-size: 2rem;
+//         --h3-size: 1.75rem;
+//         --h4-size: 1.25rem;
+//         --h5-size: 1rem;
+//     }
+// }
