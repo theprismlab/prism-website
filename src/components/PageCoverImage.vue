@@ -11,7 +11,8 @@ export default {
   url: {
     type: String,
     required: true
-  }
+  },
+  
   },
   computed:{
   background(){

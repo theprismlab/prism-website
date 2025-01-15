@@ -125,6 +125,11 @@ $quote-font-family: 'Playfair Display';
       )
     
 );
+.v-container{
+    width:80% !important;
+    max-width:1900px !important;
+  }
+
 
 .text-quote {
     font-family: $quote-font-family;

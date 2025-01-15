@@ -202,10 +202,7 @@
   }
 
 
- .v-container{
-    width:80%;
-    max-width:1900px;
-  }
+
 
 .v-card-title {
   font-weight: 800;
