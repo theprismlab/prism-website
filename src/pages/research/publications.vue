@@ -1,7 +1,13 @@
 <template>
   <div>
-<page-section>
+
+
   <v-container>
+
+    <page-section>
+  <h1 class="text-h1">Publications</h1>
+  </page-section>
+  <page-section>
           <v-row>
             <!-- <h6>Featured</h6> -->
             <v-col cols="12" xs="12" sm="8" md="8" lg="7" xl="6">
@@ -31,8 +37,9 @@
        
             </v-col>
           </v-row>
+        </page-section>
         </v-container>
-</page-section>
+
 
 
   </div>
