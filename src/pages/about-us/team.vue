@@ -1,7 +1,8 @@
 <template>
-    <v-layout>
+    <div>
         <h1>Team</h1>
-    </v-layout>
+        hello 
+    </div>
 </template>
 
 <script setup>
