@@ -1,26 +1,15 @@
 <template>
   <div>
-
-
-  <v-container>
-
+  <v-container class="py-16">
+    <h1 class="text-h1">Publications</h1>
     <page-section>
-  <h1 class="text-h1">Publications</h1>
-  </page-section>
-  <page-section>
           <v-row>
-            <!-- <h6>Featured</h6> -->
             <v-col cols="12" xs="12" sm="8" md="8" lg="7" xl="6">
-
-
-
-
               <v-row>
                 <v-col cols="12" md="3">
                   <div id="feature-image-container">
                     <v-img id="feature-image" src="https://cdn.vuetifyjs.com/docs/images/graphics/img-placeholder.png" cover></v-img>
                   </div>
-               
                 </v-col>
                 <v-col cols="12" md="9">
                   <h3 class="text-h3">Genetic dependencies associated with transcription factor activities in human cancer cell lines</h3>
@@ -29,11 +18,12 @@
                   <v-btn color="primary" variant="outlined" rounded>Read our publication</v-btn>
                 </v-col>
               </v-row>
-
-
             </v-col>
             <v-col cols="12" xs="12" sm="4" md="8" lg="7" xl="6">
-         
+              <div v-for="each in data">
+                <PublicationCard :title="each.title" :publisher="each.publisher" :date="each.date" :authors="each.authors" :url="each.url"></PublicationCard>
+              </div>
+             
        
             </v-col>
           </v-row>
@@ -46,10 +36,62 @@
   </template>
   
   <script>
+import PublicationCard from '@/components/PublicationCard.vue';
+
     export default {
       data() {
         return {
-
+          data: [
+            {
+              title: 'Genetic dependencies associated with transcription factor activities in human cancer cell lines',
+              publisher: 'Thatikonda V, et al. Cell Reports, 2024',
+              date: '2024',
+              authors: 'Thatikonda V, et al.',
+              url: 'google.com'
+            },
+            {
+              title: 'Title',
+              publisher: 'Publisher',
+              date: '2024',
+              authors: 'Authors',
+              url: 'google.com'
+            },
+            {
+              title: 'Title',
+              publisher: 'Publisher',
+              date: '2024',
+              authors: 'Authors',
+              url: 'google.com'
+            },
+            {
+              title: 'Title',
+              publisher: 'Publisher',
+              date: '2024',
+              authors: 'Authors',
+              url: 'google.com'
+            },
+            {
+              title: 'Title',
+              publisher: 'Publisher',
+              date: '2024',
+              authors: 'Authors',
+              url: 'google.com'
+            },
+            {
+              title: 'Title',
+              publisher: 'Publisher',
+              date: '2024',
+              authors: 'Authors',
+              url: 'google.com'
+            },
+            {
+              title: 'Title',
+              publisher: 'Publisher',
+              date: '2024',
+              authors: 'Authors',
+              url: 'google.com'
+            }
+          ]
         }
       },
       mounted() {
