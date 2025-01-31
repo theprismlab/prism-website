@@ -26,7 +26,7 @@ import TeamCard from '@/components/TeamCard.vue';
           {
             name: 'Lia Petronio',
             title: 'Data Visualization Engineer',
-            image: 'assets/team/lia_petronio.jpg',
+            image: 'lia_petronio.jpg',
             bio: '',
           },
           {
