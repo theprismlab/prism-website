@@ -25,7 +25,7 @@
         <v-row>
           
           <v-col v-for="card in cards" cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
-              <v-card class="fill-height" elevation="1"  max-width="344">
+              <v-card class="fill-height" elevation="1">
                 <v-img  class="align-end" cover height="90" alt="" :src="card.img"></v-img>
                 <v-card-title>{{ card.title }}</v-card-title>
                 <v-card-subtitle>{{ card.text }}</v-card-subtitle>
@@ -43,41 +43,40 @@
       <v-container>
   
         <v-row class="d-flex justify-center">
-          <v-col>
+          <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
             <h3 class="font-weight-regular">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</h3>
           </v-col>
-          <v-col cols="12" xs="12" sm="12" md="4" lg="4" xl="4">
-            <v-card class="elevation-0 quote-card" variant="tonal" color="grey">
-                <v-card-text class="text-h6 text-quote">
+          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
+            <v-card class="elevation-0">
+                <v-card-text>
                 “I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.”
-              </v-card-text>
-              <v-card-item>
-                <v-card-subtitle style="color:grey" >
-                  <hr class="my-2" style="border-top: 1px solid #c8ccd0">
+                </v-card-text>
+                <v-card-item>
+                <v-card-subtitle>
                   Florian Muller<br>
-                Head of Chemistry<br>
-                Lindonlight Collective
+                  Head of Chemistry<br>
+                  Lindonlight Collective
                 </v-card-subtitle>
               </v-card-item>
             </v-card>
           </v-col>
 
-          <v-col cols="12" xs="12" sm="12" md="4" lg="4" xl="4">
-            <v-card class="elevation-0 quote-card" variant="tonal" color="grey">
-              <v-card-text class="text-h6 text-quote">
-                “I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.”
+          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
+            <v-card class="elevation-0 fill-height">
+              <v-card-text>
+                “The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our
+                research process.”
               </v-card-text>
               <v-card-item>
-                <v-card-subtitle style="color:grey" >
-                  <hr class="my-2" style="border-top: 1px solid #c8ccd0">
+                <v-card-subtitle>
                   Discovery Oncology Scientist<br>
                   Fortune 500<br>
                   Pharmaceutical Company
                 </v-card-subtitle>
               </v-card-item>
             </v-card>
-
           </v-col>
+
         </v-row>
       </v-container>
     </page-gradient>
