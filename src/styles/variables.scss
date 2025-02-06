@@ -10,12 +10,11 @@ $quote-font-family: 'Playfair Display';
     $body-font-family: 'Inter',
     $font-size-root: 1rem,
     $heading-font-family: 'Inter',
-    $card-padding: 1.5rem,
+    // $card-padding: 1.5rem,
 
     $typography: (
         'h1': (
             'size': var(--h1-size),
-            'weight': 800,
             'line-height': 1,
             'letter-spacing': -.015625em,
             'font-family': $heading-font-family,
@@ -24,7 +23,6 @@ $quote-font-family: 'Playfair Display';
         'h2': (
         //   'size': 3.75rem,
             'size': var(--h2-size),
-            'weight': 200,
             'line-height': 1,
             'letter-spacing': -.0083333333em,
             'font-family': $heading-font-family,
@@ -33,7 +31,7 @@ $quote-font-family: 'Playfair Display';
         'h3': (
         //   'size': 3rem,
             'size': var(--h3-size),
-            'weight': 200,
+            // 'weight': 200,
             'line-height': 1.05,
             'letter-spacing': normal,
             'font-family': $heading-font-family,
@@ -42,7 +40,6 @@ $quote-font-family: 'Playfair Display';
         'h4': (
             // 'size': 2.125rem,
             'size': var(--h4-size),
-            'weight': 200,
             'line-height': 1.175,
             'letter-spacing': .0073529412em,
             'font-family': $heading-font-family,
@@ -51,7 +48,6 @@ $quote-font-family: 'Playfair Display';
         'h5': (
        //     'size': 1.5rem,
             'size': var(--h5-size),
-            'weight': 300,
             'line-height': 1.333,
             'letter-spacing': normal,
             'font-family': $heading-font-family,
@@ -60,12 +56,20 @@ $quote-font-family: 'Playfair Display';
         'h6': (
            // 'size': 1.25rem,
             'size': var(--h6-size),
-            'weight': 500,
             'line-height': 1.6,
             'letter-spacing': .0125em,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
+        'h7': (
+            // 'size': 1.25rem,
+             'size': var(--h7-size),
+             'line-height': 1.6,
+             'letter-spacing': .0125em,
+             'font-family': $heading-font-family,
+             'text-transform': none
+         ),
+
         'subtitle-1': (
           'size': 1rem,
           'weight': normal,
@@ -125,68 +129,69 @@ $quote-font-family: 'Playfair Display';
       )
     
 );
-.v-container{
-    width:80% !important;
-    max-width:1900px !important;
-  }
+
+
+
 
 
 .text-quote {
     font-family: $quote-font-family;
     // color: var(--v-secondary);
 }
-.italic{
-    font-style: italic;
-}
+
+
 :root {
-    --h1-size: 5rem;
-    --h2-size: 3rem;
-    --h3-size: 2.5rem;
-    --h4-size: 2rem;
-    --h5-size: 1.5rem;
-    --h6-size: 1.25rem;
+    --h1-size: 3.75rem;
+    --h2-size: 2.75rem;
+    --h3-size: 1.33rem;
+    --h4-size: 1.125rem;
+    --h5-size: 0.9rem; // body size??
+    --h6-size: 0.85rem;
+    --h7-size: 0.75rem;
 }
 
-@media (max-width: 1200px) {
-    :root {
-        --h1-size: 4rem;
-        --h2-size: 3rem;
-        --h3-size: 2.5rem;
-        --h4-size: 2rem;
-        --h5-size: 1.5rem;
-        --h6-size: 1.25rem;
-    }
-}
+// @media (max-width: 1200px) {
+//     :root {
+//         --h1-size: 4rem;
+//         --h2-size: 2.75rem;
+//         --h3-size: 2rem;
+//         --h4-size: 1.25rem;
+//         --h5-size: 0.85rem;
+//         --h6-size: 0.75rem;
+//     }
+// }
 
-@media (max-width: 992px) {
-    :root {
-        --h1-size: 3.5rem;
-        --h2-size: 2.5rem;
-        --h3-size: 2rem;
-        --h4-size: 1.75rem;
-        --h5-size: 1.5rem;
-        --h6-size: 1.25rem;
-    }
-}
+// @media (max-width: 992px) {
+//     :root {
+//         --h1-size: 3.5rem;
+//         --h2-size: 2.5rem;
+//         --h3-size: 2rem;
+//         --h4-size: 1.75rem;
+//         --h5-size: 1.5rem;
+//         --h6-size: 1.25rem;
+//     }
+// }
 
-@media (max-width: 768px) {
-    :root {
-        --h1-size: 3rem;
-        --h2-size: 2rem;
-        --h3-size: 1.75rem;
-        --h4-size: 1.5rem;
-        --h5-size: 1.25rem;
-        --h6-size: 1.25rem;
-    }
-}
+// @media (max-width: 768px) {
+//     :root {
+//         --h1-size: 3rem;
+//         --h2-size: 2rem;
+//         --h3-size: 1.75rem;
+//         --h4-size: 1.5rem;
+//         --h5-size: 1.25rem;
+//         --h6-size: 1.25rem;
+//     }
+// }
 
-@media (max-width: 600px) {
-    :root {
-        --h1-size: 3rem;
-        --h2-size: 2rem;
-        --h3-size: 1.75rem;
-        --h4-size: 1.5rem;
-        --h5-size: 1.25rem;
-        --h6-size: 1.25rem;
-    }
-}
+// @media (max-width: 600px) {
+//     :root {
+//         --h1-size: 3rem;
+//         --h2-size: 2rem;
+//         --h3-size: 1.75rem;
+//         --h4-size: 1.5rem;
+//         --h5-size: 1.25rem;
+//         --h6-size: 1.25rem;
+//     }
+// }
+
+
