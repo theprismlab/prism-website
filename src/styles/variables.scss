@@ -15,9 +15,13 @@ $quote-font-family: 'Playfair Display';
     $card-title-white-space: normal,
     $card-title-word-wrap: initial,
     $card-title-text-overflow: visible,
+    $card-title-hyphens: none,
     $card-subtitle-padding: 0rem 1rem,
     $card-subtitle-header-padding: 0 0 .25rem,
+    $card-subtitle-white-space: normal,
+    $card-subtitle-text-overflow: visible,
     $card-text-padding: 1rem,
+    $button-text-transform: none,
     $typography: (
         'h1': (
             'size': var(--h1-size),
@@ -28,28 +32,28 @@ $quote-font-family: 'Playfair Display';
         ),
         'h2': (
             'size': var(--h2-size),
-            'line-height': 1,
+            'line-height': 1.4em,
             'letter-spacing': -.0083333333em,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h3': (
             'size': var(--h3-size),
-            'line-height': 1.05,
+            'line-height': 1.6em,
             'letter-spacing': normal,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h4': (
             'size': var(--h4-size),
-            'line-height': 1.175,
+            'line-height': 1.6em,
             'letter-spacing': .0073529412em,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h5': (
             'size': var(--h5-size),
-            'line-height': 1.333,
+            'line-height': 1.6,
             'letter-spacing': normal,
             'font-family': $heading-font-family,
             'text-transform': none
@@ -69,22 +73,22 @@ $quote-font-family: 'Playfair Display';
              'text-transform': none
          ),
 
-        'subtitle-1': (
-          'size': 1rem,
-          'weight': normal,
-          'line-height': 1.75,
-          'letter-spacing': .009375em,
-          'font-family': $body-font-family,
-          'text-transform': none
-        ),
-        'subtitle-2': (
-          'size': .875rem,
-          'weight': 500,
-          'line-height': 1.6,
-          'letter-spacing': .0071428571em,
-          'font-family': $body-font-family,
-          'text-transform': none
-        ),
+        // 'subtitle-1': (
+        //   'size': 1rem,
+        //   'weight': normal,
+        //   'line-height': 1.75,
+        //   'letter-spacing': .009375em,
+        //   'font-family': $body-font-family,
+        //   'text-transform': none
+        // ),
+        // 'subtitle-2': (
+        //   'size': .875rem,
+        //   'weight': 500,
+        //   'line-height': 1.6,
+        //   'letter-spacing': .0071428571em,
+        //   'font-family': $body-font-family,
+        //   'text-transform': none
+        // ),
         'body-1': (
           'size': 1rem,
           'weight': 400,
@@ -130,13 +134,6 @@ $quote-font-family: 'Playfair Display';
 );
 
 
-
-
-
-.text-quote {
-    font-family: $quote-font-family;
-    // color: var(--v-secondary);
-}
 
 
 :root {

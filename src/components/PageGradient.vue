@@ -1,5 +1,5 @@
 <template>
-  <section class="py-12">
+  <section class="py-8">
       <slot></slot>
   </section>
 </template>
@@ -27,7 +27,7 @@ export default {
 </script>
 <style scoped>
   section {
-    background: linear-gradient(300deg, rgba(190, 219, 255, .02), rgba(190, 219, 255, .25));
+    background: linear-gradient(300deg, rgba(190, 219, 255, .1), rgba(190, 219, 255, .4));
   }
 </style>
   

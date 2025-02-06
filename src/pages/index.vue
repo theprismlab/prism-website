@@ -4,17 +4,18 @@
       <v-container class="fill-height">
         <v-row>
           <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
-            <h1 class="text-h1">Revolutionize cancer drug discovery</h1>
-            <h4 class="font-weight-regular">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h4>
+            <h1 class="text-h1" style="text-shadow: white 3px 3px 3px;">Revolutionize cancer drug discovery</h1>
+            <p class="text-h4 font-weight-medium" style="text-shadow: white 1px 1px 5px;">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
           </v-col>
         </v-row>
       </v-container>
     </v-parallax>
+
     <page-gradient>
         <v-container>
           <v-row class="d-flex justify-center">
-            <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
-              <h4 class="text-center font-weight-regular">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </h4>
+            <v-col cols="12" xs="12" sm="10" md="8" lg="8" xl="8">
+              <p class="text-h4 text-center font-weight-medium">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </p>
             </v-col>
           </v-row>
         </v-container>
@@ -23,15 +24,15 @@
     <page-section>
       <v-container>
         <v-row>
-          
           <v-col v-for="card in cards" cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
               <v-card class="fill-height" elevation="1">
                 <v-img  class="align-end" cover height="90" alt="" :src="card.img"></v-img>
                 <v-card-title>{{ card.title }}</v-card-title>
                 <v-card-subtitle>{{ card.text }}</v-card-subtitle>
                 <v-card-actions>
-                  <v-btn size="x-small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
+                  <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
                 </v-card-actions>
+             
             </v-card>
           </v-col>
         </v-row>
@@ -41,10 +42,9 @@
     
     <page-gradient>
       <v-container>
-  
         <v-row class="d-flex justify-center">
           <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
-            <h3 class="font-weight-regular">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</h3>
+            <p class="text-h4 font-weight-medium">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</p>
           </v-col>
           <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
             <v-card class="elevation-0">
@@ -80,7 +80,18 @@
         </v-row>
       </v-container>
     </page-gradient>
-  </div>
+    <PageBannerShort title="Collaborate with us!" buttonText="Learn more about working with us" buttonLink="google.com"></PageBannerShort>
+    <page-section>
+      <v-container>
+        <v-row>
+          <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
+            <p class="text-h4 font-weight-medium">We are devoted to moving cancer research forward.. sentence needed.</p>
+          </v-col>
+        </v-row>
+      </v-container>
+    </page-section>
+ 
+ </div>
 </template>
 <script>
   export default {
