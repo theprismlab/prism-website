@@ -3,13 +3,13 @@
 
 
 
-h1, h2, h3, h4, h5, h6, p {
-    margin-bottom: 24px !important;
-    margin-top:24px !important;
-}
-h1, h2, h3, h4, h5, h6 {
-    font-weight: 800 !important;
-}
+// h1, h2, h3, h4, h5, h6, p {
+//     margin-bottom: 24px !important;
+//     margin-top:24px !important;
+// }
+// h1, h2, h3, h4, h5, h6 {
+//     font-weight: 800 !important;
+// }
 
 // h1{
 //     font-size: var(--h1-size) !important;
@@ -28,7 +28,9 @@ h1, h2, h3, h4, h5, h6 {
 //     font-size: var(--h5-size) !important;
 // }
 
-
+.title {
+    margin: 3rem 0 2rem;
+}
 
 // .v-card-title{
 //     font-weight: 800 !important;
