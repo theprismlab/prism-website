@@ -26,7 +26,7 @@
         <v-row>
           <v-col v-for="card in cards" cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
               <v-card class="fill-height" elevation="1">
-                <v-img  class="align-end" cover height="90" alt="" :src="card.img"></v-img>
+                <v-img  class="align-end" cover height="90" alt="" :src="`${imgPath}${card.img}`"></v-img>
                 <v-card-title class="font-weight-black">{{ card.title }}</v-card-title>
                 <v-card-subtitle>{{ card.text }}</v-card-subtitle>
                 <v-card-actions>
@@ -80,7 +80,7 @@
         </v-row>
       </v-container>
     </page-gradient>
-    <PageBannerShort title="Collaborate with us!" buttonText="Learn more about working with us" buttonLink="google.com"></PageBannerShort>
+    <PageBannerShort title="Collaborate with us!" buttonText="Learn more about working with us" buttonLink=""></PageBannerShort>
     <page-section>
       <v-container>
         <v-row>
@@ -136,30 +136,30 @@
           {
             title: 'Complete genomic and functional characterization of cell lines',
             text: 'Over 150k genomic features and dependencies for hematopoietic and solid tumor cell lines covering 80 subtypes.',
-            img: '../../public/images/PRISM-about-graphic-01.png',
+            img: 'PRISM-website-graphics_about-02.png',
             linkText: 'Learn more',
-            linkUrl: 'google.com'
+            linkUrl: '/screening/cell-line-collection'
           },
           {
             title: 'Multiple screening offerings',
             text: 'Small molecules, combinations, antibody-drug conjugates, antibodies, and cytokines at multiple time points.',
-            img: '../../public/images/PRISM-about-graphic-01.png',
+            img: 'PRISM-website-graphics_about-03.png',
             linkText: 'Learn more',
-            linkUrl: 'google.com'
+            linkUrl: '/screening/screens'
           },
           {
             title: 'Predictive modeling to identify patient population and targets',
             text: 'Univariate and multivariate predictive models to compare the viability profile of your drug.',
-            img: '../../public/images/PRISM-about-graphic-01.png',
+            img: 'PRISM-website-graphics_about-04.png',
             linkText: 'Learn more',
-            linkUrl: 'google.com'
+            linkUrl: '/screening/data'
           },
           {
             title: 'Secure data portal',
             text: 'Securely browse and discover insights from your screening results with interactive visualizations.',
-            img: '../../public/images/PRISM-about-graphic-01.png',
+            img: 'PRISM-website-graphics_about-05.png',
             linkText: 'Learn more',
-            linkUrl: 'google.com'
+            linkUrl: '/portal'
           },
         ]
       }
@@ -173,6 +173,10 @@
       },
 
     computed: {
+      imgPath() {
+          console.log(import.meta.env.PROD);
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "/images/homepage/" : "../../public/images/homepage/"
+        },
       mobile () {
         return this.$vuetify.display.mobile
       },

@@ -1,6 +1,6 @@
 <template>
     <v-card>
-        <v-img :src="`../../public/images/team/${image}`" cover></v-img>
+        <v-img :src="image" cover></v-img>
         <v-card-title>{{ name }}</v-card-title>
         <v-card-text>{{ title }}</v-card-text>
         <v-card-actions>
