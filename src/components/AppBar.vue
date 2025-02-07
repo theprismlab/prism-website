@@ -1,12 +1,14 @@
 <template>
-    <v-app-bar app color="white" light clipped-left>
+
+  <v-app-bar app dense color="white" light>
+    <v-toolbar-title>
       <router-link to="/" tag="span" style="cursor: pointer">
         <img id="prism_logo" alt="PRISM Logo" width="130px" src="../assets/logo.png"/>
       </router-link>
-        <v-tabs hide-slider>
-          <v-spacer></v-spacer>
-          <v-tab color="primary" id="home" to="/">Home</v-tab>
-
+    </v-toolbar-title>
+      <v-spacer></v-spacer>
+      
+        <v-tabs hide-slider right>
           <v-tab> About us <v-icon>mdi-menu-down</v-icon>
             <v-menu activator="parent">
               <v-list>
@@ -51,11 +53,9 @@
               </v-list>
             </v-menu>
           </v-tab>
-
-        
-
-
         </v-tabs>
+
+
     </v-app-bar>
   </template>
   <script>
@@ -64,18 +64,26 @@
     name: "AppBar",
   data(){
     return {
+
     }
   },
     methods: {
 
     },
     computed: {
-
+      mobile () {
+        return this.$vuetify.display.mobile
+      },
     }
   };
   </script>
 
 <style lang="scss" scoped>
-
+  .v-app-bar{
+    border-bottom:2px solid #4699FF !important;
+    box-shadow: 0.5px 0.5px 15px 0px rgba(220, 220, 220, 0.5) !important;
+    z-index:1000;
+  }
+  
 </style>
   

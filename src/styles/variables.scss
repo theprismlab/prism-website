@@ -1,38 +1,196 @@
+
+
+$heading-font-family: 'Inter';
+$body-font-family: 'Inter';
+$quote-font-family: 'Playfair Display';
+
+
 @use 'vuetify/settings' with (
     $color-pack: true,
     $body-font-family: 'Inter',
     $font-size-root: 1rem,
     $heading-font-family: 'Inter',
-    $card-padding: 1.5rem,
+    $card-title-padding: 0.5rem 1rem,
+    $card-title-padding-top: 1rem,
+    $card-title-white-space: normal,
+    $card-title-word-wrap: initial,
+    $card-title-text-overflow: visible,
+    $card-title-hyphens: none,
+    $card-subtitle-padding: 0rem 1rem,
+    $card-subtitle-header-padding: 0 0 .25rem,
+    $card-subtitle-white-space: normal,
+    $card-subtitle-text-overflow: visible,
+    $card-text-padding: 1rem,
+    $button-text-transform: none,
     $typography: (
         'h1': (
-            'size':5rem,
-            'weight': 800,
-            'line-height': 1em,
-            'letter-spacing': 0,
-            'text-transform': none,
-            'margin-bottom': 2.5em
+            'size': var(--h1-size),
+            'line-height': 1,
+            'letter-spacing': -.015625em,
+            'font-family': $heading-font-family,
+            'text-transform': none
         ),
         'h2': (
-           // 'size': 4.5rem,
-            'weight': 200,
-            'line-height': 1.2em,
-            'letter-spacing': 0,
-            'text-transform': none,
+            'size': var(--h2-size),
+            'line-height': 1.4em,
+            'letter-spacing': -.0083333333em,
+            'font-family': $heading-font-family,
+            'text-transform': none
         ),
         'h3': (
-           // 'size': 3rem,
-            'weight': 400,
-            'line-height': 1.2em,
-            'letter-spacing': 0,
-            'text-transform': none,
+            'size': var(--h3-size),
+            'line-height': 1.33em,
+            'letter-spacing': normal,
+            'font-family': $heading-font-family,
+            'text-transform': none
         ),
         'h4': (
-          //  'size': 1.75rem,
-            'weight': 400,
-            'line-height': 1.2em,
-            'letter-spacing': 0,
-            'text-transform': none,
+            'size': var(--h4-size),
+            'line-height': 1.33em,
+            'letter-spacing': .0073529412em,
+            'font-family': $heading-font-family,
+            'text-transform': none
         ),
-    ),
+        'h5': (
+            'size': var(--h5-size),
+            'line-height': 1.33,
+            'letter-spacing': normal,
+            'font-family': $heading-font-family,
+            'text-transform': none
+        ),
+        'h6': (
+            'size': var(--h6-size),
+            'line-height': 1.33,
+            'letter-spacing': .0125em,
+            'font-family': $heading-font-family,
+            'text-transform': none
+        ),
+        'h7': (
+             'size': var(--h7-size),
+             'line-height': 1.6,
+             'letter-spacing': .0125em,
+             'font-family': $heading-font-family,
+             'text-transform': none
+         ),
+        'subtitle-1': (
+          'size': var(--subtitle-1-size),
+          'weight': normal,
+          'line-height': 1.75,
+          'letter-spacing': .009375em,
+          'font-family': $body-font-family,
+          'text-transform': none
+        ),
+        'subtitle-2': (
+          'size': var(--subtitle-2-size),
+          'weight': 500,
+          'line-height': 1.6,
+          'letter-spacing': .0071428571em,
+          'font-family': $body-font-family,
+          'text-transform': none
+        ),
+        'body-1': (
+          'size': var(--body-1-size),
+          'weight': 400,
+          'line-height': 1.5,
+          'letter-spacing': .03125em,
+          'font-family': $body-font-family,
+          'text-transform': none
+        ),
+        'body-2': (
+          'size': var(--body-2-size),
+          'weight': 400,
+          'line-height': 1.425,
+          'letter-spacing': .0178571429em,
+          'font-family': $body-font-family,
+          'text-transform': none
+        ),
+        'button': (
+          'size': .875rem,
+          'weight': 500,
+          'line-height': 2.6,
+          'letter-spacing': .0892857143em,
+          'font-family': $body-font-family,
+          'text-transform': uppercase
+        ),
+        'caption': (
+          'size': .75rem,
+          'weight': 400,
+          'line-height': 1.667,
+          'letter-spacing': .0333333333em,
+          'font-family': $body-font-family,
+          'text-transform': none
+        ),
+        'overline': (
+          'size': .75rem,
+          'weight': 500,
+          'line-height': 2.667,
+          'letter-spacing': .1666666667em,
+          'font-family': $body-font-family,
+          'text-transform': uppercase
+        )
+      )
+    
 );
+
+
+
+
+:root {
+    --body-1-size: 1rem;
+    --body-2-size: 0.875rem;
+    --h1-size: 3.75rem;
+    --h2-size: 2.75rem;
+    --h3-size: 1.75rem;
+    --h4-size: 1.33rem;
+    --h5-size: 1.125rem; 
+    --h6-size: var(--body-1-size);
+    --h7-size: var(--body-2-size);
+    --subtitle-1-size: var(--body-1-size);
+    --subtitle-2-size: var(--body-2-size);
+}
+
+// @media (max-width: 1200px) {
+//     :root {
+//         --h1-size: 4rem;
+//         --h2-size: 2.75rem;
+//         --h3-size: 2rem;
+//         --h4-size: 1.25rem;
+//         --h5-size: 0.85rem;
+//         --h6-size: 0.75rem;
+//     }
+// }
+
+// @media (max-width: 992px) {
+//     :root {
+//         --h1-size: 3.5rem;
+//         --h2-size: 2.5rem;
+//         --h3-size: 2rem;
+//         --h4-size: 1.75rem;
+//         --h5-size: 1.5rem;
+//         --h6-size: 1.25rem;
+//     }
+// }
+
+// @media (max-width: 768px) {
+//     :root {
+//         --h1-size: 3rem;
+//         --h2-size: 2rem;
+//         --h3-size: 1.75rem;
+//         --h4-size: 1.5rem;
+//         --h5-size: 1.25rem;
+//         --h6-size: 1.25rem;
+//     }
+// }
+
+// @media (max-width: 600px) {
+//     :root {
+//         --h1-size: 3rem;
+//         --h2-size: 2rem;
+//         --h3-size: 1.75rem;
+//         --h4-size: 1.5rem;
+//         --h5-size: 1.25rem;
+//         --h6-size: 1.25rem;
+//     }
+// }
+
+

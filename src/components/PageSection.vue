@@ -1,19 +1,15 @@
 <template>
-  <div>
-    <h2>{{  title  }}</h2>
+  <section class="py-12">
       <slot></slot>
-  </div>
+  </section>
   </template>
   
   <script>
     export default {
       name: 'PageSection',
       props: {
-        title: {
-        type: String,
-        required: false
-        }
-    },
+     
+      },
       data () {
         return {
 
@@ -27,9 +23,6 @@
     }
   </script>
   <style scoped>
-  h2{
-    font-weight:700;
-    margin-bottom:14px !important;
-  }
+
   </style>
   
