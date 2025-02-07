@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-parallax src="../../public/images/PRISM-homepage-hero-01.png" :height="heroHeight">
+    <v-parallax src="../../public/images/homepage-hero-02.png" :height="heroHeight">
       <v-container class="fill-height">
         <v-row>
           <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
@@ -15,7 +15,7 @@
         <v-container>
           <v-row class="d-flex justify-center">
             <v-col cols="12" xs="12" sm="10" md="8" lg="8" xl="8">
-              <p class="text-h3 text-center">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </p>
+              <p class="text-h4 text-center">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </p>
             </v-col>
           </v-row>
         </v-container>
@@ -44,7 +44,7 @@
       <v-container>
         <v-row class="d-flex justify-center">
           <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
-            <p class="text-h3">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</p>
+            <p class="text-h4">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</p>
           </v-col>
           <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
             <v-card class="elevation-0">
@@ -85,11 +85,20 @@
       <v-container>
         <v-row>
           <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
-            <p class="text-h3">We are devoted to moving cancer research forward.. sentence needed.</p>
+            <p class="text-h4">We are devoted to moving cancer research forward.. sentence needed.</p>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col v-for="stat in stats">
+            <v-card class="elevation-0 fill-height" style="border-radius: 0px; border-left: 3px solid var(--v-primary);">
+              <v-card-title class="font-weight-black text-h2">{{ stat.number }}</v-card-title>
+              <v-card-subtitle>{{ stat.text }}</v-card-subtitle>
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
     </page-section>
+
  
  </div>
 </template>
@@ -97,6 +106,32 @@
   export default {
     data() {
       return {
+        stats: [
+          {
+            number: "900+",
+            text: "Genomically characterized cell lines"
+          },
+          {
+            number: "4",
+            text: "Months turnaround time from submission to data delivery"
+          },
+          {
+            number: "7,000+",
+            text: "Compounds screened in over 500 cell lines"
+          },
+          {
+            number: "40+",
+            text: "Publications in high-impact journals"
+          },
+          {
+            number: "150+",
+            text: "Academic and industry partners"
+          },
+          {
+            number: "30+",
+            text: "Years of experience"
+          }
+        ],
         cards: [
           {
             title: 'Complete genomic and functional characterization of cell lines',

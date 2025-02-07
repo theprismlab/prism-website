@@ -39,28 +39,28 @@ $quote-font-family: 'Playfair Display';
         ),
         'h3': (
             'size': var(--h3-size),
-            'line-height': 1.6em,
+            'line-height': 1.33em,
             'letter-spacing': normal,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h4': (
             'size': var(--h4-size),
-            'line-height': 1.6em,
+            'line-height': 1.33em,
             'letter-spacing': .0073529412em,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h5': (
             'size': var(--h5-size),
-            'line-height': 1.6,
+            'line-height': 1.33,
             'letter-spacing': normal,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h6': (
             'size': var(--h6-size),
-            'line-height': 1.6,
+            'line-height': 1.33,
             'letter-spacing': .0125em,
             'font-family': $heading-font-family,
             'text-transform': none
@@ -72,9 +72,8 @@ $quote-font-family: 'Playfair Display';
              'font-family': $heading-font-family,
              'text-transform': none
          ),
-
         'subtitle-1': (
-          'size': 1rem,
+          'size': var(--subtitle-1-size),
           'weight': normal,
           'line-height': 1.75,
           'letter-spacing': .009375em,
@@ -82,7 +81,7 @@ $quote-font-family: 'Playfair Display';
           'text-transform': none
         ),
         'subtitle-2': (
-          'size': .875rem,
+          'size': var(--subtitle-2-size),
           'weight': 500,
           'line-height': 1.6,
           'letter-spacing': .0071428571em,
@@ -90,7 +89,7 @@ $quote-font-family: 'Playfair Display';
           'text-transform': none
         ),
         'body-1': (
-          'size': 1rem,
+          'size': var(--body-1-size),
           'weight': 400,
           'line-height': 1.5,
           'letter-spacing': .03125em,
@@ -98,7 +97,7 @@ $quote-font-family: 'Playfair Display';
           'text-transform': none
         ),
         'body-2': (
-          'size': .875rem,
+          'size': var(--body-2-size),
           'weight': 400,
           'line-height': 1.425,
           'letter-spacing': .0178571429em,
@@ -137,13 +136,17 @@ $quote-font-family: 'Playfair Display';
 
 
 :root {
+    --body-1-size: 1rem;
+    --body-2-size: 0.875rem;
     --h1-size: 3.75rem;
     --h2-size: 2.75rem;
-    --h3-size: 1.33rem;
-    --h4-size: 1.125rem;
-    --h5-size: 0.9rem; // body size??
-    --h6-size: 0.85rem;
-    --h7-size: 0.75rem;
+    --h3-size: 1.75rem;
+    --h4-size: 1.33rem;
+    --h5-size: 1.125rem; 
+    --h6-size: var(--body-1-size);
+    --h7-size: var(--body-2-size);
+    --subtitle-1-size: var(--body-1-size);
+    --subtitle-2-size: var(--body-2-size);
 }
 
 // @media (max-width: 1200px) {

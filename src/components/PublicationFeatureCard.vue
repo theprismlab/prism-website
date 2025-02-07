@@ -2,13 +2,15 @@
     <v-card>
         <v-card-item>
             <v-row>
-                <v-col cols="12" md="3">
-                    <v-img :src="imgUrl" cover></v-img>
+                <v-col cols="12" md="4">
+                    <v-img max-width="100%" :src="image"></v-img>
                 </v-col>
-                <v-col cols="12" md="9">
-                    <a :href="url"><v-card-title>{{ title }}</v-card-title></a>
-                    <v-card-subtitle>{{ publisher }}</v-card-subtitle>
-                    <v-card-subtitle>{{ date }}</v-card-subtitle>
+                <v-col cols="12" md="8">
+                    <v-card-item max-width="100%">
+                        <a :href="url"><v-card-title>{{ title }}</v-card-title></a>
+                        <v-card-subtitle>{{ publisher }}</v-card-subtitle>
+                        <v-card-subtitle>{{ date }}</v-card-subtitle>
+                    </v-card-item>
                     <v-card-text>{{ abstract }}</v-card-text>
                 </v-col>
             </v-row>
@@ -52,12 +54,12 @@ export default {
     },
     computed: {
 
-        imgUrl () {
-            return new URL(`../assets/${this.image}`, import.meta.url).href
-        }
+        // imgUrl () {
+        //     return new URL(`../assets/${this.image}`, import.meta.url).href
+        // }
     },
     mounted() {
-        console.log(this.image, this.imgUrl);
+     //   console.log(this.image, this.imgUrl);
     }
 }
 </script>
