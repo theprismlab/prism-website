@@ -1,149 +1,167 @@
 <template>
   <div>
-    <page-cover-image url="src/assets/hero-desktop.png">
-      <v-container :style="{minHeight: heroMinHeight, zIndex: 1}">
+    <v-parallax src="../../public/images/homepage-hero-02.png" :height="heroHeight">
+      <v-container class="fill-height">
         <v-row>
           <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
-            <h1 class="text-h1">Accelerate the understanding of cancer treatments </h1>
-            <p class="text-h5">Rapid, comprehensive cancer drug-sensitivity screening enhanced by predictive modeling</p>
+            <h1 class="title text-h1 font-weight-black" style="text-shadow: white 3px 3px 3px;">Revolutionize cancer drug discovery</h1>
+            <p class="text-h4 font-weight-medium" style="text-shadow: white 1px 1px 5px;">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
           </v-col>
         </v-row>
       </v-container>
-    </page-cover-image>
-    <page-gradient>
-      <v-container>
-        <v-row>
-          <v-col cols="12" xs="12" sm="10" md="10" lg="10" xl="8">
-          <h2 class="text-h3">PRISM multiplexed viability screening with over 900 genomically characterized cell lines.</h2>
-        </v-col>
-        </v-row>
+    </v-parallax>
 
-        <v-row :style="{ marginTop: ySpacer, marginBottom: ySpacer }">
-          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
-            <v-card class="prism-card">
-              <v-card-title> 900+ cancer cell lines barcoded and pooled</v-card-title>
-              <v-card-text>
-                Hematopoietic and solid tumor, covering 80 cancer subtypes
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="primary" variant="outlined" rounded> Learn more <v-icon>mdi-arrow-right-thin</v-icon></v-btn>
-              </v-card-actions>
-              <v-img
-                :height="cardImgHeight"
-                alt="prism cell lines graphic"
-                src="../assets/prism-main-01-cell-lines.png"
-              ></v-img>
-            </v-card>
-          </v-col>
-          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
-            <v-card class="prism-card">
-              <v-card-title>Viability profile and genomic characterization</v-card-title>
-              <v-card-text>
-                Generate univariate and multivariate predictive models comparing PRISM viability profile with Dependency Map features
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="primary" variant="outlined" rounded>
-                  Learn more 
-                  <v-icon>mdi-arrow-right-thin</v-icon>
-                </v-btn>
-              </v-card-actions>
-              <v-img
-                :height="cardImgHeight"
-                alt="prism viability profile graphic"
-                src="../assets/prism-main-02-viability.png"
-              ></v-img>
-            </v-card>
-          </v-col>
-          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
-            <v-card class="prism-card">
-              <v-card-title>Identify target and patient population of your drug</v-card-title>
-              <v-card-text>
-                Confirm hypothesis and establish biomarkers of sensitivity and resistance
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="primary" variant="outlined" rounded>
-                  Learn more 
-                  <v-icon>mdi-arrow-right-thin</v-icon>
-                </v-btn>
-              </v-card-actions>
-              <v-img
-                :height="cardImgHeight"
-                alt="prism discover graphic"
-                src="../assets/prism-main-03-discover.png"
-              ></v-img>
-            </v-card>
-          </v-col>
-          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
-            <v-card class="prism-card">
-              <v-card-title>Explore your data on the PRISM Portal</v-card-title>
-              <v-card-text>
-                Securely browse and discover insights from your screening results with interactive visualizations
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="primary" variant="outlined" rounded>
-                  Learn more 
-                  <v-icon>mdi-arrow-right-thin</v-icon>
-                </v-btn>
-              </v-card-actions>
-              <v-img
-                :height="cardImgHeight"
-                alt="prism portal graphic"
-                src="../assets/prism-main-04-portal.png"
-              ></v-img>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+    <page-gradient>
+        <v-container>
+          <v-row class="d-flex justify-center">
+            <v-col cols="12" xs="12" sm="10" md="8" lg="8" xl="8">
+              <p class="text-h4 text-center">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </p>
+            </v-col>
+          </v-row>
+        </v-container>
     </page-gradient>
+
     <page-section>
       <v-container>
-        <!-- <p class="text-h3">Over <span class="primary-text">150 leading academic and industry partners</span>  have trusted PRISM to transform their research.</p> -->
-        <v-row class="d-flex justify-center">
-          <v-col>
-            <p class="text-h3">Over <span class="primary-text">150 leading academic and industry partners</span>  have trusted PRISM to transform their research.</p>
+        <v-row>
+          <v-col v-for="card in cards" cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
+              <v-card class="fill-height" elevation="1">
+                <v-img  class="align-end" cover height="90" alt="" :src="card.img"></v-img>
+                <v-card-title class="font-weight-black">{{ card.title }}</v-card-title>
+                <v-card-subtitle>{{ card.text }}</v-card-subtitle>
+                <v-card-actions>
+                  <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
+                </v-card-actions>
+             
+            </v-card>
           </v-col>
-          <v-col cols="12" xs="12" sm="12" md="4" lg="4" xl="4">
-            <v-card class="elevation-0 quote-card" variant="tonal" color="grey">
-                <v-card-text class="text-h6 text-quote">
+        </v-row>
+      </v-container>
+    </page-section>
+
+    
+    <page-gradient>
+      <v-container>
+        <v-row class="d-flex justify-center">
+          <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
+            <p class="text-h4">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</p>
+          </v-col>
+          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
+            <v-card class="elevation-0">
+                <v-card-text>
                 “I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.”
-              </v-card-text>
-              <v-card-item>
-                <v-card-subtitle style="color:grey" >
-                  <hr class="my-2" style="border-top: 1px solid #c8ccd0">
+                </v-card-text>
+                <v-card-item>
+                <v-card-subtitle>
                   Florian Muller<br>
-                Head of Chemistry<br>
-                Lindonlight Collective
+                  Head of Chemistry<br>
+                  Lindonlight Collective
                 </v-card-subtitle>
               </v-card-item>
             </v-card>
           </v-col>
 
-          <v-col cols="12" xs="12" sm="12" md="4" lg="4" xl="4">
-            <v-card class="elevation-0 quote-card" variant="tonal" color="grey">
-              <v-card-text class="text-h6 text-quote">
-                “I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.”
+          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
+            <v-card class="elevation-0 fill-height">
+              <v-card-text>
+                “The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our
+                research process.”
               </v-card-text>
               <v-card-item>
-                <v-card-subtitle style="color:grey" >
-                  <hr class="my-2" style="border-top: 1px solid #c8ccd0">
+                <v-card-subtitle>
                   Discovery Oncology Scientist<br>
                   Fortune 500<br>
                   Pharmaceutical Company
                 </v-card-subtitle>
               </v-card-item>
             </v-card>
+          </v-col>
 
+        </v-row>
+      </v-container>
+    </page-gradient>
+    <PageBannerShort title="Collaborate with us!" buttonText="Learn more about working with us" buttonLink="google.com"></PageBannerShort>
+    <page-section>
+      <v-container>
+        <v-row>
+          <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
+            <p class="text-h4">We are devoted to moving cancer research forward.. sentence needed.</p>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col v-for="stat in stats">
+            <v-card class="elevation-0 fill-height" style="border-radius: 0px; border-left: 3px solid var(--v-primary);">
+              <v-card-title class="font-weight-black text-h2">{{ stat.number }}</v-card-title>
+              <v-card-subtitle>{{ stat.text }}</v-card-subtitle>
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
     </page-section>
-  </div>
+
+ 
+ </div>
 </template>
 <script>
   export default {
     data() {
       return {
-
+        stats: [
+          {
+            number: "900+",
+            text: "Genomically characterized cell lines"
+          },
+          {
+            number: "4",
+            text: "Months turnaround time from submission to data delivery"
+          },
+          {
+            number: "7,000+",
+            text: "Compounds screened in over 500 cell lines"
+          },
+          {
+            number: "40+",
+            text: "Publications in high-impact journals"
+          },
+          {
+            number: "150+",
+            text: "Academic and industry partners"
+          },
+          {
+            number: "30+",
+            text: "Years of experience"
+          }
+        ],
+        cards: [
+          {
+            title: 'Complete genomic and functional characterization of cell lines',
+            text: 'Over 150k genomic features and dependencies for hematopoietic and solid tumor cell lines covering 80 subtypes.',
+            img: '../../public/images/PRISM-about-graphic-01.png',
+            linkText: 'Learn more',
+            linkUrl: 'google.com'
+          },
+          {
+            title: 'Multiple screening offerings',
+            text: 'Small molecules, combinations, antibody-drug conjugates, antibodies, and cytokines at multiple time points.',
+            img: '../../public/images/PRISM-about-graphic-01.png',
+            linkText: 'Learn more',
+            linkUrl: 'google.com'
+          },
+          {
+            title: 'Predictive modeling to identify patient population and targets',
+            text: 'Univariate and multivariate predictive models to compare the viability profile of your drug.',
+            img: '../../public/images/PRISM-about-graphic-01.png',
+            linkText: 'Learn more',
+            linkUrl: 'google.com'
+          },
+          {
+            title: 'Secure data portal',
+            text: 'Securely browse and discover insights from your screening results with interactive visualizations.',
+            img: '../../public/images/PRISM-about-graphic-01.png',
+            linkText: 'Learn more',
+            linkUrl: 'google.com'
+          },
+        ]
       }
     },
     mounted() {
@@ -158,8 +176,8 @@
       mobile () {
         return this.$vuetify.display.mobile
       },
-      heroMinHeight () {
-        return 'calc(70vh - 50px)' // update to include navbar?
+      heroHeight () {
+        return this.mobile ? '70vh' : '60vh'
       },
       cardImgHeight () {
         return '200px'
@@ -201,19 +219,6 @@
     color: var(--v-primary);
   }
 
-
-
-
-.v-card-title {
-  font-weight: 800;
-  margin-bottom: 0.25rem;
-  text-overflow: visible;
-  white-space: normal;
-  word-break: normal;
-  word-wrap: initial;
-  hyphens: none;
-  line-height: 1.2em !important;
-}
 
 blockquote:before {
   content: '\0201C';

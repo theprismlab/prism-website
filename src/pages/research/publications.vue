@@ -1,13 +1,23 @@
 <template>
   <div>
-  <v-container class="py-16">
-    <h1 class="text-h1">Publications</h1>
+  <v-container>
+    <h1 class="text-h1 title font-weight-bold">Publications</h1>
     <page-section>
-      <div v-for="each in featured">
-        <!-- <PublicationFeatureCard :title="each.title" :publisher="each.publisher" :date="each.date" :authors="each.authors" :url="each.url" :abstract="each.abstract" :image="`../../assets/images/publications/${each.image}`"></PublicationFeatureCard> -->
-        <PublicationFeatureCard :title="each.title" :publisher="each.publisher" :date="each.date" :authors="each.authors" :url="each.url" :abstract="each.abstract" :image="each.image"></PublicationFeatureCard>
-      </div>
-
+      <v-list>
+        <v-list-subheader class="text-uppercase subtitle-1 font-weight-bold">Featured</v-list-subheader>
+      </v-list>
+      <v-row>
+        <v-col cols="12" md="8" v-for="each in featured.filter((item, index) => index == 0)">
+          <PublicationFeatureCard :title="each.title" :publisher="each.publisher" :date="each.date" :authors="each.authors" :url="each.url" :abstract="each.abstract" :image="`../../public/images/publications/${each.image}`"></PublicationFeatureCard>
+        </v-col>
+      
+        <v-col cols="12" md="4">
+          <div v-for="each in featured.filter((item, index) => index > 0)" class="py-1">
+            <PublicationCard :title="each.title" :publisher="each.publisher" :date="each.date" :authors="each.authors" :url="each.url"></PublicationCard>
+          </div>
+        </v-col>
+      </v-row>
+    
     </page-section>
     <page-section>
           <v-row>
@@ -39,57 +49,7 @@ import PublicationFeatureCard from '@/components/PublicationFeatureCard.vue';
           data: PublicationData.publications,
           featured: PublicationData.publications_featured
 
-          // data: [
-          //   {
-          //     title: 'Genetic dependencies associated with transcription factor activities in human cancer cell lines',
-          //     publisher: 'Thatikonda V, et al. Cell Reports, 2024',
-          //     date: '2024',
-          //     authors: 'Thatikonda V, et al.',
-          //     url: 'google.com'
-          //   },
-          //   {
-          //     title: 'Title',
-          //     publisher: 'Publisher',
-          //     date: '2024',
-          //     authors: 'Authors',
-          //     url: 'google.com'
-          //   },
-          //   {
-          //     title: 'Title',
-          //     publisher: 'Publisher',
-          //     date: '2024',
-          //     authors: 'Authors',
-          //     url: 'google.com'
-          //   },
-          //   {
-          //     title: 'Title',
-          //     publisher: 'Publisher',
-          //     date: '2024',
-          //     authors: 'Authors',
-          //     url: 'google.com'
-          //   },
-          //   {
-          //     title: 'Title',
-          //     publisher: 'Publisher',
-          //     date: '2024',
-          //     authors: 'Authors',
-          //     url: 'google.com'
-          //   },
-          //   {
-          //     title: 'Title',
-          //     publisher: 'Publisher',
-          //     date: '2024',
-          //     authors: 'Authors',
-          //     url: 'google.com'
-          //   },
-          //   {
-          //     title: 'Title',
-          //     publisher: 'Publisher',
-          //     date: '2024',
-          //     authors: 'Authors',
-          //     url: 'google.com'
-          //   }
-          // ]
+         
         }
       },
       mounted() {

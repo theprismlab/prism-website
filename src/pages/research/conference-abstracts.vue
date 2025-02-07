@@ -5,6 +5,29 @@
     </v-layout>
 </template>
 
-<script setup>
-  //
+<script>
+    export default {
+      data() {
+        return {
+          data: [
+            { title: "Title",
+              url: "google.com",
+            }
+          ]
+        }
+      },
+      mounted() {
+
+      },
+      computed: {
+     
+      },
+      methods: {
+
+      },
+      watch: {
+  
+      }
+    }
+
 </script>

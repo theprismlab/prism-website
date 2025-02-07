@@ -1,6 +1,6 @@
 <template>
     <v-card>
-        <a href="google.com"><v-card-title>{{ title }}</v-card-title></a>
+        <a href="" target="_blank"><v-card-title>{{ title }}</v-card-title></a>
         <v-card-subtitle>{{ publisher }}</v-card-subtitle>
         <v-card-subtitle>{{ date }}</v-card-subtitle>
         <v-card-text>{{  }}</v-card-text>
