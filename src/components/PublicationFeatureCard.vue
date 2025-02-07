@@ -54,12 +54,8 @@ export default {
     },
     computed: {
 
-        // imgUrl () {
-        //     return new URL(`../assets/${this.image}`, import.meta.url).href
-        // }
     },
     mounted() {
-     //   console.log(this.image, this.imgUrl);
     }
 }
 </script>

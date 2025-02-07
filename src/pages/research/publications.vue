@@ -8,7 +8,7 @@
       </v-list>
       <v-row>
         <v-col cols="12" md="8" v-for="each in featured.filter((item, index) => index == 0)">
-          <PublicationFeatureCard :title="each.title" :publisher="each.publisher" :date="each.date" :authors="each.authors" :url="each.url" :abstract="each.abstract" :image="`../../public/images/publications/${each.image}`"></PublicationFeatureCard>
+          <PublicationFeatureCard :title="each.title" :publisher="each.publisher" :date="each.date" :authors="each.authors" :url="each.url" :abstract="each.abstract" :image="`${imgPath}${each.image}`"></PublicationFeatureCard>
         </v-col>
       
         <v-col cols="12" md="4">
@@ -60,10 +60,11 @@ import PublicationFeatureCard from '@/components/PublicationFeatureCard.vue';
       // beforeDestroy() {
       //   window.removeEventListener('resize', this.handleResize);
       // },
-  
       computed: {
-
-     
+        imgPath() {
+          console.log(import.meta.env.PROD);
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "/images/publications/" : "../../public/images/publications/"
+        }
       },
       methods: {
       //   handleResize () {
@@ -93,13 +94,6 @@ import PublicationFeatureCard from '@/components/PublicationFeatureCard.vue';
   </script>
 
   <style scoped>
-  #feature-image-container {
-      width: 100%;
-      border: 1px solid #000;
-    }
-    #feature-image {
-      /* height: 200px; */
-      border: 1px solid #000;
-    }
+
 </style>
   

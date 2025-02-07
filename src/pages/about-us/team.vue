@@ -4,7 +4,7 @@
         <h1 class="text-h1 title font-weight-bold">Team</h1>
         <v-row>
           <v-col v-for="each in data" cols="12" xs="12" sm="6" md="4" lg="3" xl="2">
-            <TeamCard :name="each.name" :title="each.title" :image="each.image" :bio="each.bio"></TeamCard>
+            <TeamCard :name="each.name" :title="each.title" :image="`${imgPath}${each.image}`" :bio="each.bio"></TeamCard>
           </v-col>
         </v-row>
       </v-container>
@@ -32,37 +32,37 @@ import TeamCard from '@/components/TeamCard.vue';
           {
             name: 'Name',
             title: 'Title',
-            image: 'Image',
+            image: '',
             bio: '',
           },
           {
             name: 'Name',
             title: 'Title',
-            image: 'Image',
+            image: '',
             bio: '',
           },
           {
             name: 'Name',
             title: 'Title',
-            image: 'Image',
+            image: '',
             bio: '',
           },
           {
             name: 'Name',
             title: 'Title',
-            image: 'Image',
+            image: '',
             bio: '',
           },
           {
             name: 'Name',
             title: 'Title',
-            image: 'Image',
+            image: '',
             bio: '',
           },
           {
             name: 'Name',
             title: 'Title',
-            image: 'Image',
+            image: '',
             bio: '',
           },
 
@@ -77,9 +77,10 @@ import TeamCard from '@/components/TeamCard.vue';
       },
 
     computed: {
-      heroMinHeight () {
-        return '100vh'
-      },
+      imgPath() {
+          console.log(import.meta.env.PROD);
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "/images/team/" : "../../public/images/team/"
+        },
    
     },
     methods: {
