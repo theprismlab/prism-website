@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-parallax src="../../public/images/homepage-hero-02.png" :height="heroHeight">
+    <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-01.png`" :height="heroHeight">
       <v-container class="fill-height">
         <v-row>
           <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
@@ -11,11 +11,11 @@
       </v-container>
     </v-parallax>
 
-    <page-gradient>
+    <page-gradient className="Bl">
         <v-container>
           <v-row class="d-flex justify-center">
             <v-col cols="12" xs="12" sm="10" md="8" lg="8" xl="8">
-              <p class="text-h4 text-center">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </p>
+              <p class="text-h4 text-center" style="text-shadow: white 1px 1px 1px;">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </p>
             </v-col>
           </v-row>
         </v-container>
@@ -38,9 +38,7 @@
         </v-row>
       </v-container>
     </page-section>
-
-    
-    <page-gradient>
+    <page-gradient className="mesh-13">
       <v-container>
         <v-row class="d-flex justify-center">
           <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
@@ -174,8 +172,7 @@
 
     computed: {
       imgPath() {
-        console.log("import.meta.env.PROD", import.meta.env.PROD);
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/" : "../../public/images/"
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/home/" : "../../public/images/home/"
         },
       mobile () {
         return this.$vuetify.display.mobile
@@ -219,18 +216,6 @@
 </script>
 
 <style scoped lang="scss">
-  .primary-text {
-    color: var(--v-primary);
-  }
 
-
-blockquote:before {
-  content: '\0201C';
-  font-size: 5rem;
-  position: absolute;
-  left: -1.8rem;
-  top: -1rem;
-  color: #c8ccd0;
-}
 
 </style>
