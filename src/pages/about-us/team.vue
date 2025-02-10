@@ -78,8 +78,7 @@ import TeamCard from '@/components/TeamCard.vue';
 
     computed: {
       imgPath() {
-          console.log(import.meta.env.PROD);
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "/images/team/" : "../../public/images/team/"
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/team/" : "../../public/images/team/"
         },
    
     },

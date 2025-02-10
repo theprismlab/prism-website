@@ -192,8 +192,7 @@ import PublicationCard from '@/components/PublicationCard.vue';
           return self.publications.filter((item, index) => self.featuredPublicationTitles.includes(item.title));
         },
         imgPath() {
-        console.log("import.meta.env.PROD", import.meta.env.PROD);
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/publictions/" : "../../public/images/publications/"
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/publications/" : "../../public/images/publications/"
         },
       },
       methods: {
