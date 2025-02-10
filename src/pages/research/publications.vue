@@ -8,7 +8,15 @@
       </v-list>
       <v-row>
         <v-col cols="12" md="8" v-for="each in featured.filter((item, index) => index == 0)">
-          <PublicationFeatureCard :title="each.title" :publisher="each.publisher" :date="each.date" :authors="each.authors" :url="each.url" :abstract="each.abstract" :image="`${imgPath}${each.image}`"></PublicationFeatureCard>
+          <PublicationFeatureCard 
+          :title="each.title" 
+          :publisher="each.publisher" 
+          :date="each.date" 
+          :authors="each.authors" 
+          :url="each.url" 
+          :abstract="each.abstract" 
+          :image="`${imgPath}${each.image}`">
+        </PublicationFeatureCard>
         </v-col>
       
         <v-col cols="12" md="4">
@@ -25,8 +33,15 @@
 
             </v-col>
             <v-col cols="12" xs="12" sm="4" md="8" lg="7" xl="6">
-              <div v-for="each in data">
-                <PublicationCard :title="each.title" :publisher="each.publisher" :date="each.date" :authors="each.authors" :url="each.url"></PublicationCard>
+              <div v-for="each in publications">
+                <PublicationCard 
+                  :title="each.title" 
+                  :publisher="each.publisher" 
+                  :date="each.date" 
+                  :authors="each.authors" 
+                  :url="each.url"
+                  >
+                </PublicationCard>
               </div>
             </v-col>
           </v-row>
@@ -40,52 +55,81 @@
   
   <script>
 import PublicationCard from '@/components/PublicationCard.vue';
-import * as PublicationData from '@/assets/data/publications.js';
 import PublicationFeatureCard from '@/components/PublicationFeatureCard.vue';
 
     export default {
       data() {
         return {
-          data: PublicationData.publications,
-          featured: PublicationData.publications_featured
-
+          //  list the titles of the publications that you want to feature. 
+          // The first publication will be displayed as a large card, and the rest will be displayed as smaller cards 
+          featuredPublicationTitles: [
+            "Genetic dependencies associated with transcription factor activities in human cancer cell lines",
+            "High-throughput identification of genotype-specific cancer vulnerabilities in mixtures of barcoded tumor cell lines",
+            "Discovering the anticancer potential of non-oncology drugs by systematic viability profiling"
+          ], 
+          publications: [
+          {
+                title: "Genetic dependencies associated with transcription factor activities in human cancer cell lines",
+                publisher: "Cell Reports",
+                date: 2024,
+                authors: "Thatikonda V, et al.",
+                url: "",
+                abstract: "Developed by the Broad Institute of MIT and Harvard, PRISM (Profiling Relative Inhibition Simultaneously in Mixtures) is a novel DNA barcoding technology that allows for rapid, viability screening of cancer cell line models in mixtures. Our original efforts have been published by Channing Yu in 2016, that showed that mixing barcoded cell lines together is feasible and by Steven Corsello in 2020 showing that screening a large number of known drugs across over 500 barcoded cell lines identified new indications for non-oncology drugs.",
+                image: "Genetic-dependencies-associated-with-transcription-factor-activities-in-human-cancer-cell-lines.png" 
+            },
+            {
+                title: "High-throughput identification of genotype-specific cancer vulnerabilities in mixtures of barcoded tumor cell lines",
+                publisher: "Nature Biotechnology",
+                date: 2016,
+                authors: "Yu C, et al.",
+                url: "https://www.nature.com/articles/nbt.3460",
+                abstract: "Abstract",
+                image: "High-throughput identification of genotype-specific cancer vulnerabilities in mixtures of barcoded tumor cell lines.png" 
+            },
+            {
+                title: "Discovering the anticancer potential of non-oncology drugs by systematic viability profiling",
+                publisher: "Nature Cancer",
+                date: 2020,
+                authors: "Corsello SM, et al.",
+                url: "https://www.nature.com/articles/s43018-019-0018-6",
+                abstract: "Abstract",
+                image: "Discovering the anticancer potential of non-oncology drugs by systematic viability profiling.png" 
+            },
+            {
+                title: "Title",
+                publisher: "Publisher",
+                date: 2024,
+                authors: "Authors",
+                url: "",
+                abstract: "Abstract",
+                image: "" 
+            },
+            {
+                title: "Title",
+                publisher: "Publisher",
+                date: 2024,
+                authors: "Authors",
+                url: "",
+                abstract: "Abstract",
+                image: "" 
+            },
+          ]
          
         }
       },
       mounted() {
-        console.log(this.data);
-        // window.addEventListener('resize', this.handleResize);
-        // this.handleResize();
+
       },
-      // beforeDestroy() {
-      //   window.removeEventListener('resize', this.handleResize);
-      // },
       computed: {
+        // filter the list of publications to only include the titles that are in the featuredPublicatonTitles list
+        featuredPublications(){
+          return this.publications.filter((item, index) => this.featuredPublicationTitles.includes(item.title));
+        },
         imgPath() {
-          console.log(import.meta.env.PROD);
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "/images/publications/" : "../../public/images/publications/"
-        }
+          return "../../public/images/publications/"
+        },
       },
       methods: {
-      //   handleResize () {
-      //     this.setFeatureImageHeight();
-      // },
-      //   setFeatureImageHeight() {
-      //       const featureImageContainer = document.getElementById('feature-image-container');
-      //       const featureImage = document.getElementById('feature-image');
-      //     if (featureImageContainer && featureImage) {
-      //       let featureImageContainerWidth = featureImageContainer.offsetWidth;
-      //       if (featureImageContainerWidth >= 250) {
-      //         featureImageContainerWidth = 250;
-      //       } 
-      //       featureImageContainer.style.height = featureImageContainerWidth + 'px'; 
-      //       featureImage.style.height = featureImageContainerWidth + 'px';
-      //     } else {
-      //       console.error('Could not find feature image container or feature image');
-      //       featureImageContainer.style.height = '200px'; 
-      //       featureImage.style.height = '200px';
-      //     }
-      //   }
       },
       watch: {
   

@@ -174,9 +174,8 @@
 
     computed: {
       imgPath() {
-        return "../../public/images/"
-          // console.log(import.meta.env.PROD);
-          // return import.meta.env.PROD ? import.meta.env.BASE_URL + "../assets/homepage/" : "../../images/homepage/"
+        console.log("import.meta.env.PROD", import.meta.env.PROD);
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/" : "../../public/images/"
         },
       mobile () {
         return this.$vuetify.display.mobile
