@@ -48,8 +48,13 @@
 //     word-wrap: initial !important;
 //     hyphens: none !important;
 // }
-
-
+a{
+    text-decoration: underline;
+    color: var(--v-primary);
+}
+a:hover{
+    opacity: 0.75;
+}
 
 
 .v-container{

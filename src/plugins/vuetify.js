@@ -25,7 +25,7 @@ const prismTheme = {
     'on-surface-variant': '#EEEEEE',
     'primary': '#0E7AFF',
     'primary-darken-1': '#1F5592',
-    'secondary': 'orange',
+    'secondary': '#FB8C00',
     'secondary-darken-1': '#018786',
     'error': '#B00020',
     'info': '#2196F3',
