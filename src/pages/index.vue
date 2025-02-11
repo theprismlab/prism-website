@@ -11,7 +11,7 @@
       </v-container>
     </v-parallax>
 
-    <page-gradient className="Bl">
+      <page-gradient className="gradient-Blues-lt py-10">
         <v-container>
           <v-row class="d-flex justify-center">
             <v-col cols="12" xs="12" sm="10" md="8" lg="8" xl="8">
@@ -19,7 +19,8 @@
             </v-col>
           </v-row>
         </v-container>
-    </page-gradient>
+      </page-gradient>
+
 
     <page-section>
       <v-container>
@@ -32,53 +33,62 @@
                 <v-card-actions>
                   <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
                 </v-card-actions>
-             
             </v-card>
           </v-col>
         </v-row>
       </v-container>
     </page-section>
-    <page-gradient className="mesh-13">
-      <v-container>
-        <v-row class="d-flex justify-center">
-          <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
-            <p class="text-h4">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</p>
-          </v-col>
-          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
-            <v-card class="elevation-0">
-                <v-card-text>
-                “I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.”
-                </v-card-text>
+
+
+      <page-gradient className="solid-gray py-10">
+        <v-container>
+          <v-row class="d-flex justify-center">
+            <v-col cols="12" xs="12" sm="12" md="12" lg="4" xl="4">
+              <p class="text-h4"><b>Over 150 leading academic and industry partners</b> have trusted PRISM to transform their research.</p>
+            </v-col>
+
+            <v-col cols="12" xs="12" sm="6" md="6" lg="4" xl="4">
+              <v-card class="elevation-1 fill-height pr-2 pl-2 pt-2 pb-2">
+                <v-card-item>
+                  <v-card-subtitle>
+                  “I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.”
+                  </v-card-subtitle>
+                  <v-divider class="mb-4 mt-4"></v-divider>
+                  <v-card-subtitle>
+                    Florian Muller<br>
+                    Head of Chemistry<br>
+                    Lindonlight Collective
+                  </v-card-subtitle>
+                </v-card-item>
+              </v-card>
+            </v-col>
+
+            <v-col cols="12" xs="12" sm="6" md="6" lg="4" xl="4">
+              <v-card class="elevation-1 fill-height pr-2 pl-2 pt-2 pb-2">
                 <v-card-item>
                 <v-card-subtitle>
-                  Florian Muller<br>
-                  Head of Chemistry<br>
-                  Lindonlight Collective
+                  “The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our
+                  research process.”
                 </v-card-subtitle>
-              </v-card-item>
-            </v-card>
-          </v-col>
+                <v-divider class="mb-4 mt-4"></v-divider>
+                  <v-card-subtitle>
+                    Discovery Oncology Scientist<br>
+                    Fortune 500<br>
+                    Pharmaceutical Company
+                  </v-card-subtitle>
+                </v-card-item>
+              </v-card>
+            </v-col>
 
-          <v-col cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
-            <v-card class="elevation-0 fill-height">
-              <v-card-text>
-                “The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our
-                research process.”
-              </v-card-text>
-              <v-card-item>
-                <v-card-subtitle>
-                  Discovery Oncology Scientist<br>
-                  Fortune 500<br>
-                  Pharmaceutical Company
-                </v-card-subtitle>
-              </v-card-item>
-            </v-card>
-          </v-col>
+          </v-row>
+        </v-container>
+      </page-gradient>
 
-        </v-row>
-      </v-container>
+
+    <page-gradient className="gradient-BuCy py-2">
+      <PageBannerShort title="Collaborate with us!" buttonText="Learn more" buttonLink="" textColor="white"></PageBannerShort>
     </page-gradient>
-    <PageBannerShort title="Collaborate with us!" buttonText="Learn more about working with us" buttonLink=""></PageBannerShort>
+
     <page-section>
       <v-container>
         <v-row>
@@ -217,5 +227,7 @@
 
 <style scoped lang="scss">
 
-
+.v-card{
+  border-radius: 18px;
+}
 </style>

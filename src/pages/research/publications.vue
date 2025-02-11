@@ -54,7 +54,7 @@
     <page-section>
 
       <v-row>
-        <v-col>
+        <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
           <v-autocomplete
             v-model="filters.titles"
             :items="titles"
@@ -65,7 +65,7 @@
             hide-details
           ></v-autocomplete>
         </v-col>
-        <v-col>
+        <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
           <v-autocomplete
             v-model="filters.publishers"
             :items="publishers"
@@ -76,7 +76,7 @@
             hide-details
           ></v-autocomplete>
         </v-col>
-        <v-col>
+        <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
           <v-autocomplete
             v-model="filters.years"
             :items="years"
