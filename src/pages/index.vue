@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-01.png`" :height="heroHeight">
+    <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-04.png`" :height="heroHeight">
       <v-container class="fill-height">
         <v-row>
           <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
             <h1 class="title text-h1 font-weight-black" style="text-shadow: white 3px 3px 3px;">Revolutionize cancer drug discovery</h1>
-            <p class="text-h4 font-weight-medium" style="text-shadow: white 1px 1px 5px;">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
+            <p class="text-h4" style="text-shadow: white 1px 1px 5px;">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
           </v-col>
         </v-row>
       </v-container>
@@ -27,7 +27,7 @@
         <v-row>
           <v-col v-for="card in cards" cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
               <v-card class="fill-height" elevation="1">
-                <v-img  class="align-end" cover height="90" alt="" :src="`${imgPath}${card.img}`"></v-img>
+                <v-img  class="align-end" cover height="400" alt="" :src="`${imgPath}${card.img}`"></v-img>
                 <v-card-title class="font-weight-black">{{ card.title }}</v-card-title>
                 <v-card-subtitle>{{ card.text }}</v-card-subtitle>
                 <v-card-actions>
@@ -144,7 +144,7 @@
           {
             title: 'Complete genomic and functional characterization of cell lines',
             text: 'Over 150k genomic features and dependencies for hematopoietic and solid tumor cell lines covering 80 subtypes.',
-            img: 'PRISM-website-graphics_about-02.png',
+            img: '2025 PRISM-website-graphics.png',
             linkText: 'Learn more',
             linkUrl: '/screening/cell-line-collection'
           },
@@ -188,7 +188,7 @@
         return this.$vuetify.display.mobile
       },
       heroHeight () {
-        return this.mobile ? '70vh' : '60vh'
+        return this.mobile ? '60vh' : '68vh'
       },
       cardImgHeight () {
         return '200px'

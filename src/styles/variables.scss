@@ -183,15 +183,20 @@ $body-font-family: 'Inter';
 //     }
 // }
 
-// @media (max-width: 600px) {
-//     :root {
-//         --h1-size: 3rem;
-//         --h2-size: 2rem;
-//         --h3-size: 1.75rem;
-//         --h4-size: 1.5rem;
-//         --h5-size: 1.25rem;
-//         --h6-size: 1.25rem;
-//     }
-// }
+@media (max-width: 600px) {
+    :root {
+      --body-1-size: 1rem;
+      --body-2-size: 0.875rem;
+      --h1-size: 2.75rem;
+      --h2-size: 2rem;
+      --h3-size: 1.5rem;
+      --h4-size: 1rem;
+      --h5-size: 1rem; 
+      --h6-size: var(--body-1-size);
+      --h7-size: var(--body-2-size);
+      --subtitle-1-size: var(--body-1-size);
+      --subtitle-2-size: var(--body-2-size);
+    }
+}
 
 
