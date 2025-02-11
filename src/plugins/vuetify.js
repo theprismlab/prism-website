@@ -31,6 +31,7 @@ const prismTheme = {
     'info': '#2196F3',
     'success': '#4CAF50',
     'warning': '#FB8C00',
+    'teal-bkg': '#d5dde0'
   },
   variables: {
     'y-spacer': 48,

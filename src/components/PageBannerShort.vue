@@ -1,20 +1,16 @@
 <template>
   <section>
-    <v-container class="py-0">
-        <v-row class="d-flex align-center py-2">
-            <v-col class="py-0">
-                <h4 v-if="title" class="text-h4 mb-0 mt-0 font-weight-medium text-white mr-8">{{ title }}</h4>
-                <p v-if="subtitle" class="body-2 font-weight-medium text-white">{{ subtitle }}</p>
+    <v-container>
+        <v-row class="d-flex align-center">
+            <v-col>
+                <h4 v-if="title" :class="`text-h4 mb-0 mt-0 font-weight-medium text-${textColor} mr-8`">{{ title }}</h4>
+                <p v-if="subtitle" :class="`body-2 font-weight-medium text-${textColor}`">{{ subtitle }}</p>
             </v-col>
-            <v-col class="py-0" cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
-                <v-btn v-if="buttonText" :to="buttonLink"variant="outlined" rounded color="white" :size="getSize">{{ buttonText }}</v-btn>
+            <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
+                <v-btn v-if="buttonText" :to="buttonLink" variant="outlined" rounded :color="textColor">{{ buttonText }}</v-btn>
             </v-col>
-
-
         </v-row>
-
     </v-container>
-   
   </section>
 </template>
 
@@ -38,26 +34,23 @@ export default {
         type: String,
         required: false
     },
+    textColor: {
+        type: String,
+        required: true
+    }
 },
     data () {
-    return {
+        return {
 
-    }
+        }
     },
     methods: {
+        
     },
     computed:{
         mobile () {
         return this.$vuetify.display.mobile
       },
-        getSize(){
-            if (this.buttonText.length > 20 && this.$vuetify.display.mobile ) {
-                return 'x-small'
-            } else {
-                return 'small'
-            }
-           
-        }
     },
     watch:{
 
@@ -66,7 +59,7 @@ export default {
 </script>
 <style scoped>
   section {
-    background: var(--v-primary);
+    /* background: var(--v-primary); */
   }
 </style>
   

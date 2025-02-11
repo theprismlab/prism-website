@@ -2,7 +2,7 @@
 
 $heading-font-family: 'Inter';
 $body-font-family: 'Inter';
-$quote-font-family: 'Playfair Display';
+
 
 
 @use 'vuetify/settings' with (
@@ -104,14 +104,14 @@ $quote-font-family: 'Playfair Display';
           'font-family': $body-font-family,
           'text-transform': none
         ),
-        'button': (
-          'size': .875rem,
-          'weight': 500,
-          'line-height': 2.6,
-          'letter-spacing': .0892857143em,
-          'font-family': $body-font-family,
-          'text-transform': uppercase
-        ),
+        // 'button': (
+        //   'size': .875rem,
+        //   'weight': 500,
+        //   'line-height': 2.6,
+        //   'letter-spacing': .0892857143em,
+        //   'font-family': $body-font-family,
+        //   'text-transform': uppercase
+        // ),
         'caption': (
           'size': .75rem,
           'weight': 400,
@@ -147,6 +147,7 @@ $quote-font-family: 'Playfair Display';
     --h7-size: var(--body-2-size);
     --subtitle-1-size: var(--body-1-size);
     --subtitle-2-size: var(--body-2-size);
+
 }
 
 // @media (max-width: 1200px) {
