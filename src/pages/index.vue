@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-04.png`" :height="heroHeight">
       <v-container class="fill-height">
         <v-row>
@@ -11,11 +12,13 @@
       </v-container>
     </v-parallax>
 
-      <page-gradient className="gradient-Blues-lt py-10">
+
+      <!-- <page-gradient className="solid-Blue py-10"> -->
+        <page-gradient className="gradient-BuCy-lt py-10">
         <v-container>
           <v-row class="d-flex justify-center">
             <v-col cols="12" xs="12" sm="10" md="8" lg="8" xl="8">
-              <p class="text-h4 text-center" style="text-shadow: white 1px 1px 1px;">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </p>
+              <p class="text-h4 text-center">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </p>
             </v-col>
           </v-row>
         </v-container>
@@ -27,7 +30,7 @@
         <v-row>
           <v-col v-for="card in cards" cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
               <v-card class="fill-height" elevation="1">
-                <v-img  class="align-end" cover height="400" alt="" :src="`${imgPath}${card.img}`"></v-img>
+                <v-img  class="align-end"  width="100%" alt="" :src="`${imgPath}${card.img}`"></v-img>
                 <v-card-title class="font-weight-black">{{ card.title }}</v-card-title>
                 <v-card-subtitle>{{ card.text }}</v-card-subtitle>
                 <v-card-actions>
@@ -144,28 +147,28 @@
           {
             title: 'Complete genomic and functional characterization of cell lines',
             text: 'Over 150k genomic features and dependencies for hematopoietic and solid tumor cell lines covering 80 subtypes.',
-            img: '2025 PRISM-website-graphics.png',
+            img: '2025 PRISM-website-graphics-about-01-01.png',
             linkText: 'Learn more',
             linkUrl: '/screening/cell-line-collection'
           },
           {
             title: 'Multiple screening offerings',
             text: 'Small molecules, combinations, antibody-drug conjugates, antibodies, and cytokines at multiple time points.',
-            img: 'PRISM-website-graphics_about-03.png',
+            img: '2025 PRISM-website-graphics-about-02-02.png',
             linkText: 'Learn more',
             linkUrl: '/screening/screens'
           },
           {
             title: 'Predictive modeling to identify patient population and targets',
             text: 'Univariate and multivariate predictive models to compare the viability profile of your drug.',
-            img: 'PRISM-website-graphics_about-04.png',
+            img: '2025 PRISM-website-graphics-about-03-01.png',
             linkText: 'Learn more',
             linkUrl: '/screening/data'
           },
           {
             title: 'Secure data portal',
             text: 'Securely browse and discover insights from your screening results with interactive visualizations.',
-            img: 'PRISM-website-graphics_about-05.png',
+            img: '2025 PRISM-website-graphics-about-04-01.png',
             linkText: 'Learn more',
             linkUrl: '/portal'
           },
