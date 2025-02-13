@@ -2,7 +2,7 @@
   <div>
   <v-container>
     <h1 class="text-h1 title font-weight-bold">Publications</h1>
-    <page-section>
+    <section>
       <v-list-subheader class="text-uppercase subtitle-1 font-weight-bold" color="secondary">Featured</v-list-subheader>
       <v-row>
         <v-col 
@@ -49,8 +49,8 @@
           </div>
         </v-col>
       </v-row>
-    </page-section>
-    <page-section>
+    </section>
+    <section class="py-16">
       <v-list-subheader class="text-uppercase subtitle-1 font-weight-bold" color="secondary">Explore publications</v-list-subheader>
       <v-row>
         <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
@@ -103,7 +103,7 @@
           
         </v-col>
       </v-row>
-    </page-section>
+    </section>
     </v-container>
 
 

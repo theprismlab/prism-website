@@ -1,12 +1,12 @@
 <template>
-    <v-layout>
-      <v-container>
-        <h1>Screens</h1>
+  <div>
+    <v-container>
+      <h1 class="text-h1 title font-weight-bold">Screens</h1>
       </v-container>
-      
-    </v-layout>
-</template>
-
-<script setup>
-  //
-</script>
+    </div>
+  </template>
+  
+  <script setup>
+    //
+  </script>
+  
