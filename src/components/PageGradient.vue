@@ -46,7 +46,6 @@ export default {
   radial-gradient(at 44% 87%, hsla(294,72%,81%,1) 0px, transparent 70%) /*bottom center*/
 }
 
-
 .gradient-BuPu{
   background-color: #ffffff;
   background-image:
@@ -135,6 +134,16 @@ export default {
     -90deg,
     #9CECFB, #65C7F7, #0E7AFF 
   );
+}
+
+.gradient-BuCy-lt{
+  background: linear-gradient(
+    -90deg,
+    hsl(197, 100%, 97%), hsl(201, 89%, 95%), hsl(210, 100%, 80%)
+  );
+}
+.solid-Blue{
+  background-color: hsl(210, 100%, 85%);
 }
 
 /* .border-gradient-BuCy{ 
