@@ -148,30 +148,30 @@
       },
       methods: {
         async getData(){
-        const self = this;
-        Promise.all([
-                d3.csv(`${dataPath}${dataFile}`, function(d){
-                    return {
-                        title: d.Title,
-                        publisher: d.Publication,
-                        date: +d.Date,
-                        author: d.Author,
-                        url: d.Link,
-                        abstract: d["Featured Abstract"],
-                        rank: d["Featured Rank"],
-                        // image: `${d["Featured Rank"]}.webp`
-                        image: `publication-thumbnail-${d["Featured Rank"]}.png`
-                    }
-                })
-              ]).then(response=>{
-                this.publications = response[0].sort((a, b) => b.date - a.date);
-                this.filteredPublications = this.publications;
-                this.years = [...new Set(this.publications.map(item => item.date))];
-                this.publishers = [...new Set(this.publications.map(item => item.publisher))];
-                this.titles = [...new Set(this.publications.map(item => item.title))];
-                this.authors = [...new Set(this.publications.map(item => item.author))];
-              });
-    }
+          const self = this;
+          Promise.all([
+            d3.csv(`${dataPath}${dataFile}`, function(d){
+                return {
+                    title: d.Title,
+                    publisher: d.Publication,
+                    date: +d.Date,
+                    author: d.Author,
+                    url: d.Link,
+                    abstract: d["Featured Abstract"],
+                    rank: d["Featured Rank"],
+                    // image: `${d["Featured Rank"]}.webp`
+                    image: `publication-thumbnail-${d["Featured Rank"]}.png`
+                }
+            })
+          ]).then(response=>{
+            this.publications = response[0].sort((a, b) => b.date - a.date);
+            this.filteredPublications = this.publications;
+            this.years = [...new Set(this.publications.map(item => item.date))];
+            this.publishers = [...new Set(this.publications.map(item => item.publisher))];
+            this.titles = [...new Set(this.publications.map(item => item.title))];
+            this.authors = [...new Set(this.publications.map(item => item.author))];
+          });
+        }
       },
       watch: {
         filters: {
