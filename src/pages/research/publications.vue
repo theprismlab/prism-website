@@ -3,9 +3,7 @@
   <v-container>
     <h1 class="text-h1 title font-weight-bold">Publications</h1>
     <page-section>
-      <v-list>
-        <v-list-subheader class="text-uppercase subtitle-1 font-weight-bold" color="secondary">Featured</v-list-subheader>
-      </v-list>
+      <v-list-subheader class="text-uppercase subtitle-1 font-weight-bold" color="secondary">Featured</v-list-subheader>
       <v-row>
         <v-col 
           cols="12" 
@@ -21,7 +19,7 @@
             :title="each.title" 
             :publisher="each.publisher" 
             :date="each.date" 
-            :authors="each.authors" 
+            :author="`${each.author}, et al.`" 
             :url="each.url" 
             :abstract="each.abstract" 
             :image="`${imgPath}${each.image}`">
@@ -42,7 +40,7 @@
             :title="each.title" 
             :publisher="each.publisher" 
             :date="each.date" 
-            :authors="each.authors" 
+            :author="`${each.author}, et al.`" 
             :url="each.url"
 
             >
@@ -53,7 +51,7 @@
       </v-row>
     </page-section>
     <page-section>
-
+      <v-list-subheader class="text-uppercase subtitle-1 font-weight-bold" color="secondary">Explore publications</v-list-subheader>
       <v-row>
         <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
           <v-autocomplete
@@ -96,7 +94,7 @@
               :title="each.title" 
               :publisher="each.publisher" 
               :date="each.date" 
-              :authors="each.authors" 
+              :author="`${each.author}, et al.`" 
               :url="each.url"
               >
             </PublicationCard>
@@ -150,30 +148,30 @@
       },
       methods: {
         async getData(){
-        const self = this;
-        Promise.all([
-                d3.csv(`${dataPath}${dataFile}`, function(d){
-                    return {
-                        title: d.Title,
-                        publisher: d.Publication,
-                        date: +d.Date,
-                        author: d.Author,
-                        url: d.Link,
-                        abstract: d["Featured Abstract"],
-                        rank: d["Featured Rank"],
-                        // image: `${d["Featured Rank"]}.webp`
-                        image: `publication-thumbnail-${d["Featured Rank"]}.png`
-                    }
-                })
-              ]).then(response=>{
-                this.publications = response[0].sort((a, b) => b.date - a.date);
-                this.filteredPublications = this.publications;
-                this.years = [...new Set(this.publications.map(item => item.date))];
-                this.publishers = [...new Set(this.publications.map(item => item.publisher))];
-                this.titles = [...new Set(this.publications.map(item => item.title))];
-                this.authors = [...new Set(this.publications.map(item => item.author))];
-              });
-    }
+          const self = this;
+          Promise.all([
+            d3.csv(`${dataPath}${dataFile}`, function(d){
+                return {
+                    title: d.Title,
+                    publisher: d.Publication,
+                    date: +d.Date,
+                    author: d.Author,
+                    url: d.Link,
+                    abstract: d["Featured Abstract"],
+                    rank: d["Featured Rank"],
+                    // image: `${d["Featured Rank"]}.webp`
+                    image: `publication-thumbnail-${d["Featured Rank"]}.png`
+                }
+            })
+          ]).then(response=>{
+            this.publications = response[0].sort((a, b) => b.date - a.date);
+            this.filteredPublications = this.publications;
+            this.years = [...new Set(this.publications.map(item => item.date))];
+            this.publishers = [...new Set(this.publications.map(item => item.publisher))];
+            this.titles = [...new Set(this.publications.map(item => item.title))];
+            this.authors = [...new Set(this.publications.map(item => item.author))];
+          });
+        }
       },
       watch: {
         filters: {

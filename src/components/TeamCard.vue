@@ -1,11 +1,8 @@
 <template>
-    <v-card>
+    <v-card elevation="1" class="fill-height" max-width="300px">
         <v-img :src="image" cover></v-img>
         <v-card-title>{{ name }}</v-card-title>
         <v-card-text>{{ title }}</v-card-text>
-        <v-card-actions>
-            <v-btn text color="primary">Read bio</v-btn>
-        </v-card-actions>
     </v-card>
   </template>
   
