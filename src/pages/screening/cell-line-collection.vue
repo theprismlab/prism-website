@@ -1,7 +1,7 @@
 <template>
 <div>
-  <v-container>
-    <h1 class="text-h1 title font-weight-bold">Cell line collection</h1>
+  <v-container class="py-16">
+    <h2 class="title">Cell line collection</h2>
     </v-container>
   </div>
 </template>

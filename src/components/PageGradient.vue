@@ -67,11 +67,11 @@ export default {
 }
 
 .gradient-Blues{ 
-  background-image: linear-gradient(45deg, 
-  rgba(190, 219, 255, 0.05) 0%,
-  rgba(14, 122, 255, 0.2) 50%,
-  rgba(14, 122, 255, 0.2) 80%,
-  rgba(14, 122, 255, 0.5) 100%
+  background-image: linear-gradient(180deg, 
+  /* rgba(190, 219, 255, 0.0) 0%, */
+  rgba(14, 122, 255, 0.0) 40%,
+  rgba(14, 122, 255, 0.01) 80%,
+  rgba(14, 122, 255, 0.25) 100%
   );
 }
 

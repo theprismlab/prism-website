@@ -10,43 +10,42 @@ $body-font-family: 'Inter';
     $body-font-family: 'Inter',
     $font-size-root: 1rem,
     $heading-font-family: 'Inter',
-    $card-title-padding: 0.5rem 1rem,
-    $card-title-padding-top: 1rem,
+    // $card-title-padding: 1rem 1rem 0rem 1rem,
     $card-title-white-space: normal,
     $card-title-word-wrap: initial,
     $card-title-text-overflow: visible,
     $card-title-hyphens: none,
-    $card-subtitle-padding: 0rem 1rem,
-    $card-subtitle-header-padding: 0 0 .25rem,
+    // $card-subtitle-padding: 1rem,
+    // $card-subtitle-header-padding: 0 0 .25rem,
     $card-subtitle-white-space: normal,
     $card-subtitle-text-overflow: visible,
-    $card-text-padding: 1rem,
+    // $card-text-padding: 1rem,
     $button-text-transform: none,
     $typography: (
         'h1': (
             'size': var(--h1-size),
-            'line-height': 1,
+            'line-height': var(--h1-line-height),
             'letter-spacing': -.015625em,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h2': (
             'size': var(--h2-size),
-            'line-height': 1.4em,
+            'line-height': var(--h2-line-height),
             'letter-spacing': -.0083333333em,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h3': (
             'size': var(--h3-size),
-            'line-height': 1.33em,
+            'line-height': var(--h3-line-height),
             'letter-spacing': normal,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h4': (
             'size': var(--h4-size),
-            'line-height': 1.33em,
+            'line-height': var(--h4-line-height),
             'letter-spacing': .0073529412em,
             'font-family': $heading-font-family,
             'text-transform': none
@@ -60,14 +59,14 @@ $body-font-family: 'Inter';
         ),
         'h6': (
             'size': var(--h6-size),
-            'line-height': 1.33,
+            'line-height': var(--h6-line-height),
             'letter-spacing': .0125em,
             'font-family': $heading-font-family,
             'text-transform': none
         ),
         'h7': (
              'size': var(--h7-size),
-             'line-height': 1.6,
+             'line-height': var(--h7-line-height),
              'letter-spacing': .0125em,
              'font-family': $heading-font-family,
              'text-transform': none
@@ -75,7 +74,7 @@ $body-font-family: 'Inter';
         'subtitle-1': (
           'size': var(--subtitle-1-size),
           'weight': normal,
-          'line-height': 1.75,
+          'line-height': var(--subtitle-1-line-height),
           'letter-spacing': .009375em,
           'font-family': $body-font-family,
           'text-transform': none
@@ -83,7 +82,7 @@ $body-font-family: 'Inter';
         'subtitle-2': (
           'size': var(--subtitle-2-size),
           'weight': 500,
-          'line-height': 1.6,
+          'line-height': var(--subtitle-2-line-height),
           'letter-spacing': .0071428571em,
           'font-family': $body-font-family,
           'text-transform': none
@@ -91,7 +90,7 @@ $body-font-family: 'Inter';
         'body-1': (
           'size': var(--body-1-size),
           'weight': 400,
-          'line-height': 1.5,
+          'line-height': var(--body-1-line-height),
           'letter-spacing': .03125em,
           'font-family': $body-font-family,
           'text-transform': none,
@@ -99,7 +98,7 @@ $body-font-family: 'Inter';
         'body-2': (
           'size': var(--body-2-size),
           'weight': 400,
-          'line-height': 1.425,
+          'line-height': var(--body-2-line-height),
           'letter-spacing': .0178571429em,
           'font-family': $body-font-family,
           'text-transform': none
@@ -138,15 +137,28 @@ $body-font-family: 'Inter';
 :root {
     --body-1-size: 1rem;
     --body-2-size: 0.875rem;
-    --h1-size: 3.75rem;
-    --h2-size: 2.75rem;
-    --h3-size: 1.75rem;
+    --h1-size: 5rem;
+    --h2-size: 2.66rem;
+    --h3-size: 1.66rem;
     --h4-size: 1.33rem;
     --h5-size: 1.125rem; 
     --h6-size: var(--body-1-size);
     --h7-size: var(--body-2-size);
     --subtitle-1-size: var(--body-1-size);
     --subtitle-2-size: var(--body-2-size);
+    --h1-line-height: 1.2em;
+    --h2-line-height: 1.33em;
+    --h3-line-height: 1.33em;
+    --h4-line-height: 1.75em;
+    --h5-line-height: 1.75em;
+    --h6-line-height: 1.5em;
+    --h7-line-height: 1.6em;
+    --subtitle-1-line-height: 1.75em;
+    --subtitle-2-line-height: 1.6em;
+    --body-1-line-height: 1.5em;
+    --body-2-line-height: 1.425em;
+    --base-color-gray--600: #525252;
+    --base-color-gray--800: #262626;
 
 }
 
@@ -189,8 +201,8 @@ $body-font-family: 'Inter';
       --body-2-size: 0.875rem;
       --h1-size: 2.75rem;
       --h2-size: 2rem;
-      --h3-size: 1.5rem;
-      --h4-size: 1rem;
+      --h3-size: 1.66rem;
+      --h4-size: 1.33rem;
       --h5-size: 1rem; 
       --h6-size: var(--body-1-size);
       --h7-size: var(--body-2-size);

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-container>
-      <h1 class="text-h1 title font-weight-bold">Screens</h1>
+    <v-container class="py-16">
+      <h2 class="title">Screens</h2>
       </v-container>
     </div>
   </template>

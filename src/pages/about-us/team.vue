@@ -1,8 +1,8 @@
 <template>
   <div>
-      <v-container>
-        <h1 class="text-h1 title font-weight-bold">Team</h1>
-          <v-row>
+    <v-container class="py-16">
+        <h2 class="title">Team</h2>
+          <v-row class="justify-center">
             <v-col v-for="individual in teamMembers" cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
               <TeamCard :name="individual.name" :title="individual.title" :image="`${imgPath}${individual.image}`"></TeamCard>
             </v-col>
@@ -41,8 +41,7 @@ const dataFile = "Website Content - 2025  - Team Page.csv";
                 return {
                     name: d["Team Member"],
                     title: d["Title"],
-                    // image: `${d["Team Member"]}.jpg`,
-                    image: "2025 PRISM-website-graphics-headshot.png"
+                    image: `${d["Team Member"]}.JPG`,
                 }
             })
           ]).then(response=>{

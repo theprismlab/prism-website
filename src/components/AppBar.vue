@@ -3,7 +3,7 @@
   <v-app-bar app dense color="white" light>
     <v-toolbar-title>
       <router-link to="/" tag="span" style="cursor: pointer">
-        <img id="prism_logo" alt="PRISM Logo" width="130px" src="../assets/logo.png"/>
+        <img id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png"/>
       </router-link>
     </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -79,7 +79,15 @@
   </script>
 
 <style lang="scss" scoped>
+// .v-tab{
+//   font-size: 1rem !important;
+//   font-weight: 500 !important;
+// }
   .v-app-bar{
+    // background-image: linear-gradient(45deg, 
+    // rgba(14, 122, 255, 0.0) 40%,
+    // rgba(14, 122, 255, 0.2) 100%
+    // ) !important;
     border-bottom:2px solid #4699FF !important;
     box-shadow: 0.5px 0.5px 15px 0px rgba(220, 220, 220, 0.5) !important;
     z-index:1000;

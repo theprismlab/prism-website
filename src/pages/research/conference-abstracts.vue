@@ -1,7 +1,7 @@
 <template>
   <div>
-  <v-container>
-    <h1 class="text-h1 title font-weight-bold">Conference abstracts</h1>
+    <v-container class="py-16">
+      <h2 class="title">Conference abstracts</h2>
     <!-- <section>
         <div v-for="each in whitePapers.filter((item) => item.rank == 1)">
           <PublicationCard 

@@ -1,7 +1,7 @@
 <template>
   <div>
-  <v-container>
-    <h1 class="text-h1 title font-weight-bold">Publications</h1>
+  <v-container class="py-16">
+    <h2 class="title">Publications</h2>
     <section>
       <v-list-subheader class="text-uppercase subtitle-1 font-weight-bold" color="secondary">Featured</v-list-subheader>
       <v-row>
