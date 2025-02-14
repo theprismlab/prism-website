@@ -41,8 +41,7 @@ const dataFile = "Website Content - 2025  - Team Page.csv";
                 return {
                     name: d["Team Member"],
                     title: d["Title"],
-                    // image: `${d["Team Member"]}.jpg`,
-                    image: "2025 PRISM-website-graphics-headshot.png"
+                    image: `${d["Team Member"]}.JPG`,
                 }
             })
           ]).then(response=>{

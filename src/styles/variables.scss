@@ -10,22 +10,23 @@ $body-font-family: 'Inter';
     $body-font-family: 'Inter',
     $font-size-root: 1rem,
     $heading-font-family: 'Inter',
-    $card-title-padding: 0.5rem 1rem,
-    $card-title-padding-top: 1rem,
+    $card-title-padding: 0.75rem 1rem,
     $card-title-white-space: normal,
     $card-title-word-wrap: initial,
     $card-title-text-overflow: visible,
+    $card-title-font-weight: 600,
     $card-title-hyphens: none,
-    $card-subtitle-padding: 0rem 1rem,
+    $card-subtitle-padding: 0.75rem 1rem,
     $card-subtitle-header-padding: 0 0 .25rem,
     $card-subtitle-white-space: normal,
     $card-subtitle-text-overflow: visible,
-    $card-text-padding: 1rem,
+    $card-text-padding: 0.75rem 1rem,
+
     $button-text-transform: none,
     $typography: (
         'h1': (
             'size': var(--h1-size),
-            'weight':100,
+            'weight':200,
             'line-height': 1,
             'letter-spacing': -.015625em,
             'font-family': $heading-font-family,
@@ -33,7 +34,7 @@ $body-font-family: 'Inter';
         ),
         'h2': (
             'size': var(--h2-size),
-            'weight':100,
+            'weight':200,
             'line-height': var(--h2-line-height),
             'letter-spacing': -.0083333333em,
             'font-family': $heading-font-family,
@@ -41,7 +42,7 @@ $body-font-family: 'Inter';
         ),
         'h3': (
             'size': var(--h3-size),
-            'weight':100,
+            'weight':300,
             'line-height': var(--h3-line-height),
             'letter-spacing': normal,
             'font-family': $heading-font-family,
@@ -49,7 +50,7 @@ $body-font-family: 'Inter';
         ),
         'h4': (
             'size': var(--h4-size),
-            'weight':100,
+            'weight':300,
             'line-height': var(--h4-line-height),
             'letter-spacing': .0073529412em,
             'font-family': $heading-font-family,
@@ -57,7 +58,7 @@ $body-font-family: 'Inter';
         ),
         'h5': (
             'size': var(--h5-size),
-            'weight':100,
+            'weight':300,
             'line-height': var(--h5-line-height),
             'letter-spacing': normal,
             'font-family': $heading-font-family,
@@ -65,7 +66,7 @@ $body-font-family: 'Inter';
         ),
         'h6': (
             'size': var(--h6-size),
-            'weight':100,
+            'weight':300,
             'line-height': var(--h6-line-height),
             'letter-spacing': .0125em,
             'font-family': $heading-font-family,
@@ -73,7 +74,7 @@ $body-font-family: 'Inter';
         ),
         'h7': (
              'size': var(--h7-size),
-             'weight':100,
+         
              'line-height': var(--h7-line-height),
              'letter-spacing': .0125em,
              'font-family': $heading-font-family,
