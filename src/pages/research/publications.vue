@@ -25,8 +25,7 @@
             :image="`${imgPath}${each.image}`">
           </PublicationCard>
         </div>
-        </v-col>
-      
+        </v-col>    
         <v-col 
           cols="12" 
           xs="12"
@@ -42,7 +41,6 @@
             :date="each.date" 
             :author="`${each.author}, et al.`" 
             :url="each.url"
-
             >
           </PublicationCard>
           <v-divider></v-divider>
