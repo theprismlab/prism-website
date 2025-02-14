@@ -37,7 +37,10 @@ a:hover{
 }
 
 
-// .v-container{
-//     width:80% !important;
-//     max-width:1400px !important;
-// }
+
+
+@media (max-width: 600px) {
+    .v-container{
+        width:90% !important;
+    }
+}
