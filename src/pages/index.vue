@@ -96,7 +96,7 @@
       <v-container>
         <v-row>
           <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
-            <p class="text-h4">We are devoted to moving cancer research forward.. sentence needed.</p>
+            <p class="text-h4">Dedicated to advancing oncology research.</p>
           </v-col>
         </v-row>
         <v-row>
@@ -118,14 +118,7 @@
     data() {
       return {
         stats: [
-          {
-            number: "900+",
-            text: "Genomically characterized cell lines"
-          },
-          {
-            number: "4",
-            text: "Months turnaround time from submission to data delivery"
-          },
+        
           {
             number: "7,000+",
             text: "Compounds screened in over 500 cell lines"
@@ -137,10 +130,6 @@
           {
             number: "150+",
             text: "Academic and industry partners"
-          },
-          {
-            number: "30+",
-            text: "Years of experience"
           }
         ],
         cards: [
