@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container class="py-16">
-      <h1 class="text-h2 title">Data</h1>
+      <h2 class="title">Data</h2>
       </v-container>
     </div>
   </template>

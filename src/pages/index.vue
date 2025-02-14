@@ -1,18 +1,21 @@
 <template>
   <div>
+    <page-gradient class="gradient-Blues">
+
     <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-04.png`" :height="heroHeight">
       <v-container class="fill-height">
-        <div style="max-width:600px">
-          <h1 class="title text-h1">Revolutionize cancer drug discovery</h1>
-          <p class="text-h4" style="text-shadow: white 1px 1px 5px;">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
+        <div style="max-width:600px" class="tech-hero_text">
+          <h1 class="title">Revolutionize cancer drug discovery</h1>
+          <p class="p-size-xl">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
         </div>
       </v-container>
     </v-parallax>
+  </page-gradient>
 
     <page-section>
       <v-container class="">
         <div style="max-width:800px">
-          <h3 class="title text-h3">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
+          <h3 class="heading-style-h5 title">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
           </h3>
         </div>
         <v-row class="d-flex justify-center">
@@ -29,46 +32,54 @@
       </v-row>
     </v-container>
   </page-section>
-  <page-gradient className="solid-gray py-10">
-    <v-container class="">
-      <v-row class="d-flex justify-center">
+
+  <page-gradient className="solid-gray">
+    <page-section>
+      <v-container class="">
+      <v-row>
         <v-col cols="12" xs="12" sm="12" md="5" lg="6" xl="6">
-          <h3 class="title text-h3">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</h3>
-          <!-- <v-btn color="primary" variant="flat" rounded>Get in touch</v-btn> -->
+            <h3 class="title heading-style-h5">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</h3>
         </v-col>
         <v-col cols="12" xs="12" sm="12" md="7" lg="6" xl="6">
           <v-row>
-            <v-col>
-              <v-card elevation="1" class="fill-height">
+            <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
+              <v-card elevation="1" class="fill-height px-4 py-3">
                 <v-card-text>
                   “I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.”
                   <br><br>
                   <v-divider></v-divider>
-                  <br>
-                  Florian Muller<br>
-                  Head of Chemistry<br>
-                  Lindonlight Collective
                 </v-card-text>
+                <v-card-item>
+                  <v-card-subtitle>
+                    Florian Muller<br>
+                    Head of Chemistry<br>
+                    Lindonlight Collective
+                  </v-card-subtitle>
+                </v-card-item>
               </v-card>
             </v-col>
             <v-col>
-              <v-card elevation="1" class="fill-height">
+              <v-card elevation="1" class="fill-height py-3 px-4">
                 <v-card-text>
                   “The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our
                   research process.”
                   <br><br>
                   <v-divider></v-divider>
-                  <br>
+                </v-card-text>
+                <v-card-item>
+                  <v-card-subtitle>
                   Discovery Oncology Scientist<br>
                   Fortune 500<br>
                   Pharmaceutical Company
-                </v-card-text>
+                  </v-card-subtitle>
+                </v-card-item>
               </v-card>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
     </v-container>
+    </page-section>
   </page-gradient>
 
   <page-gradient className="gradient-BuCy py-2">
@@ -79,14 +90,14 @@
     <v-container>
       <v-row>
         <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
-          <h3 class="title text-h3">Dedicated to advancing oncology research.</h3>
+            <h3 class="title heading-style-h5">Dedicated to advancing oncology research.</h3>
         </v-col>
       </v-row>
       <v-row>
         <v-col v-for="stat in stats">
-          <v-card class="elevation-0 fill-height" style="border-radius: 0px; border-left: 3px solid var(--v-primary);">
+          <v-card elevation="1" class="fill-height" style="border-radius: 0px; border-left: 8px solid var(--v-primary);">
             <v-card-title class="font-weight-black text-h2">{{ stat.number }}</v-card-title>
-            <v-card-subtitle>{{ stat.text }}</v-card-subtitle>
+            <v-card-text>{{ stat.text }}</v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -160,7 +171,7 @@
         return this.$vuetify.display.mobile
       },
       heroHeight () {
-        return this.mobile ? '60vh' : '68vh'
+        return this.mobile ? '80vh' : '75vh'
       },
       cardImgHeight () {
         return '200px'
@@ -198,8 +209,13 @@
 </script>
 
 <style scoped lang="scss">
-
-.v-card{
-  border-radius: 18px;
+.tech-hero_text {
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    display: flex;
 }
+
 </style>

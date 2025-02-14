@@ -1,28 +1,84 @@
 
 
+// h1{
+//     font-size: var(--h1-size) !important;
+//     line-height: var(--h1-line-height) !important;
+// }
+// h2{
+//     font-size: var(--h2-size) !important;
+//     line-height: var(--h2-line-height) !important;
+// }
+// h3{
+//     font-size: var(--h3-size) !important;
+//     line-height: var(--h3-line-height) !important;
+// }
+// h4{
+//     font-size: var(--h4-size) !important;
+//     line-height: var(--h4-line-height) !important;
+// }
+
 h1{
-    font-size: var(--h1-size) !important;
-    line-height: var(--h1-line-height) !important;
+    letter-spacing: -.18rem;
+    margin-top: 0;
+    margin-bottom: 0;
+    // font-family: TWK Lausanne, sans-serif;
+    font-size: 4.5rem;
+    font-weight: 700;
+    line-height: 4.8rem;
 }
-h2{
-    font-size: var(--h2-size) !important;
-    line-height: var(--h2-line-height) !important;
+h2 {
+    letter-spacing: -.1425rem;
+    margin-top: 0;
+    margin-bottom: 0;
+   // font-family: TWK Lausanne, sans-serif;
+    font-size: 3.75rem;
+    font-weight: 700;
+    line-height: 4.25rem;
 }
-h3{
-    font-size: var(--h3-size) !important;
-    line-height: var(--h3-line-height) !important;
+h3 {
+    letter-spacing: -.105rem;
+    margin-top: 0;
+    margin-bottom: 0;
+   // font-family: TWK Lausanne, sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 3.5rem;
 }
-h4{
-    font-size: var(--h4-size) !important;
-    line-height: var(--h4-line-height) !important;
+.heading-style-h3 {
+    letter-spacing: -.105rem !important;
+    font-size: 3rem !important;
+    line-height: 3.5rem !important;
 }
-p{
-    font-size: var(--h5-size) !important;
-    line-height: var(--body-1-line-height) !important;
+.heading-style-h5 {
+    letter-spacing: -.05625rem !important;
+    font-size: 1.875rem !important;
+    line-height: 2.375rem !important;
+}
+.text-color-gray600 {
+    color: var(--base-color-gray--600) !important;
+}
+
+
+p, .body-1, .v-card-text {
+    letter-spacing: -.003rem !important;
+    margin-bottom: 0 !important;
+   // font-family: TWK Lausanne, sans-serif;
+    font-weight: 400 !important;
+    line-height: 160% !important;
+    font-size:1rem !important;
+}
+.p-size-xl {
+    letter-spacing: -.00625rem !important;
+    font-size: 1.25rem !important;
+}
+.heading-container{
+    margin-bottom: 48px;
+    margin-top: 16px;
 }
 
 .title {
-    margin-bottom:4rem;
+    margin-bottom: 48px;
+    margin-top: 16px;
 }
 .elevation-1{
     box-shadow: 2px 4px 12px #00000014 !important;
@@ -37,9 +93,13 @@ a:hover{
 }
 
 
-.v-container{
-
+.container-medium {
+    width: 100%;
+    max-width: 64rem;
+    margin-left: auto;
+    margin-right: auto;
 }
+
 @media (min-width: 1200px) {
     .v-container {
         max-width: 1312px;

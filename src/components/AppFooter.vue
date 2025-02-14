@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="pt-2 pb-6" style="background-color: var(--v-primary)">
+  <v-footer class="mt-16 pt-2 pb-6" style="background-color: var(--v-primary)">
     <v-container>
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
