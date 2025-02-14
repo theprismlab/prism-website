@@ -1,24 +1,22 @@
 <template>
   <div>
-
     <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-04.png`" :height="heroHeight">
-      <v-container class="align-centerfill-height mx-auto fill-height">
-          <v-col class="px-0" cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
-            <h1 class="title text-h1 font-weight-black" style="text-shadow: white 3px 3px 3px;">Revolutionize cancer drug discovery</h1>
-            <p class="text-h4" style="text-shadow: white 1px 1px 5px;">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
-          </v-col>
+      <v-container class="fill-height">
+        <div style="max-width:600px">
+          <h1 class="title text-h1">Revolutionize cancer drug discovery</h1>
+          <p class="text-h4" style="text-shadow: white 1px 1px 5px;">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
+        </div>
       </v-container>
     </v-parallax>
 
     <page-section>
-      <v-container class="align-centerfill-height mx-auto">
-        <v-row>
-          <v-col cols="12" xs="12" sm="10" md="8" lg="8" xl="8">
-            <h3 class="title text-h3">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. </h3>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col v-for="card in cards" cols="12" xs="12" sm="6" md="6" lg="3" xl="3">
+      <v-container class="">
+        <div style="max-width:800px">
+          <h3 class="title text-h3">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
+          </h3>
+        </div>
+        <v-row class="d-flex justify-center">
+          <v-col v-for="card in cards" cols="10" xs="10" sm="6" md="6" lg="3" xl="3">
             <v-card class="fill-height" elevation="1">
               <v-img  class="align-end"  width="100%" alt="" :src="`${imgPath}${card.img}`"></v-img>
               <v-card-title class="font-weight-black">{{ card.title }}</v-card-title>
@@ -32,7 +30,7 @@
     </v-container>
   </page-section>
   <page-gradient className="solid-gray py-10">
-    <v-container class="align-centerfill-height mx-auto">
+    <v-container class="">
       <v-row class="d-flex justify-center">
         <v-col cols="12" xs="12" sm="12" md="5" lg="6" xl="6">
           <h3 class="title text-h3">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</h3>

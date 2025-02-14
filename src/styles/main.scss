@@ -37,8 +37,19 @@ a:hover{
 }
 
 
+.v-container{
 
-
+}
+@media (min-width: 1200px) {
+    .v-container {
+        max-width: 1312px;
+    }
+}
+@media (max-width: 1350px) {
+    .v-container {
+        padding: 0 35px;
+    }
+}
 @media (max-width: 600px) {
     .v-container{
         width:90% !important;

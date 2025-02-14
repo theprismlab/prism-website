@@ -1,8 +1,8 @@
 <template>
   <div>
-      <v-container>
-        <h1 class="text-h1 title font-weight-bold">Team</h1>
-          <v-row>
+    <v-container class="py-16">
+        <h1 class="text-h2 title">Team</h1>
+          <v-row class="justify-center">
             <v-col v-for="individual in teamMembers" cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
               <TeamCard :name="individual.name" :title="individual.title" :image="`${imgPath}${individual.image}`"></TeamCard>
             </v-col>
