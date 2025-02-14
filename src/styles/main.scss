@@ -1,56 +1,33 @@
 
 
-
-
-
-// h1, h2, h3, h4, h5, h6, p {
-//     margin-bottom: 24px !important;
-//     margin-top:24px !important;
-// }
-// h1, h2, h3, h4, h5, h6 {
-//     font-weight: 800 !important;
-// }
-
-// h1{
-//     font-size: var(--h1-size) !important;
-//     line-height: var(--h1-line-height) !important;
-// }
-// h2{
-//     font-size: var(--h2-size) !important;
-// }
-// h3{
-//     font-size: var(--h3-size) !important;
-// }
-// h4{
-//     font-size: var(--h4-size) !important;
-// }
-// p{
-//     font-size: var(--h5-size) !important;
-// }
+h1{
+    font-size: var(--h1-size) !important;
+    line-height: var(--h1-line-height) !important;
+}
+h2{
+    font-size: var(--h2-size) !important;
+    line-height: var(--h2-line-height) !important;
+}
+h3{
+    font-size: var(--h3-size) !important;
+    line-height: var(--h3-line-height) !important;
+}
+h4{
+    font-size: var(--h4-size) !important;
+    line-height: var(--h4-line-height) !important;
+}
+p{
+    font-size: var(--h5-size) !important;
+    line-height: var(--body-1-line-height) !important;
+}
 
 .title {
-    margin: 3rem 0 4rem;
+    margin-bottom:4rem;
 }
 .elevation-1{
     box-shadow: 2px 4px 12px #00000014 !important;
   }
 
-// .v-card-title{
-//     font-weight: 800 !important;
-//     line-height: 1.33em !important;
-//     font-size:var(--h6-size) !important;
-//     text-overflow: visible !important;
-//     hyphens: none !important;
-// }
-// .v-card-subtitle{
-//     font-size:var(--h7-size) !important;
-//     line-height: 1.5em !important;
-//     text-overflow: visible !important;
-//     white-space: normal !important;
-//     word-break: normal !important;
-//     word-wrap: initial !important;
-//     hyphens: none !important;
-// }
 a{
     text-decoration: underline;
     color: var(--v-primary);
@@ -60,7 +37,7 @@ a:hover{
 }
 
 
-.v-container{
-    width:80% !important;
-    max-width:1900px !important;
-}
+// .v-container{
+//     width:80% !important;
+//     max-width:1400px !important;
+// }
