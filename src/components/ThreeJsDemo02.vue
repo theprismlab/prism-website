@@ -40,7 +40,9 @@ name: 'ThreeJsDemo02',
         // init
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera( 70, width / height, 0.01, 10 );
+
         camera.position.z = 1;
+        // camera.position.y = 1;
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
 
@@ -83,14 +85,9 @@ function interpolateColor(x) {
 function generateTransSpheresVolcano(){
 	for (let i = 0; i < 600; i++) {
 
-		// const y = generateNormalDistribution(1, 1);
-		// const x = generateNormalDistribution(0, Math.abs(y) + (Math.random()/2));
-		// const z = generateNormalDistribution(0,  Math.abs(y));
-
 		const x = generateNormalDistribution(0, 1);
 		const y = generateNormalDistribution(0, 1);
 		const z = generateNormalDistribution(0, 1);
-
 
 		//const radius = (z + 1) * 0.01 + (y + 1) * 0.01; // Scale radius based on z and y values
 		const radius = (z + 1) * 0.02; // Scale radius based on z and y values
@@ -128,6 +125,8 @@ function generateTransSpheresVolcano(){
 
             mesh.rotation.x = time / 2000;
             mesh.rotation.y = time / 1000;
+
+            scene.rotation.x = time / 2000;
 
             renderer.render( scene, camera );
 
