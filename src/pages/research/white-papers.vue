@@ -2,18 +2,16 @@
   <div>
     <v-container class="py-16">
       <h2 class="title">White papers</h2>
-    <!-- <section>
-        <div v-for="each in whitePapers.filter((item) => item.rank == 1)">
-          <PublicationCard 
-            :title="each.title" 
-            :date="each.date" 
-            :author="`${each.author}, et al.`" 
-            :url="each.url" 
-            :abstract="each.abstract" 
-            :image="`${imgPath}${each.image}`">
-          </PublicationCard>
+    <section>
+        <div v-for="each in data">
+          <Card
+            :suptitle="each.suptitle"
+            :title="each.title"
+            :button="each.button"
+          >
+          </Card>
         </div>
-    </section> -->
+    </section>
 
     </v-container>
 
@@ -23,19 +21,20 @@
   </template>
   
   <script>
-  // import * as d3 from 'd3';
-  // const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL+"data/" : "../../public/data/";
-  // const dataFile = "Website Content - 2025  - Publications.csv";
+  import * as d3 from 'd3';  
+  import Card from '@/components/Card.vue';
+  const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL+"data/" : "../../public/data/";
+  const dataFile = "Website Content - 2025  - White Papers.csv";
 
 
     export default {
       data() {
         return {
-
+          data: [],
         }
       },
       async mounted() {
-       // await this.getData();
+        await this.getData();
       },
       computed: {
         // imgPath() {
@@ -43,17 +42,50 @@
         // },
       },
       methods: {
-        // async getData(){
-        //   const self = this;
-        //   Promise.all([
-        //     d3.csv(`${dataPath}${dataFile}`, function(d){
-        //         return {
-                  
-        //         }
-        //     })
-        //   ]).then(response=>{
+        async getData(){
+          const self = this;
+          Promise.all([
+            d3.csv(`${dataPath}${dataFile}`, function(d){
+                return {
+                  chip: d.Chip,
+                  title: d.Title,
+                  date: d.Date,
+                  url: d["Paper Link"],
+                  portalUrl: d["Portal Link"],
+        
+                }
+            })
+          ]).then(response=>{
+            response[0].forEach(d=>{
+              // d.chip = this.createChip(d);
+              d.suptitle = this.createSuptitle(d);
+              d.title = this.createTitle(d);
+              // d.text = this.createText(d);
+              d.button = this.createButton(d);
+            })
+            self.data = response[0];
           
-        //   });
+          });
+        },
+        // createChip(d){
+        //   return `<v-chip>${d.chip}</v-chip>`
+        // },
+        createButton(d){
+          return {
+            text: `Explore ${d.chip} data in the portal <span class='ml-1 mdi mdi-open-in-new'></span>`,
+            color: "primary",
+            variant: "text",
+            url: d.portalUrl
+          }
+        },
+        createSuptitle(d){
+          return `${d.date}`;
+        },
+        createTitle(d){
+          return `<a href='${d.url}' target='_blank' class="text-black">${d.title}</a>`
+        },
+        // createText(d){
+        //   return `<a href='${d.portalUrl}' target='_blank'>Explore White Paper Data in the Portal <span class='ml-1 mdi mdi-open-in-new'></span></a>`
         // }
       },
       watch: {
