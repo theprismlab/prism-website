@@ -3,7 +3,7 @@
   <v-container class="py-16">
     <h2 class="title">Publications</h2>
     <section>
-      <v-list-subheader class="text-uppercase subtitle-1 font-weight-bold" color="secondary">Featured</v-list-subheader>
+      <h2 class="pb-2 text-overline font-weight-black text-secondary">Featured</h2>
       <v-row>
         <v-col 
           cols="12" 
@@ -52,7 +52,8 @@
       </v-row>
     </section>
     <section class="py-16">
-      <v-list-subheader class="text-uppercase subtitle-1 font-weight-bold" color="secondary">Explore publications</v-list-subheader>
+      <h2 class="pb-2 text-overline font-weight-black text-secondary">Explore publications</h2>
+     
       <v-row>
         <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
           <v-autocomplete

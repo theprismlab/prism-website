@@ -5,12 +5,13 @@
                 <v-img style="border-radius:10px;" max-width="250px" :src="image"></v-img>
             </v-col>
             <v-col>
-                <v-chip v-if="chip">{{chip}}</v-chip>
-                <h3 v-if="suptitle" class="v-card-subtitle font-weight-bold" v-html="suptitle"></h3>
+                <v-chip v-if="chip" class='mb-2 ml-2' :size="chip.size || 'default'" :color="chip.color || 'primary'">{{ chip.text}}</v-chip>
+                <h3 v-if="suptitle" class="v-card-subtitle font-weight-bold text-overline" v-html="suptitle"></h3>
                 <h2 v-if="title" :class="`v-card-title text-size-${titleSize}`" v-html="title"></h2>
                 <h3 v-if="subtitle" class="v-card-subtitle" v-html="subtitle"></h3>
                 <p v-if="text" :class="`v-card-text text-size-${textSize}`" v-html="text"></p>
-                <v-btn v-if="button" :color="button.color || 'primary'" :variant="button.variant || 'outlined'" class="primary" v-html="button.text" :href="button.url" target="_blank"></v-btn>
+                <v-btn v-if="button" :color="button.color || 'primary'" :variant="button.variant || 'outlined'" v-html="button.text" :href="button.url" target="_blank"></v-btn>
+              
             </v-col>
         </v-row>
     </v-card>
@@ -62,6 +63,10 @@ export default {
         button: {
             type: Object,
             required: false
+        },
+        link: {
+            type: String,
+            required: false
         }
 
     },
@@ -79,10 +84,13 @@ export default {
 }
 </script>
 <style scoped>
-
 .v-card-title > * {
     text-decoration: none !important;
     border-bottom: 1px solid #cccccc !important;
 } 
+/* .v-chip{
+    font-weight: 600;
+} */
+
 </style>
 
