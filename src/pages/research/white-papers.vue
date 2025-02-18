@@ -6,12 +6,15 @@
         <div v-for="each in data">
           <Card
             size="md"
+            elevation="0"
             classes="px-4 py-4"
+            :chip="each.chip"
             :suptitle="each.suptitle"
             :title="each.title"
-            :button="each.button"
+            :text="each.text"
           >
           </Card>
+          <v-divider></v-divider>
         </div>
     </section>
 
@@ -59,19 +62,23 @@
             })
           ]).then(response=>{
             response[0].forEach(d=>{
-              // d.chip = this.createChip(d);
+              d.chip = this.createChip(d);
               d.suptitle = this.createSuptitle(d);
               d.title = this.createTitle(d);
-              // d.text = this.createText(d);
+              d.text = this.createText(d);
               d.button = this.createButton(d);
             })
             self.data = response[0];
           
           });
         },
-        // createChip(d){
-        //   return `<v-chip>${d.chip}</v-chip>`
-        // },
+        createChip(d){
+          return {
+            text: d.chip,
+            color: "primary",
+            size: "x-small"
+          }
+        },
         createButton(d){
           return {
             text: `Explore ${d.chip} data in the portal <span class='ml-1 mdi mdi-open-in-new'></span>`,
@@ -86,9 +93,9 @@
         createTitle(d){
           return `<a href='${d.url}' target='_blank' class="text-black">${d.title}</a>`
         },
-        // createText(d){
-        //   return `<a href='${d.portalUrl}' target='_blank'>Explore White Paper Data in the Portal <span class='ml-1 mdi mdi-open-in-new'></span></a>`
-        // }
+        createText(d){
+          return `<a style='text-decoration: none; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em;' href='${d.portalUrl}' target='_blank'>Explore data <span class='mdi mdi-open-in-new'></span></a>`
+        },
       },
       watch: {
 
@@ -96,7 +103,7 @@
     }
   </script>
 
-  <style scoped>
+  <style>
 
 </style>
   
