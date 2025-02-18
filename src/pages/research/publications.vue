@@ -13,17 +13,17 @@
           lg="8"
           xl="9"
         >
-        <div v-for="each in featuredPublications.filter((item) => item.rank == 1)">
-          <PublicationCard 
-            size="large"
-            :title="each.title" 
-            :publisher="each.publisher" 
-            :date="each.date" 
-            :author="`${each.author}, et al.`" 
+        <div v-for="each in data.filter((item) => item.rank == 1)">
+          <Card 
+            size="lg"
+            classes="pb-4"
+            :title="each.cardTitle" 
+            :suptitle="each.cardSuptitle" 
+            :subtitle="each.cardSubtitle"
+            :text="each.cardText" 
             :url="each.url" 
-            :abstract="each.abstract" 
             :image="`${imgPath}${each.image}`">
-          </PublicationCard>
+        </Card>
         </div>
         </v-col>
       
@@ -35,16 +35,17 @@
           lg="4"
           xl="3"
           >
-          <div v-for="each in featuredPublications.filter((item, index) => index > 0)" class="py-1">
-            <PublicationCard 
-            :title="each.title" 
-            :publisher="each.publisher" 
-            :date="each.date" 
-            :author="`${each.author}, et al.`" 
-            :url="each.url"
-
+          <div v-for="each in data.filter((item) => item.rank > 1 && item.rank <5)" class="py-1">
+            <Card 
+            size="sm"
+            classes="pb-4"
+            :title="each.cardTitle" 
+            :suptitle="each.cardSuptitle" 
+            :subtitle="each.cardSubtitle"
+            :text="each.cardText" 
+            :url="each.url" 
             >
-          </PublicationCard>
+          </Card>
           <v-divider></v-divider>
           </div>
         </v-col>
@@ -56,7 +57,7 @@
         <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
           <v-autocomplete
             v-model="filters.titles"
-            :items="titles"
+            :items="options.titles"
             label="Filter titles"
             multiple
             chips
@@ -67,7 +68,7 @@
         <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
           <v-autocomplete
             v-model="filters.publishers"
-            :items="publishers"
+            :items="options.publishers"
             label="Filter publishers"
             multiple
             chips
@@ -78,8 +79,19 @@
         <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
           <v-autocomplete
             v-model="filters.years"
-            :items="years"
+            :items="options.years"
             label="Filter years"
+            multiple
+            chips
+            clearable
+            hide-details
+          ></v-autocomplete>
+        </v-col>
+        <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
+          <v-autocomplete
+            v-model="filters.authors"
+            :items="options.authors"
+            label="Filter authors"
             multiple
             chips
             clearable
@@ -89,15 +101,16 @@
       </v-row>
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
-          <div v-for="each in filteredPublications">
-            <PublicationCard 
-              :title="each.title" 
-              :publisher="each.publisher" 
-              :date="each.date" 
-              :author="`${each.author}, et al.`" 
-              :url="each.url"
-              >
-            </PublicationCard>
+          <div v-for="each in filteredData">
+            <Card 
+            size="sm"
+            classes="py-4"
+            :title="each.cardTitle" 
+            :suptitle="each.cardSuptitle" 
+            :subtitle="each.cardSubtitle"
+            :url="each.url" 
+            >
+          </Card>
             <v-divider></v-divider>
           </div>
           
@@ -113,7 +126,7 @@
   
   <script>
   import * as d3 from 'd3';
-  import PublicationCard from '@/components/PublicationCard.vue';
+  import Card from '@/components/Card.vue';
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL+"data/" : "../../public/data/";
   const dataFile = "Website Content - 2025  - Publications.csv";
 
@@ -121,27 +134,26 @@
     export default {
       data() {
         return {
-          years: [],
-          publishers: [],
-          titles: [],
+          data: [],
+          filteredData: [],
+          options: {
+            years: [],
+            publishers: [],
+            titles: [],
+            authors: []
+          },
           filters: {
             years: [],
             publishers: [],
-            titles: []
+            titles: [],
+            authors: []
           },
-          filteredPublications: [],
-          publications: [],
         }
       },
       async mounted() {
-
         await this.getData();
       },
       computed: {
-        // filter the list of publications to only include the titles that are in the featuredPublicatonTitles list
-        featuredPublications(){
-          return this.publications.filter((item) => item.rank >0);
-        },
         imgPath() {
           return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/publications/" : "../../public/images/publications/"
         },
@@ -164,26 +176,47 @@
                 }
             })
           ]).then(response=>{
-            this.publications = response[0].sort((a, b) => b.date - a.date);
-            this.filteredPublications = this.publications;
-            this.years = [...new Set(this.publications.map(item => item.date))];
-            this.publishers = [...new Set(this.publications.map(item => item.publisher))];
-            this.titles = [...new Set(this.publications.map(item => item.title))];
-            this.authors = [...new Set(this.publications.map(item => item.author))];
+
+            let data = response[0].sort((a, b) => b.date - a.date);
+            data.forEach(d=>{
+              d.cardSuptitle = this.createSuptitle(d);
+              d.cardTitle = this.createTitle(d);
+              d.cardSubtitle = this.createSubtitle(d);
+              d.cardText = this.createText(d);
+            })
+            this.data = data;
+            this.filteredData = this.data;
+            this.options.years = [...new Set(this.data.map(item => item.date))];
+            this.options.publishers = [...new Set(this.data.map(item => item.publisher))];
+            this.options.titles = [...new Set(this.data.map(item => item.title))];
+            this.options.authors = [...new Set(this.data.map(item => item.author))];
           });
-        }
+        },
+        createSuptitle(d){
+          return `${d.date} ${d.publisher}`;
+        },
+        createTitle(d){
+          return `<a href='${d.url}' target='_blank' class="text-black">${d.title}</a>`
+        },
+        createSubtitle(d){
+          return `${d.author} et al.`;
+        },
+        createText(d){
+          return `${d.abstract}`;
+        },
       },
       watch: {
         filters: {
           handler(current, previous) {
-             const self = this;
-            let filtered = self.publications.filter(item => {
+            const self = this;
+            let filtered = self.data.filter(item => {
               return (self.filters.years.length === 0 || self.filters.years.includes(item.date)) &&
               (self.filters.publishers.length === 0 || self.filters.publishers.includes(item.publisher)) &&
-             (self.filters.titles.length === 0 || self.filters.titles.includes(item.title));
+             (self.filters.titles.length === 0 || self.filters.titles.includes(item.title)) && 
+             (self.filters.authors.length === 0 || self.filters.authors.includes(item.author));
              
             });
-            this.filteredPublications = filtered;
+            this.filteredData = filtered;
           },
           deep: true
         },

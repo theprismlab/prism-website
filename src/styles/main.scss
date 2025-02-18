@@ -59,6 +59,8 @@ h3 {
 }
 
 
+
+//get rid of this and use txt size classes and updated card component
 p, .body-1, .v-card-text {
     letter-spacing: -.003rem !important;
     margin-bottom: 0 !important;
@@ -67,15 +69,55 @@ p, .body-1, .v-card-text {
     line-height: 160% !important;
     font-size:1rem !important;
 }
+
+
 .p-size-xl {
     letter-spacing: -.00625rem !important;
     font-size: 1.25rem !important;
 }
+
+
+
+.text-size-body-1{
+    font-size: var(--body-1-size) !important;
+}
+.text-size-body-2{
+    font-size: var(--body-2-size) !important;
+}
+.text-size-h1{
+    font-size: var(--h1-size) !important;
+}
+.text-size-h2{
+    font-size: var(--h2-size) !important;
+}
+.text-size-h3{
+    font-size: var(--h3-size) !important;
+}
+.text-size-h4{
+    font-size: var(--h4-size) !important;
+}
+.text-size-h5{
+    font-size: var(--h5-size) !important;
+}
+.text-size-h6{
+    font-size: var(--h6-size) !important;
+}
+.text-size-h7{
+    font-size: var(--h7-size) !important;
+}
+
+
+
+
 .heading-container{
     margin-bottom: 48px;
     margin-top: 16px;
 }
 
+
+
+
+// title class adds bottom margin. need to consider better way
 .title {
     margin-bottom: 48px;
     margin-top: 16px;
