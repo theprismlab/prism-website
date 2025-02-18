@@ -5,6 +5,8 @@
     <section>
         <div v-for="each in data">
           <Card
+            size="md"
+            classes="px-4 py-4"
             :suptitle="each.suptitle"
             :title="each.title"
             :button="each.button"
