@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="position: relative; height: 90vh; width: 100%;">
-      <ThreeJsDemo04></ThreeJsDemo04>
+      <ThreeJsDemo06></ThreeJsDemo06>
       <div style="position:absolute; width: 100%; height:100%;">
         <v-container class="fill-height">
         <div style="max-width:600px" class="tech-hero_text">
