@@ -1,19 +1,16 @@
 <template>
   <div>
     <div style="position: relative; height: 90vh; width: 100%;">
-      <ThreeJsDemo06></ThreeJsDemo06>
-      <div style="position:absolute; width: 100%; height:100%;">
+      <ThreeJsDemoViability03/>
+      <!-- <div style="position:absolute; width: 100%; height:100%;">
         <v-container class="fill-height">
         <div style="max-width:600px" class="tech-hero_text">
           <h1 class="title">Revolutionize cancer drug discovery</h1>
           <p class="p-size-xl">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
         </div>
       </v-container>
-      </div>
-
+      </div> -->
     </div>
-
-
 
     <!-- <page-gradient class="gradient-Blues">
 
