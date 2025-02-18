@@ -3,23 +3,23 @@
 $heading-font-family: 'Inter';
 $body-font-family: 'Inter';
 
-
-
 @use 'vuetify/settings' with (
     $color-pack: true,
     $body-font-family: 'Inter',
     $font-size-root: 1rem,
     $heading-font-family: 'Inter',
-    // $card-title-padding: 1rem 1rem 0rem 1rem,
     $card-title-white-space: normal,
     $card-title-word-wrap: initial,
     $card-title-text-overflow: visible,
     $card-title-hyphens: none,
-    // $card-subtitle-padding: 1rem,
-    // $card-subtitle-header-padding: 0 0 .25rem,
     $card-subtitle-white-space: normal,
     $card-subtitle-text-overflow: visible,
-    // $card-text-padding: 1rem,
+    $card-title-letter-spacing: .0178571429em,
+    // $card-title-padding: 1rem,
+    // $card-subtitle-padding: 1rem,
+    // $card-title-header-padding: .25rem 0 .25rem 0,
+    // $card-subtitle-header-padding: .25rem 0 .25rem 0,
+    //  $card-text-padding: .25rem 0 .25rem 0,
     $button-text-transform: none,
     $typography: (
         'h1': (
@@ -159,7 +159,6 @@ $body-font-family: 'Inter';
     --body-2-line-height: 1.425em;
     --base-color-gray--600: #525252;
     --base-color-gray--800: #262626;
-
 }
 
 // @media (max-width: 1200px) {
