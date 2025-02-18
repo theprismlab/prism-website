@@ -42,6 +42,7 @@ export default {
             }));
             this.heatmapData = this.parseHeatmapData(data);
             this.initThreeJs();
+        //   window.addEventListener('resize', this.onWindowResize);
             this.renderScene();
         },
         parseHeatmapData(data) {
@@ -97,7 +98,7 @@ export default {
             this.renderer.setPixelRatio(window.devicePixelRatio);
             this.renderer.shadowMap.enabled = true;
 
-            window.addEventListener('resize', this.onWindowResize);
+         //   window.addEventListener('resize', this.onWindowResize);
         },
         onWindowResize() {
             this.width = this.canvas.clientWidth;

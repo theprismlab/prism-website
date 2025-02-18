@@ -11,9 +11,6 @@
       </v-container>
       </div>
     </div>
-
-
-
     <page-section>
       <v-container class="">
         <div style="max-width:800px">
