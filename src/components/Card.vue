@@ -84,6 +84,7 @@ export default {
 }
 </script>
 <style scoped>
+/* To do: remove this, make a class for specifying the type of link (ie: title link) */
 .v-card-title > * {
     text-decoration: none !important;
     border-bottom: 1px solid #cccccc !important;
