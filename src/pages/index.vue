@@ -2,7 +2,7 @@
   <div>
     <page-gradient class="gradient-Blues">
 
-    <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-04.png`" :height="heroHeight">
+    <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-01.png`" :height="heroHeight">
       <v-container class="fill-height">
         <div style="max-width:600px" class="tech-hero_text">
           <h1 class="title">Revolutionize cancer drug discovery</h1>
@@ -128,28 +128,28 @@
           {
             title: 'Complete genomic and functional characterization of cell lines',
             text: 'Over 150k genomic features and dependencies for hematopoietic and solid tumor cell lines covering 80 subtypes.',
-            img: '2025 PRISM-website-graphics-about-01-01.png',
+            img: '2025 PRISM-website-graphics-about-01.png',
             linkText: 'Learn more',
             linkUrl: '/screening/cell-line-collection'
           },
           {
             title: 'Multiple screening offerings',
             text: 'Small molecules, combinations, antibody-drug conjugates, antibodies, and cytokines at multiple time points.',
-            img: '2025 PRISM-website-graphics-about-02-02.png',
+            img: '2025 PRISM-website-graphics-about-02.png',
             linkText: 'Learn more',
             linkUrl: '/screening/screens'
           },
           {
             title: 'Predictive modeling to identify patient population and targets',
             text: 'Univariate and multivariate predictive models to compare the viability profile of your drug.',
-            img: '2025 PRISM-website-graphics-about-03-01.png',
+            img: '2025 PRISM-website-graphics-about-03.png',
             linkText: 'Learn more',
             linkUrl: '/screening/data'
           },
           {
             title: 'Secure data portal',
             text: 'Securely browse and discover insights from your screening results with interactive visualizations.',
-            img: '2025 PRISM-website-graphics-about-04-01.png',
+            img: '2025 PRISM-website-graphics-about-04.png',
             linkText: 'Learn more',
             linkUrl: '/portal'
           },
