@@ -103,14 +103,14 @@ $body-font-family: 'Inter';
           'font-family': $body-font-family,
           'text-transform': none
         ),
-        // 'button': (
-        //   'size': .875rem,
-        //   'weight': 500,
-        //   'line-height': 2.6,
-        //   'letter-spacing': .0892857143em,
-        //   'font-family': $body-font-family,
-        //   'text-transform': uppercase
-        // ),
+        'button': (
+          'size': .875rem,
+          'weight': 500,
+          'line-height': 2.6,
+          'letter-spacing': .0892857143em,
+          'font-family': $body-font-family,
+          'text-transform': normal
+        ),
         'caption': (
           'size': .75rem,
           'weight': 400,
@@ -126,7 +126,7 @@ $body-font-family: 'Inter';
           'letter-spacing': .1666666667em,
           'font-family': $body-font-family,
           'text-transform': uppercase
-        )
+        ),
       )
     
 );
