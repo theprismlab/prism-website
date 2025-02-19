@@ -15,11 +15,13 @@
     </page-gradient>
 
     <page-section>
-      <container-sm>
-        <h3 class="heading-style-h5 title">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
-        </h3>
-      </container-sm>
       <container-md>
+        <v-row>
+          <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
+            <h3 class="heading-style-h5 title">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
+            </h3>
+          </v-col>
+        </v-row>
         <v-row class="d-flex justify-center">
           <v-col v-for="card in cards" cols="10" xs="10" sm="6" md="3" lg="3" xl="3">
             <v-card class="fill-height" elevation="1" style="border-radius: 0px;">
