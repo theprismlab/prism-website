@@ -6,7 +6,6 @@
             <div v-for="each in data">
               <Card
                 size="md"
-                elevation="0"
                 classes="px-4 py-4"
                 :chip="each.chip"
                 :suptitle="each.suptitle"
