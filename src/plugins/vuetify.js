@@ -12,6 +12,7 @@ import '@/styles/main.scss'
 
 // Composables
 import { createVuetify } from 'vuetify'
+import colors  from 'vuetify/util/colors'
 
 
 const prismTheme = {
@@ -27,9 +28,9 @@ const prismTheme = {
     'primary-darken-1': '#1F5592',
     'secondary': '#FB8C00',
     'secondary-darken-1': '#018786',
-    'error': '#B00020',
+    'error': colors.deepOrange.accent3,
     'info': '#2196F3',
-    'success': '#4CAF50',
+    'success': colors.green.accent2,
     'warning': '#FB8C00',
     'teal-bkg': '#d5dde0'
   },
@@ -53,6 +54,7 @@ const prismTheme = {
     'theme-on-code': '#000000',
   }
 }
+
 
 
 
