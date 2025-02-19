@@ -44,22 +44,22 @@
     }
       /* md */
     @media (min-width: 960px) and (max-width: 1280px) {
-        .v-container{
+        /* .v-container{
             max-width: 92% !important;
-        }
+        } */
     }
 
     /* sm */
     @media (min-width: 600px) and (max-width: 960px) {
-        .v-container{
+        /* .v-container{
             max-width: 92% !important;
-        }
+        } */
     }
     /* xs */
     @media (max-width: 600px) {
-        .v-container{
+        /* .v-container{
             max-width: 92% !important;
-        }
+        } */
     }
 </style>
   
