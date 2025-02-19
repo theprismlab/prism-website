@@ -1,16 +1,12 @@
 <template>
   <section>
-    <v-container>
-        <v-row class="d-flex align-center">
-            <v-col>
-                <h4 v-if="title" :class="`text-h4 mb-0 mt-0 font-weight-medium text-${textColor} mr-8`">{{ title }}</h4>
+        <v-row class="justify-start" no-gutters>
+            <div class="pr-4">
+                <h4 v-if="title" :class="`text-h4 mb-0 mt-0 font-weight-medium text-${textColor}`">{{ title }}</h4>
                 <p v-if="subtitle" :class="`body-2 font-weight-medium text-${textColor}`">{{ subtitle }}</p>
-            </v-col>
-            <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
-                <v-btn v-if="buttonText" :to="buttonLink" variant="outlined" rounded :color="textColor">{{ buttonText }}</v-btn>
-            </v-col>
+            </div>  
+            <v-btn v-if="buttonText" :to="buttonLink" variant="outlined" rounded :color="textColor">{{ buttonText }}</v-btn>
         </v-row>
-    </v-container>
   </section>
 </template>
 

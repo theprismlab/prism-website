@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-container class="py-16">
+  <page>
+    <container-sm>
       <h2 class="title">Conference abstracts</h2>
     <!-- <section>
         <div v-for="each in whitePapers.filter((item) => item.rank == 1)">
@@ -15,11 +15,8 @@
         </div>
     </section> -->
 
-    </v-container>
-
-
-
-  </div>
+    </container-sm>
+  </page>
   </template>
   
   <script>

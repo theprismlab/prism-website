@@ -1,46 +1,48 @@
 <template>
-  <div>
-    <page-gradient class="gradient-Blues">
-
-    <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-01.png`" :height="heroHeight">
-      <v-container class="fill-height">
-        <div style="max-width:600px" class="tech-hero_text">
-          <h1 class="title">Revolutionize cancer drug discovery</h1>
-          <p class="p-size-xl">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
-        </div>
-      </v-container>
-    </v-parallax>
-  </page-gradient>
+  <!-- padding top is 0 because the title is vertically centered -->
+  <page class="pt-0">
+    <page-gradient className="gradient-Blues" >
+      <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-01.png`" :height="heroHeight">
+        <container-md class="fill-height">
+          <v-row>
+            <v-col cols="12" xs="12" sm="10" md="6" lg="6" xl="5" class="d-flex justify-center flex-column">
+              <h1 class="title">Revolutionize cancer drug discovery</h1>
+              <p class="p-size-xl">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
+            </v-col>
+          </v-row>
+        </container-md>
+      </v-parallax>
+    </page-gradient>
 
     <page-section>
-      <v-container class="">
-        <div style="max-width:800px">
-          <h3 class="heading-style-h5 title">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
-          </h3>
-        </div>
+      <container-sm>
+        <h3 class="heading-style-h5 title">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
+        </h3>
+      </container-sm>
+      <container-md>
         <v-row class="d-flex justify-center">
-          <v-col v-for="card in cards" cols="10" xs="10" sm="6" md="6" lg="3" xl="3">
-            <v-card class="fill-height" elevation="1">
+          <v-col v-for="card in cards" cols="10" xs="10" sm="6" md="3" lg="3" xl="3">
+            <v-card class="fill-height" elevation="1" style="border-radius: 0px;">
               <v-img  class="align-end"  width="100%" alt="" :src="`${imgPath}${card.img}`"></v-img>
-              <v-card-title class="font-weight-black">{{ card.title }}</v-card-title>
+              <v-card-title style="min-height:5rem;" class="font-weight-black">{{ card.title }}</v-card-title>
               <v-card-subtitle>{{ card.text }}</v-card-subtitle>
               <v-card-actions>
                 <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
               </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </page-section>
+            </v-card>
+          </v-col>
+        </v-row>
+      </container-md>
+    </page-section>
 
   <page-gradient className="solid-gray">
     <page-section>
-      <v-container class="">
+      <container-md>
       <v-row>
-        <v-col cols="12" xs="12" sm="12" md="5" lg="6" xl="6">
+        <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
             <h3 class="title heading-style-h5">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</h3>
         </v-col>
-        <v-col cols="12" xs="12" sm="12" md="7" lg="6" xl="6">
+        <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
           <v-row>
             <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
               <v-card elevation="1" class="fill-height px-4 py-3">
@@ -78,22 +80,22 @@
           </v-row>
         </v-col>
       </v-row>
-    </v-container>
+    </container-md>
     </page-section>
+     
   </page-gradient>
 
-  <page-gradient className="gradient-BuCy py-2">
-    <PageBannerShort title="Collaborate with us!" buttonText="Learn more" buttonLink="" textColor="white"></PageBannerShort>
+  <page-gradient className="gradient-BuCy">
+    <container-md>
+      <PageBannerShort title="Collaborate with us!" buttonText="Learn more" buttonLink="" textColor="white"></PageBannerShort>
+    </container-md>
+ 
   </page-gradient>
 
   <page-section>
-    <v-container>
-      <v-row>
-        <v-col cols="12" xs="12" sm="10" md="8" lg="7" xl="6">
-            <h3 class="title heading-style-h5">Dedicated to advancing oncology research.</h3>
-        </v-col>
-      </v-row>
-      <v-row>
+    <container-md>
+      <h3 class="title heading-style-h5">Dedicated to advancing oncology research.</h3>
+      <v-row class="pt-6">
         <v-col v-for="stat in stats">
           <v-card elevation="1" class="fill-height" style="border-radius: 0px; border-left: 8px solid var(--v-primary);">
             <v-card-title class="font-weight-black text-h2">{{ stat.number }}</v-card-title>
@@ -101,10 +103,10 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
+    </container-md>
   </page-section>
 
- </div>
+</page>
 </template>
 <script>
   export default {
@@ -157,11 +159,11 @@
       }
     },
     mounted() {
-        window.addEventListener('resize', this.handleResize);
-        this.handleResize();
+   
+
       },
       beforeDestroy() {
-        window.removeEventListener('resize', this.handleResize);
+
       },
     computed: {
       imgPath() {
@@ -173,34 +175,11 @@
       heroHeight () {
         return this.mobile ? '80vh' : '75vh'
       },
-      cardImgHeight () {
-        return '200px'
-      },
-      ySpacer () {
-        return this.$vuetify.theme.themes.prismTheme.variables['y-spacer'] + 'px'
-      }
+
+
     },
     methods: {
-      handleResize () {
-        this.setMaxCardHeight('prism-card')
-        this.setMaxCardHeight('quote-card')
-      },
-      setMaxCardHeight (className) {
-        const cards = this.$el.querySelectorAll(`.${className}`);
-        cards.forEach(card => {
-          card.style.height = `auto`;
-        });
-        let maxHeight = 0;
-        cards.forEach(card => {
-          const cardHeight = card.clientHeight;
-          if (cardHeight > maxHeight) {
-            maxHeight = cardHeight;
-          }
-        });
-        cards.forEach(card => {
-          card.style.height = `${maxHeight}px`;
-        });
-      }
+
     },
     watch: {
 
@@ -209,13 +188,13 @@
 </script>
 
 <style scoped lang="scss">
-.tech-hero_text {
-    grid-column-gap: 2rem;
-    grid-row-gap: 2rem;
-    flex-flow: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    display: flex;
-}
+// .tech-hero_text {
+//     grid-column-gap: 2rem;
+//     grid-row-gap: 2rem;
+//     flex-flow: column;
+//     justify-content: flex-start;
+//     align-items: flex-start;
+//     display: flex;
+// }
 
 </style>

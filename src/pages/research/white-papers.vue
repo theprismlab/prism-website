@@ -1,34 +1,29 @@
 <template>
-  <div>
-    <v-container class="py-16">
-      <h2 class="title">White papers</h2>
-    <section>
-        <div v-for="each in data">
-          <Card
-            size="md"
-            elevation="0"
-            classes="px-4 py-4"
-            :chip="each.chip"
-            :suptitle="each.suptitle"
-            :title="each.title"
-            :text="each.text"
-            :image="each.image"
-          >
-          </Card>
-          <v-divider style="max-width: 1000px"></v-divider>
-        </div>
-    </section>
-
-    </v-container>
-
-
-
-  </div>
-  </template>
+  <page>
+    <container-sm>
+        <h2 class="title">White papers</h2>
+        <section>
+            <div v-for="each in data">
+              <Card
+                size="md"
+                elevation="0"
+                classes="px-4 py-4"
+                :chip="each.chip"
+                :suptitle="each.suptitle"
+                :title="each.title"
+                :text="each.text"
+                :image="each.image"
+              >
+              </Card>
+              <v-divider style="max-width: 1000px"></v-divider>
+            </div>
+        </section>
+    </container-sm>
+  </page>
+</template>
   
   <script>
   import * as d3 from 'd3';  
-  import Card from '@/components/Card.vue';
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL+"data/" : "../../public/data/";
   const dataFile = "Website Content - 2025  - White Papers.csv";
 

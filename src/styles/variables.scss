@@ -159,7 +159,56 @@ $body-font-family: 'Inter';
     --body-2-line-height: 1.425em;
     --base-color-gray--600: #525252;
     --base-color-gray--800: #262626;
+    --container-xs-max-width: 850px;
+    --container-sm-max-width: 1000px;
+    --container-md-max-width: 1400px;
 }
+
+
+      /* xxl  */
+      @media (min-width:  2560px) {
+
+      }
+      /* xl */
+      @media (min-width: 1920px) and (max-width: 2560px) {
+  
+      }
+      /* lg */
+      @media (min-width: 1280px) and (max-width: 1920px) {
+        :root {
+          --container-xs-max-width: 800px;
+          --container-sm-max-width: 1000px;
+          --container-md-max-width: 1200px;
+      }
+      }
+        /* md */
+      @media (min-width: 960px) and (max-width: 1280px) {
+
+        :root {
+          --container-xs-max-width: 800px;
+          --container-sm-max-width: 1000px;
+          --container-md-max-width: 1200px;
+        }
+      
+      }
+  
+      /* sm */
+      @media (min-width: 600px) and (max-width: 960px) {
+        :root {
+          --container-xs-max-width: 82%;
+          --container-sm-max-width: 800px;
+          --container-md-max-width: 92%;
+        }
+      }
+      /* xs */
+      @media (max-width: 600px) {
+        :root {
+          --container-xs-max-width: 92%;
+          --container-sm-max-width: 92%;
+          --container-md-max-width: 92%;
+        }
+      }
+
 
 // @media (max-width: 1200px) {
 //     :root {
@@ -194,20 +243,20 @@ $body-font-family: 'Inter';
 //     }
 // }
 
-@media (max-width: 600px) {
-    :root {
-      --body-1-size: 1rem;
-      --body-2-size: 0.875rem;
-      --h1-size: 2.75rem;
-      --h2-size: 2rem;
-      --h3-size: 1.66rem;
-      --h4-size: 1.33rem;
-      --h5-size: 1rem; 
-      --h6-size: var(--body-1-size);
-      --h7-size: var(--body-2-size);
-      --subtitle-1-size: var(--body-1-size);
-      --subtitle-2-size: var(--body-2-size);
-    }
-}
+// @media (max-width: 600px) {
+//     :root {
+//       --body-1-size: 1rem;
+//       --body-2-size: 0.875rem;
+//       --h1-size: 2.75rem;
+//       --h2-size: 2rem;
+//       --h3-size: 1.66rem;
+//       --h4-size: 1.33rem;
+//       --h5-size: 1rem; 
+//       --h6-size: var(--body-1-size);
+//       --h7-size: var(--body-2-size);
+//       --subtitle-1-size: var(--body-1-size);
+//       --subtitle-2-size: var(--body-2-size);
+//     }
+// }
 
 

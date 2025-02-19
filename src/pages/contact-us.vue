@@ -1,11 +1,11 @@
 <template>
-<div>
-  <v-container class="py-16">
+<page>
+  <container-sm>
     <h2 class="title">Contact us</h2>
       <p class="body-1">HubSpot form to be integrated here</p>
-    </v-container>
+    </container-sm>
 
-</div>
+  </page>
 </template>
 
 <script>
