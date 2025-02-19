@@ -41,7 +41,7 @@ export default {
             required: false
         },
         chip: {
-            type: String,
+            type: Object,
             required: false
         },
         subtitle: {
