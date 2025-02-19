@@ -1,33 +1,28 @@
 <template>
-  <div>
-    <v-container class="py-16">
-      <h2 class="title">White papers</h2>
-    <section>
-        <div v-for="each in data">
-          <Card
-            size="md"
-            elevation="0"
-            classes="px-4 py-4"
-            :chip="each.chip"
-            :suptitle="each.suptitle"
-            :title="each.title"
-            :text="each.text"
-          >
-          </Card>
-          <v-divider></v-divider>
-        </div>
-    </section>
-
-    </v-container>
-
-
-
-  </div>
-  </template>
+  <page>
+    <container-sm>
+        <h2 class="title">White papers</h2>
+        <section>
+            <div v-for="each in data">
+              <Card
+                size="md"
+                classes="px-4 py-4"
+                :chip="each.chip"
+                :suptitle="each.suptitle"
+                :title="each.title"
+                :text="each.text"
+                :image="each.image"
+              >
+              </Card>
+              <v-divider style="max-width: 1000px"></v-divider>
+            </div>
+        </section>
+    </container-sm>
+  </page>
+</template>
   
   <script>
   import * as d3 from 'd3';  
-  import Card from '@/components/Card.vue';
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL+"data/" : "../../public/data/";
   const dataFile = "Website Content - 2025  - White Papers.csv";
 
@@ -42,9 +37,9 @@
         await this.getData();
       },
       computed: {
-        // imgPath() {
-        //   return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/publications/" : "../../public/images/publications/"
-        // },
+        imgPath() {
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/whitepapers/" : "../../public/images/whitepapers/"
+        },
       },
       methods: {
         async getData(){
@@ -52,11 +47,12 @@
           Promise.all([
             d3.csv(`${dataPath}${dataFile}`, function(d){
                 return {
-                  chip: d.Chip,
-                  title: d.Title,
-                  date: d.Date,
-                  url: d["Paper Link"],
-                  portalUrl: d["Portal Link"],
+                  chip: d["Chip"], // this is the screen type or topic category
+                  title: d["Title"], // white paper title
+                  date: d["Date"], // date published
+                  url: d["Paper Link"], // link to the white paper
+                  portalUrl: d["Portal Link"], // link to the portal
+                  image: d['Title'] // Developer/Lia handles naming images the same as the title
         
                 }
             })
@@ -67,6 +63,7 @@
               d.title = this.createTitle(d);
               d.text = this.createText(d);
               d.button = this.createButton(d);
+              d.image = `${this.imgPath}${d.image}.png`;
             })
             self.data = response[0];
           

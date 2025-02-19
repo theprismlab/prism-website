@@ -1,9 +1,9 @@
 <template>
-<div>
-  <v-container class="py-16">
+<page>
+  <container-sm>
     <h2 class="title">Cell line collection</h2>
-    </v-container>
-  </div>
+  </container-sm>
+</page>
 </template>
 
 <script setup>

@@ -1,128 +1,124 @@
 <template>
-  <div>
-  <v-container class="py-16">
-    <h2 class="title">Publications</h2>
-    <section>
-      <h2 class="pb-2 text-overline font-weight-black text-secondary">Featured</h2>
-      <v-row>
-        <v-col 
-          cols="12" 
-          xs="12"
-          sm="12"
-          md="8" 
-          lg="8"
-          xl="9"
-        >
-        <div v-for="each in data.filter((item) => item.rank == 1)">
-          <Card 
-            size="lg"
-            classes="pb-4"
-            :title="each.cardTitle" 
-            :suptitle="each.cardSuptitle" 
-            :subtitle="each.cardSubtitle"
-            :text="each.cardText" 
-            :url="each.url" 
-            :image="`${imgPath}${each.image}`">
-        </Card>
-        </div>
-        </v-col>
-      
-        <v-col 
-          cols="12" 
-          xs="12"
-          sm="12"
-          md="4"
-          lg="4"
-          xl="3"
+  <page>
+    <container-sm>
+      <h2 class="title">Publications</h2>
+      <section>
+        <h2 class="pb-2 text-overline font-weight-black text-secondary">Featured</h2>
+        <v-row>
+          <v-col 
+            cols="12" 
+            xs="12"
+            sm="12"
+            md="8" 
+            lg="8"
+            xl="9"
           >
-          <div v-for="each in data.filter((item) => item.rank > 1 && item.rank <5)" class="py-1">
+          <div v-for="each in data.filter((item) => item.rank == 1)">
             <Card 
-            size="sm"
-            classes="pb-4"
-            :title="each.cardTitle" 
-            :suptitle="each.cardSuptitle" 
-            :subtitle="each.cardSubtitle"
-            :text="each.cardText" 
-            :url="each.url" 
-            >
+              size="lg"
+              classes="pb-4"
+              :title="each.cardTitle" 
+              :suptitle="each.cardSuptitle" 
+              :subtitle="each.cardSubtitle"
+              :text="each.cardText" 
+              :url="each.url" 
+              :image="`${imgPath}${each.image}`">
           </Card>
-          <v-divider></v-divider>
           </div>
-        </v-col>
-      </v-row>
-    </section>
-    <section class="py-16">
-      <h2 class="pb-2 text-overline font-weight-black text-secondary">Explore publications</h2>
-     
-      <v-row>
-        <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
-          <v-autocomplete
-            v-model="filters.titles"
-            :items="options.titles"
-            label="Filter titles"
-            multiple
-            chips
-            clearable
-            hide-details
-          ></v-autocomplete>
-        </v-col>
-        <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
-          <v-autocomplete
-            v-model="filters.publishers"
-            :items="options.publishers"
-            label="Filter publishers"
-            multiple
-            chips
-            clearable
-            hide-details
-          ></v-autocomplete>
-        </v-col>
-        <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
-          <v-autocomplete
-            v-model="filters.years"
-            :items="options.years"
-            label="Filter years"
-            multiple
-            chips
-            clearable
-            hide-details
-          ></v-autocomplete>
-        </v-col>
-        <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
-          <v-autocomplete
-            v-model="filters.authors"
-            :items="options.authors"
-            label="Filter authors"
-            multiple
-            chips
-            clearable
-            hide-details
-          ></v-autocomplete>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
-          <div v-for="each in filteredData">
-            <Card 
-            size="sm"
-            classes="py-4"
-            :title="each.cardTitle" 
-            :suptitle="each.cardSuptitle" 
-            :subtitle="each.cardSubtitle"
-            :url="each.url" 
+          </v-col>
+        
+          <v-col 
+            cols="12" 
+            xs="12"
+            sm="12"
+            md="4"
+            lg="4"
+            xl="3"
             >
-          </Card>
+            <div v-for="each in data.filter((item) => item.rank > 1 && item.rank <5)" class="py-1">
+              <Card 
+              size="sm"
+              classes="pb-4"
+              :title="each.cardTitle" 
+              :suptitle="each.cardSuptitle" 
+              :subtitle="each.cardSubtitle"
+              :text="each.cardText" 
+              :url="each.url" 
+              >
+            </Card>
             <v-divider></v-divider>
-          </div>
-          
-        </v-col>
-      </v-row>
-    </section>
-    </v-container>
-
-
-
-  </div>
+            </div>
+          </v-col>
+        </v-row>
+      </section>
+      <section class="py-16">
+        <h2 class="pb-2 text-overline font-weight-black text-secondary">Explore publications</h2>
+        <v-row>
+          <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
+            <v-autocomplete
+              v-model="filters.titles"
+              :items="options.titles"
+              label="Filter titles"
+              multiple
+              chips
+              clearable
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
+            <v-autocomplete
+              v-model="filters.publishers"
+              :items="options.publishers"
+              label="Filter publishers"
+              multiple
+              chips
+              clearable
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
+            <v-autocomplete
+              v-model="filters.years"
+              :items="options.years"
+              label="Filter years"
+              multiple
+              chips
+              clearable
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
+            <v-autocomplete
+              v-model="filters.authors"
+              :items="options.authors"
+              label="Filter authors"
+              multiple
+              chips
+              clearable
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
+            <div v-for="each in filteredData">
+              <Card 
+              size="sm"
+              classes="py-4"
+              :title="each.cardTitle" 
+              :suptitle="each.cardSuptitle" 
+              :subtitle="each.cardSubtitle"
+              :url="each.url" 
+              >
+            </Card>
+              <v-divider></v-divider>
+            </div>
+            
+          </v-col>
+        </v-row>
+      </section>
+      </container-sm>
+    </page>
   </template>
   
   <script>

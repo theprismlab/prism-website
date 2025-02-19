@@ -77,7 +77,7 @@ p, .body-1, .v-card-text {
 }
 
 
-
+// new classes for easier text size changes
 .text-size-body-1{
     font-size: var(--body-1-size) !important;
 }
@@ -114,8 +114,15 @@ p, .body-1, .v-card-text {
     margin-top: 16px;
 }
 
-
-
+.container-xs-max-width {
+    max-width: var(--container-xs-max-width) !important;
+}
+.container-sm-max-width {
+    max-width: var(--container-sm-max-width) !important;
+}
+.container-md-max-width {
+    max-width: var(--container-md-max-width) !important;
+}
 
 // title class adds bottom margin. need to consider better way
 .title {
@@ -135,25 +142,34 @@ a:hover{
 }
 
 
-.container-medium {
-    width: 100%;
-    max-width: 64rem;
-    margin-left: auto;
-    margin-right: auto;
+// xxl 
+@media (min-width:  2560px) {
+
+}
+// xl
+@media (min-width: 1920px) and (max-width: 2560px) {
+
+}
+// lg
+@media (min-width: 1280px) and (max-width: 1920px) {
+
+}
+// md
+@media (min-width: 960px) and (max-width: 1280px) {
+    // .v-container{
+    //     max-width: 92% !important;
+    // }
 }
 
-@media (min-width: 1200px) {
-    .v-container {
-        max-width: 1312px;
-    }
+// sm
+@media (min-width: 600px) and (max-width: 960px) {
+    // .v-container{
+    //     max-width: 92% !important;
+    // }
 }
-@media (max-width: 1350px) {
-    .v-container {
-        padding: 0 35px;
-    }
-}
+// xs
 @media (max-width: 600px) {
-    .v-container{
-        width:90% !important;
-    }
+    // .v-container{
+    //     max-width: 92% !important;
+    // }
 }

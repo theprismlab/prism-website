@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <v-container class="py-16">
+  <page>
+    <container-sm>
         <h2 class="title">Team</h2>
           <v-row class="justify-center">
             <v-col v-for="individual in teamMembers" cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
               <TeamCard :name="individual.name" :title="individual.title" :image="`${imgPath}${individual.image}`"></TeamCard>
             </v-col>
           </v-row>
-      </v-container>
-  </div>
+      </container-sm>
+    </page>
 </template>
 <script>
   import * as d3 from 'd3';
