@@ -1,80 +1,52 @@
-
-
-// h1{
-//     font-size: var(--h1-size) !important;
-//     line-height: var(--h1-line-height) !important;
-// }
-// h2{
-//     font-size: var(--h2-size) !important;
-//     line-height: var(--h2-line-height) !important;
-// }
-// h3{
-//     font-size: var(--h3-size) !important;
-//     line-height: var(--h3-line-height) !important;
-// }
-// h4{
-//     font-size: var(--h4-size) !important;
-//     line-height: var(--h4-line-height) !important;
-// }
-
+       // font-family: TWK Lausanne, sans-serif;
 h1{
-    letter-spacing: -.18rem;
-    margin-top: 0;
-    margin-bottom: 0;
-    // font-family: TWK Lausanne, sans-serif;
-    font-size: 4.5rem;
-    font-weight: 700;
-    line-height: 4.8rem;
+    font-size: var(--h1-size);
+    line-height: var(--h1-line-height);
+
 }
 h2 {
-    letter-spacing: -.1425rem;
-    margin-top: 0;
-    margin-bottom: 0;
-   // font-family: TWK Lausanne, sans-serif;
-    font-size: 3.75rem;
-    font-weight: 700;
-    line-height: 4.25rem;
+    font-size: var(--h2-size);
+    line-height: var(--h2-line-height);
 }
 h3 {
-    letter-spacing: -.105rem;
-    margin-top: 0;
-    margin-bottom: 0;
-   // font-family: TWK Lausanne, sans-serif;
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 3.5rem;
+    font-size: var(--h3-size);;
+    line-height: var(--h3-line-height);
 }
-.heading-style-h3 {
-    letter-spacing: -.105rem !important;
-    font-size: 3rem !important;
-    line-height: 3.5rem !important;
+h4{
+    font-size: var(--h4-size);
+    line-height: var(--h4-line-height);
 }
-.heading-style-h5 {
-    letter-spacing: -.05625rem !important;
-    font-size: 1.875rem !important;
-    line-height: 2.375rem !important;
+h5{
+    font-size: var(--h5-size);
+    line-height: var(--h5-line-height);
 }
+h6{
+    font-size: var(--h6-size);
+    line-height: var(--h6-line-height);
+}
+p {
+    font-size: var(--body-1-size);
+    line-height: var(--body-1-line-height);
+}
+// .heading-style-h3 {
+//     letter-spacing: -.105rem !important;
+//     font-size: 3rem !important;
+//     line-height: 3.5rem !important;
+// }
+// .heading-style-h5 {
+//     letter-spacing: -.05625rem !important;
+//     font-size: 1.875rem !important;
+//     line-height: 2.375rem !important;
+// }
 .text-color-gray600 {
     color: var(--base-color-gray--600) !important;
 }
 
 
-
-//get rid of this and use txt size classes and updated card component
-p, .body-1, .v-card-text {
-    letter-spacing: -.003rem !important;
-    margin-bottom: 0 !important;
-   // font-family: TWK Lausanne, sans-serif;
-    font-weight: 400 !important;
-    line-height: 160% !important;
-    font-size:1rem !important;
-}
-
-
-.p-size-xl {
-    letter-spacing: -.00625rem !important;
-    font-size: 1.25rem !important;
-}
+// .p-size-xl {
+//     letter-spacing: -.00625rem !important;
+//     font-size: 1.25rem !important;
+// }
 
 
 // new classes for easier text size changes
@@ -107,13 +79,6 @@ p, .body-1, .v-card-text {
 }
 
 
-
-
-.heading-container{
-    margin-bottom: 48px;
-    margin-top: 16px;
-}
-
 .container-xs-max-width {
     max-width: var(--container-xs-max-width) !important;
 }
@@ -135,17 +100,13 @@ p, .body-1, .v-card-text {
 
 a{
     color: var(--v-primary);
-    // text-decoration: none; 
-    // border-bottom: 0.25px solid var(--v-primary);
-    // // font-size: 0.875rem; 
-  //  font-weight: 500; 
-  //  letter-spacing: 0.0075em;
-
 }
 a:hover{
     opacity: 0.75;
 }
-
+a.text-button{
+    text-decoration: none;
+}
 
 // xxl 
 @media (min-width:  2560px) {

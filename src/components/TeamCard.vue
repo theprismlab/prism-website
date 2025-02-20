@@ -1,8 +1,11 @@
 <template>
-    <v-card elevation="1" class="fill-height" max-width="250px">
+    <v-card elevation="1" class="fill-height" max-width="350px">
         <v-img height="200px" :src="image" cover></v-img>
-        <v-card-title>{{ name }}</v-card-title>
-        <v-card-text>{{ title }}</v-card-text>
+        <v-card-item>
+            <v-card-title>{{ name }}</v-card-title>
+            <v-card-subtitle>{{ title }}</v-card-subtitle>
+        </v-card-item>
+
     </v-card>
   </template>
   
