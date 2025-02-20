@@ -6,8 +6,8 @@
         <container-md class="fill-height">
           <v-row>
             <v-col cols="12" xs="12" sm="10" md="6" lg="6" xl="5" class="d-flex justify-center flex-column">
-              <h1 class="title">Revolutionize cancer drug discovery</h1>
-              <p class="p-size-xl">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
+              <h1 class="text-h1 mb-12 font-weight-bold">Revolutionize cancer drug discovery</h1>
+              <p class="text-h4">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
             </v-col>
           </v-row>
         </container-md>
