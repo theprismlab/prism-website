@@ -2,7 +2,24 @@
   <page>
     <container-sm>
         <h2 class="title">White papers</h2>
-        <section>
+        <v-row>
+          <v-col cols="12" xs="12" sm="12" md="10" lg="8" xl="8">
+            <div v-for="each in data">
+              <Card
+                size="sm"
+                classes="px-4 py-4"
+                :chip="each.chip"
+                :suptitle="each.suptitle"
+                :title="each.title"
+                :text="each.text"
+                :image="each.image"
+              >
+              </Card>
+              <v-divider style="max-width: 1000px"></v-divider>
+            </div>
+          </v-col>
+        </v-row>
+        <!-- <section>
             <div v-for="each in data">
               <Card
                 size="md"
@@ -16,7 +33,7 @@
               </Card>
               <v-divider style="max-width: 1000px"></v-divider>
             </div>
-        </section>
+        </section> -->
     </container-sm>
   </page>
 </template>
@@ -72,8 +89,8 @@
         createChip(d){
           return {
             text: d.chip,
-            color: "primary",
-            size: "x-small"
+            color: "primary-accent-2",
+            size: "small"
           }
         },
         createButton(d){
@@ -85,13 +102,13 @@
           }
         },
         createSuptitle(d){
-          return `${d.date}`;
+          return `${d.date} <span class='ml-2 text-primary-accent-3'>${d.chip.text}</span>`;
         },
         createTitle(d){
           return `<a href='${d.url}' target='_blank' class="text-black">${d.title}</a>`
         },
         createText(d){
-          return `<a style='text-decoration: none; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em;' href='${d.portalUrl}' target='_blank'>Explore data <span class='mdi mdi-open-in-new'></span></a>`
+          return `<a class='text-button text-primary-accent-2' style='text-decoration: none;' href='${d.portalUrl}' target='_blank'>Explore data <span class='mdi mdi-open-in-new'></span></a>`
         },
       },
       watch: {

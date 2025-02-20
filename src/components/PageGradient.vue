@@ -31,6 +31,9 @@ export default {
 </script>
 <style>
 
+
+
+
 /* https://csshero.org/mesher/ */
 .solid-gray{
   background-color: #f5f5f5;
@@ -76,7 +79,7 @@ export default {
 }
 
 .gradient-Blues-lt{ 
-  background-image: linear-gradient(45deg, 
+  background-image: linear-gradient(160deg, 
   rgba(190, 219, 255, 0.05) 0%,
   rgba(190, 219, 255, 0.25) 50%,
   rgba(190, 219, 255, 0.25) 80%,
@@ -85,13 +88,36 @@ export default {
 }
 
 
-.gradient-piYl {
+.gradient-PiYl {
   background: linear-gradient(
     111.9deg,
     #fa709a,#fee140
   );
 }
 
+.gradient-PiYl-lt {
+  background: linear-gradient(
+    -90deg,
+    hsl(340, 100%, 95%),
+    hsl(54, 100%, 95%)
+  );
+}
+
+.gradient-primary {
+  background-image: linear-gradient(180deg, 
+  #ffffff 0%,
+  var(--v-primary-lighten-5) 50%,
+  var(--v-primary-lighten-4) 100%
+  );
+}
+
+.gradient-secondary {
+  background-image: linear-gradient(180deg, 
+  var(--v-secondary-lighten-5) 0%,
+  var(--v-secondary-lighten-4) 50%,
+  var(--v-secondary-lighten-3) 100%
+  );
+}
 
 .gradient-magma {
   /* background-image: linear-gradient( 111.9deg,   */

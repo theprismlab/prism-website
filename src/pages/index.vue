@@ -97,11 +97,11 @@
   <page-section>
     <container-md>
       <h3 class="title heading-style-h5">Dedicated to advancing oncology research.</h3>
-      <v-row class="pt-6">
-        <v-col v-for="stat in stats">
-          <v-card elevation="1" class="fill-height" style="border-radius: 0px; border-left: 8px solid var(--v-primary);">
-            <v-card-title class="font-weight-black text-h2">{{ stat.number }}</v-card-title>
-            <v-card-text>{{ stat.text }}</v-card-text>
+      <v-row>
+        <v-col v-for="stat in stats" :key="stat.number" cols="12" xs="12" sm="12" md="4" lg="4" xl="4">
+          <v-card class="pa-4 pb-8 fill-height" max-width="600px" elevation="1">
+            <v-card-title style="line-height: 1.2em !important;" class="pb-0 text-size-h2">{{stat.number}}</v-card-title>
+            <v-card-subtitle style="opacity: 1;" class="text-overline text-primary text-none font-weight-medium">{{stat.caption}}</v-card-subtitle>
           </v-card>
         </v-col>
       </v-row>
@@ -115,17 +115,21 @@
     data() {
       return {
         stats: [
+          // {
+          //   number: "7,000+",
+          //   caption: "Compounds screened in over 500 cell lines"
+          // },
           {
             number: "7,000+",
-            text: "Compounds screened in over 500 cell lines"
+            caption: "Collaborator compounds screened"
           },
           {
             number: "40+",
-            text: "Publications in high-impact journals"
+            caption: "Publications in high-impact journals"
           },
           {
             number: "150+",
-            text: "Academic and industry partners"
+            caption: "Academic and industry partners"
           }
         ],
         cards: [

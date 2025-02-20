@@ -14,6 +14,8 @@ import '@/styles/main.scss'
 import { createVuetify } from 'vuetify'
 import colors  from 'vuetify/util/colors'
 
+let secondary = 'amber';
+
 
 const prismTheme = {
   dark: false,
@@ -24,13 +26,44 @@ const prismTheme = {
     'surface-light': '#EEEEEE',
     'surface-variant': '#424242',
     'on-surface-variant': '#EEEEEE',
-    'primary': '#0E7AFF',
-    'primary-darken-1': '#1F5592',
-    'secondary': '#FB8C00',
-    'secondary-darken-1': '#018786',
+    // 'primary': '#0E7AFF',
+    // 'primary': colors.blue.accent3,
+    'primary': colors.blue.base,
+    'primary-darken-1': colors.blue.darken1,
+    'primary-darken-2': colors.blue.darken2,
+    'primary-darken-3': colors.blue.darken3,
+    'primary-darken-4': colors.blue.darken4,
+    'primary-lighten-1': colors.blue.lighten1,
+    'primary-lighten-2': colors.blue.lighten2,
+    'primary-lighten-3': colors.blue.lighten3,
+    'primary-lighten-4': colors.blue.lighten4,
+    'primary-lighten-5': colors.blue.lighten5,
+    'primary-accent-1': colors.blue.accent1,
+    'primary-accent-2': colors.blue.accent2,
+    'primary-accent-3': colors.blue.accent3,
+
+    'secondary': colors[secondary].base,
+    'secondary-lighten-1': colors[secondary].lighten1,
+    'secondary-lighten-2': colors[secondary].lighten2,
+    'secondary-lighten-3': colors[secondary].lighten3,
+    'secondary-lighten-4': colors[secondary].lighten4,
+    'secondary-lighten-5': colors[secondary].lighten5,
+    'secondary-darken-1': colors[secondary].darken1,
+    'secondary-darken-2': colors[secondary].darken2,
+    'secondary-darken-3': colors[secondary].darken3,
+    'secondary-darken-4': colors[secondary].darken4,
+    'secondary-accent-1': colors[secondary].accent1,
+    'secondary-accent-2': colors[secondary].accent2,
+    'secondary-accent-3': colors[secondary].accent3,  
+    'secondary-accent-4': colors[secondary].accent4,
     'error': colors.deepOrange.accent3,
     'info': '#2196F3',
-    'success': colors.green.accent2,
+    'success': colors.teal.accent3,
+    'success-accent-1': colors.teal.accent1,
+    'success-accent-2': colors.teal.accent2,
+    'success-accent-3': colors.teal.accent3,
+    'success-accent-4': colors.teal.accent4,
+
     'warning': '#FB8C00',
     'teal-bkg': '#d5dde0'
   },
