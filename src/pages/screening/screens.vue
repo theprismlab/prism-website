@@ -1,9 +1,13 @@
 <template>
-  <page>
+<page>
     <container-sm>
-      <h2 class="title">Screens</h2>
+      <page-title>Screening</page-title>
+      <p class="text-body-1">Coming next</p>
     </container-sm>
-  </page>
+    <section>
+
+    </section>
+</page>
 </template>
   
 <script setup>

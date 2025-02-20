@@ -1,8 +1,9 @@
 <template>
   <page>
     <container-sm>
-        <h2 class="title">White papers</h2>
-        <v-row>
+        <page-title>White papers</page-title>
+        <section class="section-margin-default">
+          <v-row>
           <v-col cols="12" xs="12" sm="12" md="10" lg="8" xl="8">
             <div v-for="each in data">
               <Card
@@ -19,21 +20,7 @@
             </div>
           </v-col>
         </v-row>
-        <!-- <section>
-            <div v-for="each in data">
-              <Card
-                size="md"
-                classes="px-4 py-4"
-                :chip="each.chip"
-                :suptitle="each.suptitle"
-                :title="each.title"
-                :text="each.text"
-                :image="each.image"
-              >
-              </Card>
-              <v-divider style="max-width: 1000px"></v-divider>
-            </div>
-        </section> -->
+        </section>
     </container-sm>
   </page>
 </template>

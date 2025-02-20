@@ -1,45 +1,43 @@
 <template>
-  <!-- padding top is 0 because the title is vertically centered -->
-  <page class="pt-0">
-    <page-gradient className="gradient-Blues" >
-      <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-01.png`" :height="heroHeight">
-        <container-md class="fill-height">
-          <v-row>
-            <v-col cols="12" xs="12" sm="10" md="6" lg="6" xl="5" class="d-flex justify-center flex-column">
-              <h1 class="text-h1 mb-12 font-weight-bold">Revolutionize cancer drug discovery</h1>
-              <p class="text-h4">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
-            </v-col>
-          </v-row>
-        </container-md>
-      </v-parallax>
-    </page-gradient>
-
-    <page-section>
-      <container-md>
+<page class="mt-0">
+  <page-gradient background="gradient-Blues" >
+    <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-01.png`" :height="heroHeight">
+      <container-md class="fill-height">
         <v-row>
-          <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
-            <h3 class="heading-style-h5 title">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
-            </h3>
-          </v-col>
-        </v-row>
-        <v-row class="d-flex justify-center">
-          <v-col v-for="card in cards" cols="10" xs="10" sm="6" md="3" lg="3" xl="3">
-            <v-card class="fill-height" elevation="1" style="border-radius: 0px;">
-              <v-img  class="align-end"  width="100%" alt="" :src="`${imgPath}${card.img}`"></v-img>
-              <v-card-title style="min-height:5rem;" class="font-weight-black">{{ card.title }}</v-card-title>
-              <v-card-subtitle>{{ card.text }}</v-card-subtitle>
-              <v-card-actions>
-                <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
-              </v-card-actions>
-            </v-card>
+          <v-col cols="12" xs="12" sm="10" md="6" lg="6" xl="5" class="d-flex justify-center flex-column">
+            <h1 class="text-h1 mb-12 font-weight-bold">Revolutionize cancer drug discovery</h1>
+            <p class="text-h4">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
           </v-col>
         </v-row>
       </container-md>
-    </page-section>
+    </v-parallax>
+  </page-gradient>
 
-  <page-gradient className="solid-gray">
-    <page-section>
-      <container-md>
+  <section class="section-padding-default">
+    <container-md>
+      <v-row>
+        <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
+          <h3 class="heading-style-h5 title">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
+          </h3>
+        </v-col>
+      </v-row>
+      <v-row class="d-flex justify-center">
+        <v-col v-for="card in cards" cols="10" xs="10" sm="6" md="3" lg="3" xl="3">
+          <v-card class="fill-height" elevation="1" style="border-radius: 0px;">
+            <v-img  class="align-end"  width="100%" alt="" :src="`${imgPath}${card.img}`"></v-img>
+            <v-card-title style="min-height:5rem;" class="font-weight-black">{{ card.title }}</v-card-title>
+            <v-card-subtitle>{{ card.text }}</v-card-subtitle>
+            <v-card-actions>
+              <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </container-md>
+  </section>
+
+  <page-gradient class="section-padding-default" background="solid-gray">
+    <container-md>
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
             <h3 class="title heading-style-h5">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</h3>
@@ -82,19 +80,17 @@
           </v-row>
         </v-col>
       </v-row>
-    </container-md>
-    </page-section>
-     
+    </container-md>     
   </page-gradient>
 
-  <page-gradient className="gradient-BuCy">
+  <page-gradient background="gradient-secondary-darken-1">
     <container-md>
       <PageBannerShort title="Collaborate with us!" buttonText="Learn more" buttonLink="" textColor="white"></PageBannerShort>
     </container-md>
  
   </page-gradient>
 
-  <page-section>
+  <section class="section-padding-default">
     <container-md>
       <h3 class="title heading-style-h5">Dedicated to advancing oncology research.</h3>
       <v-row>
@@ -106,7 +102,7 @@
         </v-col>
       </v-row>
     </container-md>
-  </page-section>
+  </section>
 
 </page>
 </template>
