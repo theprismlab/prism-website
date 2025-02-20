@@ -1,11 +1,12 @@
 <template>
 <page>
   <container-sm>
-    <h2 class="title">Contact us</h2>
+    <page-title>Contact us</page-title>
+    <page-section>
       <p class="body-1">HubSpot form to be integrated here</p>
-    </container-sm>
-
-  </page>
+    </page-section>
+  </container-sm>
+</page>
 </template>
 
 <script>

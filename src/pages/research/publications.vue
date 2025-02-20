@@ -1,9 +1,9 @@
 <template>
   <page>
     <container-sm>
-      <h2 class="title">Publications</h2>
-      <section>
-        <h2 class="pb-2 text-overline font-weight-black text-secondary">Featured</h2>
+      <page-title>Publications</page-title>
+      <section class="section-margin-default">
+        <h2 class="mb-3 text-overline font-weight-black text-secondary">Featured</h2>
         <v-row>
           <v-col 
             cols="12" 
@@ -51,8 +51,8 @@
           </v-col>
         </v-row>
       </section>
-      <section class="py-16">
-        <h2 class="pb-2 text-overline font-weight-black text-secondary">Explore publications</h2>
+      <section  class="section-margin-default">
+        <h2 class="mb-4 text-overline font-weight-black text-secondary">Explore publications</h2>
         <v-row>
           <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
             <v-autocomplete

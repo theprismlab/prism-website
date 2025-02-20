@@ -1,7 +1,8 @@
 <template>
   <page>
     <container-sm>
-      <h2 class="title">Data</h2>
+      <page-title>Data</page-title>
+      <p class="text-body-1">Coming next</p>
       </container-sm>
     </page>
   </template>

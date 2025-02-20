@@ -1,18 +1,14 @@
 <template>
-  <div :class="`${className}`">
+  <section :class="`${background}`">
       <slot></slot>
-  </div>
+  </section>
 </template>
 
 <script>
 export default {
     name: 'PageGradient',
     props: {
-    title: {
-      type: String,
-      required: false
-    },
-    className: {
+    background: {
       type: String,
       required: false
     }
@@ -116,6 +112,13 @@ export default {
   var(--v-secondary-lighten-5) 0%,
   var(--v-secondary-lighten-4) 50%,
   var(--v-secondary-lighten-3) 100%
+  );
+}
+.gradient-secondary-darken-1 {
+  background-image: linear-gradient(-33.33deg, 
+  var(--v-secondary-darken-1) 0%,
+  var(--v-secondary-darken-2) 50%,
+  var(--v-secondary-darken-3) 100%
   );
 }
 

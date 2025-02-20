@@ -68,7 +68,7 @@ const prismTheme = {
     'teal-bkg': '#d5dde0'
   },
   variables: {
-    'y-spacer': 48,
+    // 'y-spacer': 48,
     'border-color': '#000000',
     'border-opacity': 0.12,
     'high-emphasis-opacity': 0.87,
