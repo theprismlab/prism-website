@@ -7,11 +7,11 @@
         <v-row>
           <v-col 
             cols="12" 
-            xs="12"
+            xs=" 12"
             sm="12"
-            md="8" 
+            md="12" 
             lg="8"
-            xl="9"
+            xl="8"
           >
           <div v-for="each in data.filter((item) => item.rank == 1)">
             <Card 
@@ -30,10 +30,10 @@
           <v-col 
             cols="12" 
             xs="12"
-            sm="12"
-            md="4"
-            lg="4"
-            xl="3"
+            sm="9"
+            md="6" 
+            lg="4" 
+            xl="4" 
             >
             <div v-for="each in data.filter((item) => item.rank > 1 && item.rank <5)" class="py-1">
               <Card 
@@ -190,7 +190,7 @@
           });
         },
         createSuptitle(d){
-          return `${d.date} ${d.publisher}`;
+          return `${d.date} <span class='ml-2 text-primary-accent-3'>${d.publisher}</span>`;
         },
         createTitle(d){
           return `<a href='${d.url}' target='_blank' class="text-black">${d.title}</a>`
