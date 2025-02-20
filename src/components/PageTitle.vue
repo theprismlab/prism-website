@@ -1,12 +1,10 @@
 <template>
-  <div class="section-margin-default">
-      <slot></slot>
-  </div>
+  <h2 class="section-margin-default text-h2 font-weight-bold title"><slot></slot></h2>
   </template>
   
   <script>
     export default {
-      name: 'Page',
+      name: 'PageTitle',
       props: {
      
       },
