@@ -107,6 +107,17 @@ export default {
   );
 }
 
+.gradient-primary-lighten-1 {
+  background-image: linear-gradient(180deg, 
+  var(--v-primary-lighten-5) 0%,
+  #ffffff 10%,
+  #ffffff 50%,
+  #ffffff 90%,
+  var(--v-primary-lighten-5) 100%
+  );
+}
+
+
 .gradient-secondary {
   background-image: linear-gradient(180deg, 
   var(--v-secondary-lighten-5) 0%,

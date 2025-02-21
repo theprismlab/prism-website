@@ -2,9 +2,8 @@
 <page>
   <container-sm>
     <page-title>Cell line collection</page-title>
-    <section class="section-margin-default">
-      <p class=text-body-1>Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and the genomic diversity of existing two dimensional cell line models. We have a large number of pediatric cancer cell lines as well as over 100 hematopoietic cell lines. Our cell lines are our most important asset and we therefore take great pride in the quality of our cell set. 
-      <br><br><br>
+    <p class=text-body-1>Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and the genomic diversity of existing two dimensional cell line models. We have a large number of pediatric cancer cell lines as well as over 100 hematopoietic cell lines. Our cell lines are our most important asset and we therefore take great pride in the quality of our cell set. 
+      <br><br>
       </p>
       <v-row>
         <v-col cols="6" xs="6" sm="6" md="5" lg="3" xl="3"  v-for="(card, index) in cards" :key="index">
@@ -14,7 +13,6 @@
           </v-card>
         </v-col>  
       </v-row>
-    </section>
   </container-sm>
 
   <page-gradient class="gradient-primary section-margin-default mt-0">
@@ -23,10 +21,13 @@
         <v-col>
           <v-card class="pa-2 fill-height" style="background: none;" elevation="0" >
             <v-card-item>
-                <v-list dense style="background-color: transparent;">
-                  <h4>All of our cell lines are: </h4>
+                <v-list style="background-color: transparent;">
+                  <v-list-subheader class="text-h4">All of our cell lines are:</v-list-subheader>
                   <v-list-item v-for="item in checklist" :key="checklist">
-                    <v-list-item-title><v-icon class="mr-4 text-success-accent-4"> mdi-check-circle</v-icon>{{ item }}</v-list-item-title>
+                    <template v-slot:prepend>
+                      <v-icon class="text-success-accent-4"> mdi-check-circle</v-icon>
+                    </template>
+                    <v-list-item-title>{{ item }}</v-list-item-title>
                   </v-list-item>
                 </v-list>
             </v-card-item>
@@ -40,27 +41,25 @@
     <container-sm>
       <v-row>
         <v-col>
-          <h3>Cell sets in PRISM screens</h3>
+          <h2 class="text-h3">Cell sets in PRISM screens</h2>
           <p class="text-body-1">
-            The PR1000 cell set contains the full collection of PRISM cell lines and is screened for all standard PRISM experiments. <br><br>
-            This PR1000 collection is divided into two cell sets:
+            The PR1000 cell set contains the full collection of PRISM cell lines and is screened for all standard PRISM experiments. 
+          This PR1000 collection is divided into two cell sets:
           </p>
-          <v-card class="pa-2" elevation="0" >
-            <v-card-item>
-
-          <v-list>
-            <v-list-item>
-                <v-list-item-title><v-icon style="font-size: 0.6em;" class="mr-4 text-black">mdi-circle</v-icon><span class="font-weight-bold"> PR500:</span> 488 solid tumor adherent cell lines</v-list-item-title>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-title><v-icon style="font-size: 0.6em;" class="mr-4 text-black">mdi-circle</v-icon><span class="font-weight-bold"> PR300+:</span>  431 hematopoietic, solid tumor, and pediatric cell lines</v-list-item-title>
-              </v-list-item>
-          </v-list>
-            </v-card-item>
-          </v-card>
-
+              <v-list class="mb-6" lines="auto">
+                <v-list-item
+                title="PR500"
+                subtitle="488 solid tumor adherent cell lines"
+                >
+                </v-list-item>
+                <v-list-item
+                  title="PR300+"  
+                  subtitle="431 hematopoietic, solid tumor, and pediatric cell lines"
+                >
+                </v-list-item>
+            </v-list>
           <p class="text-body-1">
-            See a full annotated list of our <a href="" target="_blank">PRISM barcoded cell lines</a>.
+            See a full annotated list of our <a class="text-button" href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx" target="_blank">PRISM barcoded cell lines <v-icon>mdi-download</v-icon></a>.
           </p>
         </v-col>
       </v-row>
