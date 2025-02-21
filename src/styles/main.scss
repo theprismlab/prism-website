@@ -2,7 +2,6 @@
 h1{
     font-size: var(--h1-size);
     line-height: var(--h1-line-height);
-
 }
 h2 {
     font-size: var(--h2-size);
@@ -27,26 +26,20 @@ h6{
 p {
     font-size: var(--body-1-size);
     line-height: var(--body-1-line-height);
+    margin-top: 12px;
+    margin-bottom: 24px;
 }
-// .heading-style-h3 {
-//     letter-spacing: -.105rem !important;
-//     font-size: 3rem !important;
-//     line-height: 3.5rem !important;
-// }
-// .heading-style-h5 {
-//     letter-spacing: -.05625rem !important;
-//     font-size: 1.875rem !important;
-//     line-height: 2.375rem !important;
-// }
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    margin-top: 96px;
+}
+
 .text-color-gray600 {
     color: var(--base-color-gray--600) !important;
 }
 
-
-// .p-size-xl {
-//     letter-spacing: -.00625rem !important;
-//     font-size: 1.25rem !important;
-// }
 
 
 // new classes for easier text size changes
@@ -136,13 +129,13 @@ a.text-button{
 
 // sm
 @media (min-width: 600px) and (max-width: 960px) {
-    // .v-container{
-    //     max-width: 92% !important;
-    // }
+    .v-container{
+        max-width: 92% !important;
+    }
 }
 // xs
 @media (max-width: 600px) {
-    // .v-container{
-    //     max-width: 92% !important;
-    // }
+    .v-container{
+        max-width: 96% !important;
+    }
 }

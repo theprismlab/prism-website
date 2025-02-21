@@ -1,21 +1,21 @@
 <template>
 <page class="mt-0">
-  <page-gradient background="gradient-Blues" >
+  <page-gradient background="gradient-primary-lighten-1" >
     <v-parallax :src="`${imgPath}PRISM-website-graphics_hero-01.png`" :height="heroHeight">
-      <container-md class="fill-height">
+      <v-container class="fill-height">
         <v-row>
           <v-col cols="12" xs="12" sm="10" md="6" lg="6" xl="5" class="d-flex justify-center flex-column">
             <h1 class="text-h1 mb-12 font-weight-bold">Revolutionize cancer drug discovery</h1>
             <p class="text-h4">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
           </v-col>
         </v-row>
-      </container-md>
+      </v-container>
     </v-parallax>
   </page-gradient>
 
   <section class="section-padding-default">
-    <container-md>
-      <v-row>
+    <v-container>
+      <v-row class="d-flex justify-center">
         <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
           <h3 class="heading-style-h5 title">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. 
           </h3>
@@ -33,23 +33,23 @@
           </v-card>
         </v-col>
       </v-row>
-    </container-md>
+    </v-container>
   </section>
 
-  <page-gradient class="section-padding-default" background="solid-gray">
-    <container-md>
+  <page-gradient class="section-padding-default" background="gradient-primary">
+    <v-container>
       <v-row>
-        <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
+        <v-col cols="12" xs="12" sm="12" md="5" lg="6" xl="6">
             <h3 class="title heading-style-h5">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</h3>
         </v-col>
-        <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
+        <v-col>
+        <!-- <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6"> -->
           <v-row>
             <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
-              <v-card elevation="1" class="fill-height px-4 py-3">
-                <v-card-text>
+              <v-card elevation="1" class="fill-height pa-2">
+                <v-card-text class="text-body-1">
                   “I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.”
-                  <br><br>
-                  <v-divider></v-divider>
+       
                 </v-card-text>
                 <v-card-item>
                   <v-card-subtitle>
@@ -61,12 +61,11 @@
               </v-card>
             </v-col>
             <v-col>
-              <v-card elevation="1" class="fill-height py-3 px-4">
-                <v-card-text>
+              <v-card elevation="1" class="fill-height pa-2">
+                <v-card-text class="text-body-1">
                   “The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our
                   research process.”
-                  <br><br>
-                  <v-divider></v-divider>
+            
                 </v-card-text>
                 <v-card-item>
                   <v-card-subtitle>
@@ -80,18 +79,17 @@
           </v-row>
         </v-col>
       </v-row>
-    </container-md>     
+    </v-container>     
   </page-gradient>
 
   <page-gradient background="gradient-secondary-darken-1">
-    <container-md>
+    <container-sm>
       <PageBannerShort title="Collaborate with us!" buttonText="Learn more" buttonLink="" textColor="white"></PageBannerShort>
-    </container-md>
- 
+    </container-sm>
   </page-gradient>
 
   <section class="section-padding-default">
-    <container-md>
+    <v-container>
       <h3 class="title heading-style-h5">Dedicated to advancing oncology research.</h3>
       <v-row>
         <v-col v-for="stat in stats" :key="stat.number" cols="12" xs="12" sm="12" md="4" lg="4" xl="4">
@@ -101,7 +99,7 @@
           </v-card>
         </v-col>
       </v-row>
-    </container-md>
+    </v-container>
   </section>
 
 </page>
