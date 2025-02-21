@@ -21,10 +21,13 @@
         <v-col>
           <v-card class="pa-2 fill-height" style="background: none;" elevation="0" >
             <v-card-item>
-                <v-list dense style="background-color: transparent;">
-                  <h4>All of our cell lines are: </h4>
+                <v-list style="background-color: transparent;">
+                  <v-list-subheader class="text-h4">All of our cell lines are:</v-list-subheader>
                   <v-list-item v-for="item in checklist" :key="checklist">
-                    <v-list-item-title><v-icon class="mr-4 text-success-accent-4"> mdi-check-circle</v-icon>{{ item }}</v-list-item-title>
+                    <template v-slot:prepend>
+                      <v-icon class="text-success-accent-4"> mdi-check-circle</v-icon>
+                    </template>
+                    <v-list-item-title>{{ item }}</v-list-item-title>
                   </v-list-item>
                 </v-list>
             </v-card-item>
@@ -38,25 +41,23 @@
     <container-sm>
       <v-row>
         <v-col>
-          <h3>Cell sets in PRISM screens</h3>
+          <h2 class="text-h3">Cell sets in PRISM screens</h2>
           <p class="text-body-1">
-            The PR1000 cell set contains the full collection of PRISM cell lines and is screened for all standard PRISM experiments. <br><br>
-            This PR1000 collection is divided into two cell sets:
+            The PR1000 cell set contains the full collection of PRISM cell lines and is screened for all standard PRISM experiments. 
+          This PR1000 collection is divided into two cell sets:
           </p>
-          <v-card class="pa-2" elevation="0" >
-            <v-card-item>
-
-          <v-list>
-            <v-list-item>
-                <v-list-item-title><v-icon style="font-size: 0.6em;" class="mr-4 text-black">mdi-circle</v-icon><span class="font-weight-bold"> PR500:</span> 488 solid tumor adherent cell lines</v-list-item-title>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-title><v-icon style="font-size: 0.6em;" class="mr-4 text-black">mdi-circle</v-icon><span class="font-weight-bold"> PR300+:</span>  431 hematopoietic, solid tumor, and pediatric cell lines</v-list-item-title>
-              </v-list-item>
-          </v-list>
-            </v-card-item>
-          </v-card>
-
+              <v-list class="mb-6" lines="auto">
+                <v-list-item
+                title="PR500"
+                subtitle="488 solid tumor adherent cell lines"
+                >
+                </v-list-item>
+                <v-list-item
+                  title="PR300+"  
+                  subtitle="431 hematopoietic, solid tumor, and pediatric cell lines"
+                >
+                </v-list-item>
+            </v-list>
           <p class="text-body-1">
             See a full annotated list of our <a class="text-button" href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx" target="_blank">PRISM barcoded cell lines <v-icon>mdi-download</v-icon></a>.
           </p>

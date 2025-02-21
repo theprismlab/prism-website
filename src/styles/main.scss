@@ -6,10 +6,12 @@ h1{
 h2 {
     font-size: var(--h2-size);
     line-height: var(--h2-line-height);
+
 }
 h3 {
     font-size: var(--h3-size);;
     line-height: var(--h3-line-height);
+
 }
 h4{
     font-size: var(--h4-size);
@@ -26,8 +28,22 @@ h6{
 p {
     font-size: var(--body-1-size);
     line-height: var(--body-1-line-height);
-    margin-top: 12px;
-    margin-bottom: 24px;
+    margin: 12px 0 24px 0;
+}
+.header-h1{
+    margin: 32px 0 24px 0;
+}
+.header-h2{
+    margin: 24px 0 12px 0;
+}
+.header-h3{
+    margin: 24px 0 12px 0;
+}
+.header-h4{
+    margin: 24px 0 12px 0;
+}
+.header-h5, .header-h6{
+    margin: 24px 0 12px 0;
 }
 .content {
     display: flex;
@@ -106,6 +122,10 @@ a:hover{
 }
 a.text-button{
     text-decoration: none;
+}
+
+.text-body-1 > a.text-button{
+    line-height: var(--body-1-line-height) !important;
 }
 
 // xxl 
