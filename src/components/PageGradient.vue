@@ -5,13 +5,15 @@
 </template>
 
 <script>
+
+
 export default {
     name: 'PageGradient',
     props: {
     background: {
       type: String,
       required: false
-    }
+    },
 },
     data () {
     return {
@@ -29,10 +31,18 @@ export default {
 
 
 
-
+.solid-primary-darken-3{
+  background-color: var(--v-primary-darken-3);
+  color: white !important;
+}
+.solid-primary-darken-4{
+  background-color: var(--v-primary-darken-4);
+  color: white !important;
+}
 /* https://csshero.org/mesher/ */
 .solid-gray{
   background-color: #f5f5f5;
+
 }
 
 .gradient-PuBu{
@@ -114,6 +124,14 @@ export default {
   #ffffff 50%,
   #ffffff 90%,
   var(--v-primary-lighten-5) 100%
+  );
+}
+
+.gradient-primary-darken{
+color: white;
+  background-image: linear-gradient(133deg, 
+  var(--v-primary-darken-4) 0%,
+  var(--v-primary-darken-3) 100%
   );
 }
 
