@@ -1,6 +1,9 @@
 <template>
-  <a class="text-button text-primary-accent-2" :href="href" :target="target">
-    {{ text }} <v-icon class="ml-1" style="font-size: 1em;">mdi-open-in-new</v-icon>
+  <a :class="`text-button ${classes}`" 
+    :href="href" 
+    :target="target">
+    {{ text }}
+     <v-icon style="font-size: 1em;">mdi-open-in-new</v-icon>
   </a>
   </template>
   
@@ -23,10 +26,10 @@ import { text } from 'd3';
             type: String,
             required: true
         },
-        textClass: {
+        classes: {
             type: String,
             required: false,
-            default: "body-1"
+            default: "text-primary-accent-2"
         }
       },
       data () {
@@ -43,9 +46,10 @@ import { text } from 'd3';
   </script>
   <style scoped>
 
-    /* a.text-button{
-        line-height: var(--body-1-line-height);
-    } */
+    a.text-button {
+      font-size: inherit !important;
+      letter-spacing: inherit !important;
+    }
 
          /* xxl  */
         @media (min-width:  2560px) {
