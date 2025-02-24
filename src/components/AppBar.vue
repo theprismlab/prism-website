@@ -42,8 +42,8 @@
             <v-list-item id="cell-line-collection" to="/screening/cell-line-collection">
               <v-list-item-title>Cell line collection</v-list-item-title>
             </v-list-item>
-            <v-list-item id="screens" to="/screening/screens">
-              <v-list-item-title>Screens</v-list-item-title>
+            <v-list-item id="screens" to="/screening/assay">
+              <v-list-item-title>Assay</v-list-item-title>
             </v-list-item>
             <v-list-item id="data" to="/screening/data">
               <v-list-item-title>Data</v-list-item-title>

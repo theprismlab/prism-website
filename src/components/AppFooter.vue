@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="mt-12 py-4" style="background-color: var(--v-primary-darken-2)">
+  <v-footer class="py-4" style="background-color: var(--v-primary-darken-2)">
     <container-md>
       <v-row class="justify-space-between align-center">
         <!-- <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6" align-self="center">
