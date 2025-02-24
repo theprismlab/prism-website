@@ -22,19 +22,30 @@
           <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our technology</h1>
           <h2 class="text-h2 font-weight-medium">PRISM is a novel DNA barcoding technology</h2>
           <p class="text-body-1">PRISM barcoding technology enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines.</p>
+          <p class="text-body-1">Large-scale cancer cell line screening is critical to oncology drug discovery and development to better understand how drugs work. Traditional phenotypic screening tests only one cell line at a time using a lot of resources and taking a lot of time. Generating data for a small subset of cell lines results in an incomplete understanding of your drug.
+          <br><br>
+          Using PRISM, we accelerate the screening process by employing a novel DNA barcode-based approach that enables simultaneous high-throughput viability analysis of over 900 cell lines from over 45 cancer subtypes. Our extensive cell line collection captures the diversity of human cancers to provide a comprehensive evaluation of oncology drug candidates.
+          </p>
         </v-col>
       </v-row>
 
       <v-row class="d-flex justify-center">
         <v-col v-for="card in cards" cols="10" xs="10" sm="6" md="3" lg="3" xl="3">
-          <v-card class="fill-height" elevation="1" style="border-radius: 0px;">
+          <VerticalCard
+            :title="card.title"
+            :subtitle="card.subtitle"
+            :image="`${imgPath}${card.image}`"
+            :action="card.action"
+          >
+          </VerticalCard>
+          <!-- <v-card class="fill-height" elevation="1" style="border-radius: 0px;">
             <v-img  class="align-end"  width="100%" alt="" :src="`${imgPath}${card.img}`"></v-img>
-            <v-card-title style="min-height:5rem;" class="font-weight-black">{{ card.title }}</v-card-title>
+            <h3 style="min-height:5rem; line-height:1.33em;" class="v-card-title text-h5 font-weight-black">{{ card.title }}</h3>
             <v-card-subtitle>{{ card.text }}</v-card-subtitle>
             <v-card-actions>
               <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
             </v-card-actions>
-          </v-card>
+          </v-card> -->
         </v-col>
       </v-row>
     </v-container>
@@ -132,32 +143,40 @@
         ],
         cards: [
           {
-            title: 'Complete genomic and functional characterization of cell lines',
-            text: 'Over 150k genomic features and dependencies for hematopoietic and solid tumor cell lines covering 80 subtypes.',
-            img: '2025 PRISM-website-graphics-about-01.png',
-            linkText: 'Learn more',
-            linkUrl: '/screening/cell-line-collection'
+            title: 'Genomic and functional characterization',
+            subtitle: 'Over 150k genomic features and dependencies for hematopoietic and solid tumor cell lines covering 80 subtypes.',
+            image: '2025 PRISM-website-graphics-about-01.png',
+            action: {
+              text: 'Learn more',
+              url: '/screening/cell-line-collection'
+            }
           },
           {
             title: 'Multiple screening offerings',
-            text: 'Small molecules, combinations, antibody-drug conjugates, antibodies, and cytokines at multiple time points.',
-            img: '2025 PRISM-website-graphics-about-02.png',
-            linkText: 'Learn more',
-            linkUrl: '/screening/screens'
+            subtitle: 'Small molecules, combinations, antibody-drug conjugates, antibodies, and cytokines at multiple time points.',
+            image: '2025 PRISM-website-graphics-about-02.png',
+            action: {
+              text: 'Learn more',
+              url: '/screening/assays'
+            }
           },
           {
             title: 'Predictive modeling to identify patient population and targets',
-            text: 'Univariate and multivariate predictive models to compare the viability profile of your drug.',
-            img: '2025 PRISM-website-graphics-about-03.png',
-            linkText: 'Learn more',
-            linkUrl: '/screening/data'
+            subtitle: 'Univariate and multivariate predictive models to compare the viability profile of your drug.',
+            image: '2025 PRISM-website-graphics-about-03.png',
+            action: {
+              text: 'Learn more',
+              url: '/screening/data'
+            }
           },
           {
             title: 'Secure data portal',
-            text: 'Securely browse and discover insights from your screening results with interactive visualizations.',
-            img: '2025 PRISM-website-graphics-about-04.png',
-            linkText: 'Learn more',
-            linkUrl: '/portal'
+            subtitle: 'Securely browse and discover insights from your screening results with interactive visualizations.',
+            image: `2025 PRISM-website-graphics-about-04.png`,
+            action: {
+              text: 'Learn more',
+              url: 'theprismlab.org/portal'
+            }
           },
         ]
       }
@@ -176,9 +195,7 @@
       mobile () {
         return this.$vuetify.display.mobile
       },
-      heroHeight () {
-        return this.mobile ? '80vh' : '75vh'
-      },
+
 
 
     },

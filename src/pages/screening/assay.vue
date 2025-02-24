@@ -1,5 +1,5 @@
 <template>
-<page id="screening-assay" class="">
+<page id="screening-assay" class="mb-0">
   <container-sm>
       <page-title>Assay</page-title>
         <p>
@@ -168,15 +168,23 @@
             </v-col>
           </v-row>
         </section>
-        <v-row>
+        <!-- <v-row>
           <v-col cols="12" md="10">
-            <page-gradient class="pa-16 pb-8  mt-16" style="border-radius:10px;" background="gradient-primary-darken">
+            <page-gradient class="pa-16 pb-8  mt-16" style="border-radius:10px;" background="gradient-stolen">
                 <h2 class="text-h3 font-weight-bold">Interested in submitting?</h2>
                 <p class="text-h4">Checkout our <open-in-new-link href="https://theprismlab.org/portal/submissions" target="_blank" text="submissions page" classes="text-primary-lighten-4"/></p>
             </page-gradient>
           </v-col>
-        </v-row>
+        </v-row> -->
       </container-sm>
+      <section>
+        <page-gradient class="pa-16 pb-8  mt-16" background="gradient-stolen">
+          <container-sm>
+            <h2 class="text-h3 font-weight-bold text-white">Interested in submitting?</h2>
+            <p class="text-h4  text-white">Checkout our <open-in-new-link href="https://theprismlab.org/portal/submissions" target="_blank" text="submissions page" classes="text-primary-lighten-2"/></p>
+          </container-sm>                 
+        </page-gradient>
+    </section>
 </page>
 </template>
   

@@ -61,6 +61,9 @@
             <v-list-item id="data" to="/screening/data">
               <v-list-item-title>Data</v-list-item-title>
             </v-list-item>
+            <v-list-item id="collaborate" to="/screening/collaborate">
+              <v-list-item-title>Collaborate</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </v-tab>
