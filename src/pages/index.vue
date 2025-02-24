@@ -82,10 +82,13 @@
     </v-container>     
   </page-gradient>
 
-  <page-gradient background="gradient-secondary-darken-1">
-    <container-sm>
-      <PageBannerShort title="Collaborate with us!" buttonText="Learn more" buttonLink="" textColor="white"></PageBannerShort>
-    </container-sm>
+  <page-gradient background="gradient-stolen">
+    <container-md>
+      <div class="d-flex flex-row">
+        <h3 class="text-h4 mr-6">Interested in collaborating?</h3>
+        <v-btn class="" to="/screening/collaborate">Learn more</v-btn>
+      </div>
+    </container-md>
   </page-gradient>
 
   <section class="section-padding-default">

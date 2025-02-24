@@ -30,7 +30,7 @@ export default {
 <style>
 
 .gradient-stolen{
-  /* color: white; */
+  color: white;
   background: linear-gradient(34deg, #131219, #212329 40%, #545e7c);
 }
 

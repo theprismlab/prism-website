@@ -7,7 +7,7 @@
       <v-container class="fill-height">
       <v-row>
         <v-col cols="12" xs="12" sm="10" md="6" lg="6" xl="5" class="d-flex justify-center flex-column">
-          <h1 class="text-h1 mb-12 font-weight-medium">Revolutionize cancer drug discovery</h1>
+          <page-title>Revolutionize cancer drug discovery</page-title>
           <p class="text-h4  font-weight-medium">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
         </v-col>
       </v-row>
@@ -20,7 +20,7 @@
       <v-row class="mt-0 mb-8">
         <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
           <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our technology</h1>
-          <h2 class="text-h2 font-weight-medium">PRISM is a novel DNA barcoding technology</h2>
+          <section-title>PRISM is a novel DNA barcoding technology</section-title>
           <p class="text-body-1">PRISM barcoding technology enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines.</p>
           <p class="text-body-1">Large-scale cancer cell line screening is critical to oncology drug discovery and development to better understand how drugs work. Traditional phenotypic screening tests only one cell line at a time using a lot of resources and taking a lot of time. Generating data for a small subset of cell lines results in an incomplete understanding of your drug.
           <br><br>
@@ -38,14 +38,6 @@
             :action="card.action"
           >
           </VerticalCard>
-          <!-- <v-card class="fill-height" elevation="1" style="border-radius: 0px;">
-            <v-img  class="align-end"  width="100%" alt="" :src="`${imgPath}${card.img}`"></v-img>
-            <h3 style="min-height:5rem; line-height:1.33em;" class="v-card-title text-h5 font-weight-black">{{ card.title }}</h3>
-            <v-card-subtitle>{{ card.text }}</v-card-subtitle>
-            <v-card-actions>
-              <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
-            </v-card-actions>
-          </v-card> -->
         </v-col>
       </v-row>
     </v-container>
@@ -56,13 +48,13 @@
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
           <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our Collaborators</h1>
-          <h2 class="text-h2">Over 150 leading academic and industry partners</h2>
+          <section-title>Over 150 leading academic and industry partners</section-title>
           <p>We are excited to collaborate with you to advance the understanding of cancer therapeutics and accelerate the drug discovery process. Our working model is that of a scientific collaboration to further cancer research.
           </p>
         </v-col>
         <v-col>
           <v-row>
-              <v-col cols="12" md="8">
+              <v-col cols="12" md="10" lg="12" xl="12">
                 <v-list style="background: transparent; "lines="auto">
                   <v-list-item>
                     <v-list-item-title class="font-weight-medium">
@@ -80,31 +72,36 @@
                       "The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our research process."
                     </v-list-item-title>
                     <v-list-item-subtitle class="pt-2 text-black text-opacity-1">
-                    <!-- <v-list-item-subtitle class="pt-2 font-weight-bold text-grey-darken-1"> -->
                       Discovery Oncology Scientist<br>
                       Fortune 500<br>
                       Pharmaceutical Company
                     </v-list-item-subtitle>
                   </v-list-item>
                 </v-list>
-              
             </v-col>
-           
           </v-row>
         </v-col>
       </v-row>
     </v-container>     
   </page-gradient>
 
-  <page-gradient background="gradient-secondary-darken-1">
-    <container-sm>
-      <PageBannerShort title="Collaborate with us!" buttonText="Learn more" buttonLink="" textColor="white"></PageBannerShort>
-    </container-sm>
+  <page-gradient background="gradient-stolen">
+    <v-container>
+      <div class="d-flex flex-row">
+        <h3 class="text-h4 mr-6">Interested in collaborating?</h3>
+        <v-btn class="" to="/screening/collaborate">Learn more</v-btn>
+      </div>
+    </v-container>
   </page-gradient>
 
   <section class="section-padding-default">
     <v-container>
-      <h3 class="title heading-style-h5">Dedicated to advancing oncology research.</h3>
+      <v-row class="mt-0 mb-8">
+        <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
+          <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our impact</h1>
+          <section-title>Dedicated to advancing oncology research</section-title>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col v-for="stat in stats" :key="stat.number" cols="12" xs="12" sm="12" md="4" lg="4" xl="4">
           <v-card class="pa-4 pb-8 fill-height" max-width="600px" elevation="1">
@@ -124,10 +121,6 @@
       return {
         resizeCounter: 0,
         stats: [
-          // {
-          //   number: "7,000+",
-          //   caption: "Compounds screened in over 500 cell lines"
-          // },
           {
             number: "7,000+",
             caption: "Collaborator compounds screened"

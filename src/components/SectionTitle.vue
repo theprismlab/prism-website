@@ -1,10 +1,10 @@
 <template>
-  <h1 class="text-h1 font-weight-bold"><slot></slot></h1>
+  <h3 class="text-h2 font-weight-bold"><slot></slot></h3>
   </template>
   
   <script>
     export default {
-      name: 'PageTitle',
+      name: 'SectionTitle',
       props: {
      
       },
@@ -21,8 +21,8 @@
     }
   </script>
   <style scoped>
-    h1{
-      margin-bottom: 48px;
+    h2{
+      margin-bottom: 36px;
     }
       /* xxl  */
     @media (min-width:  2560px) {
