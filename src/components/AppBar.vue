@@ -12,11 +12,11 @@
         <v-menu activator="parent">
           <v-list>
             <v-list-item id="demos" to="/demos/home-01">
-              <v-list-item-title class="v-tab v-btn" >Home 01</v-list-item-title>
+              <v-list-item-title class="v-tab v-btn" >Home Page Version 2</v-list-item-title>
             </v-list-item>
-            <v-list-item id="demos" to="/demos/home-02">
+            <!-- <v-list-item id="demos" to="/demos/home-02">
               <v-list-item-title class="v-tab v-btn" >Home 02</v-list-item-title>
-            </v-list-item>
+            </v-list-item> -->
            
           
           </v-list>
