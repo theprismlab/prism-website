@@ -5,12 +5,15 @@
                 <v-img style="border-radius:10px;" max-width="250px" :src="image" cover></v-img>
             </v-col>
             <v-col>
-                <!-- <v-chip v-if="chip" class='mb-2 ml-2' :size="chip.size || 'default'" :color="chip.color || 'primary-accent-2'">{{ chip.text}}</v-chip> -->
-                <h3 v-if="suptitle" class="v-card-subtitle font-weight-bold text-overline" v-html="suptitle"></h3>
+                <!-- <h3 v-if="suptitle" class="v-card-subtitle font-weight-bold text-overline" v-html="suptitle"></h3> -->
+                <v-card-item v-if="suptitle" class="pt-0">
+                    <card-overline class="text-grey" v-html="suptitle"></card-overline>
+                </v-card-item>
+ 
                 <h2 v-if="title" :class="`v-card-title text-size-${titleSize}`" v-html="title"></h2>
                 <h3 v-if="subtitle" class="v-card-subtitle" v-html="subtitle"></h3>
                 <p v-if="text" :class="`v-card-text text-size-${textSize}`" v-html="text"></p>
-                <v-btn v-if="button" :color="button.color || 'primary-accent-2'" :variant="button.variant || 'outlined'" v-html="button.text" :href="button.url" target="_blank"></v-btn>
+                <v-btn v-if="button" :color="button.color || 'primary-accent-2'" :variant="button.variant || 'outlined'" v-html="button.text" :href="button.url" target="_blank" rounded></v-btn>
               
             </v-col>
         </v-row>
@@ -18,9 +21,9 @@
   </template>
 <script>
 
-
+import CardOverline from '@/components/CardOverline.vue'
 export default {
-    name: "Card",
+    name: "PublicationCard",
     props: {    
         size: {
             type: String,
@@ -38,10 +41,6 @@ export default {
         },
         image: {
             type: String,
-            required: false
-        },
-        chip: {
-            type: Object,
             required: false
         },
         subtitle: {
@@ -84,6 +83,9 @@ export default {
 }
 </script>
 <style scoped>
+.text-overline{
+    line-height: normal !important;
+}
 /* To do: remove this, make a class for specifying the type of link (ie: title link) */
 .v-card-title > * {
     text-decoration: none !important;

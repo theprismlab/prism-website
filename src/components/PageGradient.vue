@@ -29,7 +29,10 @@ export default {
 </script>
 <style>
 
-
+.gradient-stolen{
+  color: white;
+  background: linear-gradient(34deg, #131219, #212329 40%, #545e7c);
+}
 
 .solid-primary-darken-3{
   background-color: var(--v-primary-darken-3);

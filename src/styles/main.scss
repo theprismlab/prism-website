@@ -127,6 +127,15 @@ a.text-button{
 .text-body-1 > a.text-button{
     line-height: var(--body-1-line-height) !important;
 }
+// .rokkitt{
+//   font-family: "Rokkitt", serif;
+//   font-optical-sizing: auto;
+//   font-weight: 400;
+//   font-style: normal;
+// }
+p, h1, h2, h3, h4, h5, h6, ul, li{
+    max-width:800px;
+}
 
 // xxl 
 @media (min-width:  2560px) {

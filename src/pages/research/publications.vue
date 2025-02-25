@@ -3,18 +3,10 @@
     <container-sm>
       <page-title>Publications</page-title>
       <section class="section-margin-default">
-        <h2 class="mb-3 text-overline font-weight-black text-secondary">Featured</h2>
-        <v-row>
-          <v-col 
-            cols="12" 
-            xs=" 12"
-            sm="12"
-            md="12" 
-            lg="8"
-            xl="8"
-          >
-          <div v-for="each in data.filter((item) => item.rank == 1)">
-            <Card 
+        <section-overline> Featured</section-overline>
+        <v-row class="mt-1">
+          <v-col cols="12" xs=" 12" sm="12" md="12" lg="8" xl="8">
+            <PublicationCard v-for="each in data.filter((item) => item.rank == 1)"
               size="lg"
               classes="pb-4"
               :title="each.cardTitle" 
@@ -23,20 +15,11 @@
               :text="each.cardText" 
               :url="each.url" 
               :image="`${imgPath}${each.image}`">
-          </Card>
-          </div>
+            </PublicationCard>
           </v-col>
-        
-          <v-col 
-            cols="12" 
-            xs="12"
-            sm="9"
-            md="6" 
-            lg="4" 
-            xl="4" 
-            >
-            <div v-for="each in data.filter((item) => item.rank > 1 && item.rank <5)" class="py-1">
-              <Card 
+          <v-col cols="12" xs="12" sm="9" md="6" lg="4" xl="4">
+            <PublicationCard 
+               v-for="each in data.filter((item) => item.rank > 1 && item.rank <5)" class="py-1"
               size="sm"
               classes="pb-4"
               :title="each.cardTitle" 
@@ -45,15 +28,14 @@
               :text="each.cardText" 
               :url="each.url" 
               >
-            </Card>
+            </PublicationCard>
             <v-divider></v-divider>
-            </div>
           </v-col>
         </v-row>
       </section>
       <section  class="section-margin-default">
-        <h2 class="mb-4 text-overline font-weight-black text-secondary">Explore publications</h2>
-        <v-row>
+        <section-overline> Explore Publications</section-overline>
+        <v-row class="mt-1">
           <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
             <v-autocomplete
               v-model="filters.titles"
@@ -102,7 +84,7 @@
         <v-row>
           <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
             <div v-for="each in filteredData">
-              <Card 
+              <PublicationCard 
               size="sm"
               classes="py-4"
               :title="each.cardTitle" 
@@ -110,7 +92,7 @@
               :subtitle="each.cardSubtitle"
               :url="each.url" 
               >
-            </Card>
+            </PublicationCard>
               <v-divider></v-divider>
             </div>
             
@@ -123,7 +105,6 @@
   
   <script>
   import * as d3 from 'd3';
-  import Card from '@/components/Card.vue';
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL+"data/" : "../../public/data/";
   const dataFile = "Website Content - 2025  - Publications.csv";
 
@@ -168,7 +149,6 @@
                     url: d.Link,
                     abstract: d["Featured Abstract"],
                     rank: d["Featured Rank"],
-                    // image: `${d["Featured Rank"]}.webp`
                     image: `publication-thumbnail-${d["Featured Rank"]}.png`
                 }
             })
@@ -190,7 +170,7 @@
           });
         },
         createSuptitle(d){
-          return `${d.date} <span class='ml-2 text-primary-accent-3'>${d.publisher}</span>`;
+          return `${d.date} <span class='ml-2 text-primary-accent-1'>${d.publisher}</span>`;
         },
         createTitle(d){
           return `<a href='${d.url}' target='_blank' class="text-black">${d.title}</a>`

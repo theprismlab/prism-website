@@ -22,15 +22,14 @@
         </v-col>
       </v-row>
       <v-row class="d-flex justify-center">
-        <v-col v-for="card in cards" cols="10" xs="10" sm="6" md="3" lg="3" xl="3">
-          <v-card class="fill-height" elevation="1" style="border-radius: 0px;">
-            <v-img  class="align-end"  width="100%" alt="" :src="`${imgPath}${card.img}`"></v-img>
-            <v-card-title style="min-height:5rem;" class="font-weight-black">{{ card.title }}</v-card-title>
-            <v-card-subtitle>{{ card.text }}</v-card-subtitle>
-            <v-card-actions>
-              <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ card.linkText }}</v-btn>
-            </v-card-actions>
-          </v-card>
+        <v-col v-for="card in what_is_prism_cards" cols="10" xs="10" sm="6" md="3" lg="3" xl="3">
+          <VerticalCard
+            :title="card.title"
+            :subtitle="card.subtitle"
+            :image="`${imgPath}${card.image}`"
+            :action="card.action"
+          >
+          </VerticalCard>
         </v-col>
       </v-row>
     </v-container>
@@ -43,19 +42,20 @@
             <h3 class="title heading-style-h5">Over 150 leading academic and industry partners have trusted PRISM to transform their research.</h3>
         </v-col>
         <v-col>
-        <!-- <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6"> -->
           <v-row>
             <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6">
               <v-card elevation="1" class="fill-height pa-2">
                 <v-card-text class="text-body-1">
-                  “I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.”
-       
+                  <svg-icon type="mdi" :path="quoteOpenSvg" class="text-primary-lighten-3"></svg-icon>
+                {{  testimonial_cards[0].text }}
+                <svg-icon type="mdi" :path="quoteCloseSvg" class="text-primary-lighten-3"></svg-icon>
                 </v-card-text>
                 <v-card-item>
                   <v-card-subtitle>
-                    Florian Muller<br>
-                    Head of Chemistry<br>
-                    Lindonlight Collective
+
+                    {{  testimonial_cards[0].name }}<br>
+                    {{  testimonial_cards[0].title }}<br>
+                    {{  testimonial_cards[0].company }}
                   </v-card-subtitle>
                 </v-card-item>
               </v-card>
@@ -63,15 +63,15 @@
             <v-col>
               <v-card elevation="1" class="fill-height pa-2">
                 <v-card-text class="text-body-1">
-                  “The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our
-                  research process.”
-            
+                  <svg-icon type="mdi" :path="quoteOpenSvg" class="text-primary-lighten-3"></svg-icon>
+                  {{  testimonial_cards[1].text }}
+                  <svg-icon type="mdi" :path="quoteCloseSvg" class="text-primary-lighten-3"></svg-icon>
                 </v-card-text>
                 <v-card-item>
                   <v-card-subtitle>
-                  Discovery Oncology Scientist<br>
-                  Fortune 500<br>
-                  Pharmaceutical Company
+                    {{  testimonial_cards[1].name }}<br>
+                    {{  testimonial_cards[1].title }}<br>
+                    {{  testimonial_cards[1].company }}
                   </v-card-subtitle>
                 </v-card-item>
               </v-card>
@@ -82,20 +82,23 @@
     </v-container>     
   </page-gradient>
 
-  <page-gradient background="gradient-secondary-darken-1">
-    <container-sm>
-      <PageBannerShort title="Collaborate with us!" buttonText="Learn more" buttonLink="" textColor="white"></PageBannerShort>
-    </container-sm>
+  <page-gradient background="gradient-stolen">
+    <container-md>
+      <div class="d-flex flex-row">
+        <h3 class="text-h4 mr-6">Interested in collaborating?</h3>
+        <v-btn class="" to="/screening/collaborate">Learn more</v-btn>
+      </div>
+    </container-md>
   </page-gradient>
 
   <section class="section-padding-default">
     <v-container>
       <h3 class="title heading-style-h5">Dedicated to advancing oncology research.</h3>
       <v-row>
-        <v-col v-for="stat in stats" :key="stat.number" cols="12" xs="12" sm="12" md="4" lg="4" xl="4">
+        <v-col v-for="each in prism_impact_cards" :key="each.value" cols="12" xs="12" sm="12" md="4" lg="4" xl="4">
           <v-card class="pa-4 pb-8 fill-height" max-width="600px" elevation="1">
-            <v-card-title style="line-height: 1.2em !important;" class="pb-0 text-size-h2">{{stat.number}}</v-card-title>
-            <v-card-subtitle style="opacity: 1;" class="text-overline text-primary text-none font-weight-medium">{{stat.caption}}</v-card-subtitle>
+            <v-card-title style="line-height: 1.2em !important;" class="pb-0 text-size-h2">{{each.value}}</v-card-title>
+            <v-card-subtitle style="opacity: 1;" class="text-overline text-primary text-none font-weight-medium">{{each.caption}}</v-card-subtitle>
           </v-card>
         </v-col>
       </v-row>
@@ -105,96 +108,61 @@
 </page>
 </template>
 <script>
-  export default {
-    data() {
-      return {
-        stats: [
-          // {
-          //   number: "7,000+",
-          //   caption: "Compounds screened in over 500 cell lines"
-          // },
-          {
-            number: "7,000+",
-            caption: "Collaborator compounds screened"
-          },
-          {
-            number: "40+",
-            caption: "Publications in high-impact journals"
-          },
-          {
-            number: "150+",
-            caption: "Academic and industry partners"
-          }
-        ],
-        cards: [
-          {
-            title: 'Complete genomic and functional characterization of cell lines',
-            text: 'Over 150k genomic features and dependencies for hematopoietic and solid tumor cell lines covering 80 subtypes.',
-            img: '2025 PRISM-website-graphics-about-01.png',
-            linkText: 'Learn more',
-            linkUrl: '/screening/cell-line-collection'
-          },
-          {
-            title: 'Multiple screening offerings',
-            text: 'Small molecules, combinations, antibody-drug conjugates, antibodies, and cytokines at multiple time points.',
-            img: '2025 PRISM-website-graphics-about-02.png',
-            linkText: 'Learn more',
-            linkUrl: '/screening/screens'
-          },
-          {
-            title: 'Predictive modeling to identify patient population and targets',
-            text: 'Univariate and multivariate predictive models to compare the viability profile of your drug.',
-            img: '2025 PRISM-website-graphics-about-03.png',
-            linkText: 'Learn more',
-            linkUrl: '/screening/data'
-          },
-          {
-            title: 'Secure data portal',
-            text: 'Securely browse and discover insights from your screening results with interactive visualizations.',
-            img: '2025 PRISM-website-graphics-about-04.png',
-            linkText: 'Learn more',
-            linkUrl: '/portal'
-          },
-        ]
-      }
+import * as content from '@/utils/content.js'
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiFormatQuoteOpen } from '@mdi/js';
+import { mdiFormatQuoteClose } from '@mdi/js';
+
+export default {
+  components: {
+    SvgIcon
+  },
+  data() {
+    return {
+      quoteOpenSvg: mdiFormatQuoteOpen,
+      quoteCloseSvg: mdiFormatQuoteClose,
+      resizeCounter: 0,
+      prism_impact_cards: content.prism_impact_cards(),
+      what_is_prism_cards: content.what_is_prism_cards(), 
+      testimonial_cards: content.testimonial_cards(),
+    }
+  },
+  created() {
+    window.addEventListener("resize", this.debounce(this.onWindowResize));
+
+  },
+  destroyed() {
+      window.removeEventListener("resize", this.onWindowResize);
+  },
+  computed: {
+    imgPath() {
+        return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/home/" : "../../public/images/home/"
+      },
+    mobile () {
+      return this.$vuetify.display.mobile
     },
-    mounted() {
-   
-
-      },
-      beforeDestroy() {
-
-      },
-    computed: {
-      imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/home/" : "../../public/images/home/"
-        },
-      mobile () {
-        return this.$vuetify.display.mobile
-      },
-      heroHeight () {
+    heroHeight () {
         return this.mobile ? '80vh' : '75vh'
       },
-
-
+  },
+  methods: {
+    debounce(func){
+        var timer;
+        return function(event){
+          if(timer) clearTimeout(timer);
+          timer = setTimeout(func,100,event);
+        };
+      },
+    onWindowResize() {
+      this.resizeCounter++;
     },
-    methods: {
+  },
+  watch: {
 
-    },
-    watch: {
-
-    }
   }
+}
 </script>
 
 <style scoped lang="scss">
-// .tech-hero_text {
-//     grid-column-gap: 2rem;
-//     grid-row-gap: 2rem;
-//     flex-flow: column;
-//     justify-content: flex-start;
-//     align-items: flex-start;
-//     display: flex;
-// }
 
 </style>

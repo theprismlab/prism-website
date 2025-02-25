@@ -7,6 +7,23 @@
       </router-link>
     </v-toolbar-title>
     <v-tabs hide-slider>
+
+      <v-tab class="v-btn--size-large"> Demos <v-icon>mdi-menu-down</v-icon>
+        <v-menu activator="parent">
+          <v-list>
+            <v-list-item id="demos" to="/demos/home-01">
+              <v-list-item-title class="v-tab v-btn" >Home Page Version 2</v-list-item-title>
+            </v-list-item>
+            <!-- <v-list-item id="demos" to="/demos/home-02">
+              <v-list-item-title class="v-tab v-btn" >Home 02</v-list-item-title>
+            </v-list-item> -->
+           
+          
+          </v-list>
+        </v-menu>
+      </v-tab>
+
+
       <v-tab class="v-btn--size-large"> About us <v-icon>mdi-menu-down</v-icon>
         <v-menu activator="parent">
           <v-list>
@@ -47,6 +64,9 @@
             </v-list-item>
             <v-list-item id="data" to="/screening/data">
               <v-list-item-title>Data</v-list-item-title>
+            </v-list-item>
+            <v-list-item id="collaborate" to="/screening/collaborate">
+              <v-list-item-title>Collaborate</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
