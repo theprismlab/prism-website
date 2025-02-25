@@ -21,8 +21,8 @@
         <v-col>
           <v-card class="pa-2 fill-height" style="background: none;" elevation="0" >
             <v-card-item>
+              <h4 class="v-card-title text-h4">All of our cell lines are:</h4>
                 <v-list style="background-color: transparent;">
-                  <v-list-subheader class="text-h4">All of our cell lines are:</v-list-subheader>
                   <v-list-item v-for="item in checklist" :key="checklist">
                     <template v-slot:prepend>
                       <v-icon class="text-success-accent-4"> mdi-check-circle</v-icon>
@@ -59,7 +59,13 @@
                 </v-list-item>
             </v-list>
           <p class="text-body-1">
-            See a full annotated list of our <a class="text-button" href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx" target="_blank">PRISM barcoded cell lines <v-icon>mdi-download</v-icon></a>.
+            See a full annotated list of our 
+            <icon-link
+              icon="mdi-download"
+              href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx"
+              target="_blank"
+              text="PRISM barcoded cell lines"
+            />.
           </p>
         </v-col>
       </v-row>

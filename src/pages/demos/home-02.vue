@@ -19,16 +19,15 @@
     <v-container>
       <v-row class="mt-0 mb-8">
         <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
-          <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our technology</h1>
-          <section-title>Accelerate the screening process</section-title>
-          <p class="text-body-1">PRISM is a novel DNA barcoding technology that enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines.</p>
-          <p class="text-body-1">Large-scale cancer cell line screening is critical to oncology drug discovery and development to better understand how drugs work. Traditional phenotypic screening tests only one cell line at a time using a lot of resources and taking a lot of time. Generating data for a small subset of cell lines results in an incomplete understanding of your drug.
+          <section-overline>Our Technology</section-overline>
+          <section-title>PRISM is a novel DNA barcoding technology</section-title>
+          <p class="text-body-1">Large-scale cancer cell line screening is critical to oncology drug discovery and development to better understand how drugs work. Traditional phenotypic screening tests only one cell line at a time, using a lot of resources to generate data for a small subset of cell lines, resulting in an incomplete understanding of your drug.
           <br><br>
-          Using PRISM, we accelerate the screening process by employing a novel DNA barcode-based approach that enables simultaneous high-throughput viability analysis of over 900 cell lines from over 45 cancer subtypes. Our extensive cell line collection captures the diversity of human cancers to provide a comprehensive evaluation of oncology drug candidates.
+          PRISM barcoding technology enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. Our extensive cell line collection captures the diversity of human cancers to provide a comprehensive evaluation of oncology drug candidates.
           </p>
         </v-col>
       </v-row>
-
+    
       <v-row class="d-flex justify-center">
         <v-col v-for="card in what_is_prism_cards" cols="10" xs="10" sm="6" md="3" lg="3" xl="3">
           <VerticalCard
@@ -47,7 +46,7 @@
     <v-container>
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
-          <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our Collaborators</h1>
+          <section-overline>Our Collaborators</section-overline>
           <section-title>Over 150 leading academic and industry partners</section-title>
           <p>We are excited to collaborate with you to advance the understanding of cancer therapeutics and accelerate the drug discovery process. 
           </p>
@@ -90,7 +89,7 @@
     <v-container>
       <v-row class="mt-0 mb-8">
         <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
-          <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our impact</h1>
+          <section-overline>Our Impact</section-overline>
           <section-title>Dedicated to advancing oncology research</section-title>
         </v-col>
       </v-row>

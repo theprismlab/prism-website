@@ -5,12 +5,15 @@
       <section class="section-margin-default">
         <v-row>
           <v-col cols="12" v-for="(group) in data" :key="group.key" class="mb-8">
-            <h3 class="text-overline font-weight-bold text-secondary">{{group.key}}</h3>
+            <section-overline>{{group.key}}</section-overline>
             <div v-for="subgroup in group.values" :key="subgroup.key">
               <h4 class="mb-6">{{subgroup.key}}</h4>
               <div v-for="(value, index) in subgroup.values" :key="`${value.key}-${index}`" class="mb-4">
                 <v-divider v-if="index===0" class="mb-4"></v-divider>
-                  <a :href="value.url" target="_blank" class="text-button">{{value.title}} <v-icon style="font-size: 1em;">mdi-open-in-new</v-icon></a>
+                  <icon-link 
+                    :href="value.url"
+                    :text="value.title"
+                  />
                   <v-divider class="mt-4"></v-divider>
                 </div>
             </div>

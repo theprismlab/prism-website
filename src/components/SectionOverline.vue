@@ -1,12 +1,16 @@
 <template>
-  <h2 class="text-overline text-secondary-darken-2 font-weight-black"><slot></slot></h2>
+  <h3 :class="`text-overline text-${color} font-weight-black`"><slot></slot></h3>
 </template>
   
   <script>
     export default {
-      name: 'SectionTitle',
+      name: 'SectionOverline',
       props: {
-     
+        color: {
+          type: String,
+          required: false,
+          default: 'secondary-darken-2'
+        }
       },
       data () {
         return {
@@ -21,9 +25,7 @@
     }
   </script>
   <style scoped>
-  h2{
-    margin-bottom: 36px;
-  }
+
          /* xxl  */
         @media (min-width:  2560px) {
 

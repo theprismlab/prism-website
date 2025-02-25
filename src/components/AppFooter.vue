@@ -18,15 +18,27 @@
           </v-row>
         </v-col> -->
         <v-col cols="12" xs="12" sm="12" md="7" lg="7" xl="6">
-          <h4 class="text-white text-overline font-weight-bold">Connect</h4>
+          <section-overline color="white">Connect</section-overline>
           <v-row class="justify-start align-top pb-4">
             <v-col cols="6" xs="12" sm="auto" md="4" lg="4" xl="4">
-              <a style="line-height: 2rem" href="https://www.linkedin.com/company/prism-cancer-cell-line-screening/posts/?feedView=all" target="_blank">LinkedIn <v-icon style="font-size:1em;">mdi-open-in-new</v-icon></a>
+              <icon-link
+                href="https://www.linkedin.com/company/prism-cancer-cell-line-screening/posts/?feedView=all"
+                text="LinkedIn"
+                color="white"
+              />
+
               <br>
-              <a style="line-height: 2rem" href="https://www.broadinstitute.org/" target="_blank">Broad Institute <v-icon style="font-size:1em;">mdi-open-in-new</v-icon></a>
+              <icon-link
+                href="https://www.broadinstitute.org/"
+                text="Broad Institute"
+                color="white"
+              />
               <br>
-              <a style="line-height: 2rem" href="https://depmap.org/portal/" target="_blank">Depmap Portal <v-icon style="font-size:1em;">mdi-open-in-new</v-icon></a>
-            
+              <icon-link
+                href="https://depmap.org/portal/"
+                text="Depmap Portal"
+                color="white"
+              />
             </v-col>
             <v-col cols="6" xs="12" sm="6" md="6" lg="4" xl="4">      
               <v-btn to="/contact-us" rounded size="small" class="text-primary mt-2" variant="flat">Contact us</v-btn>
@@ -49,6 +61,8 @@
 </template>
 
 <script setup>
+import { link } from 'd3';
+
  
 </script>
 
