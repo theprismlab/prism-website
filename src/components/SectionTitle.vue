@@ -21,8 +21,9 @@
     }
   </script>
   <style scoped>
-    h2{
+    h3{
       margin-bottom: 36px;
+      line-height: 1.175em !important;
     }
       /* xxl  */
     @media (min-width:  2560px) {

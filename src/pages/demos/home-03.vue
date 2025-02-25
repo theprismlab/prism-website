@@ -18,13 +18,16 @@
   <section>
     <v-container>
       <v-row class="mt-0 mb-8">
-        <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
+        <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
           <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our technology</h1>
           <section-title>PRISM is a novel DNA barcoding technology</section-title>
-          <p class="text-body-1">PRISM barcoding technology enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines.</p>
+          <p class="text-body-1">Large-scale cancer cell line screening is critical to oncology drug discovery and development to better understand how drugs work. Traditional phenotypic screening tests only one cell line at a time, using a lot of resources to generate data for a small subset of cell lines, resulting in an incomplete understanding of your drug.
+          <br><br>
+          PRISM barcoding technology enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines. Our extensive cell line collection captures the diversity of human cancers to provide a comprehensive evaluation of oncology drug candidates.
+          </p>
         </v-col>
       </v-row>
-
+    
       <v-row class="d-flex justify-center">
         <v-col v-for="card in what_is_prism_cards" cols="10" xs="10" sm="6" md="3" lg="3" xl="3">
           <VerticalCard
@@ -85,7 +88,7 @@
   <section class="section-padding-default">
     <v-container>
       <v-row class="mt-0 mb-8">
-        <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
+        <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
           <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our impact</h1>
           <section-title>Dedicated to advancing oncology research</section-title>
         </v-col>
@@ -109,7 +112,6 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiFormatQuoteOpen } from '@mdi/js';
 import { mdiFormatQuoteClose } from '@mdi/js';
 
-
 export default {
   components: {
     SvgIcon
@@ -121,7 +123,7 @@ export default {
       resizeCounter: 0,
       prism_impact_cards: content.prism_impact_cards(),
       what_is_prism_cards: content.what_is_prism_cards(), 
-      testimonial_cards: content.testimonial_cards()
+      testimonial_cards: content.testimonial_cards(),
     }
   },
   created() {
@@ -165,15 +167,5 @@ export default {
     justify-content: flex-start;
     align-items: flex-start;
     display: flex;
-}
-.testimonial-heading {
-    flex-direction: row;
-    align-items: center;
-    display: flex;
-}
-.testimonial-heading > img {
-    max-width: 100%;
-    vertical-align: middle;
-    display: inline-block;
 }
 </style>
