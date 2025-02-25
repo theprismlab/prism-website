@@ -33,7 +33,7 @@
       margin-left: auto !important;
       margin-right: auto !important;
     }
-  
+
       /* xxl  */
     @media (min-width:  2560px) {
 

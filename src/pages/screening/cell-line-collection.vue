@@ -2,9 +2,10 @@
 <page>
   <container-sm>
     <page-title>Cell line collection</page-title>
-    <p class=text-body-1>Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and the genomic diversity of existing two dimensional cell line models. We have a large number of pediatric cancer cell lines as well as over 100 hematopoietic cell lines. Our cell lines are our most important asset and we therefore take great pride in the quality of our cell set. 
+      <p class=text-body-1>Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and the genomic diversity of existing two dimensional cell line models. We have a large number of pediatric cancer cell lines as well as over 100 hematopoietic cell lines. Our cell lines are our most important asset and we therefore take great pride in the quality of our cell set. 
       <br><br>
       </p>
+
       <v-row>
         <v-col cols="6" xs="6" sm="6" md="5" lg="3" xl="3"  v-for="(card, index) in cards" :key="index">
           <v-card class="pa-2 pb-5 fill-height" elevation="1">
@@ -13,6 +14,7 @@
           </v-card>
         </v-col>  
       </v-row>
+      
   </container-sm>
 
   <page-gradient class="gradient-primary section-margin-default mt-0">

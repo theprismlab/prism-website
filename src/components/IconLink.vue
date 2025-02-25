@@ -13,7 +13,7 @@
   </template>
   
   <script>
-import { color } from 'd3';
+
 
 // import SvgIcon from '@jamescoyle/vue-icon';
 // import { mdiOpenInNew } from '@mdi/js';
@@ -86,6 +86,9 @@ import { color } from 'd3';
 
     a.text-button{
       line-height: inherit !important;
+    }
+    a.text-button:hover{
+      cursor: pointer;
     }
     .text-h4 a.text-button{
       font-size: inherit !important;
