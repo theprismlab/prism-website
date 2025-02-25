@@ -1,14 +1,15 @@
 <template>
-  <v-container>
-      <slot></slot>
-  </v-container>
-  </template>
+  <h3 :class= "`text-overline text-grey-lighten-1 font-weight-black ${classes}`"><slot></slot></h3>
+</template>
   
   <script>
     export default {
-      name: 'Container',
+      name: 'CardOverline',
       props: {
-     
+        classes: {
+            type: String,
+            required: false
+        }
       },
       data () {
         return {
@@ -23,6 +24,7 @@
     }
   </script>
   <style scoped>
+
          /* xxl  */
         @media (min-width:  2560px) {
 
@@ -37,22 +39,16 @@
         }
          /* md */
         @media (min-width: 960px) and (max-width: 1280px) {
-            .v-container{
-                max-width: 92% !important;
-            }
+
         }
 
         /* sm */
         @media (min-width: 600px) and (max-width: 960px) {
-            .v-container{
-                max-width: 92% !important;
-            }
+
         }
         /* xs */
         @media (max-width: 600px) {
-            .v-container{
-                max-width: 92% !important;
-            }
+
         }
   </style>
   

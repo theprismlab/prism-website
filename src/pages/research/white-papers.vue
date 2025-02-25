@@ -6,16 +6,15 @@
           <v-row>
           <v-col cols="12" xs="12" sm="12" md="10" lg="8" xl="8">
             <div v-for="each in data">
-              <Card
+              <PublicationCard
                 size="sm"
                 classes="px-4 py-4"
-                :chip="each.chip"
                 :suptitle="each.suptitle"
                 :title="each.title"
-                :text="each.text"
                 :image="each.image"
+                :button="each.button"
               >
-              </Card>
+              </PublicationCard>
               <v-divider style="max-width: 1000px"></v-divider>
             </div>
           </v-col>
@@ -51,7 +50,7 @@
           Promise.all([
             d3.csv(`${dataPath}${dataFile}`, function(d){
                 return {
-                  chip: d["Chip"], // this is the screen type or topic category
+                  topic: d["Chip"], 
                   title: d["Title"], // white paper title
                   date: d["Date"], // date published
                   url: d["Paper Link"], // link to the white paper
@@ -62,10 +61,9 @@
             })
           ]).then(response=>{
             response[0].forEach(d=>{
-              d.chip = this.createChip(d);
               d.suptitle = this.createSuptitle(d);
               d.title = this.createTitle(d);
-              d.text = this.createText(d);
+           //   d.text = this.createText(d);
               d.button = this.createButton(d);
               d.image = `${this.imgPath}${d.image}.png`;
             })
@@ -73,30 +71,22 @@
           
           });
         },
-        createChip(d){
-          return {
-            text: d.chip,
-            color: "primary-accent-2",
-            size: "small"
-          }
-        },
         createButton(d){
           return {
-            text: `Explore ${d.chip} data in the portal <span class='ml-1 mdi mdi-open-in-new'></span>`,
-            color: "primary",
+            text: "Explore data <span class='mdi mdi-open-in-new'></span>",
             variant: "text",
             url: d.portalUrl
           }
         },
         createSuptitle(d){
-          return `${d.date} <span class='ml-2 text-primary-accent-3'>${d.chip.text}</span>`;
+          return `${d.date} <span class='ml-2 text-primary-accent-1'>${d.topic}</span>`;
         },
         createTitle(d){
           return `<a href='${d.url}' target='_blank' class="text-black">${d.title}</a>`
         },
-        createText(d){
-          return `<a class='text-button text-primary-accent-2' style='text-decoration: none;' href='${d.portalUrl}' target='_blank'>Explore data <span class='mdi mdi-open-in-new'></span></a>`
-        },
+        // createText(d){
+        //   return `<a class='text-button text-primary-accent-2' style='text-decoration: none;' href='${d.portalUrl}' target='_blank'>Explore data <span class='mdi mdi-open-in-new'></span></a>`
+        // },
       },
       watch: {
 

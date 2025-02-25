@@ -1,10 +1,10 @@
 <template>
-  <h1 class="text-h2 font-weight-bold"><slot></slot></h1>
+  <h2 class="text-h2 font-weight-bold section-title"><slot></slot></h2>
   </template>
   
   <script>
     export default {
-      name: 'PageTitle',
+      name: 'SectionTitle',
       props: {
      
       },
@@ -21,8 +21,9 @@
     }
   </script>
   <style scoped>
-    h1{
-      margin-bottom: 48px;
+    .section-title{
+      margin-bottom: 36px;
+      line-height: 1.175em !important;
     }
       /* xxl  */
     @media (min-width:  2560px) {

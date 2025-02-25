@@ -1,5 +1,5 @@
 <template>
-<page id="screening-assay" class="">
+<page id="screening-assay" class="mb-0">
   <container-sm>
       <page-title>Assay</page-title>
         <p>
@@ -43,13 +43,13 @@
           <h3 class="text-overline text-primary-accent-1">Small molecule combinations</h3>
           <p class="text-body-1">Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents. When selecting an anchor dose our recommendation is to select a dose that does not broadly affect cell viability but gives a reproducible phenotypic effect in a specific cell line or set of cell lines. 
 
-            <open-in-new-link 
+            <icon-link 
             href="https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism" 
             target="_blank" 
             text="CPS white paper"
           />
             and explore our 
-            <open-in-new-link 
+            <icon-link 
             href="https://theprismlab.org/portal/projects/CPS009/CPS_WHITEPAPER/compounds" 
             target="_blank" 
             text="public dataset"
@@ -94,15 +94,13 @@
           <h2 class="text-h3  mt-12">APS</h2>
            <h3 class="text-overline text-primary-accent-1">Antibodies, ADCs, growth-inhibiting cytokines, aqueous test agents</h3>
           <p class="text-body-1">The main difference between our aqueous screen and the DMSO-based screen is that we plate the cells first in the aqueous screen followed by the aqueous agents by ECHO transfer. This method gives us the highest quality data and does not freeze the aqueous reagents. For more information, checkout our 
-          <open-in-new-link 
+          <icon-link 
             href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" 
-            target="_blank" 
             text="ADC white paper"
           />
             and explore our 
-            <open-in-new-link 
+            <icon-link 
             href="https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds" 
-            target="_blank" 
             text="public dataset"
           /> on the portal.
           </p>
@@ -168,15 +166,29 @@
             </v-col>
           </v-row>
         </section>
-        <v-row>
+        <!-- <v-row>
           <v-col cols="12" md="10">
-            <page-gradient class="pa-16 pb-8  mt-16" style="border-radius:10px;" background="gradient-primary-darken">
+            <page-gradient class="pa-16 pb-8  mt-16" style="border-radius:10px;" background="gradient-stolen">
                 <h2 class="text-h3 font-weight-bold">Interested in submitting?</h2>
-                <p class="text-h4">Checkout our <open-in-new-link href="https://theprismlab.org/portal/submissions" target="_blank" text="submissions page" classes="text-primary-lighten-4"/></p>
+                <p class="text-h4">Checkout our <icon-link href="https://theprismlab.org/portal/submissions" target="_blank" text="submissions page" classes="text-primary-lighten-4"/></p>
             </page-gradient>
           </v-col>
-        </v-row>
+        </v-row> -->
       </container-sm>
+      <section>
+        <page-gradient class="pa-16 pb-8  mt-16" background="gradient-stolen">
+          <container-sm>
+            <h2 class="text-h3 font-weight-bold text-white">Interested in submitting?</h2>
+            <p class="text-h4  text-white">Checkout our 
+              <icon-link 
+              href="https://theprismlab.org/portal/submissions"  
+              text="submissions page" 
+              color="primary-lighten-2"
+              />
+            </p>
+          </container-sm>                 
+        </page-gradient>
+    </section>
 </page>
 </template>
   
