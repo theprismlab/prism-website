@@ -4,9 +4,6 @@
         <h3 v-if="title" class="v-card-title text-h5 font-weight-bold" v-html="title"></h3>
         <h4 v-if="subtitle" class="v-card-subtitle" v-html="subtitle"></h4>
         <p v-if="text" class="v-card-text" v-html="text"></p>
-        <!-- <v-card-actions v-if="action">
-            <v-btn class="position-absolute ms-auto" style="right: 12px; bottom: 8px;" size="small" color="primary" variant="text" rounded>{{ action.text }}</v-btn>
-        </v-card-actions>  -->
         <v-card-actions v-if="action">
             <v-btn class="position-absolute ms-auto" 
                 style="left: 12px; bottom: 8px;" 

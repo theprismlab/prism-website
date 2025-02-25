@@ -7,7 +7,7 @@
       <v-container class="fill-height">
       <v-row>
         <v-col cols="12" xs="12" sm="10" md="6" lg="6" xl="5" class="d-flex justify-center flex-column">
-          <page-title>Revolutionize cancer drug discovery</page-title>
+          <page-title><span class="text-h1">Revolutionize cancer drug discovery</span></page-title>
           <p class="text-h4  font-weight-medium">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
         </v-col>
       </v-row>
@@ -19,7 +19,7 @@
     <v-container>
       <v-row class="mt-0 mb-8">
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
-          <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our technology</h1>
+          <section-overline>Our Technology</section-overline>
           <section-title>PRISM is a novel DNA barcoding technology</section-title>
           <p class="text-body-1">PRISM barcoding technology enables simultaneous high-throughput viability analysis of over 900 genomically characterized cell lines.</p>
         </v-col>
@@ -43,7 +43,7 @@
     <v-container>
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
-          <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our Collaborators</h1>
+          <section-overline>Our Collaborators</section-overline>
           <section-title>Over 150 leading academic and industry partners</section-title>
           <p>We are excited to collaborate with you to advance the understanding of cancer therapeutics and accelerate the drug discovery process. 
           </p>
@@ -86,7 +86,7 @@
     <v-container>
       <v-row class="mt-0 mb-8">
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
-          <h1 class="text-overline text-secondary-darken-2 font-weight-black">Our impact</h1>
+          <section-overline>Our Impact</section-overline>
           <section-title>Dedicated to advancing oncology research</section-title>
         </v-col>
       </v-row>

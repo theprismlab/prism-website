@@ -1,5 +1,5 @@
 <template>
-  <h3 class="text-h2 font-weight-bold"><slot></slot></h3>
+  <h2 class="text-h2 font-weight-bold section-title"><slot></slot></h2>
   </template>
   
   <script>
@@ -21,7 +21,7 @@
     }
   </script>
   <style scoped>
-    h3{
+    .section-title{
       margin-bottom: 36px;
       line-height: 1.175em !important;
     }

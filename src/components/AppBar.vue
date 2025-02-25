@@ -17,9 +17,7 @@
             <v-list-item id="demos" to="/demos/home-02">
               <v-list-item-title class="v-tab v-btn" >Home 02</v-list-item-title>
             </v-list-item>
-            <v-list-item id="demos" to="/demos/home-03">
-              <v-list-item-title class="v-tab v-btn" >Home 03</v-list-item-title>
-            </v-list-item>
+           
           
           </v-list>
         </v-menu>
