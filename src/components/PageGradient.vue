@@ -3,7 +3,6 @@
       <slot></slot>
   </section>
 </template>
-
 <script>
 
 
