@@ -120,7 +120,13 @@ export default {
       quoteCloseSvg: mdiFormatQuoteClose,
       resizeCounter: 0,
       prism_impact_cards: content.prism_impact_cards(),
-      what_is_prism_cards: content.what_is_prism_cards(), 
+      what_is_prism_cards: [
+        content.cell_lines_card,
+        content.test_agents_card,
+        content.viability_features_card,
+      
+        content.discover_card
+      ], 
       testimonial_cards: content.testimonial_cards()
     }
   },

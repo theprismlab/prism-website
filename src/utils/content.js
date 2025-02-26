@@ -1,7 +1,7 @@
 
 
 
-const genomic_characterization_card =  {
+export const genomic_characterization_card =  {
     title: 'Genomic and functional characterization',
     subtitle: 'Over 150k genomic features and dependencies for hematopoietic and solid tumor cell lines covering 80 subtypes.',
     image: '2025 PRISM-website-graphics-about-01.png',
@@ -10,7 +10,7 @@ const genomic_characterization_card =  {
       url: '/screening/cell-line-collection'
     }
   }
-  const multiple_screening_offerings_card =  {
+  export const multiple_screening_offerings_card =  {
     title: 'Multiple screening offerings',
     subtitle: 'Small molecules, combinations, antibody-drug conjugates, antibodies, and cytokines at multiple time points.',
     image: '2025 PRISM-website-graphics-about-02.png',
@@ -19,7 +19,7 @@ const genomic_characterization_card =  {
         url: '/screening/assays'
     }
     }
-    const predictive_modeling_card =  {
+    export const predictive_modeling_card =  {
         title: 'Predictive modeling to identify patient population and targets',
         subtitle: 'Univariate and multivariate predictive models to compare the viability profile of your drug.',
         image: '2025 PRISM-website-graphics-about-03.png',
@@ -28,7 +28,7 @@ const genomic_characterization_card =  {
           url: '/screening/data'
         }
       }
-      const secure_data_portal_card =  {
+      export const secure_data_portal_card =  {
         title: 'Secure data portal',
         subtitle: 'Securely browse and discover insights from your screening results with interactive visualizations.',
         image: `2025 PRISM-website-graphics-about-04.png`,
@@ -38,6 +38,45 @@ const genomic_characterization_card =  {
         }
       }
 
+export const viability_features_card =  {
+  title: 'Viability profile and genomic characterization',
+  subtitle: 'Generate univariate and multivariate predictive models comparing PRISM viability profile with Dependency Map features',
+  image: '2025 PRISM Graphics - viability-features.png',
+  action: {
+    text: 'Learn more',
+    url: 'https://depmap.org/portal/',
+    external: true
+  }
+}
+export const test_agents_card =  {
+  title: 'Multiple screening offerings',
+  subtitle: 'Small molecules, combinations, antibody-drug conjugates, antibodies, and cytokines at multiple time points.',
+  image: '2025 PRISM Graphics - test agents.png',
+  action: {
+    text: 'Learn more',
+      url: '/screening/assays'
+  }
+  }
+
+  export const cell_lines_card =  {
+    title: '900+ pooled and barcoded cell lines',
+    subtitle: 'Hematopoietic and solid tumor, covering 80 cancer subtypes',
+    image: '2025 PRISM Graphics - cell lines.png',
+    action: {
+      text: 'Learn more',
+        url: '/screening/cell-line-collection'
+    }
+  }
+
+  export const discover_card =  {
+    title: 'Identify target and patient population of your drug',
+    subtitle: 'Confirm hypothesis and establish biomarkers of sensitivity and resistance',
+    image: '2025 PRISM Graphics - discover.png',
+    action: {
+      text: 'Learn more',
+        url: '/screening/data'
+    }
+  }
 
 
 export const what_is_prism_cards =  () => {
@@ -45,6 +84,7 @@ export const what_is_prism_cards =  () => {
         genomic_characterization_card,
         multiple_screening_offerings_card,
         predictive_modeling_card,
+        secure_data_portal_card
 
     ]
 }
