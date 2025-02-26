@@ -45,7 +45,7 @@ export const what_is_prism_cards =  () => {
         genomic_characterization_card,
         multiple_screening_offerings_card,
         predictive_modeling_card,
-        secure_data_portal_card
+
     ]
 }
 
