@@ -28,10 +28,16 @@ export default {
 }
 </script>
 <style>
-
-.gradient-stolen{
+.solid-grey-lighten-2{
+  background-color: var(--v-grey-lighten-2);
+}
+.gradient-dark{
   color: white;
   background: linear-gradient(34deg, #131219, #212329 40%, #545e7c);
+}
+
+.gradient-dark-lighten{
+  background: linear-gradient(-34deg, rgba(19, 18, 25, .6), rgba(33, 35, 41, .2) 40%, rgba(84, 94, 124, .1));
 }
 
 .solid-primary-darken-3{

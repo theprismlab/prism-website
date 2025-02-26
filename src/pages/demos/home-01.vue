@@ -38,7 +38,7 @@
       </v-row>
     </v-container>
   </section>
-
+  <portal-banner :image="`${imgPath}Macbook PRISM Portal- front views.png`"></portal-banner>
   <page-gradient class="section-padding-default" background="gradient-primary">
     <v-container>
       <v-row>
@@ -73,7 +73,7 @@
     </v-container>     
   </page-gradient>
 
-  <page-gradient background="gradient-stolen">
+  <page-gradient background="gradient-dark">
     <v-container>
       <div class="d-flex flex-row">
         <h3 class="text-h4 mr-6">Interested in collaborating?</h3>

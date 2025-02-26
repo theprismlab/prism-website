@@ -168,7 +168,7 @@
         </section>
         <!-- <v-row>
           <v-col cols="12" md="10">
-            <page-gradient class="pa-16 pb-8  mt-16" style="border-radius:10px;" background="gradient-stolen">
+            <page-gradient class="pa-16 pb-8  mt-16" style="border-radius:10px;" background="gradient-dark">
                 <h2 class="text-h3 font-weight-bold">Interested in submitting?</h2>
                 <p class="text-h4">Checkout our <icon-link href="https://theprismlab.org/portal/submissions" target="_blank" text="submissions page" classes="text-primary-lighten-4"/></p>
             </page-gradient>
@@ -176,7 +176,7 @@
         </v-row> -->
       </container-sm>
       <section>
-        <page-gradient class="pa-16 pb-8  mt-16" background="gradient-stolen">
+        <page-gradient class="pa-16 pb-8  mt-16" background="gradient-dark">
           <container-sm>
             <h2 class="text-h3 font-weight-bold text-white">Interested in submitting?</h2>
             <p class="text-h4  text-white">Checkout our 

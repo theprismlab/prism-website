@@ -82,7 +82,7 @@
     </v-container>     
   </page-gradient>
 
-  <page-gradient background="gradient-stolen">
+  <page-gradient background="gradient-dark">
     <container-md>
       <div class="d-flex flex-row">
         <h3 class="text-h4 mr-6">Interested in collaborating?</h3>
