@@ -63,7 +63,11 @@ const prismTheme = {
     'success-accent-2': colors.teal.accent2,
     'success-accent-3': colors.teal.accent3,
     'success-accent-4': colors.teal.accent4,
-
+    'grey-lighten-1': colors.grey.lighten1,
+    'grey-lighten-2': colors.grey.lighten2,
+    'grey-lighten-3': colors.grey.lighten3,
+    'grey-lighten-4': colors.grey.lighten4,
+    'grey-lighten-5': colors.grey.lighten5,
     'warning': '#FB8C00',
     'teal-bkg': '#d5dde0'
   },

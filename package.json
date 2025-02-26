@@ -15,6 +15,7 @@
     "@mdi/js": "^7.4.47",
     "d3": "^7.9.0",
     "roboto-fontface": "*",
+    "three": "^0.173.0",
     "unplugin-fonts": "^1.1.1",
     "vue": "^3.4.31",
     "vuetify": "^3.6.14"

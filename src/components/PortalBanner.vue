@@ -1,5 +1,5 @@
 <template>
-    <page-gradient background="gradient-dark">
+    <page-gradient background="gradient-grey-lighten">
     <v-container>
         <v-row class="d-flex align-center justify-center fill-height">
             <v-col>

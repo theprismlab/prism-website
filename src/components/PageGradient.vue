@@ -28,9 +28,18 @@ export default {
 }
 </script>
 <style>
+.gradient-grey-lighten{
+  background: linear-gradient(34deg, 
+  var(--v-grey-lighten-5) 0%, 
+  var(--v-grey-lighten-4) 50%, 
+  var(--v-grey-lighten-3) 100%
+  );
+}
 .solid-grey-lighten-2{
   background-color: var(--v-grey-lighten-2);
 }
+
+
 .gradient-dark{
   color: white;
   background: linear-gradient(34deg, #131219, #212329 40%, #545e7c);
