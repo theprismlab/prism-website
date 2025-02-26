@@ -9,6 +9,7 @@
                 <section-overline>Our Portal</section-overline>
                 <h3 class="text-h3 font-weight-bold">Explore and discover</h3>
                 <p class="text-body-2">Securely browse and discover insights from your screening results with interactive visualizations.</p>
+                <v-btn href="https://theprismlab.org/portal/projects" target="_blank" color="primary-accent-2" rounded variant="flat">PRISM portal <v-icon>mdi-arrow-right-thin</v-icon></v-btn>
             </v-col>
         </v-row>
     </v-container>
