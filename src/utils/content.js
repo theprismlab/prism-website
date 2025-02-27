@@ -123,3 +123,61 @@ export const testimonial_cards = () => {
         
     ]
 }
+
+export const navigation_options = [
+  {
+    title: 'About us', 
+    icon: 'mdi-menu-down', 
+    items: [
+      { 
+        title: 'Background', 
+        to: '/about-us/background' 
+      },
+      { 
+        title: 'Team', 
+        to: '/about-us/team' 
+      }
+    ]  
+  },
+  { 
+    title: 'Research', 
+    icon: 'mdi-menu-down', 
+    items: [
+      { 
+        title: 'Publications', 
+        to: '/research/publications' 
+      },
+      { 
+        title: 'White papers', 
+        to: '/research/white-papers' 
+      },
+      { 
+        title: 'Conference abstracts', 
+        to: '/research/conference-abstracts' 
+      }
+    ] 
+  },
+  { 
+    title: 'Screening', 
+    icon: 'mdi-menu-down', 
+    items: [
+      { 
+        title: 'Cell line collection', 
+        to: '/screening/cell-line-collection' 
+      },
+      { 
+        title: 'Assay',
+        to: '/screening/assay'
+      },
+      { 
+        title: 'Data', 
+        to: '/screening/data' 
+      },
+      { 
+        title: 'Collaborate', 
+        to: '/screening/collaborate' 
+      }
+    ]
+  },
+
+]

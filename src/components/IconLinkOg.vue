@@ -1,28 +1,29 @@
 <template>
-  <a :class="`app-link text-decoration-none font-weight-medium text-${color}`" 
+  <a :class="`text-button text-${color} ${classes}`" 
     :href="href" 
     :target="target"
     >
     {{ text }}
-      <i :class="`v-icon notranslate v-theme--dark text-${color}`" style="font-size: 0.875rem; height: 0.875rem; width: 0.875rem;" area-hidden="true">
-        <svg-icon type="mdi" class="v-icon__svg":path="svgPath"></svg-icon>
-      </i>
+      <v-icon 
+        :size="size"
+        :icon="icon"
+      ></v-icon>
+    <!-- <svg-icon style="height:1em;" type="mdi" :path="svgPath"></svg-icon> -->
   </a>
   </template>
   
   <script>
 
 
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiArrowRight, mdiOpenInNew, mdiDownload } from '@mdi/js';
-
-
+// import SvgIcon from '@jamescoyle/vue-icon';
+// import { mdiOpenInNew } from '@mdi/js';
+// import { mdiDownload } from '@mdi/js';
 
 
     export default {
       name: 'IconLink',
       components: {
-        SvgIcon
+        // SvgIcon
       },
       props: {
         href: {
@@ -48,34 +49,30 @@ import { mdiArrowRight, mdiOpenInNew, mdiDownload } from '@mdi/js';
             required: false,
             default: "mdi-open-in-new"
         },
-        // size: {
-        //     type: String,
-        //     required: false,
-        //     default: "x-small"
-        // },
-        // classes: {
-        //     type: String,
-        //     required: false
-        // },
+        size: {
+            type: String,
+            required: false,
+            default: "x-small"
+        },
+        classes: {
+            type: String,
+            required: false
+        },
       },
       data () {
         return {
-          mdiOpenInNew: mdiOpenInNew,
-          mdiDownload: mdiDownload,
-          mdiArrowRight: mdiArrowRight
-
+          // mdiOpenInNew: mdiOpenInNew,
+          // mdiDownload: mdiDownload
         }
       },
       computed: {
-        svgPath() {
-          if (this.icon === 'mdi-open-in-new') {
-            return this.mdiOpenInNew
-          } else  if (this.icon === 'mdi-download') {
-            return this.mdiDownload
-          } else {
-            return this.mdiArrowRight
-          }
-        }
+        // svgPath() {
+        //   if (this.icon === 'open-in-new') {
+        //     return this.mdiOpenInNew
+        //   } else  if (this.icon === 'download') {
+        //     return this.mdiDownload
+        //   }
+        // }
       },
       methods: {
         
@@ -89,16 +86,14 @@ import { mdiArrowRight, mdiOpenInNew, mdiDownload } from '@mdi/js';
 
     a.text-button{
       line-height: inherit !important;
-      font-size: inherit !important;
-      letter-spacing: inherit !important;
     }
     a.text-button:hover{
       cursor: pointer;
     }
-    /* .text-h4 a.text-button{
+    .text-h4 a.text-button{
       font-size: inherit !important;
       letter-spacing: inherit !important;
-    }  */
+    } 
 
          /* xxl  */
         @media (min-width:  2560px) {

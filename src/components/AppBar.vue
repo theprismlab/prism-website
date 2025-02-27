@@ -1,82 +1,47 @@
 <template>
 
   <v-app-bar app dense color="white" light class="elevation-1">
+    <v-app-bar-nav-icon v-if="$vuetify.display.mobile" variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
     <v-toolbar-title>
       <router-link to="/" tag="span" style="cursor: pointer">
         <img id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png"/>
       </router-link>
     </v-toolbar-title>
+
     <v-tabs hide-slider>
-      <v-tab class="v-btn--size-large"> About us <v-icon>mdi-menu-down</v-icon>
-        <v-menu activator="parent">
+      <v-tab v-for="item in items" :key="item.title" class="v-btn--size-large">
+          {{ item.title }}
+          <v-icon>{{ item.icon }}</v-icon>
+   
+        <v-menu v-if="item.items" activator="parent">
           <v-list>
-            <v-list-item id="background" to="/about-us/background">
-              <v-list-item-title class="v-tab v-btn" >Background</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="team" to="/about-us/team">
-              <v-list-item-title>Team</v-list-item-title>
+            <v-list-item v-for="subItem in item.items" :key="subItem.title" :to="subItem.to">
+              <v-list-item-title>{{ subItem.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
       </v-tab>
-
-      <v-tab class="v-btn--size-large">Research<v-icon>mdi-menu-down</v-icon>
-        <v-menu activator="parent">
-          <v-list>
-            <v-list-item id="publications" to="/research/publications">
-              <v-list-item-title>Publications</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="white-papers" to="/research/white-papers">
-              <v-list-item-title>White papers</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="conference-abstracts" to="/research/conference-abstracts">
-              <v-list-item-title>Conference abstracts</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-tab>
-
-      <v-tab class="v-btn--size-large">Screening<v-icon>mdi-menu-down</v-icon>
-        <v-menu activator="parent">
-          <v-list>
-            <v-list-item id="cell-line-collection" to="/screening/cell-line-collection">
-              <v-list-item-title>Cell line collection</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="screens" to="/screening/assay">
-              <v-list-item-title>Assay</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="data" to="/screening/data">
-              <v-list-item-title>Data</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="collaborate" to="/screening/collaborate">
-              <v-list-item-title>Collaborate</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-tab>
-    </v-tabs>
-
-    <v-tabs hide-slider right> 
       <v-tab href="https://theprismlab.org/portal" target="_blank" class="text-primary text-uppercase v-btn--size-default">Portal <v-icon class="ml-1" style="font-size: 1em">mdi-open-in-new</v-icon></v-tab>
     </v-tabs>
 </v-app-bar>
   </template>
   <script>
+  import * as content from '@utils/content.js';
   // import Vue from 'vue';
   export default {
     name: "AppBar",
   data(){
     return {
-
-    }
+      items: content.navigation_options
+ }
   },
     methods: {
 
     },
     computed: {
-      mobile () {
-        return this.$vuetify.display.mobile
-      },
+      // mobile () {
+      //   return this.$vuetify.display.mobile
+      // },
     }
   };
   </script>
