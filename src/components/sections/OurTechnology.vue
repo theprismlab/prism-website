@@ -37,12 +37,7 @@ export default {
     },
     data(){
         return {
-            cards: [
-                content.cell_lines_card,
-                content.test_agents_card,
-                content.viability_features_card,
-                content.discover_card
-            ], 
+            cards: content.our_technology_cards()
         }
     },
     computed: {

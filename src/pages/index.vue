@@ -102,7 +102,6 @@
           content.cell_lines_card,
           content.test_agents_card,
           content.viability_features_card,
-        
           content.discover_card
         ], 
         testimonial_cards: content.testimonial_cards()
