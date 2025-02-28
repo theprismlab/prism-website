@@ -12,13 +12,14 @@
                 variant="text" 
                 rounded
                 :href="action.url"
-                v-html="action.text">
+                v-html="action.text"
+                :target="action.target"
+                >
             </v-btn>
         </v-card-actions> 
     </v-card>
   </template>
 <script>
-
 
 export default {
     name: "VerticalCard",
