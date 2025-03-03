@@ -1,11 +1,12 @@
 <template>
 
-  <v-app-bar app dense color="white" light class="elevation-1">
+  <v-app-bar app color="white" light class="elevation-1 px-6">
     <v-toolbar-title>
       <router-link to="/" tag="span" style="cursor: pointer">
         <img id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png"/>
       </router-link>
     </v-toolbar-title>
+    <v-spacer></v-spacer>
     <v-tabs hide-slider>
       <v-tab class="v-btn--size-large"> About us <v-icon>mdi-menu-down</v-icon>
         <v-menu activator="parent">
@@ -48,17 +49,19 @@
             <v-list-item id="data" to="/screening/data">
               <v-list-item-title>Data</v-list-item-title>
             </v-list-item>
-            <v-list-item id="collaborate" to="/screening/collaborate">
-              <v-list-item-title>Collaborate</v-list-item-title>
-            </v-list-item>
           </v-list>
         </v-menu>
       </v-tab>
-    </v-tabs>
+    </v-tabs>        
+    <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary" variant="text" rounded>
+      Portal <v-icon class="ml-1" style="font-size: 1em">mdi-open-in-new</v-icon>
+    </v-btn>
 
-    <v-tabs hide-slider right> 
-      <v-tab href="https://theprismlab.org/portal" target="_blank" class="text-primary text-uppercase v-btn--size-default">Portal <v-icon class="ml-1" style="font-size: 1em">mdi-open-in-new</v-icon></v-tab>
-    </v-tabs>
+    <v-spacer></v-spacer>
+    <v-btn to="/contact-us" color="primary" variant="flat" rounded>
+      Contact us
+    </v-btn>
+
 </v-app-bar>
   </template>
   <script>

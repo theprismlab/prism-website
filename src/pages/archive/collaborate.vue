@@ -48,7 +48,6 @@ export default {
 <style scoped>
 .card-border{
     border: 1px solid var(--v-primary-lighten-4) !important;
-    /* border: 1px solid black !important; */
     border-radius: 8px;
     margin-bottom: 16px;
 }

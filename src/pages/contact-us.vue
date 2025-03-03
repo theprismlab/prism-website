@@ -1,150 +1,44 @@
 <template>
 <page>
-  <container-sm>
-    <page-title>Contact us</page-title>
-    <page-section>
-      <v-card class="hbspt-form-card elevation-0 py-4 px-10" style="max-width: 600px;">
-        <div class="hbspt-form" id="hbspt-form-31184627-79a8-4973-9ed3-8cfe47d1cdd3" v-once></div>
-      </v-card>
- 
-    </page-section>
-  </container-sm>
-</page>
-</template>
+  <container-md>
+    <v-row class="justify-center align-center">
+      <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
+        <page-title>Contact us</page-title>
+        <p class="text-body-1">The Broad Institute and PRISM’s mission is to help improve cancer patients’ lives. To that end, we are excited to collaborate with you to advance the understanding of cancer therapeutics and accelerate the drug discovery process. Our working model is that of a scientific collaboration to further cancer research.   
+        </p>
+      </v-col>
+    </v-row>
+    </container-md> 
+    <gradient-dark class="py-6 my-6">
+      <container-md>
+        <v-row class="justify-center align-center">
+          <v-col cols="auto" class="text-center">
+            <section-overline color="primary-accent-1">Key collaboration points</section-overline>
+          </v-col>
+        </v-row>
+        <collaborate-cards></collaborate-cards>
+      </container-md>
+    </gradient-dark>
 
+    <container-md class="py-6 my-6">
+      <v-row class="justify-center align-center">
+        <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
+          <h2 class="text-h3">Want to collaborate?</h2>
+          <p class="text-body-1">Tell us more about your project or inquiries using form below.</p>
+          <hubspot-form></hubspot-form>
+      </v-col>
+    </v-row>
+  </container-md>
+</page>
+
+</template>
 <script>
   export default {
     mounted() {
-    const script = document.createElement("script");
-    script.src="https://js.hsforms.net/forms/v2.js";
-    document.body.appendChild(script);
-    script.addEventListener("load", () => {
-      if (window.hbspt) {
-        window.hbspt.forms.create({
-          portalId: "23265540",
-          formId: "2a0b0448-c46f-4bd0-9ba5-84520afafd68",
-          target: "#hbspt-form-31184627-79a8-4973-9ed3-8cfe47d1cdd3"
-        })
-      }
-    })
+
   }
 }
 </script>
-<style>
-.hbspt-form-card{
-  border: 1px solid var(--v-primary-lighten-4) !important;
-  border-radius: 4px !important;
-}
-.hbspt-form ul.no-list, .hbspt-form .inputs-list {
-    list-style: none;
-    padding: 0;
-}
-.hbspt-form .hs-richtext {
-  font-family: Inter, Sans-Serif !important;
-  font-size: var(--body-1-size) !important;
-  line-height: var(--body-1-line-height) !important;
-}
-.hbspt-form label, 
-.hbspt-form input {
-    font-family: Inter, Sans-Serif !important;
-    font-size: var(--body-1-size) !important;
-    line-height: var(--body-1-line-height) !important;
-    font-weight: 600;
-}
+<style scoped>
 
-.hs-main-font-element p{
-  font-size: var(--h4-size) !important;
-  line-height: var(--h4-line-height) !important;
-}
-
-
-
-.hbspt-form .hs-firstname, 
-.hbspt-form .hs-lastname {
-    width: 50% !important;
-}
-.hbspt-form .input input  {
-    background-color: #fafafa;
-    border: 1px solid #dedede;
-}
-
-.hbspt-form .input {
-    margin-right: 0 !important;
-    margin-top:8px !important;
-}
-.hbspt-form .submitted-message p{
-  font-size: var(--h4-size) !important;
-  line-height: var(--h4-line-height) !important;
-  font-weight: 300 !important;
-}
-
-.hbspt-form input[type=text], .hbspt-form input[type=email] {
-    height: 32px;
-    padding: 0 .625rem;
-    font-weight: 300 !important;
-}
-
-
-.hbspt-form input[type=radio] {
-    margin-right: 10px;
-    font-weight: 300 !important;
-}
-
-.hbspt-form input::placeholder, .hbspt-form input::-webkit-input-placeholder {
-    color: #cccccc;
-    color: rgba(144, 144, 144, .6);
-}
-
-.hbspt-form .hs-submit {
-    margin: 0px 0px 24px 0px;
-    background-color: var(--v-primary);
-    color: white;
-    display: inline-block;
-    padding: 6px 24px;
-    border-radius: 4em;
-}
-.hbspt-form .hs-submit:hover{
-  opacity: 0.8;
-}
-
-.hbspt-form .hs-form-booleancheckbox-display, .hbspt-form .hs-error-msg {
-  font-size: .75rem!important;
-  line-height: var(--body-2-line-height) !important;
-  font-weight: 400 !important;
-}
-
-.hbspt-form .hs-form-radio-display{
-  font-weight:400 !important;
-  font-size: var(--body-2-size) !important;
-}
-
-.hbspt-form input.error {
-    border-color: var(--v-error) !important;
-}
-.hbspt-form .hs-error-msg {
-    color: var(--v-error) !important;;
-}
-
-.hbspt-form .legal-consent-container .inputs-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.hbspt-form .legal-consent-container .hs-richtext p{
-  font-size: .75rem!important;
-  line-height: var(--body-2-line-height) !important;
-}
-
-.hbspt-form fieldset{
-  max-width: 100% !important;
-  margin-bottom: 24px !important;
-
-}
-
-@media (max-width: 767px) {
-    .hbspt-form .hs-firstname, .hbspt-form .hs-lastname {
-        max-width: 100%;
-        width: 100% !important;
-    }
-}
 </style>
