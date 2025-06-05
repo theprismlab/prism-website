@@ -11,8 +11,8 @@
       <v-tab class="v-btn--size-large"> About us <v-icon>mdi-menu-down</v-icon>
         <v-menu activator="parent">
           <v-list>
-            <v-list-item id="background" to="/about-us/background">
-              <v-list-item-title class="v-tab v-btn" >Background</v-list-item-title>
+            <v-list-item id="about-prism" to="/about-us/about-prism">
+              <v-list-item-title class="v-tab v-btn" >About PRISM</v-list-item-title>
             </v-list-item>
             <v-list-item id="team" to="/about-us/team">
               <v-list-item-title>Team</v-list-item-title>
@@ -37,17 +37,23 @@
         </v-menu>
       </v-tab>
 
-      <v-tab class="v-btn--size-large">Screening<v-icon>mdi-menu-down</v-icon>
+      <v-tab class="v-btn--size-large">Consortium Screens<v-icon>mdi-menu-down</v-icon>
         <v-menu activator="parent">
           <v-list>
-            <v-list-item id="cell-line-collection" to="/screening/cell-line-collection">
+            <v-list-item id="cell-line-collection" to="/consortium-screens/cell-line-collection">
               <v-list-item-title>Cell line collection</v-list-item-title>
             </v-list-item>
-            <v-list-item id="screens" to="/screening/assay">
-              <v-list-item-title>Assay</v-list-item-title>
+            <v-list-item id="assays" to="/consortium-screens/assays">
+              <v-list-item-title>Assays</v-list-item-title>
             </v-list-item>
-            <v-list-item id="data" to="/screening/data">
-              <v-list-item-title>Data</v-list-item-title>
+            <v-list-item id="data-analysis" to="/consortium-screens/data-analysis">
+              <v-list-item-title>Data Analysis</v-list-item-title>
+            </v-list-item>
+            <v-list-item id="deliverables" to="/consortium-screens/deliverables">
+              <v-list-item-title>Deliverables</v-list-item-title>
+            </v-list-item>
+            <v-list-item id="collaborating" to="/consortium-screens/collaborating">
+              <v-list-item-title>Collaborating</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>

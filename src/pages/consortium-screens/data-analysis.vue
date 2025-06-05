@@ -1,7 +1,7 @@
 <template>
 <page>
   <container-sm>
-    <page-title>Data</page-title>
+    <page-title>Data Analysis</page-title>
     <section id="analysis-and-predictive-modeling">
       <h2 class="text-h3">Analysis and Predictive Modeling</h2>
       <p class="text-body-1">PRISM sensitivity profiles are compared to deep multi-omic cell line characterization information in univariate analyses as well as multivariate predictive modeling algorithms to identify features that correlate with sensitivity.

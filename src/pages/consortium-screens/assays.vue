@@ -1,7 +1,7 @@
 <template>
 <page id="screening-assay" class="mb-0">
   <container-sm>
-      <page-title>Assay</page-title>
+      <page-title>Assays</page-title>
         <p>
           Our viability assays are performed using the PRISM barcoding technology, which allows for the simultaneous measurement of the effects of test agents on hundreds of pooled cell lines. We offer a few  assay types and time-points. For all of our assays, test agents are added to 384-well plates for a number of dose-dilutions and screened in replicate. At the end of incubation, cells are lysed, and mRNA or gDNA is isolated. Barcode sequences are amplified by PCR and quantified using a Luminex FlexMap 3D® scanner or NextGen sequencing. Relative barcode abundance (compared to vehicle control) is then used to generate cell line sensitivity profiles for each test agent and concentration tested. 
         </p>
@@ -194,7 +194,7 @@
   
 <script>
   export default {
-    name: 'Assay',
+    name: 'Assays',
     data() {
       return {
         screens: [
