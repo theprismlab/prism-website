@@ -5,16 +5,7 @@
       <p class=text-body-1>
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and wide genomic diversity. Among them, our collection includes a significant number of pediatric cancer cell lines, as well as over 100 hematopoietic cell lines. Our cell lines are our most important asset, and we therefore take great pride in the quality of our cell lines.
       </p>
-      <v-row>
-         <v-col cols="6" xs="6" sm="6" md="5" lg="3" xl="3"  v-for="(card, index) in cards" :key="index">
-          <v-card class="pa-2 fill-height" style="background: none;" elevation="0" variant="outlined" color="primary-accent-2">
-            <v-card-item class="d-flex flex-column justify-center"> 
-              <h2 style="line-height: 1.2em !important;" class="text-h2 font-weight-bold">{{card.number}}</h2>
-              <h3 style="opacity: 1; line-height: 1.4em !important;" class="text-overline text-primary-accent-2 text-none font-weight-medium" v-html="card.caption"></h3>
-            </v-card-item>
-          </v-card>
-        </v-col>
-      </v-row>
+      <cell-line-collection-cards></cell-line-collection-cards>
       <v-row>
         <v-col>
 
@@ -95,24 +86,6 @@
   export default {
     data() {
       return {
-        cards: [
-          {
-            caption: "Cancer cell lines",
-            number: "900+"
-          },
-          {
-            caption: "Lineages",
-            number: "45+"
-          },
-          {
-            caption: "Subtypes",
-            number: "80+"
-          },
-          {
-            caption: "Hematopoietic /<br> Pediatric",
-            number: "100+"
-          }
-        ],
         checklist: [
           "Grown in antibiotic-free RPMI 1640 media",
           "Mycoplasma negative",
