@@ -69,7 +69,8 @@ const prismTheme = {
     'grey-lighten-4': colors.grey.lighten4,
     'grey-lighten-5': colors.grey.lighten5,
     'warning': '#FB8C00',
-    'teal-bkg': '#d5dde0'
+    'teal-bkg': '#d5dde0',
+    'red-accent-3': colors.red.accent3,
   },
   variables: {
     // 'y-spacer': 48,

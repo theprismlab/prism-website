@@ -42,13 +42,14 @@ export default {
                     title: "150+",
                     subtitle: "Academic and industry partners",
                     text: "",
-                    iconPath: mdiHexagonMultiple
+                    iconPath: mdiAccountGroup 
+                   
                 },
                 {
                     title: "7,000+",
                     subtitle: "Compounds screened in over 500 cell lines",
                     text: "",
-                    iconPath: mdiAccountGroup 
+                    iconPath: mdiHexagonMultiple
                 },
                 {
                     title: "40+",
@@ -64,9 +65,16 @@ export default {
 }
 </script>
 <style scoped>
-
+/* .masthead-followup-icon {
+    padding: 1rem 16px;
+    color: rgba(var(--bg-rgb), 1);
+    background-color: rgba(var(--bg-rgb), .1);
+    background-blend-mode: multiply;
+    border-radius: 1rem;
+    mix-blend-mode: darken;
+} */
 .icon-circle{
-    background-color: var(--v-primary-accent-2) !important;
+    background-color: var(--v-primary-lighten-5) !important;
     border-radius: 50%;
     width: 40px;
     height: 40px;
