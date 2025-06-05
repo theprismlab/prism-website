@@ -2,28 +2,43 @@
 <page>
   <container-sm>
     <page-title>Cell line collection</page-title>
-      <p class=text-body-1>Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and the genomic diversity of existing two dimensional cell line models. We have a large number of pediatric cancer cell lines as well as over 100 hematopoietic cell lines. Our cell lines are our most important asset and we therefore take great pride in the quality of our cell set. 
-      <br><br>
+      <p class=text-body-1>
+        Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and wide genomic diversity. Among them, our collection includes a significant number of pediatric cancer cell lines, as well as over 100 hematopoietic cell lines. Our cell lines are our most important asset, and we therefore take great pride in the quality of our cell lines.
       </p>
-
       <v-row>
-        <v-col cols="6" xs="6" sm="6" md="5" lg="3" xl="3"  v-for="(card, index) in cards" :key="index">
-          <v-card class="pa-2 pb-5 fill-height" elevation="1">
-            <v-card-title style="line-height: 1.2em !important;" class="pb-0 text-size-h2">{{card.number}}</v-card-title>
-            <v-card-subtitle style="opacity: 1;" class="text-overline text-primary-accent-2 text-none font-weight-medium">{{card.caption}}</v-card-subtitle>
+         <v-col cols="6" xs="6" sm="6" md="5" lg="3" xl="3"  v-for="(card, index) in cards" :key="index">
+          <v-card class="pa-2 fill-height" style="background: none;" elevation="0" variant="outlined" color="primary-accent-2">
+            <v-card-item class="d-flex flex-column justify-center"> 
+              <h2 style="line-height: 1.2em !important;" class="text-h2 font-weight-bold">{{card.number}}</h2>
+              <h3 style="opacity: 1; line-height: 1.4em !important;" class="text-overline text-primary-accent-2 text-none font-weight-medium" v-html="card.caption"></h3>
+            </v-card-item>
           </v-card>
-        </v-col>  
+        </v-col>
       </v-row>
-      
+      <v-row>
+        <v-col>
+
+        </v-col>
+      </v-row>
   </container-sm>
 
   <page-gradient class="gradient-primary section-margin-default mt-0">
     <container-sm>
-      <v-row >
+      <h2 class="text-h3">All of our cell lines are:</h2>
+        <v-list style="background-color: transparent;">
+          <v-list-item v-for="item in checklist" :key="checklist">
+            <template v-slot:prepend>
+              <v-icon class="text-success-accent-4"> mdi-check-circle</v-icon>
+            </template>
+            <v-list-item-title>{{ item }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      <!-- <v-row >
         <v-col>
           <v-card class="pa-2 fill-height" style="background: none;" elevation="0" >
             <v-card-item>
-              <h4 class="v-card-title text-h4">All of our cell lines are:</h4>
+              <v-card-title>All of our cell lines are:</v-card-title>
+
                 <v-list style="background-color: transparent;">
                   <v-list-item v-for="item in checklist" :key="checklist">
                     <template v-slot:prepend>
@@ -35,7 +50,7 @@
             </v-card-item>
         </v-card>
         </v-col>
-      </v-row>
+      </v-row> -->
     </container-sm>
   </page-gradient>
 
@@ -94,16 +109,15 @@
             number: "80+"
           },
           {
-            caption: "Hematopoietic / Pediatric",
+            caption: "Hematopoietic /<br> Pediatric",
             number: "100+"
           }
         ],
         checklist: [
           "Grown in antibiotic-free RPMI 1640 media",
           "Mycoplasma negative",
-          "STR fingerprinted to verify each cell lines identity",
-          "Sequence verified to confirm each cell lines’ unique 24-nucleotide barcode is correct",
-          "Mixed together by doubling time into pools of 20-25 cell lines. Pools of cell lines are then frozen in Assay-ready pools so they can be easily thawed for screening."
+          "STR fingerprinted to verify each cell line's identity",
+          "Mixed by doubling time into pools of 20-25 cell lines. Pools of cell lines are then frozen in Assay-ready pools so they can be easily thawed for screening"
         ]
       }
     },
