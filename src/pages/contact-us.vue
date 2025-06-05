@@ -1,6 +1,6 @@
 <template>
 <page>
-  <container-md>
+  <v-container>
     <v-row class="justify-center align-center">
       <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
         <page-title>Contact us</page-title>
@@ -8,19 +8,19 @@
         </p>
       </v-col>
     </v-row>
-    </container-md> 
+    </v-container> 
     <gradient-dark class="py-6 my-6">
-      <container-md>
+      <v-container>
         <v-row class="justify-center align-center">
           <v-col cols="auto" class="text-center">
             <section-overline color="primary-accent-1">Key collaboration points</section-overline>
           </v-col>
         </v-row>
         <collaborate-cards></collaborate-cards>
-      </container-md>
+      </v-container>
     </gradient-dark>
 
-    <container-md class="py-6 my-6">
+    <v-container class="py-6 my-6">
       <v-row class="justify-center align-center">
         <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
           <h2 class="text-h3">Want to collaborate?</h2>
@@ -28,7 +28,7 @@
           <hubspot-form></hubspot-form>
       </v-col>
     </v-row>
-  </container-md>
+  </v-container>
 </page>
 
 </template>

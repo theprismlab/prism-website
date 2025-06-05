@@ -61,20 +61,20 @@ $body-font-family: 'Inter';
             'font-family': $heading-font-family,
             'text-transform': none,
         ),
-        'h6': (
-            'size': var(--h6-size),
-            'line-height': var(--h6-line-height),
-            'letter-spacing': .0125em,
-            'font-family': $heading-font-family,
-            'text-transform': none
-        ),
-        'h7': (
-             'size': var(--h7-size),
-             'line-height': var(--h7-line-height),
-             'letter-spacing': .0125em,
-             'font-family': $heading-font-family,
-             'text-transform': none
-         ),
+        // 'h6': (
+        //     'size': var(--h6-size),
+        //     'line-height': var(--h6-line-height),
+        //     'letter-spacing': .0125em,
+        //     'font-family': $heading-font-family,
+        //     'text-transform': none
+        // ),
+        // 'h7': (
+        //      'size': var(--h7-size),
+        //      'line-height': var(--h7-line-height),
+        //      'letter-spacing': .0125em,
+        //      'font-family': $heading-font-family,
+        //      'text-transform': none
+        //  ),
         'subtitle-1': (
           'size': var(--subtitle-1-size),
           'weight': normal,
@@ -155,13 +155,14 @@ $body-font-family: 'Inter';
     --section-padding-default: 56px;
     --body-1-size: 1rem;
     --body-2-size: 0.875rem;
-    --h1-size: 4.75rem;
-    --h2-size: 3.33rem;
+    // --h1-size: 4.75rem;
+    --h1-size: 3.33rem;
+    --h2-size: 2.75rem;
     --h3-size: 1.66rem;
     --h4-size: 1.33rem;
     --h5-size: 1.125rem; 
-    --h6-size: var(--body-1-size);
-    --h7-size: var(--body-2-size);
+    // --h6-size: var(--body-1-size);
+    // --h7-size: var(--body-2-size);
     --subtitle-1-size: var(--body-1-size);
     --subtitle-2-size: var(--body-2-size);
 
@@ -177,8 +178,8 @@ $body-font-family: 'Inter';
     --body-2-line-height: 1.725em;
 
 
-    --h6-line-height: var(--body-1-line-height);
-    --h7-line-height: var(--body-2-line-height);
+    // --h6-line-height: var(--body-1-line-height);
+    // --h7-line-height: var(--body-2-line-height);
     --subtitle-1-line-height: var(--body-1-line-height);
     --subtitle-2-line-height: var(--body-2-line-height);
 
@@ -208,7 +209,7 @@ $body-font-family: 'Inter';
       @media (min-width: 960px) and (max-width: 1280px) {
 
         :root {
-          --container-sm-max-width: 800px;
+          --container-sm-max-width: 1000px;
           --container-md-max-width: 1200px;
         }
       

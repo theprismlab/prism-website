@@ -21,10 +21,10 @@ h5{
     font-size: var(--h5-size);
     line-height: var(--h5-line-height);
 }
-h6{
-    font-size: var(--h6-size);
-    line-height: var(--h6-line-height);
-}
+// h6{
+//     font-size: var(--h6-size);
+//     line-height: var(--h6-line-height);
+// }
 p {
     font-size: var(--body-1-size);
     line-height: var(--body-1-line-height);
@@ -42,7 +42,9 @@ p {
 .header-h4{
     margin: 24px 0 12px 0;
 }
-.header-h5, .header-h6{
+.header-h5
+// .header-h6
+{
     margin: 24px 0 12px 0;
 }
 .content {
@@ -80,12 +82,12 @@ p {
 .text-size-h5{
     font-size: var(--h5-size) !important;
 }
-.text-size-h6{
-    font-size: var(--h6-size) !important;
-}
-.text-size-h7{
-    font-size: var(--h7-size) !important;
-}
+// .text-size-h6{
+//     font-size: var(--h6-size) !important;
+// }
+// .text-size-h7{
+//     font-size: var(--h7-size) !important;
+// }
 
 .section-padding-default {
     padding-top: var(--section-padding-default);
@@ -95,9 +97,7 @@ p {
     margin-top: var(--section-padding-default);
     margin-bottom: var(--section-padding-default);
 }
-.container-xs-max-width {
-    max-width: var(--container-xs-max-width) !important;
-}
+
 .container-sm-max-width {
     max-width: var(--container-sm-max-width) !important;
 }
@@ -105,6 +105,14 @@ p {
     max-width: var(--container-md-max-width) !important;
 }
 
+
+    .v-container{
+      width: 100% !important;
+      max-width: var(--container-md-max-width) !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+  
 // title class adds bottom margin. need to consider better way
 .title {
     margin-bottom: 48px;
@@ -133,10 +141,12 @@ a.text-button{
 //   font-weight: 400;
 //   font-style: normal;
 // }
-p, h1, h2, h3, h4, h5, h6, ul, li{
+p, h1, h2, h3, h4, h5, h6{
     max-width:800px;
 }
-
+ ul, li, .v-list-item>*{
+    max-width:600px;
+ }
 // xxl 
 @media (min-width:  2560px) {
 
@@ -151,9 +161,9 @@ p, h1, h2, h3, h4, h5, h6, ul, li{
 }
 // md
 @media (min-width: 960px) and (max-width: 1280px) {
-    // .v-container{
-    //     max-width: 92% !important;
-    // }
+    .v-container{
+        max-width: 92% !important;
+    }
 }
 
 // sm
