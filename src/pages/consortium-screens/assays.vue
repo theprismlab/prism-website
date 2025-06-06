@@ -8,14 +8,40 @@
               Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures in 384- or 96-well plates at either 5- or 10-day assay timepoints. To ensure high-quality data, validation compounds are run on each assay plate.
             </p>
 
-          <div style="height:200px; background-color:#e2e2e2; margin-bottom:4px;">
-          <h2 class="text-center text-white pt-8"> 5 day-assay workflow graphics</h2>
-          </div>
+            <section class="mt-6 mb-6">
+                <div style="height:100px; background-color:#e2e2e2; margin-bottom:4px;">
+                <h2 class="text-center text-white pt-8"> 5 day-assay workflow graphics</h2>
+                </div>
+        
+                <div style="height:100px; background-color:#e2e2e2; margin-bottom:4px;">
+                <h2 class="text-center text-white pt-8">10 day-assay workflow graphic</h2>
+                </div>
+            </section>
 
-          <div style="height:100px; background-color:#e2e2e2; margin-bottom:4px;">
-          <h2 class="text-center text-white pt-8">10 day-assay workflow graphic</h2>
-          </div>
-
+          <section>
+            <v-card elevation="0" variant="outlined" color="grey-lighten-2" class="mb-4 mt-4">
+              <v-table>
+                <thead>
+                  <tr>
+                      <th class="td-0">Screen</th>
+                      <th>Test Agents</th>
+                      <th># of Cell Lines</th>
+                      <th>Dose Scheme</th>
+                      <th>Time-Point</th>
+                    </tr>
+                </thead>
+                <tbody class="">
+                  <tr v-for="(item, index) in table.items" :key="index">
+                    <td class="td-0">{{ item.screen }}</td>
+                    <td class="td-1">{{ item['test agents'] }}</td>
+                    <td class="td-2">{{ item['num_cell_lines'] }}</td>
+                    <td class="td-3">{{ item['dose scheme'] }}</td>
+                    <td class="td-4">{{ item['time-point'] }}</td>
+                  </tr>
+                </tbody>
+                </v-table>
+            </v-card>
+          </section>
 
         <section class="mt-12 mb-12">
           <h2 class="text-h3 font-weight-bold">MTS</h2>
@@ -43,7 +69,6 @@
           /> on the portal.
 
           </p>
-
         </section>
         <section>
           <h2 class="text-h3 font-weight-bold">APS (Aqueous PRISM Screen) </h2>
@@ -105,22 +130,46 @@
     name: 'Assays',
     data() {
       return {
-        screens: [
-          {
-            'screen': 'MTS',
-            'test agents': 'Small molecule single agents',
-            'media': 'DMSO',
-            'time-point': '5-day',
-            'dose scheme': `8-point dose, 3-fold dilution`,
-          },
-          {
-            name: 'CPS',
-            description: 'Small molecule combinations',
-            media: 'DMSO',
-            timepoint: '5-day',
-            dose_scheme: `7-point dose, 3-fold dilution of treatment test agent and 1 dose of anchor test agent alone and in combination`,
-          }
-        ]
+
+        table: {
+                headers: [
+                    { text: 'Screen', value: 'screen', class: 'td-0' },
+                    { text: 'Test Agents', value: 'test agents' },
+                    { text: '# of Cell Lines', value: 'num_cell_lines' },
+                    { text: 'Dose Scheme', value: 'dose scheme' },
+                    { text: 'Time-Point', value: 'time-point' },
+                ],
+                items: [
+                    {
+                        screen: 'MTS',
+                        'test agents': 'Small molecule single agents',
+                        'num_cell_lines': 900,
+                        'dose scheme': `8-point dose, 3-fold dilution`,
+                        'time-point': '5-day',
+                    },
+                    {
+                        screen: 'CPS',
+                        'test agents': 'Small molecule combinations',
+                        'num_cell_lines': 900,
+                        'dose scheme': `7-point dose, 3-fold dilution of treatment test agent and 1 dose of anchor test agent alone and in combination`,
+                        'time-point': '5-day',
+                    },
+                    {
+                        screen: 'APS',
+                        'test agents': 'Antibodies, ADCs, growth-inhibiting cytokines, peptides',
+                        'num_cell_lines': 900,
+                        'dose scheme': `Single dose or custom dose`,
+                        'time-point': '5-day',
+                    },
+                    {
+                        screen: 'EPS',
+                        'test agents': 'Small molecule single agents',
+                        'num_cell_lines': 900,
+                        'dose scheme': `Single dose or custom dose`,
+                        'time-point': '10-day',
+                    },
+                ],
+            },
       }
     }
   }
