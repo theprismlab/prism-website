@@ -1,5 +1,5 @@
 <template>
-  <h3 :class="`text-overline text-${color} font-weight-black`"><slot></slot></h3>
+  <h2 :class="`text-overline text-${color} font-weight-black`"><slot></slot></h2>
 </template>
   
   <script>
@@ -25,7 +25,9 @@
     }
   </script>
   <style scoped>
-
+/* .text-overline{
+  font-size: .85rem !important;  
+} */
          /* xxl  */
         @media (min-width:  2560px) {
 

@@ -22,6 +22,22 @@ $body-font-family: 'Inter';
     //  $card-text-padding: .25rem 0 .25rem 0,
     $button-text-transform: none,
     $typography: (
+        'body-1': (
+          'size': var(--body-1-size),
+          'weight': 400,
+          'line-height': var(--body-1-line-height),
+          'letter-spacing': .03125em,
+          'font-family': $body-font-family,
+          'text-transform': none
+        ),
+        'body-2': (
+          'size': var(--body-2-size),
+          'weight': 400,
+          'line-height': var(--body-2-line-height),
+           'letter-spacing': .03125em,
+          'font-family': $body-font-family,
+          'text-transform': none
+        ),
         'h1': (
             'size': var(--h1-size),
             'line-height': var(--h1-line-height),
@@ -83,30 +99,30 @@ $body-font-family: 'Inter';
           'font-family': $body-font-family,
           'text-transform': none
         ),
-        'subtitle-2': (
-          'size': var(--subtitle-2-size),
-          'weight': 500,
-          'line-height': var(--subtitle-2-line-height),
-          'letter-spacing': .0071428571em,
-          'font-family': $body-font-family,
-          'text-transform': none
-        ),
-        'body-1': (
-          'size': var(--body-1-size),
-          'weight': 400,
-          'line-height': var(--body-1-line-height),
-          'letter-spacing': .03125em,
-          'font-family': $body-font-family,
-          'text-transform': none,
-        ),
-        'body-2': (
-          'size': var(--body-2-size),
-          'weight': 400,
-          'line-height': var(--body-2-line-height),
-          'letter-spacing': .0178571429em,
-          'font-family': $body-font-family,
-          'text-transform': none
-        ),
+        // 'subtitle-2': (
+        //   'size': var(--subtitle-2-size),
+        //   'weight': 500,
+        //   'line-height': var(--subtitle-2-line-height),
+        //   'letter-spacing': .0071428571em,
+        //   'font-family': $body-font-family,
+        //   'text-transform': none
+        // ),
+        // 'body-1': (
+        //   'size': var(--body-1-size),
+        //   'weight': 400,
+        //   'line-height': var(--body-1-line-height),
+        //   'letter-spacing': .03125em,
+        //   'font-family': $body-font-family,
+        //   'text-transform': none,
+        // ),
+        // 'body-2': (
+        //   'size': var(--body-2-size),
+        //   'weight': 400,
+        //   'line-height': var(--body-2-line-height),
+        //   'letter-spacing': .0178571429em,
+        //   'font-family': $body-font-family,
+        //   'text-transform': none
+        // ),
         'button': (
           'size': .875rem,
           'weight': 500,
@@ -124,7 +140,7 @@ $body-font-family: 'Inter';
           'text-transform': none
         ),
         'overline': (
-          'size': .75rem,
+          'size': .8rem,
           'weight': 500,
           'line-height': 2.667,
           'letter-spacing': .1666666667em,
@@ -150,17 +166,35 @@ $body-font-family: 'Inter';
   word-wrap: initial !important;
   line-height: var(--body-2-line-height) !important;
 }
+// .v-card-subtitle {
+//   display: block;
+//   flex: none;
+//   // font-size: 0.875rem;
+//   font-size: var(--body-2-size) !important;
+//   font-weight: 400;
+//   letter-spacing: 0.0178571429em;
+//   opacity: var(--v-card-subtitle-opacity, var(--v-medium-emphasis-opacity));
+//   overflow: hidden;
+//   padding: 0 1rem;
+//   text-overflow: visible;
+//   text-transform: none;
+//   white-space: normal;
+// }
 
 :root {
     --section-padding-default: 56px;
-    --body-1-size: 1rem;
-    --body-2-size: 0.875rem;
+    --body-1-size: 1.125rem;
+    --body-2-size: 0.925rem;
+
+
+    // --body-1-size: 1rem;
+    // --body-2-size: 0.875rem;
     // --h1-size: 4.75rem;
     --h1-size: 3.33rem;
     --h2-size: 2.75rem;
     --h3-size: 1.66rem;
     --h4-size: 1.33rem;
-    --h5-size: 1.125rem; 
+    --h5-size: 1.25rem; 
     // --h6-size: var(--body-1-size);
     // --h7-size: var(--body-2-size);
     --subtitle-1-size: var(--body-1-size);
@@ -174,8 +208,8 @@ $body-font-family: 'Inter';
     --h5-line-height: 1.66em;
 
 
-    --body-1-line-height: 1.75em;
-    --body-2-line-height: 1.725em;
+    --body-1-line-height: 1.6em;
+    --body-2-line-height: 1.6em;
 
 
     // --h6-line-height: var(--body-1-line-height);

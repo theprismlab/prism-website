@@ -33,13 +33,15 @@
                     <v-btn class="position-absolute ms-auto" 
                         style="left: 12px; bottom: 8px;" 
                         size="small" 
-                        color="primary" 
-                        variant="text" 
+                        color="primary-accent-2" 
+                        variant="text"                      
                         rounded
                         :href="card.action.url"
-                        v-html="card.action.text"
+             
                         :target="card.action.target"
                         >
+                        {{ card.action.text }}
+                    <v-icon>mdi-arrow-right-thin</v-icon>                   
                     </v-btn>
                 </v-card-actions> 
             </v-card>
@@ -68,7 +70,7 @@ export default {
                             subtitle: 'Hematopoietic and solid tumor, covering 80 cancer subtypes',
                             // image: '2025 PRISM Graphics - cell lines.png',
                             action: {
-                            text: 'Learn more',
+                            text: "Learn more",
                             url: '/consortium-screens/cell-line-collection',
                             target: '_self'
                             }
@@ -160,32 +162,32 @@ p{
     max-width: 250px !important;
     min-width:175px !important;
 }
-      /* xxl  */
-      @media (min-width:  2560px) {
+/* xxl  */
+@media (min-width:  2560px) {
 
-      }
-      /* xl */
-      @media (min-width: 1920px) and (max-width: 2560px) {
-  
-      }
-      /* lg */
-      @media (min-width: 1280px) and (max-width: 1920px) {
+}
+/* xl */
+@media (min-width: 1920px) and (max-width: 2560px) {
 
-      }
-        /* md */
-      @media (min-width: 960px) and (max-width: 1280px) {
+}
+/* lg */
+@media (min-width: 1280px) and (max-width: 1920px) {
+
+}
+/* md */
+@media (min-width: 960px) and (max-width: 1280px) {
 
 
-      
-      }
-  
-      /* sm */
-      @media (min-width: 600px) and (max-width: 960px) {
 
-      }
-      /* xs */
-      @media (max-width: 600px) {
-      
-      }
+}
+
+/* sm */
+@media (min-width: 600px) and (max-width: 960px) {
+
+}
+/* xs */
+@media (max-width: 600px) {
+
+}
 </style>
 
