@@ -23,41 +23,29 @@ export default {
     data() {
         return {
             steps: [
+                // {
+                //     text: "Get on our mailing list below to receive updates on our screen offerings and submission windows!"
+                // },
                 {
-                    text: "Get on our mailing list below to receive updates on our screen offerings and submission windows!"
-                },
-                {
-                    text: 'Register for the screen by completing an online submission form on the <a href="https://www.theprismlab.org/portal/submissions" target="_blank" class="text-link">PRISM Submission Hub</a>.',
-                    subSteps: [
-                        {
-                            text: "Forms can only be completed during our 2-3 week submission window periods (specific dates will be available on the Submission Hub)"
-                        },
-                        {
-                            text: "As we have limited capacity for all of our screens, we encourage collaborators to submit their forms as soon as the window opens."
-                        }
-                    ]
+                    text: 'Complete the forms on the submission hub during our 2-3 week submission window <a href="https://www.theprismlab.org/portal/submissions" target="_blank" class="text-link">PRISM Submission Hub</a>.',
+                    // subSteps: [
+                    //     {
+                    //         text: "Forms can only be completed during our 2-3 week submission window periods (specific dates will be available on the Submission Hub)"
+                    //     },
+
+                    // ]
                 },
                 {
                 text: "Approve and fund a quote for your PRISM submission",
-                subSteps: [
-                    {
-                    text: "An invoice will be sent after data is delivered"
-                    }
-                ]
+
                 },
                 {
                 text: "Ship a stock solution of your test agent(s) to the PRISM lab before the submission window deadline",
-                subSteps: [
-                    {
-                    text: "We will share additional shipping information once your submission form and funded quote are confirmed by a member of our team"
-                    }
-                ]
+
                 },
+
                 {
-                text: 'Create an account on the <a href="https://www.theprismlab.org/portal/log-in" target="_blank" class="text-link">PRISM Portal</a>  to prepare for data delivery and give data access to others',
-                },
-                {
-                text: "Receive your screening data on the PRISM Portal approximately 4 months after the submission window closes"
+                text: "Data will be released on the PRISM Portal approximately 4 months after the submission window closes"
                 }
             ]
         }
