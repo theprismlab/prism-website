@@ -58,14 +58,6 @@
 </script>
   
 <style scoped>
-ul{
-  padding-inline-start: 1.25em;
-  
-}
-li{
-  line-height:1.6em;
-  margin-bottom: 0.65em;
-  padding-left:6px;
-}
+
 
 </style>
