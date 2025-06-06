@@ -1,29 +1,33 @@
        // font-family: TWK Lausanne, sans-serif;
-h1{
-    font-size: var(--h1-size);
-    line-height: var(--h1-line-height);
-}
-h2 {
-    font-size: var(--h2-size);
-    line-height: var(--h2-line-height);
+// h1{
+//     font-size: var(--h1-size);
+//     line-height: var(--h1-line-height);
+// }
+// h2 {
+//     font-size: var(--h2-size);
+//     line-height: var(--h2-line-height);
 
-}
-h3 {
-    font-size: var(--h3-size);;
-    line-height: var(--h3-line-height);
+// }
+// h3 {
+//     font-size: var(--h3-size);;
+//     line-height: var(--h3-line-height);
 
-}
-h4{
-    font-size: var(--h4-size);
-    line-height: var(--h4-line-height);
-}
-h5{
-    font-size: var(--h5-size);
-    line-height: var(--h5-line-height);
-}
-h6{
-    font-size: var(--h6-size);
-    line-height: var(--h6-line-height);
+// }
+// h4{
+//     font-size: var(--h4-size);
+//     line-height: var(--h4-line-height);
+// }
+// h5{
+//     font-size: var(--h5-size);
+//     line-height: var(--h5-line-height);
+// }
+// h6{
+//     font-size: var(--h6-size);
+//     line-height: var(--h6-line-height);
+// }
+.text-emphasize{
+    font-weight: 600;
+    color: var(--base-color-gray--900);
 }
 p {
     font-size: var(--body-1-size);
@@ -42,7 +46,9 @@ p {
 .header-h4{
     margin: 24px 0 12px 0;
 }
-.header-h5, .header-h6{
+.header-h5
+// .header-h6
+{
     margin: 24px 0 12px 0;
 }
 .content {
@@ -80,12 +86,12 @@ p {
 .text-size-h5{
     font-size: var(--h5-size) !important;
 }
-.text-size-h6{
-    font-size: var(--h6-size) !important;
-}
-.text-size-h7{
-    font-size: var(--h7-size) !important;
-}
+// .text-size-h6{
+//     font-size: var(--h6-size) !important;
+// }
+// .text-size-h7{
+//     font-size: var(--h7-size) !important;
+// }
 
 .section-padding-default {
     padding-top: var(--section-padding-default);
@@ -95,9 +101,7 @@ p {
     margin-top: var(--section-padding-default);
     margin-bottom: var(--section-padding-default);
 }
-.container-xs-max-width {
-    max-width: var(--container-xs-max-width) !important;
-}
+
 .container-sm-max-width {
     max-width: var(--container-sm-max-width) !important;
 }
@@ -105,6 +109,14 @@ p {
     max-width: var(--container-md-max-width) !important;
 }
 
+
+    .v-container{
+      width: 100% !important;
+      max-width: var(--container-md-max-width) !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+  
 // title class adds bottom margin. need to consider better way
 .title {
     margin-bottom: 48px;
@@ -123,20 +135,36 @@ a:hover{
 a.text-button{
     text-decoration: none;
 }
+.text-link {
+    text-decoration: none !important;
+    border-bottom:0.25px solid var(--v-primary);
+    cursor: pointer;
+  }
 
 .text-body-1 > a.text-button{
     line-height: var(--body-1-line-height) !important;
 }
+ul{
+    padding-inline-start: 1.25em;
+    
+  }
+  li{
+    line-height:1.6em;
+    margin-bottom: 0.65em;
+    padding-left:6px;
+  }
 // .rokkitt{
 //   font-family: "Rokkitt", serif;
 //   font-optical-sizing: auto;
 //   font-weight: 400;
 //   font-style: normal;
 // }
-p, h1, h2, h3, h4, h5, h6, ul, li{
+p, h1, h2, h3, h4, h5, h6{
     max-width:800px;
 }
-
+ ul, li, .v-list-item>*{
+    max-width:800px;
+ }
 // xxl 
 @media (min-width:  2560px) {
 
@@ -151,9 +179,9 @@ p, h1, h2, h3, h4, h5, h6, ul, li{
 }
 // md
 @media (min-width: 960px) and (max-width: 1280px) {
-    // .v-container{
-    //     max-width: 92% !important;
-    // }
+    .v-container{
+        max-width: 92% !important;
+    }
 }
 
 // sm

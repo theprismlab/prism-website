@@ -4,7 +4,6 @@
         <v-row>
           <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
             <section-overline>Testimonials</section-overline>
-            <section-title>We are excited to collaborate with you</section-title>
           </v-col>
           <v-col>
             <v-row>
@@ -36,7 +35,7 @@
 import * as content from '@/utils/content.js'
 
 export default {
-    name: "OurTechnology",
+    name: "Testimonials",
     props: {    
      image: {
         type: String,

@@ -6,10 +6,11 @@
                     <v-img class="align-end"  width="100%" alt="" :src="`${imgPath}${image}`" style="" aspect-ratio="1.5"></v-img>
                 </v-col>
                 <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="6">
-                    <section-overline>Our Portal</section-overline>
                     <h3 class="text-h3 font-weight-bold">{{ title }}</h3>
-                    <p class="text-body-2">{{  body }}</p>
-                    <v-btn :href="button.link" target="_blank" color="primary-accent-2" rounded variant="flat">{{  button.text }} <v-icon>mdi-arrow-right-thin</v-icon></v-btn>
+                    <p class="text-body-1">{{  body }}</p>
+                    <v-btn :href="button.link" target="_blank" color="primary-accent-2" rounded variant="outlined">{{  button.text }} 
+                        <!-- <v-icon>mdi-arrow-right-thin</v-icon> -->
+                    </v-btn>
                 </v-col>
             </v-row>
         </v-container>

@@ -1,6 +1,6 @@
 <template>
   <v-footer class="py-4" style="background-color: var(--v-primary-darken-2)">
-    <container-md>
+    <v-container>
       <v-row class="justify-space-between align-center">
         <!-- <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6" align-self="center">
           <h4 class="text-white text-overline">Connect</h4>
@@ -56,7 +56,7 @@
             </v-row>
         </v-col>
       </v-row>
-    </container-md>
+    </v-container>
   </v-footer>
 </template>
 
