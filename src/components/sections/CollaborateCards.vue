@@ -1,15 +1,13 @@
 <template>
-    <v-row>
-        <v-col v-for="card in cards" :key="card.title" cols="12" xs="6" sm="6" md="3" lg="3" xl="3">
-            <v-card class="fill-height" elevation="0" >   
-            <v-card-title class="d-flex align-center justify-start text-primary-accent-1">
-                <v-icon size="medium" class="mr-2">{{ card.icon }}</v-icon>
-                {{card.title}}
+    <v-card elevation="0" variant="tonal"  color="teal-cyan-lighten-4" class="pa-5 pb-7">  
+        <div v-for="card in cards" :key="card.title">
+            <v-card-title class="d-flex align-center justify-start text-teal-cyan-darken-1">
+            <v-icon size="medium" class="mr-2">{{ card.icon }}</v-icon>
+            {{card.title}}
             </v-card-title>
-            <v-card-subtitle>{{card.text}}</v-card-subtitle>
+            <v-card-subtitle class="text-grey-darken-4 mb-2">{{card.text}}</v-card-subtitle>
+        </div>
     </v-card>
-    </v-col>
-</v-row>
 </template>
 <script>
 export default {
@@ -19,17 +17,12 @@ export default {
             cards: [
                 {
                     title: "Data Ownership",
-                    text: "PRISM retains the right to use collaboratively generated data to validate and improve the PRISM platform.",
+                    text: "PRISM retains the right to use collaboratively generated data to validate and improve the PRISM platform. The structure and identity of your compound will not be shared with us. Unique identifiers are given to all test agents.",
                     icon: "mdi-database"
                 },
                 {
-                    title: "Confidentiality",
-                    text: "The structure and identity of your compound will not be shared with us. Unique identifiers are given to all test agents.",
-                    icon: "mdi-lock"
-                },
-                {
                     title: "Intellectual Property",
-                    text: "Non-exclusive royalty free licenses are granted.",
+                    text: "Non-exclusive royalty-free licenses are granted.",
                     icon: "mdi-head-snowflake"
                 },
                 {
@@ -37,7 +30,6 @@ export default {
                     text: "Data may be jointly published when both partners agree.",
                     icon: "mdi-newspaper"
                 },
-          
             ]
         }
     }
@@ -54,8 +46,8 @@ export default {
 }
 .v-card-subtitle{
     padding-left:42px;
-    font-size: var(--body-2-size) !important;
-    color: white !important;
+    font-size: 0.85rem !important;
+    /* font-size: var(--body-2-size) !important; */
 }
 
 

@@ -15,6 +15,21 @@ import { createVuetify } from 'vuetify'
 import colors  from 'vuetify/util/colors'
 
 let secondary = 'amber';
+function mixColors(color1, color2, ratio) {
+  const r1 = parseInt(color1.slice(1, 3), 16);
+  const g1 = parseInt(color1.slice(3, 5), 16);
+  const b1 = parseInt(color1.slice(5, 7), 16);
+
+  const r2 = parseInt(color2.slice(1, 3), 16);
+  const g2 = parseInt(color2.slice(3, 5), 16);
+  const b2 = parseInt(color2.slice(5, 7), 16);
+
+  const rMix = Math.round(r1 * (1 - ratio) + r2 * ratio);
+  const gMix = Math.round(g1 * (1 - ratio) + g2 * ratio);
+  const bMix = Math.round(b1 * (1 - ratio) + b2 * ratio);
+
+  return `#${((1 << 24) + (rMix << 16) + (gMix << 8) + bMix).toString(16).slice(1).toUpperCase()}`;
+}
 
 
 const prismTheme = {
@@ -84,6 +99,48 @@ const prismTheme = {
     'red-accent-1': colors.red.accent1,
     'red-accent-2': colors.red.accent2,
     'red-accent-3': colors.red.accent3,
+    "teal-cyan-accent-4": mixColors(colors.teal.accent4,  colors.cyan.accent4, 0.5),
+    "teal-cyan-accent-3": mixColors(colors.teal.accent3,  colors.cyan.accent3, 0.5),
+    "teal-cyan-accent-2": mixColors(colors.teal.accent2,  colors.cyan.accent2, 0.5),
+    "teal-cyan-accent-1": mixColors(colors.teal.accent1,  colors.cyan.accent1, 0.5),
+    'teal-cyan-darken-1': mixColors(colors.teal.darken1,  colors.cyan.darken1, 0.7), // in use
+    'teal-cyan-lighten-1': mixColors(colors.teal.lighten1,  colors.cyan.lighten1, 0.7), 
+    'teal-cyan-lighten-2': mixColors(colors.teal.lighten2,  colors.cyan.lighten2, 0.7),
+    'teal-cyan-lighten-3': mixColors(colors.teal.lighten3,  colors.cyan.lighten3, 0.7),
+    'teal-cyan-lighten-4': mixColors(colors.teal.lighten4,  colors.cyan.lighten4, 0.7), // in use
+    'cyan': colors.cyan.base,
+    'cyan-lighten-1': colors.cyan.lighten1,
+    'cyan-lighten-2': colors.cyan.lighten2,
+    'cyan-lighten-3': colors.cyan.lighten3,
+    'cyan-darken-1': colors.cyan.darken1,
+    'cyan-darken-2': colors.cyan.darken2,
+    'cyan-darken-3': colors.cyan.darken3,
+    'cyan-accent-1': colors.cyan.accent1,
+    'cyan-accent-2': colors.cyan.accent2,
+    'cyan-accent-3': colors.cyan.accent3,
+    'cyan-accent-4': colors.cyan.accent4,
+    'teal': colors.teal.base,
+    'teal-lighten-1': colors.teal.lighten1,
+    'teal-lighten-2': colors.teal.lighten2,
+    'teal-lighten-3': colors.teal.lighten3,
+    'teal-darken-1': colors.teal.darken1,
+    'teal-darken-2': colors.teal.darken2,
+    'teal-darken-3': colors.teal.darken3,
+    'teal-accent-1': colors.teal.accent1,
+    'teal-accent-2': colors.teal.accent2,
+    'teal-accent-3': colors.teal.accent3,
+    'teal-accent-4': colors.teal.accent4,
+    'purple': colors.purple.base,
+    'purple-lighten-1': colors.purple.lighten1,
+    'purple-lighten-2': colors.purple.lighten2,
+    'purple-lighten-3': colors.purple.lighten3,
+    'purple-darken-1': colors.purple.darken1,
+    'purple-darken-2': colors.purple.darken2,
+    'purple-darken-3': colors.purple.darken3,
+    'purple-accent-1': colors.purple.accent1,
+    'purple-accent-2': colors.purple.accent2,
+    'purple-accent-3': colors.purple.accent3,
+    'purple-accent-4': colors.purple.accent4,
   },
   variables: {
     // 'y-spacer': 48,
