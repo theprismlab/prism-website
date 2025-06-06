@@ -76,9 +76,6 @@ li{
   line-height:1.45em;
   margin-bottom: 0.5em;
 }
-.text-link {
-  border-bottom:0.25px solid var(--v-primary);
-  cursor: pointer;
-}
+
 
 </style>

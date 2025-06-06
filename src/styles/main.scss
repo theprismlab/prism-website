@@ -135,6 +135,11 @@ a:hover{
 a.text-button{
     text-decoration: none;
 }
+.text-link {
+    text-decoration: none !important;
+    border-bottom:0.25px solid var(--v-primary);
+    cursor: pointer;
+  }
 
 .text-body-1 > a.text-button{
     line-height: var(--body-1-line-height) !important;

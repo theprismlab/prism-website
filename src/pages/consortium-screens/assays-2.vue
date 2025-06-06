@@ -1,5 +1,5 @@
 <template>
-    <page id="screening-assay" class="mb-0">
+    <page id="" class="mb-0">
         <v-container>
           <v-row class="mb-4 mt-4">
             <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8" offset-sm="0" offset-md="2" offset-lg="2" offset-xl="2">
