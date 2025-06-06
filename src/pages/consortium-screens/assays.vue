@@ -1,48 +1,35 @@
 <template>
 <page id="screening-assay" class="mb-0">
-  <container-sm>
-      <page-title>Assays</page-title>
-        <p>
-          Our viability assays are performed using the PRISM barcoding technology, which allows for the simultaneous measurement of the effects of test agents on hundreds of pooled cell lines. We offer a few  assay types and time-points. For all of our assays, test agents are added to 384-well plates for a number of dose-dilutions and screened in replicate. At the end of incubation, cells are lysed, and mRNA or gDNA is isolated. Barcode sequences are amplified by PCR and quantified using a Luminex FlexMap 3D® scanner or NextGen sequencing. Relative barcode abundance (compared to vehicle control) is then used to generate cell line sensitivity profiles for each test agent and concentration tested. 
-        </p>
-        <section id="screening-assay-mts">
-          <h2 class="text-h3 mt-12">MTS</h2>
-          <h3 class="text-overline text-primary-accent-1">Small molecule single agents</h3>
-          <p class="text-body-1">Our most popular screen is a small molecule single agent screen called Medium Throughput Screening (MTS). We screen standard DMSO compounds at a top dose of your choice,  diluted 3-fold over 8 dilutions.</p>
-          <v-row>
-            <v-col cols="12" md="10">
-              <v-table class="elevation-1 mb-0 mt-4" style = "border: 1px solid #e0e0e0 !important" density="compact">
-                <tbody>
-                  <tr>
-                    <td class="text-body-2 font-weight-bold td-0">Screen name</td>
-                    <td class="text-body-2">MTS</td>
-                </tr>
-                <tr>
-                    <td class="text-body-2 font-weight-bold td-0">Test agents</td>
-                    <td class="text-body-2">small molecule single agents</td>
-                </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Media</td>
-                      <td class="text-body-2">DMSO</td>
-                  </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Dose scheme</td>
-                      <td class="text-body-2">8-point dose, 3-fold dilution</td>
-                  </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Time-point</td>
-                      <td class="text-body-2">5-day</td>
-                  </tr>
-                </tbody>
-              </v-table>
-            </v-col>
-          </v-row>
-        </section>
-        <section id="screening-assay-cps">
-          <h2 class="text-h3  mt-12">CPS</h2>
-          <h3 class="text-overline text-primary-accent-1">Small molecule combinations</h3>
-          <p class="text-body-1">Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents. When selecting an anchor dose our recommendation is to select a dose that does not broadly affect cell viability but gives a reproducible phenotypic effect in a specific cell line or set of cell lines. 
+    <v-container>
+      <v-row class="mb-4 mt-4">
+        <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8" offset-sm="0" offset-md="2" offset-lg="2" offset-xl="2">
+          <page-title>Assays</page-title>
+            <p class="text-body-1">
+              Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures in 384- or 96-well plates at either 5- or 10-day assay timepoints. To ensure high-quality data, validation compounds are run on each assay plate.
+            </p>
 
+          <div style="height:200px; background-color:#e2e2e2; margin-bottom:4px;">
+          <h2 class="text-center text-white pt-8"> 5 day-assay workflow graphics</h2>
+          </div>
+
+          <div style="height:100px; background-color:#e2e2e2; margin-bottom:4px;">
+          <h2 class="text-center text-white pt-8">10 day-assay workflow graphic</h2>
+          </div>
+
+
+        <section class="mt-12 mb-12">
+          <h2 class="text-h3 font-weight-bold">MTS</h2>
+          <h3 class="text-subtitle-1 text-grey">Small molecule single agents</h3>
+          <p class="text-body-1">We screen standard DMSO compounds at a top dose of your choice, diluted 3-fold over 8 dilutions. Compounds are plated with an Echo using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s). 
+          </p>
+        </section>
+        <section class="mt-12 mb-12">
+          <h2 class="text-h3 font-weight-bold">CPS</h2>
+          <h3 class="text-subtitle-1 text-grey">Small molecule combinations</h3>
+          <p class="text-body-1">
+            Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents. When selecting an anchor dose our recommendation is to select a dose that does not broadly affect cell viability but gives a reproducible phenotypic effect in a specific cell line or set of cell lines. Compounds are plated by Echo into plates and frozen prior to cell treatment. Cells are then tawed and plated onto the compound assay ready plates (ARP’s).
+            <br><br>
+            For more information, review the
             <icon-link 
             href="https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism" 
             target="_blank" 
@@ -56,44 +43,17 @@
           /> on the portal.
 
           </p>
-          <v-row>
-            <v-col cols="12" md="10">
-              <v-table class="elevation-1 mb-0 mt-4" style = "border: 1px solid #e0e0e0 !important" density="compact">
-                <tbody>
-                  <tr>
-                    <td class="text-body-2 font-weight-bold td-0">Screen name</td>
-                    <td class="text-body-2">CPS</td>
-                </tr>
-                <tr>
-                    <td class="text-body-2 font-weight-bold td-0">Test agents</td>
-                    <td class="text-body-2">small molecule combination</td>
-                </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Media</td>
-                      <td class="text-body-2">DMSO</td>
-                  </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Dose scheme</td>
-                      <td class="text-body-2">
 
-                        7-point dose, 3-fold dilution (treatment agent)<br>
-                        1-point dose (anchor agent)<br>
-                        Test agents are screened at dose alone and in combination.
-                      </td>
-                  </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Time-point</td>
-                      <td class="text-body-2">5-day</td>
-                  </tr>
-                </tbody>
-              </v-table>
-            </v-col>
-          </v-row>
         </section>
-        <section id="screening-assay-aps">
-          <h2 class="text-h3  mt-12">APS</h2>
-           <h3 class="text-overline text-primary-accent-1">Antibodies, ADCs, growth-inhibiting cytokines, aqueous test agents</h3>
-          <p class="text-body-1">The main difference between our aqueous screen and the DMSO-based screen is that we plate the cells first in the aqueous screen followed by the aqueous agents by ECHO transfer. This method gives us the highest quality data and does not freeze the aqueous reagents. For more information, checkout our 
+        <section>
+          <h2 class="text-h3 font-weight-bold">APS (Aqueous PRISM Screen) </h2>
+           <h3 class="text-subtitle-1 text-grey">Test agents dissolved in aqueous buffers: Antibodies, ADCs, growth-inhibiting cytokines, peptides and other aqueous test agents
+          </h3>
+          <p class="text-body-1">
+            For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents. 
+            
+            <br><br>
+            For more information, review the
           <icon-link 
             href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" 
             text="ADC white paper"
@@ -104,85 +64,33 @@
             text="public dataset"
           /> on the portal.
           </p>
-          <v-row>
-            <v-col cols="12" md="10">
-              <v-table class="elevation-1 mb-0 mt-4" style = "border: 1px solid #e0e0e0 !important" density="compact">
-                <tbody>
-                  <tr>
-                    <td class="text-body-2 font-weight-bold td-0">Screen name</td>
-                    <td class="text-body-2">APS</td>
-                </tr>
-                <tr>
-                    <td class="text-body-2 font-weight-bold td-0">Test agents</td>
-                    <td class="text-body-2">antibodies, ADCs, growth-inhibiting cytokines, aqueous test agents</td>
-                </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Media</td>
-                      <td class="text-body-2">AQUEOUS</td>
-                  </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Dose scheme</td>
-                      <td class="text-body-2">8-point does, 3-fold dilution</td>
-                  </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Time-point</td>
-                      <td class="text-body-2">5-day</td>
-                  </tr>
-                </tbody>
-              </v-table>
-            </v-col>
-          </v-row>
+
         </section>
-        <section id="screening-assay-eps">
-          <h2 class="text-h3  mt-12">EPS (Extended day)</h2>
-          <h3 class="text-overline text-primary-accent-1">Small molecule single agents</h3>
-          <p class="text-body-1">TEXT??</p>
-          <v-row>
-            <v-col cols="12" md="10">
-              <v-table class="elevation-1 mb-0 mt-4" style = "border: 1px solid #e0e0e0 !important" density="compact">
-                <tbody>
-                  <tr>
-                    <td class="text-body-2 font-weight-bold td-0">Screen name</td>
-                    <td class="text-body-2">EPS</td>
-                </tr>
-                <tr>
-                    <td class="text-body-2 font-weight-bold td-0">Test agents</td>
-                    <td class="text-body-2">small molecule single agents</td>
-                </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Media</td>
-                      <td class="text-body-2">DMSO</td>
-                  </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Dose scheme</td>
-                      <td class="text-body-2">5-point does, custom dilution</td>
-                  </tr>
-                  <tr>
-                      <td class="text-body-2 font-weight-bold  td-0">Time-point</td>
-                      <td class="text-body-2">10-day</td>
-                  </tr>
-                </tbody>
-              </v-table>
-            </v-col>
-          </v-row>
+
+        <section>
+          <h2 class="text-h3 font-weight-bold">EPS (Extended day PRISM Screen)</h2>
+           <h3 class="text-subtitle-1 text-grey">Small molecule single agents</h3>
+          <p class="text-body-1">
+            For the extended day PRISM screen, small molecules are plated onto 96-well plates and frozen. Cell pools are plated on assay ready plates on day 0 and drug is re-added on day 6. Cell pools are lysed on day 10, gDNA is then PCR’ed and then sequenced. 
+          </p>
+
         </section>
-        <!-- <v-row>
-          <v-col cols="12" md="10">
-            <page-gradient class="pa-16 pb-8  mt-16" style="border-radius:10px;" background="gradient-dark">
-                <h2 class="text-h3 font-weight-bold">Interested in submitting?</h2>
-                <p class="text-h4">Checkout our <icon-link href="https://theprismlab.org/portal/submissions" target="_blank" text="submissions page" classes="text-primary-lighten-4"/></p>
-            </page-gradient>
-          </v-col>
-        </v-row> -->
-      </container-sm>
+
+
+      </v-col>
+    </v-row>
+      </v-container>
+
+
+
       <section>
         <page-gradient class="pa-16 pb-8  mt-16" background="gradient-dark">
           <container-sm>
             <h2 class="text-h3 font-weight-bold text-white">Interested in submitting?</h2>
-            <p class="text-h4  text-white">Checkout our 
+            <p class="text-h4  text-white">Checkout the 
               <icon-link 
               href="https://theprismlab.org/portal/submissions"  
-              text="submissions page" 
+              text="PRISM submission hub" 
               color="primary-lighten-2"
               />
             </p>
@@ -226,5 +134,12 @@
   min-width:fit-content !important;
   border-right: 1px solid #e0e0e0;
 }
-
+h2{
+  margin-bottom:12px;
+}
+h3{
+  font-weight:700 !important;
+  line-height:1.5em !important;
+  margin-bottom:24px !important;
+}
 </style>
