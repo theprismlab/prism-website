@@ -2,7 +2,7 @@
   <page class="mt-0">
     <section style="position: relative; height: 75vh; width: 100%;">
 
-      <ThreeJs_Heatmap_Circles :key="resizeCounter"/>
+      <ThreeJs_Heatmap_Circles03 :key="resizeCounter"/>
 
       <div style="position:absolute; width: 100%; height:100%;">
         <v-container class="fill-height">
