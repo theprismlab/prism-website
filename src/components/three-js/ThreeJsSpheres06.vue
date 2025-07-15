@@ -41,7 +41,15 @@ export default {
         'Sine Wave',
         'Radial Wave',
         'Grid Waves',
-        'Helix'
+          'Grid Checkerboard',
+  'Grid Radial Pulse',
+  'Grid Swirl',
+  'Grid Rings',
+  'Grid Diagonal Sweep',
+        'Helix',
+          'Lissajous',
+  'Spherical Shells',
+  '3D Rose'
       ],
       animateId: null,
     };
@@ -136,15 +144,130 @@ export default {
           const z = Math.sin(angle) * radius;
           return [x, y, z];
         },
-        // 3: Grid Waves
-        (i, t) => {
-          const xi = i % gridSize;
-          const zi = Math.floor(i / gridSize);
-          const x = xi - gridSize / 2;
-          const z = zi - gridSize / 2;
-          const y = Math.sin(x * 0.5 + t * 0.0003) + Math.cos(z * 0.5 + t * 0.0003);
-          return [x, y, z];
-        },
+        // 3: Grid Waves (original, but slower)
+(i, t) => {
+  const xi = i % gridSize;
+  const zi = Math.floor(i / gridSize);
+  const x = xi - gridSize / 2;
+  const z = zi - gridSize / 2;
+  const y = Math.sin(x * 0.3 + t * 0.00008) + Math.cos(z * 0.3 + t * 0.00008);
+  return [x, y, z];
+},
+
+// 4: Grid Checkerboard (slower, more subtle)
+(i, t) => {
+  const xi = i % gridSize;
+  const zi = Math.floor(i / gridSize);
+  const x = xi - gridSize / 2;
+  const z = zi - gridSize / 2;
+  const phase = ((xi + zi) % 2 === 0 ? 1 : -1);
+  const y = Math.sin(x * 0.3 + t * 0.00008) * phase * Math.cos(z * 0.3 + t * 0.00008) * 0.8;
+  return [x, y, z];
+},
+
+// 5: Grid Radial Pulse (slow, gentle)
+(i, t) => {
+  const xi = i % gridSize;
+  const zi = Math.floor(i / gridSize);
+  const x = xi - gridSize / 2;
+  const z = zi - gridSize / 2;
+  const r = Math.sqrt(x * x + z * z);
+  const y = Math.sin(r - t * 0.00008) * 1.2;
+  return [x, y, z];
+},
+
+// 6: Grid Swirl (slow, gentle)
+(i, t) => {
+  const xi = i % gridSize;
+  const zi = Math.floor(i / gridSize);
+  const x = xi - gridSize / 2;
+  const z = zi - gridSize / 2;
+  const angle = Math.atan2(z, x);
+  const radius = Math.sqrt(x * x + z * z);
+  const y = Math.sin(radius + t * 0.00008 + angle * 2) * 1.2;
+  return [x, y, z];
+},
+
+// 7: Grid Rings (slow, gentle)
+(i, t) => {
+  const xi = i % gridSize;
+  const zi = Math.floor(i / gridSize);
+  const x = xi - gridSize / 2;
+  const z = zi - gridSize / 2;
+  const r = Math.sqrt(x * x + z * z);
+  const y = Math.sin(r * 1.2 - t * 0.00008) * 1.2;
+  return [x, y, z];
+},
+
+// 8: Grid Diagonal Sweep (slow, gentle)
+(i, t) => {
+  const xi = i % gridSize;
+  const zi = Math.floor(i / gridSize);
+  const x = xi - gridSize / 2;
+  const z = zi - gridSize / 2;
+  const y = Math.sin((x + z) * 0.3 + t * 0.00008) * 1.2;
+  return [x, y, z];
+},
+        // // 3: Grid Waves
+        // (i, t) => {
+        //   const xi = i % gridSize;
+        //   const zi = Math.floor(i / gridSize);
+        //   const x = xi - gridSize / 2;
+        //   const z = zi - gridSize / 2;
+        //   const y = Math.sin(x * 0.5 + t * 0.0003) + Math.cos(z * 0.5 + t * 0.0003);
+        //   return [x, y, z];
+        // },
+        //         // Grid Waves: Checkerboard Breathing
+        // (i, t) => {
+        // const xi = i % gridSize;
+        // const zi = Math.floor(i / gridSize);
+        // const x = xi - gridSize / 2;
+        // const z = zi - gridSize / 2;
+        // const phase = ((xi + zi) % 2 === 0 ? 1 : -1);
+        // const y = Math.sin(x * 0.5 + t * 0.0003) * phase * Math.cos(z * 0.5 + t * 0.0003);
+        // return [x, y, z];
+        // },
+        // // Grid Waves: Radial Pulse
+        // (i, t) => {
+        // const xi = i % gridSize;
+        // const zi = Math.floor(i / gridSize);
+        // const x = xi - gridSize / 2;
+        // const z = zi - gridSize / 2;
+        // const r = Math.sqrt(x * x + z * z);
+        // const y = Math.sin(r - t * 0.002) * 2;
+        // return [x, y, z];
+        // },
+        // // Grid Waves: Swirl
+        // (i, t) => {
+        // const xi = i % gridSize;
+        // const zi = Math.floor(i / gridSize);
+        // const x = xi - gridSize / 2;
+        // const z = zi - gridSize / 2;
+        // const angle = Math.atan2(z, x);
+        // const radius = Math.sqrt(x * x + z * z);
+        // const y = Math.sin(radius + t * 0.002 + angle * 2) * 2;
+        // return [x, y, z];
+        // },
+        // // Grid Waves: Expanding Rings
+        // (i, t) => {
+        // const xi = i % gridSize;
+        // const zi = Math.floor(i / gridSize);
+        // const x = xi - gridSize / 2;
+        // const z = zi - gridSize / 2;
+        // const r = Math.sqrt(x * x + z * z);
+        // const y = Math.sin(r * 2 - t * 0.003) * 2;
+        // return [x, y, z];
+        // },
+
+        // // Grid Waves: Diagonal Sweep
+        // (i, t) => {
+        // const xi = i % gridSize;
+        // const zi = Math.floor(i / gridSize);
+        // const x = xi - gridSize / 2;
+        // const z = zi - gridSize / 2;
+        // const y = Math.sin((x + z) * 0.7 + t * 0.002) * 2;
+        // return [x, y, z];
+        // },
         // 4: Helix
         (i, t) => {
           const tt = i * 0.1 + t * 0.0003;
@@ -152,6 +275,37 @@ export default {
           const y = tt - 15;
           const z = Math.sin(tt) * 5;
           return [x, y, z];
+        },
+        // 5: 3D Lissajous Curve
+        (i, t) => {
+        const a = 3, b = 2, c = 5;
+        const delta = Math.PI / 2;
+        const tt = i * 0.05 + t * 0.0002;
+        const x = Math.sin(a * tt + delta) * 6;
+        const y = Math.sin(b * tt) * 6;
+        const z = Math.sin(c * tt) * 6;
+        return [x, y, z];
+        },
+        // 6: Expanding/Contracting Spherical Shells
+        (i, t) => {
+        const N = 200;
+        const phi = Math.acos(-1 + (2 * i) / N);
+        const theta = Math.sqrt(N * Math.PI) * phi;
+        const r = 4 + Math.sin(t * 0.0005 + i) * 2;
+        const x = r * Math.cos(theta) * Math.sin(phi);
+        const y = r * Math.sin(theta) * Math.sin(phi);
+        const z = r * Math.cos(phi);
+        return [x, y, z];
+        },
+        // 7: 3D Rose (Rhodonea) Curve
+        (i, t) => {
+        const k = 5;
+        const tt = i * 0.05 + t * 0.0003;
+        const r = 5 * Math.cos(k * tt);
+        const x = r * Math.cos(tt);
+        const y = r * Math.sin(tt);
+        const z = Math.sin(k * tt) * 3;
+        return [x, y, z];
         }
       ];
 
