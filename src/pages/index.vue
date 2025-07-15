@@ -17,7 +17,7 @@
 
     <section style="height: 100vh; width: 100%;">
      
-           <ThreeJsSpheres08 :windowSize="$vuetify.display" />
+           <ThreeJsSpheres09 :windowSize="$vuetify.display" />
 
 
 
