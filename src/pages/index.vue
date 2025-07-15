@@ -1,8 +1,9 @@
 <template>
   <page class="mt-0">
     <section style="position: relative; height: 75vh; width: 100%;">
-      <ThreeJsViabilityHeatmap :key="resizeCounter"/>
-      
+
+      <ThreeJs_Heatmap_Circles :key="resizeCounter"/>
+
       <div style="position:absolute; width: 100%; height:100%;">
         <v-container class="fill-height">
           <v-row>
@@ -13,14 +14,6 @@
           </v-row>
         </v-container>
       </div>
-    </section>
-
-    <section style="height: 100vh; width: 100%;">
-     
-           <ThreeJsSpheres12 :windowSize="$vuetify.display" />
-
-
-
     </section>
 
 
@@ -86,6 +79,7 @@
   // import { mdiFormatQuoteClose } from '@mdi/js';
   import OurPortal from '@/components/sections/OurPortal.vue'
   import OurTechnology from '@/components/sections/OurTechnology.vue'
+import ThreeJsSpheres13 from '@/components/three-js/ThreeJsSpheres13.vue';
 
   
   export default {
