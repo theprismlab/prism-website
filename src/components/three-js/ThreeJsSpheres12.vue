@@ -23,7 +23,7 @@ export default {
       barcodePositions: null,
       barcodeColors: null,
       autoLoopTimer: null,
-      autoLoopDelay: 2200,
+      autoLoopDelay: 20,
     };
   },
   computed: {
