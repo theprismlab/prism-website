@@ -1,8 +1,8 @@
 <template>
   <page class="mt-0">
     <section style="position: relative; height: 75vh; width: 100%;">
-
-      <ThreeJs_Heatmap_Circles08 :key="resizeCounter"/>
+      <ThreeJsViabilityHeatmap :key="resizeCounter"/>
+      <!-- <ThreeJs_Heatmap_Circles13 :key="resizeCounter"/> -->
       <!-- <ThreeJsSpheres10/> -->
 
       <div style="position:absolute; width: 100%; height:100%;">
