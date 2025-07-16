@@ -123,7 +123,6 @@ function createHeatmapPlanes(heatmapData) {
     heatmapPlanes.push(plane);
   });
 }
-
 function initSpheres(heatmapData) {
   spheres.forEach(s => scene.remove(s));
   spheres = [];
@@ -131,8 +130,7 @@ function initSpheres(heatmapData) {
   const rainbowColorScale = d3.scaleSequential(d3.interpolateRainbow).domain([0, 10]); // Rainbow color scale
 
   heatmapData.forEach(d => {
-    const radius = Math.random() * 0.3 + 0.1; // Random radius
-    const sphereGeometry = new THREE.SphereGeometry(radius, 16, 16);
+    const sphereGeometry = new THREE.SphereGeometry(0, 16, 16); // Start with radius 0
     const material = new THREE.MeshStandardMaterial({
       color: new THREE.Color(d.c), // Start with heatmap rectangle color
       transparent: true,
@@ -143,13 +141,14 @@ function initSpheres(heatmapData) {
     const sphere = new THREE.Mesh(sphereGeometry, material);
 
     // Initial position matches heatmap rectangle
-    sphere.position.set(d.x, 0.1, d.z); // Slightly above the heatmap rectangle
+    sphere.position.set(d.x, 1, d.z); // Slightly above the heatmap rectangle
 
     // Store user data for animation
     sphere.userData = {
       initialX: d.x,
       initialZ: d.z,
-      radius,
+      radius: 0, // Start with radius 0
+      maxRadius: Math.random() * 0.3 + 0.1, // Random maximum radius
       speed: Math.random() * 0.02 + 0.01, // Random speed
       waveOffset: Math.random() * Math.PI * 2, // Random wave offset
       viability: d.viability, // Store viability for color transition
@@ -160,101 +159,9 @@ function initSpheres(heatmapData) {
     spheres.push(sphere);
   });
 }
-// function parseHeatmapData(data) {
-//   let cellLineGroups = d3.groups(data, d => d.ccle_name).map(d => ({
-//     key: d[0],
-//     values: d[1],
-//     mean: d3.mean(d[1], e => e.viability)
-//   }));
-//   cellLineGroups.sort((a, b) => d3.descending(a.mean, b.mean));
-//   let cellLineToNumber = {};
-//   cellLineGroups.forEach((d, i) => { cellLineToNumber[d.key] = i; });
-//   let doses = [...new Set(data.map(d => d.pert_dose))].sort((a, b) => b - a);
-//   let doseToNumber = {};
-//   doses.forEach((d, i) => { doseToNumber[d] = i; });
-//   const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1, 0.3]);
-//   data.forEach(d => {
-//     d.x = cellLineToNumber[d.ccle_name];
-//     d.z = doseToNumber[d.pert_dose];
-//     d.y = 0;
-//     d.c = colorScale(d.viability);
-//     d.rgba = d.c;
-//   });
-//   return data;
-// }
-// function createHeatmapPlanes(heatmapData) {
-//   heatmapPlanes.forEach(plane => scene.remove(plane));
-//   heatmapPlanes = [];
-
-//   if (!heatmapData.length) return;
-
-//   const zExtent = d3.extent(heatmapData, d => d.z);
-//   const xExtent = d3.extent(heatmapData, d => d.x);
-//   const planeWidth = width / xExtent[1];
-//   const planeHeight = 4;
-
-//   const xScale = d3.scaleLinear().domain(xExtent).range([0, width]);
-//   const zScale = d3.scaleLinear().domain(zExtent).range([0, planeHeight * zExtent[1]]);
-//   const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
-
-//   const xOffset = (xScale.range()[1] - xScale.range()[0]) / 2;
-//   const zOffset = (zScale.range()[1] - zScale.range()[0]) / 2;
-
-//   heatmapData.forEach(d => {
-//     const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
-//     const material = new THREE.MeshBasicMaterial({
-//       color: new THREE.Color(d.c), // Use d.c directly as in the context file
-//       side: THREE.DoubleSide,
-//       opacity: opacityScale(d.z),
-//       transparent: true
-//     });
-//     const plane = new THREE.Mesh(geometry, material);
-//     plane.rotation.x = -Math.PI / 2;
-//     plane.position.set(xScale(d.x) - xOffset, d.y, zScale(d.z) - zOffset);
-//     scene.add(plane);
-//     heatmapPlanes.push(plane);
-//   });
-// }
-// // --- SPHERE LOGIC ---
-// function initSpheres(heatmapData) {
-//   spheres.forEach(s => scene.remove(s));
-//   spheres = [];
-
-//   const rainbowColorScale = d3.scaleSequential(d3.interpolateRainbow).domain([0, 10]); // Rainbow color scale
-
-//   heatmapData.forEach(d => {
-//     const radius = Math.random() * 0.3 + 0.1; // Random radius
-//     const sphereGeometry = new THREE.SphereGeometry(radius, 16, 16);
-//     const material = new THREE.MeshStandardMaterial({
-//       color: new THREE.Color(d.color), // Start with heatmap rectangle color
-//       transparent: true,
-//       opacity: 0, // Start fully transparent
-//       roughness: 0.5,
-//       metalness: 0.3
-//     });
-//     const sphere = new THREE.Mesh(sphereGeometry, material);
-
-//     // Initial position matches heatmap rectangle
-//     sphere.position.set(d.x, 0.1, d.z); // Slightly above the heatmap rectangle
-
-//     // Store user data for animation
-//     sphere.userData = {
-//       initialX: d.x,
-//       initialZ: d.z,
-//       radius,
-//       speed: Math.random() * 0.02 + 0.01, // Random speed
-//       waveOffset: Math.random() * Math.PI * 2, // Random wave offset
-//       viability: d.viability, // Store viability for color transition
-//       rainbowColorScale
-//     };
-
-//     scene.add(sphere);
-//     spheres.push(sphere);
-//   });
-// }
 function updateSpheres(t) {
   spheres.forEach(sphere => {
-    const { initialX, initialZ, speed, waveOffset, viability, rainbowColorScale } = sphere.userData;
+    const { initialX, initialZ, speed, waveOffset, radius, maxRadius, rainbowColorScale } = sphere.userData;
 
     // Bubble up slowly
     sphere.position.y += speed;
@@ -263,9 +170,16 @@ function updateSpheres(t) {
     sphere.position.x = initialX + Math.sin(t * 0.001 + waveOffset) * 2; // Horizontal wave
     sphere.position.z = initialZ + Math.cos(t * 0.001 + waveOffset) * 2; // Depth wave
 
+    // Gradually increase radius
+    if (sphere.userData.radius < maxRadius) {
+      sphere.userData.radius = Math.min(maxRadius, sphere.userData.radius + 0.01);
+      sphere.geometry.dispose(); // Dispose old geometry
+      sphere.geometry = new THREE.SphereGeometry(sphere.userData.radius, 16, 16); // Update geometry with new radius
+    }
+
     // Fade in
     if (sphere.material.opacity < 0.8) {
-      sphere.material.opacity = Math.min(0.8, sphere.material.opacity + 0.01);
+      sphere.material.opacity = Math.min(0.8, sphere.material.opacity + 0.001);
     }
 
     // Change color based on height
@@ -275,9 +189,10 @@ function updateSpheres(t) {
     sphere.material.color.set(blendedColor);
 
     // Reset position if sphere moves too far up
-    if (sphere.position.y > 10) {
-      sphere.position.y = 0.1; // Reset near heatmap
+    if (sphere.position.y > 20) {
+      sphere.position.y = 0.3; // Reset near heatmap
       sphere.material.opacity = 0; // Reset opacity
+      sphere.userData.radius = 0; // Reset radius
       sphere.userData.waveOffset = Math.random() * Math.PI * 2; // Reset wave offset
     }
   });
