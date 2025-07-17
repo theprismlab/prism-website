@@ -1,5 +1,5 @@
 <template>
-  <div class="section-margin-default">
+  <div class="pt-12 pb-12">
       <slot></slot>
   </div>
   </template>
