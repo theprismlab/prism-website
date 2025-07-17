@@ -23,17 +23,8 @@ export default {
     data() {
         return {
             steps: [
-                // {
-                //     text: "Get on our mailing list below to receive updates on our screen offerings and submission windows!"
-                // },
                 {
                     text: 'Complete the forms on the submission hub during our 2-3 week submission window <a href="https://www.theprismlab.org/portal/submissions" target="_blank" class="text-link">PRISM Submission Hub</a>.',
-                    // subSteps: [
-                    //     {
-                    //         text: "Forms can only be completed during our 2-3 week submission window periods (specific dates will be available on the Submission Hub)"
-                    //     },
-
-                    // ]
                 },
                 {
                 text: "Approve and fund a quote for your PRISM submission",

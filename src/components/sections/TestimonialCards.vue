@@ -3,9 +3,9 @@
         <v-col v-for="card in cards" :key="card.title" cols="12" xs="6" sm="6" md="6" lg="6" xl="6">
             <v-card class="pa-6 fill-height justify-start mb-2" style="background: none;" elevation="1">
                 <v-card-text style="line-height:1.75;">
-                    <svg-icon type="mdi" :path="mdiFormatQuoteOpenPath" class="text-primary-lighten-4" ></svg-icon>
+                    <svg-icon size="42" type="mdi" :path="mdiFormatQuoteOpenPath" class="text-primary-lighten-4" ></svg-icon>
                     {{card.text}}
-                    <svg-icon type="mdi" :path="mdiFormatQuoteClosePath" class="text-primary-lighten-4" style="float:right;"></svg-icon>
+                    <svg-icon size="42" type="mdi" :path="mdiFormatQuoteClosePath" class="text-primary-lighten-4" style="float:right;"></svg-icon>
                 </v-card-text>
                 <v-card-subtitle style="line-height:1.33;" class="mb-4 font-weight-medium" v-html="card.subtitle"> </v-card-subtitle>
             </v-card>

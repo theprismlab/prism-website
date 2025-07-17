@@ -19,54 +19,42 @@
 
 
 
-    <section>
-      <v-container>
-        <v-row>
-          <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8" offset-sm="0" offset-md="2" offset-lg="2" offset-xl="2">
-            <p class="text-h3 text-center">Our lab partners with researchers to reveal clinically important differences in drug behavior by screening over 900 cancer cell lines and correlating the viability results with baseline and functional genomic features </p>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8" offset-sm="0" offset-md="2" offset-lg="2" offset-xl="2">
-            <p class="text-body-1"> 
+
+      <container-xs>
+           <p class="text-h3 text-center">Our lab partners with researchers to reveal clinically important differences in drug behavior by screening over 900 cancer cell lines and correlating the viability results with baseline and functional genomic features </p>
+      </container-xs>
+      <container-xs>
+          <p class="text-body-1"> 
               Cancer cell line models remain essential in drug development, providing a controlled system to assess potency and confirm on-target engagement. At a larger scale using PRISM, these models provide power to <span class="text-emphasize">understand heterogeneity</span> in drug response among cell lines harboring the targeted alteration(s), assess <span class="text-emphasize">selectivity relative to those without target alterations, and investigate potential biomarkers associated with these responses</span>.
             </p>
+      </container-xs>
+
+
+      <MainVisual></MainVisual>
+
+
+      <our-portal></our-portal>
+
+      <container-xs>
+        <section-overline>Impact</section-overline>
+        <section-title>Dedicated to advancing oncology research</section-title>
+        <p class="text-body-1">Working with pharmaceutical and biotech companies and academics to improve the outcome for cancer patients worldwide. </p>
+      </container-xs>
+     
+        <container-sm>
+               <our-impact-cards></our-impact-cards>
+        </container-sm>
+
+        
+        <container-sm>
+          <v-row>
+            <v-col offset-sm="0" offset-md="1" offset-lg="1" offset-xl="1">
+              <section-overline>Testimonials</section-overline>
             </v-col>
-        </v-row>
-      </v-container>
-    </section>
-<MainVisual></MainVisual>
-    <section>
+          </v-row>
 
-    </section>
-
-    <our-portal></our-portal>
-
-  
-    <section>
-      <v-container>
-        <v-row>
-          <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8" offset-sm="0" offset-md="2" offset-lg="2" offset-xl="2">
-            <section-overline>Impact</section-overline>
-            <section-title>Dedicated to advancing oncology research</section-title>
-            <p class="text-body-1">Working with pharmaceutical and biotech companies and academics to improve the outcome for cancer patients worldwide. </p>
-            <our-impact-cards></our-impact-cards>
-          </v-col>
-        </v-row>
-
-      </v-container>
-    </section>
-
-    <section>
-      <v-container>
-        <v-row>
-          <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8" offset-sm="0" offset-md="2" offset-lg="2" offset-xl="2">
-            <section-overline>Testimonials</section-overline>
             <testimonial-cards></testimonial-cards>
-          </v-col>
-        </v-row>
-      </v-container>
-    </section>
+        </container-sm>
 
   
 

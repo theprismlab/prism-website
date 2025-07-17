@@ -1,6 +1,10 @@
 <template>
   <v-container>
-      <slot></slot>
+        <v-row class="justify-center">  
+          <v-col cols="12" xs="12" sm="12" md="12" lg="11" xl="10" offset-sm="0" offset-md="0" offset-lg="0" offset-xl="0">
+            <slot></slot>
+        </v-col>
+     </v-row>
   </v-container>
   </template>
   
@@ -23,13 +27,7 @@
     }
   </script>
   <style scoped>
-    .v-container{
-      width: 100% !important;
-      max-width: var(--container-md-max-width) !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-    }
-  
+   
       /* xxl  */
     @media (min-width:  2560px) {
 
