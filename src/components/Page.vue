@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-12 pb-12">
+  <div class="page">
       <slot></slot>
   </div>
   </template>
@@ -23,6 +23,11 @@
     }
   </script>
   <style scoped>
+
+    .page {
+      padding-top: 90px;
+      padding-bottom: 90px;
+    }
          /* xxl  */
         @media (min-width:  2560px) {
 
@@ -46,7 +51,10 @@
         }
         /* xs */
         @media (max-width: 600px) {
-
+            .page{
+              padding-top: 24px;
+              padding-bottom: 24px;
+            }
         }
   </style>
   

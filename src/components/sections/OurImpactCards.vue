@@ -1,18 +1,4 @@
 <template>
-     <!-- <v-row class="mt-12 mb-6">
-        <v-col v-for="card in cards" :key="card.title" cols="12" xs="6" sm="6" md="4" lg="4" xl="4">
-            <v-card class="pa-2 fill-height" style="background: none;" elevation="0" variant="outlined" color="primary-base">
-                <v-card-item>
-                    <div class="d-flex align-center justify-start text-primary-accent-1 mb-2">
-                        <svg-icon type="mdi" size="24" :path="card.iconPath" class="text-primary-accent-2 mr-4"></svg-icon>
-                        <h2 style="line-height: 1.2em !important;" class="text-h2 text-primary-accent-2 font-weight-bold">{{card.title}}</h2>
-                    </div>
-                    <h3 style="opacity: 1; line-height: 1.4em !important;" class="text-overline text-primary-accent-2 text-none font-weight-medium" v-html="card.subtitle"></h3>
-                </v-card-item>
-            </v-card>
-        </v-col>
-    </v-row> -->
-
     <v-row class="mt-6 mb-6">
         <v-col v-for="(card, index) in cards" :key="card.title" cols="12" xs="6" sm="6" md="4" lg="4" xl="4">
             <v-card class="pa-2 fill-height d-flex align-center justify-center flex-column" align="center" elevation="1">
@@ -68,14 +54,6 @@ export default {
 }
 </script>
 <style scoped>
-/* .masthead-followup-icon {
-    padding: 1rem 16px;
-    color: rgba(var(--bg-rgb), 1);
-    background-color: rgba(var(--bg-rgb), .1);
-    background-blend-mode: multiply;
-    border-radius: 1rem;
-    mix-blend-mode: darken;
-} */
 .icon-circle{
     background-color: var(--v-primary-lighten-5);
     border-radius: 50%;

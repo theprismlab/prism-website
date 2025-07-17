@@ -7,11 +7,11 @@
       </p>
   </container-sm>
   <!-- To Do: make container-md use the cols below -->
-  <v-row class="mt-6 mb-10">
-    <v-col cols="12" xs="12" sm="12" md="10" lg="10" xl="10" offset-sm="0" offset-md="1" offset-lg="1" offset-xl="1">
+  <container-md>
       <cell-line-collection-cards></cell-line-collection-cards>
-    </v-col>
-  </v-row>
+  </container-md>
+
+
  
   <container-sm class="mt-10 mb-10">
     <v-row class="justify-center">

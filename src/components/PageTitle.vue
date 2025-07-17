@@ -23,6 +23,7 @@
   <style scoped>
     h1{
       margin-bottom: 48px;
+      margin-top:24px;
     }
       /* xxl  */
     @media (min-width:  2560px) {
