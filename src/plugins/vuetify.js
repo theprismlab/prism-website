@@ -30,7 +30,17 @@ function mixColors(color1, color2, ratio) {
 
   return `#${((1 << 24) + (rMix << 16) + (gMix << 8) + bMix).toString(16).slice(1).toUpperCase()}`;
 }
+function lightenColor(color, amount) {
+  const r = parseInt(color.slice(1, 3), 16);
+  const g = parseInt(color.slice(3, 5), 16);
+  const b = parseInt(color.slice(5, 7), 16);
 
+  const rLightened = Math.min(255, Math.round(r + (255 - r) * amount));
+  const gLightened = Math.min(255, Math.round(g + (255 - g) * amount));
+  const bLightened = Math.min(255, Math.round(b + (255 - b) * amount));
+
+  return `#${((1 << 24) + (rLightened << 16) + (gLightened << 8) + bLightened).toString(16).slice(1).toUpperCase()}`;
+}
 
 const prismTheme = {
   dark: false,
@@ -44,6 +54,7 @@ const prismTheme = {
     // 'primary': '#0E7AFF',
     // 'primary': colors.blue.accent3,
     'primary': colors.blue.base,
+    'primary-base': colors.blue.accent3,
     'primary-darken-1': colors.blue.darken1,
     'primary-darken-2': colors.blue.darken2,
     'primary-darken-3': colors.blue.darken3,
@@ -53,6 +64,8 @@ const prismTheme = {
     'primary-lighten-3': colors.blue.lighten3,
     'primary-lighten-4': colors.blue.lighten4,
     'primary-lighten-5': colors.blue.lighten5,
+    'primary-lighten-6': lightenColor(colors.blue.lighten5, 0.2), // custom lightened color
+    'primary-lighten-7': lightenColor(colors.blue.lighten5, 0.4), // custom lightened color
     'primary-accent-1': colors.blue.accent1,
     'primary-accent-2': colors.blue.accent2,
     'primary-accent-3': colors.blue.accent3,

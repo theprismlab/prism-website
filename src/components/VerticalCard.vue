@@ -8,7 +8,7 @@
             <v-btn class="position-absolute ms-auto" 
                 style="left: 12px; bottom: 8px;" 
                 size="small" 
-                color="primary" 
+                color="primary-base" 
                 variant="text" 
                 rounded
                 :href="action.url"

@@ -118,7 +118,7 @@
 
 .hbspt-form .hs-submit {
     margin: 0px 0px 24px 0px;
-    background-color: var(--v-primary);
+    background-color: var(--v-primary-base);
     color: white;
     display: inline-block;
     padding: 6px 24px;

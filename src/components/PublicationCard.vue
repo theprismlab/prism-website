@@ -11,7 +11,7 @@
                 <h2 v-if="title" :class="`v-card-title text-size-${titleSize}`" v-html="title"></h2>
                 <h3 v-if="subtitle" class="v-card-subtitle" v-html="subtitle"></h3>
                 <p v-if="text" :class="`v-card-text text-size-${textSize}`" v-html="text"></p>
-                <v-btn v-if="button" :color="button.color || 'primary-accent-2'" :variant="button.variant || 'outlined'" v-html="button.text" :href="button.url" target="_blank" rounded></v-btn>
+                <v-btn v-if="button" :color="button.color || 'primary-base'" :variant="button.variant || 'outlined'" v-html="button.text" :href="button.url" target="_blank" rounded></v-btn>
             </v-col>
         </v-row>
     </v-card>

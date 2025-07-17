@@ -65,12 +65,12 @@
         </v-menu>
       </v-tab>
     </v-tabs>        
-    <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary" variant="text" rounded>
+    <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary-base" variant="text" rounded>
       Portal <v-icon class="ml-1" style="font-size: 1em">mdi-open-in-new</v-icon>
     </v-btn>
 
     <v-spacer></v-spacer>
-    <v-btn to="/contact-us" color="primary" variant="flat" rounded>
+    <v-btn to="/contact-us" color="primary-base" variant="flat" rounded>
       Contact us
     </v-btn>
 

@@ -3,7 +3,7 @@
         <v-card  v-for="(step, index) in steps" :key="index" class="mb-4" elevation="0">
 
             <div class=" text-body-2">
-                <v-icon class="text-primary-lighten-2" style="float:left">mdi-numeric-{{ index + 1 }}-circle</v-icon>
+                <v-icon class="text-primary-base" style="float:left">mdi-numeric-{{ index + 1 }}-circle</v-icon>
                 <div style="display: inline-block; width: calc(100% - 40px);">
                     <div v-html="step.text" class="ml-2"></div>
                 </div>

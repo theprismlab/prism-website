@@ -8,7 +8,7 @@
                 <h3 class="text-h5 font-weight-bold">900+ genomically diverse barcoded and pooled cell lines</h3>
                 <p class="text-body-2">
                   Hematopoietic and solid tumor, covering 80 cancer subtypes<br>
-                    <v-btn variant="text" color="primary">Learn more</v-btn>
+                    <v-btn variant="text" color="primary-base">Learn more</v-btn>
                 </p>
               </v-col>
               <v-col class="px-6">
@@ -17,13 +17,13 @@
                 <p class="text-body-2">
                   Features from the Dependency Map are correlated with the PRISM viability profile using univariate and multivariate predictive models
                 </p>
-                <v-btn variant="text" color="primary">Learn more</v-btn>
+                <v-btn variant="text" color="primary-base">Learn more</v-btn>
               </v-col>
               <v-col class="px-6">
                 <v-img :src="`${imgPath}main graphic copy 13.png`"></v-img>
                 <h3 class="text-h5 font-weight-bold">Identify target and patient population of your drug</h3>
                 <p class="text-body-2">Confirm hypothesis and establish biomarkers of sensitivity and resistance</p>
-                <v-btn variant="text" color="primary">Learn more</v-btn>
+                <v-btn variant="text" color="primary-base">Learn more</v-btn>
               </v-col>
             </v-row>
          
