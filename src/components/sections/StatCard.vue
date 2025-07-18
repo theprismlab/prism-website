@@ -1,7 +1,7 @@
 <template>
     <v-card class="pa-2 fill-height d-flex align-center justify-center flex-column" align="center" elevation="1">
         <v-card-item>
-            <div :id="`icon-circle-${index}`" class="d-flex align-center justify-center" 
+            <div v-if="showIcon" :id="`icon-circle-${index}`" class="d-flex align-center justify-center" 
                 :style="{ 
                     backgroundColor: icon.backgroundColor, 
                     width: icon.size + 'px', 
@@ -48,6 +48,11 @@ export default {
             type: String,
             required: false,
             default: ""
+        },
+        showIcon: {
+            type: Boolean,
+            required: false,
+            default: true
         },
         icon: {
             type: Object,
