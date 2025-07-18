@@ -1,11 +1,12 @@
 <template>
-    <v-card class="pa-6 fill-height justify-start mb-2" style="background: none;" elevation="1">
+    <v-card class="pa-6 px-10 fill-height justify-start mb-2" variant="tonal" color="secondary-lighten-3" >
         <v-card-item>
-            <p class="text-body-1">
-                <svg-icon size="34" type="mdi" :path="mdiFormatQuoteOpenPath" class="text-teal-lighten-4" ></svg-icon>  {{card.quote}}
-                <svg-icon size="34" type="mdi" :path="mdiFormatQuoteClosePath" class="text-teal-lighten-4" style="float:right;"></svg-icon>
+            <p class="text-body-1 text-black">
+                <svg-icon size="34" type="mdi" :path="mdiFormatQuoteOpenPath" class="text-secondary" ></svg-icon>  {{card.quote}}
+                <svg-icon size="34" type="mdi" :path="mdiFormatQuoteClosePath" class="text-secondary" style="float:right;"></svg-icon>
             </p>
-            <p class="text-body-2 mb-0 text-grey-darken-1"  v-html="card.author"></p>
+            <p class="text-body-2 mb-0 font-weight-bold text-secondary-darken-2" v-html="card.author"></p>
+            <p class="text-body-2 mb-0 mt-0 text-grey-darken-1" v-html="card.company"></p>
 
             
         </v-card-item>
@@ -53,11 +54,7 @@ export default {
 }
 </script>
 <style scoped>
-.v-card-subtitle{
-    color: var(--v-grey-darken-2);
-}
-p{
-    max-width: 500px;
-}
+
+
 </style>
 

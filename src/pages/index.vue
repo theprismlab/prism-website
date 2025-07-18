@@ -118,12 +118,14 @@ import { mdiAccountGroup } from '@mdi/js';
         testimonialCards: [
           {
               quote: "I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.",
-              author: "Florian Muller<br>Head of Chemistry<br>Lindonlight Collective",
+              author: "Florian Muller",
+              company: "Head of Chemistry<br>Lindonlight Collective"
 
           },
           {
               quote: "The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our research process.",
-              author: "Discovery Oncology Scientist<br>Fortune 500<br>Pharmaceutical Company",
+              author: "Discovery Oncology Scientist",
+              company: "Fortune 500<br>Pharmaceutical Company"
           }
         ]
       }
