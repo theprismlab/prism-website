@@ -9,7 +9,7 @@
         color: {
           type: String,
           required: false,
-          default: 'secondary-darken-2'
+          default: 'secondary-accent-4'
         }
       },
       data () {
