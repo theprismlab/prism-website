@@ -11,12 +11,25 @@
                         <v-data-table
                             :headers="table.headers"
                             :items="table.items"
-                            :group-by="table.groupBy"
                             item-value="name"
+                            item-key="name"
                             class="elevation-1"
                             show-expand
+                            @click:row="clickRow"
+                            :expand-on-click="true"
                             single-expand
-                        >
+                            >
+                            <template
+                            v-slot:expanded-row="{ columns, item, isExpanded, toggleExpand }"
+                            >
+                            <tr>
+                                <td :colspan="columns.length">
+                                    <p class="test-body-2" v-html="item.description"> </p>
+                                </td>
+                            </tr>
+                            </template>
+
+
                         </v-data-table>
                     </section>
                 </v-col>
@@ -30,6 +43,8 @@ export default {
     name: 'Assays',
     data() {
         return {
+            expanded: [],
+            singleExpand: true,
             table: {
                 groupBy:  [{ key: 'screen', order: 'asc' }],
                 headers: [
@@ -41,6 +56,7 @@ export default {
                 ],
                 items: [
                     {
+                        
                         'screen': 'MTS',
                         'test agents': 'Small molecule single agents',
                         'num_cell_lines': 900,
@@ -77,8 +93,15 @@ export default {
         };
     },
     methods: {
-
-    },
+        clickRow(item, event) {
+      if(event.isExpanded) {
+        const index = this.expanded.findIndex(i => i === item);
+        this.expanded.splice(index, 1)
+      } else {
+        this.expanded.push(item);
+      }
+    }
+  },
 };
 </script>
 
