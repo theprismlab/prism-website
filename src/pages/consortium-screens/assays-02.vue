@@ -11,22 +11,23 @@
                         <v-data-table
                             :headers="table.headers"
                             :items="table.items"
-      
+                            item-value="name"
                             item-key="name"
                             class="elevation-1"
                             show-expand
-          
+                         
+                            :expand-on-click="true"
                             :expanded.sync="expanded"
                             >
-                            <template v-slot:item.name="slotData">
-        <div @click="clickColumn(slotData)">{{ slotData.item.name }}</div>
-      </template>
-      
-      <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length">
-          More info about {{ item.name }}
-        </td>
-      </template>
+                            <template
+                            v-slot:expanded-row="{ columns, item, isExpanded, toggleExpand }"
+                            >
+                            <tr>
+                                <td :colspan="columns.length">
+                                    <p class="test-body-2" v-html="item.description"> </p>
+                                </td>
+                            </tr>
+                            </template>
                         </v-data-table>
                     </section>
                 </v-col>
@@ -89,16 +90,7 @@ export default {
         };
     },
     methods: {
-        clickColumn(slotData) {
-      const indexRow = slotData.index;
-      const indexExpanded = this.expanded.findIndex(i => i === slotData.item);
-    this.expanded = this.singleExpand ? [] : this.expanded;
-      if (indexExpanded === -1) {
-        this.expanded.push(slotData.item);
-      } else {
-        this.expanded.splice(indexExpanded, 1);
-      }
-    }
+
   },
 };
 </script>

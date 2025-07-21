@@ -11,22 +11,22 @@
                         <v-data-table
                             :headers="table.headers"
                             :items="table.items"
-      
+                            item-value="name"
                             item-key="name"
                             class="elevation-1"
                             show-expand
-          
+                            single-expand
                             :expanded.sync="expanded"
                             >
-                            <template v-slot:item.name="slotData">
-        <div @click="clickColumn(slotData)">{{ slotData.item.name }}</div>
-      </template>
-      
-      <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length">
-          More info about {{ item.name }}
-        </td>
-      </template>
+
+
+                            <template v-slot:expanded-row="{ columns, item }">
+                                <tr>
+                                    <td :colspan="columns.length">
+                                        <p class="test-body-2" v-html="item.description"></p>
+                                    </td>
+                                </tr>
+                            </template>
                         </v-data-table>
                     </section>
                 </v-col>
@@ -40,10 +40,9 @@ export default {
     name: 'Assays',
     data() {
         return {
-            expanded: [],
-            singleExpand: true,
+            expanded: null,
+            // singleExpand: true,
             table: {
-                groupBy:  [{ key: 'screen', order: 'asc' }],
                 headers: [
                     { title: 'Screen', key: 'screen' },
                     { title: 'Test Agents', key: 'test agents' },
@@ -53,6 +52,7 @@ export default {
                 ],
                 items: [
                     {
+                        
                         'screen': 'MTS',
                         'test agents': 'Small molecule single agents',
                         'num_cell_lines': 900,
@@ -89,16 +89,11 @@ export default {
         };
     },
     methods: {
-        clickColumn(slotData) {
-      const indexRow = slotData.index;
-      const indexExpanded = this.expanded.findIndex(i => i === slotData.item);
-    this.expanded = this.singleExpand ? [] : this.expanded;
-      if (indexExpanded === -1) {
-        this.expanded.push(slotData.item);
-      } else {
-        this.expanded.splice(indexExpanded, 1);
-      }
-    }
+        clickRow(item) {
+            // Toggle the expanded row
+            this.expanded = this.expanded === item ? null : item;
+        },
+
   },
 };
 </script>
