@@ -46,12 +46,7 @@
             <v-list-item id="assays" to="/consortium-screens/assays">
               <v-list-item-title>Assays</v-list-item-title>
             </v-list-item>
-            <v-list-item id="assays2" to="/consortium-screens/assays-2">
-              <v-list-item-title>Assays 2</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="assays3" to="/consortium-screens/assays-3">
-              <v-list-item-title>Assays 3</v-list-item-title>
-            </v-list-item>
+
             <v-list-item id="data-analysis" to="/consortium-screens/data-analysis">
               <v-list-item-title>Data Analysis</v-list-item-title>
             </v-list-item>
