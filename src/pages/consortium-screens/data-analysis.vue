@@ -7,17 +7,29 @@
         <p class="text-body-1">
           PRISM sensitivity profiles are compared to deep multi-omic cell line characterization information in univariate analyses as well as multivariate predictive modeling algorithms to identify features that correlate with sensitivity.
         </p>
-
       </v-col>
-    
     </v-row>  
   
 
 
 
     <v-row class="justify-center">
-        <v-img  style="max-width:800px;" :src="`${imgPath}data-analysis-graphic.png`" alt="Cell Line Collection"></v-img>
+      <v-img style="max-width:800px;" :src="`${imgPath}${imgFiles[selectedIndex]}`" alt="Cell Line Collection"></v-img>
     </v-row>
+    <v-row class="justify-center mt-12">
+      <v-btn
+        v-for="(file, idx) in imgFiles"
+        :key="file"
+        class="ma-2"
+        flat
+        :color="selectedIndex === idx ? 'grey-lighten-1' : 'grey-lighten-3'"
+        @click="selectedIndex = idx"
+      >
+        Image {{ idx + 1 }}
+      </v-btn>
+    </v-row>
+
+
 
 
     <v-row class="mt-6 mb-6">
@@ -46,7 +58,6 @@
       </v-col>
     </v-row>
 
-
       <v-row class="mt-6 mb-6">
         <v-col>
           <div style="height:250px; background-color:#e2e2e2; margin-bottom:4px;">
@@ -73,9 +84,15 @@
 
 export default {
   name: 'DataAnalysis',
-  data() {
+data() {
     return {
-     
+      selectedIndex: 0,
+      imgFiles: [
+        'data-analysis-11.png',
+        'data-analysis-09.png',
+        'data-analysis-10.png',
+
+      ]
     };
   },
     computed:{
