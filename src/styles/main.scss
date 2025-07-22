@@ -1,149 +1,41 @@
        // font-family: TWK Lausanne, sans-serif;
-// h1{
-//     font-size: var(--h1-size);
-//     line-height: var(--h1-line-height);
-// }
-// h2 {
-//     font-size: var(--h2-size);
-//     line-height: var(--h2-line-height);
 
-// }
-// h3 {
-//     font-size: var(--h3-size);;
-//     line-height: var(--h3-line-height);
-
-// }
-// h4{
-//     font-size: var(--h4-size);
-//     line-height: var(--h4-line-height);
-// }
-// h5{
-//     font-size: var(--h5-size);
-//     line-height: var(--h5-line-height);
-// }
-// h6{
-//     font-size: var(--h6-size);
-//     line-height: var(--h6-line-height);
-// }
 .text-emphasize{
     font-weight: 600;
     color: var(--base-color-gray--900);
 }
 p {
-    font-size: var(--body-1-size);
-    line-height: var(--body-1-line-height);
-    margin: 12px 0 24px 0;
-}
-.header-h1{
-    margin: 32px 0 24px 0;
-}
-.header-h2{
-    margin: 24px 0 12px 0;
-}
-.header-h3{
-    margin: 24px 0 12px 0;
-}
-.header-h4{
-    margin: 24px 0 12px 0;
-}
-.header-h5
-// .header-h6
-{
-    margin: 24px 0 12px 0;
-}
-.content {
-    display: flex;
-    flex-direction: column;
-    gap: 48px;
-    margin-top: 96px;
+    max-width:800px;
+    margin: 12px 0 24px 0; // not sure is this is needed
 }
 
-.text-color-gray600 {
-    color: var(--base-color-gray--600) !important;
-}
-
-
-
-// new classes for easier text size changes
-.text-size-body-1{
-    font-size: var(--body-1-size) !important;
-}
-.text-size-body-2{
-    font-size: var(--body-2-size) !important;
-}
-.text-size-h1{
-    font-size: var(--h1-size) !important;
-}
-.text-size-h2{
-    font-size: var(--h2-size) !important;
-}
-.text-size-h3{
-    font-size: var(--h3-size) !important;
-}
-.text-size-h4{
-    font-size: var(--h4-size) !important;
-}
-.text-size-h5{
-    font-size: var(--h5-size) !important;
-}
-// .text-size-h6{
-//     font-size: var(--h6-size) !important;
-// }
-// .text-size-h7{
-//     font-size: var(--h7-size) !important;
-// }
-
-.section-padding-default {
-    padding-top: var(--section-padding-default);
-    padding-bottom: var(--section-padding-default);
-}
-.section-margin-default {
-    margin-top: var(--section-padding-default);
-    margin-bottom: var(--section-padding-default);
-}
-
-.container-sm-max-width {
-    max-width: var(--container-sm-max-width) !important;
-}
-.container-md-max-width {
+.v-container{
+    width: 100% !important;
     max-width: var(--container-md-max-width) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
-
-    .v-container{
-      width: 100% !important;
-      max-width: var(--container-md-max-width) !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-    }
-  
-// title class adds bottom margin. need to consider better way
-.title {
-    margin-bottom: 48px;
-    margin-top: 16px;
-}
 .elevation-1{
     box-shadow: 2px 4px 12px #00000014 !important;
   }
 
 a{
-    color: var(--v-primary);
+    text-decoration: none !important;
+    color: var(--v-primary-base);
 }
 a:hover{
-    opacity: 0.75;
+    opacity: 0.85;
 }
-a.text-button{
-    text-decoration: none;
+// a:not(button){
+//     text-decoration: none !important;
+//     border-bottom:0.25px solid var(--v-primary);
+//     cursor: pointer;
+// }
+.no-border{
+    border: none !important;
 }
-.text-link {
-    text-decoration: none !important;
-    border-bottom:0.25px solid var(--v-primary);
-    cursor: pointer;
-  }
 
-.text-body-1 > a.text-button{
-    line-height: var(--body-1-line-height) !important;
-}
 ul{
     padding-inline-start: 1.25em;
     
@@ -153,18 +45,7 @@ ul{
     margin-bottom: 0.65em;
     padding-left:6px;
   }
-// .rokkitt{
-//   font-family: "Rokkitt", serif;
-//   font-optical-sizing: auto;
-//   font-weight: 400;
-//   font-style: normal;
-// }
-p, h1, h2, h3, h4, h5, h6{
-    max-width:800px;
-}
- ul, li, .v-list-item>*{
-    max-width:800px;
- }
+
 // xxl 
 @media (min-width:  2560px) {
 

@@ -2,7 +2,7 @@
 
   <v-app-bar app color="white" light class="elevation-1 px-6">
     <v-toolbar-title>
-      <router-link to="/" tag="span" style="cursor: pointer">
+      <router-link to="/" tag="span" style="cursor: pointer; text-decoration: none; border: none;">
         <img id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png"/>
       </router-link>
     </v-toolbar-title>

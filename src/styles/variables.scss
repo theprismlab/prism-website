@@ -6,7 +6,7 @@ $body-font-family: 'Inter';
 @use 'vuetify/settings' with (
     $color-pack: true,
     $body-font-family: 'Inter',
-    $font-size-root: 1rem,
+    $font-size-root: var(--font-size-root),
     $heading-font-family: 'Inter',
     $card-title-white-space: normal,
     $card-title-word-wrap: initial,
@@ -24,35 +24,35 @@ $body-font-family: 'Inter';
     $typography: (
         'body-1': (
           'size': var(--body-1-size),
-          'weight': 400,
-          'line-height': var(--body-1-line-height),
-          'letter-spacing': .03125em,
-          'font-family': $body-font-family,
-          'text-transform': none
+          // 'weight': 400,
+         'line-height': 1.6em,
+         // 'letter-spacing': .03125em,
+          // 'font-family': $body-font-family,
+          // 'text-transform': none
         ),
         'body-2': (
           'size': var(--body-2-size),
-          'weight': 400,
-          'line-height': var(--body-2-line-height),
-           'letter-spacing': .03125em,
-          'font-family': $body-font-family,
-          'text-transform': none
+          // 'weight': 400,
+          // 'line-height': var(--body-2-line-height),
+        //   'letter-spacing': .03125em,
+          // 'font-family': $body-font-family,
+          // 'text-transform': none
         ),
         'h1': (
             'size': var(--h1-size),
-            'line-height': var(--h1-line-height),
-            'letter-spacing': -.015625em,
-            'font-family': $heading-font-family,
+          //  'line-height': var(--h1-line-height),
+          //  'letter-spacing': -.015625em,
+          //  'font-family': $heading-font-family,
             'text-transform': none,
             'weight': 700
         ),
         'h2': (
             'size': var(--h2-size),
-            'line-height': var(--h2-line-height),
-            'letter-spacing': -.0083333333em,
+         //   'line-height': var(--h2-line-height),
+         //   'letter-spacing': -.0083333333em,
             'font-family': $heading-font-family,
             'text-transform': none,
-            'weight': 500
+        //    'weight': 500
         ),
         'h3': (
             'size': var(--h3-size),
@@ -60,7 +60,7 @@ $body-font-family: 'Inter';
             'letter-spacing': normal,
             'font-family': $heading-font-family,
             'text-transform': none,
-            'weight': 500
+           // 'weight': 500
         ),
         'h4': (
             'size': var(--h4-size),
@@ -68,12 +68,12 @@ $body-font-family: 'Inter';
             'letter-spacing': .0073529412em,
             'font-family': $heading-font-family,
             'text-transform': none,
-            'weight': 500
+          //  'weight': 500
         ),
         'h5': (
             'size': var(--h5-size),
-            'line-height': 1.33,
-            'letter-spacing': normal,
+            // 'line-height': 1.33,
+            // 'letter-spacing': normal,
             'font-family': $heading-font-family,
             'text-transform': none,
         ),
@@ -166,56 +166,22 @@ $body-font-family: 'Inter';
   word-wrap: initial !important;
   line-height: var(--body-2-line-height) !important;
 }
-// .v-card-subtitle {
-//   display: block;
-//   flex: none;
-//   // font-size: 0.875rem;
-//   font-size: var(--body-2-size) !important;
-//   font-weight: 400;
-//   letter-spacing: 0.0178571429em;
-//   opacity: var(--v-card-subtitle-opacity, var(--v-medium-emphasis-opacity));
-//   overflow: hidden;
-//   padding: 0 1rem;
-//   text-overflow: visible;
-//   text-transform: none;
-//   white-space: normal;
-// }
 
 :root {
-    --section-padding-default: 56px;
+  --font-size-root: 16px;
     --body-1-size: 1.125rem;
     --body-2-size: 0.925rem;
 
-
-    // --body-1-size: 1rem;
-    // --body-2-size: 0.875rem;
-    // --h1-size: 4.75rem;
     --h1-size: 3.33rem;
     --h2-size: 2.75rem;
     --h3-size: 1.66rem;
     --h4-size: 1.33rem;
     --h5-size: 1.25rem; 
-    // --h6-size: var(--body-1-size);
-    // --h7-size: var(--body-2-size);
+    --h6-size: var(--body-1-size);
+    --h7-size: var(--body-2-size);
     --subtitle-1-size: var(--body-1-size);
     --subtitle-2-size: var(--body-2-size);
 
-
-    --h1-line-height: 1em;
-    --h2-line-height: 1.33em;
-    --h3-line-height: 1.33em;
-    --h4-line-height: 1.66em;
-    --h5-line-height: 1.66em;
-
-
-    --body-1-line-height: 1.6em;
-    --body-2-line-height: 1.6em;
-
-
-    // --h6-line-height: var(--body-1-line-height);
-    // --h7-line-height: var(--body-2-line-height);
-    --subtitle-1-line-height: var(--body-1-line-height);
-    --subtitle-2-line-height: var(--body-2-line-height);
 
     --base-color-gray--600: #525252;
     --base-color-gray--800: #262626;
@@ -234,88 +200,30 @@ $body-font-family: 'Inter';
       }
       /* lg */
       @media (min-width: 1280px) and (max-width: 1920px) {
-        :root {
-          --container-sm-max-width: 1000px;
-          --container-md-max-width: 1200px;
-        }
+
       }
         /* md */
       @media (min-width: 960px) and (max-width: 1280px) {
-
-        :root {
-          --container-sm-max-width: 1000px;
-          --container-md-max-width: 1200px;
-        }
       
       }
-  
-      /* sm */
+
+        /* sm */
       @media (min-width: 600px) and (max-width: 960px) {
-        :root {
-          --h1-size: 3.66rem;
-          --h2-size: 2.66rem;
-          --container-sm-max-width: 92%;
-          --container-md-max-width: 92%;
-        }
+
       }
       /* xs */
       @media (max-width: 600px) {
         :root {
-          --h1-size: 3.66rem;
-          --h2-size: 2.66rem;
-          --container-sm-max-width: 96%;
-          --container-md-max-width: 96%;
+           --font-size-root: 14px;
+          // --h1-size: calc(3.33rem * 0.9);
+          // --h2-size: calc(2.75rem * 0.9);
+          // --h3-size: calc(1.66rem * 0.9);
+          // --h4-size: calc(1.33rem * 0.9);
+          // --h5-size: calc(1.25rem * 0.9);
+          // --h6-size: var(--body-1-size);
+          // --h7-size: var(--body-2-size);
+          // --container-sm-max-width: 96%;
+          // --container-md-max-width: 96%;
         }
       }
-
-
-// @media (max-width: 1200px) {
-//     :root {
-//         --h1-size: 4rem;
-//         --h2-size: 2.75rem;
-//         --h3-size: 2rem;
-//         --h4-size: 1.25rem;
-//         --h5-size: 0.85rem;
-//         --h6-size: 0.75rem;
-//     }
-// }
-
-// @media (max-width: 992px) {
-//     :root {
-//         --h1-size: 3.5rem;
-//         --h2-size: 2.5rem;
-//         --h3-size: 2rem;
-//         --h4-size: 1.75rem;
-//         --h5-size: 1.5rem;
-//         --h6-size: 1.25rem;
-//     }
-// }
-
-// @media (max-width: 768px) {
-//     :root {
-//         --h1-size: 3rem;
-//         --h2-size: 2rem;
-//         --h3-size: 1.75rem;
-//         --h4-size: 1.5rem;
-//         --h5-size: 1.25rem;
-//         --h6-size: 1.25rem;
-//     }
-// }
-
-// @media (max-width: 600px) {
-//     :root {
-//       --body-1-size: 1rem;
-//       --body-2-size: 0.875rem;
-//       --h1-size: 2.75rem;
-//       --h2-size: 2rem;
-//       --h3-size: 1.66rem;
-//       --h4-size: 1.33rem;
-//       --h5-size: 1rem; 
-//       --h6-size: var(--body-1-size);
-//       --h7-size: var(--body-2-size);
-//       --subtitle-1-size: var(--body-1-size);
-//       --subtitle-2-size: var(--body-2-size);
-//     }
-// }
-
 
