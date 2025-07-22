@@ -27,8 +27,8 @@
                             </tr>
                             </template>
                             <template v-slot:item.data-table-expand="{ toggleExpand, isExpanded, item, internalItem }">
-                                <v-icon  v-if="isExpanded(internalItem)" @click="toggleExpand(internalItem)">mdi-check</v-icon>
-                                <v-icon  v-else @click="toggleExpand(internalItem)">mdi-delete</v-icon>
+                                <v-icon  v-if="isExpanded(internalItem)" @click="toggleExpand(internalItem)">mdi-chevron-up</v-icon>
+                                <v-icon  v-else @click="toggleExpand(internalItem)">mdi-chevron-down</v-icon>
                             </template>
 
                         </v-data-table>
