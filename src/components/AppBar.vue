@@ -2,7 +2,7 @@
 
   <v-app-bar app color="white" light class="elevation-1 px-6">
     <v-toolbar-title>
-      <router-link to="/" tag="span" style="cursor: pointer">
+      <router-link to="/" tag="span" style="cursor: pointer; text-decoration: none; border: none;">
         <img id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png"/>
       </router-link>
     </v-toolbar-title>
@@ -46,12 +46,7 @@
             <v-list-item id="assays" to="/consortium-screens/assays">
               <v-list-item-title>Assays</v-list-item-title>
             </v-list-item>
-            <v-list-item id="assays2" to="/consortium-screens/assays-2">
-              <v-list-item-title>Assays 2</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="assays3" to="/consortium-screens/assays-3">
-              <v-list-item-title>Assays 3</v-list-item-title>
-            </v-list-item>
+
             <v-list-item id="data-analysis" to="/consortium-screens/data-analysis">
               <v-list-item-title>Data Analysis</v-list-item-title>
             </v-list-item>
@@ -65,12 +60,12 @@
         </v-menu>
       </v-tab>
     </v-tabs>        
-    <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary" variant="text" rounded>
+    <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary-base" variant="text" rounded>
       Portal <v-icon class="ml-1" style="font-size: 1em">mdi-open-in-new</v-icon>
     </v-btn>
 
     <v-spacer></v-spacer>
-    <v-btn to="/contact-us" color="primary" variant="flat" rounded>
+    <v-btn to="/contact-us" color="primary-base" variant="flat" rounded>
       Contact us
     </v-btn>
 

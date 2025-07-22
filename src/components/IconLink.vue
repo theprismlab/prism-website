@@ -42,7 +42,7 @@
         color: {
             type: String,
             required: false,
-            default: "primary-accent-2"
+            default: "primary-base"
         },
         icon: {
             type: String,

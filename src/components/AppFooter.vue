@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="py-4" style="background-color: var(--v-primary-darken-2)">
+  <v-footer class="py-4" style="background-color: var(--v-primary-base)">
     <v-container>
       <v-row class="justify-space-between align-center">
         <!-- <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6" align-self="center">
@@ -41,7 +41,7 @@
               />
             </v-col>
             <v-col cols="6" xs="12" sm="6" md="6" lg="4" xl="4">      
-              <v-btn to="/contact-us" rounded size="small" class="text-primary mt-2" variant="flat">Contact us</v-btn>
+              <v-btn to="/contact-us" rounded size="small" class="text-primary-base mt-2" variant="flat">Contact us</v-btn>
             </v-col>
           </v-row>
         </v-col>

@@ -10,9 +10,11 @@
 
 
         <section class="mt-12 mb-6">
+
           <h2 class="text-h3  font-weight-bold">Test agent data</h2>
 
           <div class="mt-6 mb-6">
+            <svg-icon type="mdi" size="54" :path="mdiChartBoxOutline"></svg-icon>
             <h3 class="text-h4 font-weight-medium">Standard deliverables</h3>
             <ul class="ma-6 text-body-2">
               <li>Viability heatmap</li>
@@ -23,7 +25,16 @@
             </ul>  
           </div>
 
+
           <div class="mt-6 mb-6">
+            <div
+              class="pa-6"
+       
+            :style="{ backgroundColor: 'var(--v-primary-lighten-7)', borderRadius: '8px', display: 'inline-block' }"
+            >
+              <svg-icon type="mdi" size="54" color="var(--v-primary-base)"  :path="mdiChartBoxMultipleOutline"></svg-icon>
+            </div>
+             
             <h3 class="text-h4 font-weight-medium">Combination deliverables</h3>
             <ul class="ma-6 text-body-2">
               <li>Standard devliverables for each single agent alone and in combination</li>
@@ -53,9 +64,31 @@
 </page>
 </template>
 
-<script setup>
-  
+<script>
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiFileChartOutline } from '@mdi/js';
+import { mdiChartBoxOutline } from '@mdi/js';
+import { mdiChartBoxMultipleOutline } from '@mdi/js';
+import { mdiDna } from '@mdi/js';
+import { mdiChartSankeyVariant } from '@mdi/js';
+import { mdiViewComfy } from '@mdi/js';
+
+export default {
+  name: "my-component",
+  components: {
+    SvgIcon
+  },
+  data() {
+    return {
+      mdiFileChartOutline: mdiFileChartOutline,
+      mdiChartBoxOutline: mdiChartBoxOutline,
+      mdiChartBoxMultipleOutline: mdiChartBoxMultipleOutline,
+      mdiDna: mdiDna
+    }
+  }
+}
 </script>
+
   
 <style scoped>
 

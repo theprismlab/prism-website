@@ -8,15 +8,29 @@
           PRISM sensitivity profiles are compared to deep multi-omic cell line characterization information in univariate analyses as well as multivariate predictive modeling algorithms to identify features that correlate with sensitivity.
         </p>
       </v-col>
-    </v-row>
+    </v-row>  
   
-    <v-row class="mt-6 mb-6">
-      <v-col>
-        <div style="height:200px; background-color:#e2e2e2; margin-bottom:4px;">
-            <h2 class="text-center text-white pt-8">graphic</h2>
-        </div>
-      </v-col>
+
+
+
+    <v-row class="justify-center">
+      <v-img style="max-width:800px;" :src="`${imgPath}${imgFiles[selectedIndex]}`" alt="Cell Line Collection"></v-img>
     </v-row>
+    <!-- <v-row class="justify-center mt-12">
+      <v-btn
+        v-for="(file, idx) in imgFiles"
+        :key="file"
+        class="ma-2"
+        flat
+        :color="selectedIndex === idx ? 'grey-lighten-1' : 'grey-lighten-3'"
+        @click="selectedIndex = idx"
+      >
+        Image {{ idx + 1 }}
+      </v-btn>
+    </v-row> -->
+
+
+
 
     <v-row class="mt-6 mb-6">
       <v-col>
@@ -44,7 +58,6 @@
       </v-col>
     </v-row>
 
-
       <v-row class="mt-6 mb-6">
         <v-col>
           <div style="height:250px; background-color:#e2e2e2; margin-bottom:4px;">
@@ -67,7 +80,30 @@
 </page>
 </template>
 
-<script setup>
+<script>
+
+export default {
+  name: 'DataAnalysis',
+data() {
+    return {
+      selectedIndex: 1,
+      imgFiles: [
+        'data-analysis-11.png',
+        'data-analysis-09.png',
+        'data-analysis-10.png',
+
+      ]
+    };
+  },
+    computed:{
+    imgPath() {
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/" : "../../public/images/"
+        },
+    },
+  components: {
+
+  },
+}
   
 </script>
   
