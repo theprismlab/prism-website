@@ -8,20 +8,24 @@
   </container-sm>
 
   <container-md>  
-    <v-row class="mt-6 mb-6">
+    <v-row>
       <v-col v-for="(card, index) in cellLineCards" :key="index" cols="12" xs="6" sm="6" md="3" lg="3" xl="3">
         <stat-card :index="index" :title="card.title" :subtitle="card.subtitle" :showIcon="false"></stat-card>
       </v-col>
     </v-row>
   </container-md>
 
-  <container-sm class="mt-10 mb-10">
-    <v-row class="justify-center">
-        <v-img  style="max-width:800px;" :src="`${imgPath}img-kb-1.2-step-1.svg`" alt="Cell Line Collection"></v-img>
-    </v-row>
+  <container-sm class="mt-6 mb-12">
+    <v-card class="py-6" variant="outlined" color="grey-lighten-2">
+      <v-card-item>
+        <v-img  style="max-width:800px; margin: auto;" :src="`${imgPath}img-kb-1.2-step-1.svg`" alt="Cell Line Collection"></v-img>
+      </v-card-item>
+
+    </v-card>
+      
   </container-sm>
 
-  <container-sm class="mt-10 mb-10">
+  <container-sm class="mt-12 mb-12">
     <h2 class="text-h3 text-black">All of our cell lines are:</h2>
       <v-list class="mt-6" style="background-color: transparent;">
         <v-list-item v-for="item in checklist" :key="checklist">
@@ -33,7 +37,7 @@
       </v-list>
   </container-sm>
 
-  <container-sm class="mt-10 mb-10">
+  <container-sm class="mt-12 mb-12">
     <v-row>
       <v-col>
         <h2 class="text-h3">Cell sets in PRISM screens</h2>
