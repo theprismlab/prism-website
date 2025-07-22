@@ -17,16 +17,15 @@
                 :expanded.sync="expandedRows"
                 @click:row="handleRowClick"
                 >
+                <template v-slot:item.dose_scheme="{ item }">
+                    <span v-html="item['dose_scheme']"></span>
+                </template>
                 <template v-slot:expanded-row="{ columns, item }">
                 <tr>
                     <td :colspan="columns.length">
                         <v-card class="pa-3" flat>
-                            <v-card-text  v-html="item.description">
-
-                            </v-card-text>
-                         
+                            <v-card-text  v-html="item.description"></v-card-text>
                         </v-card>
-              
                     </td>
                 </tr>
                 </template>
@@ -49,45 +48,49 @@ export default {
                 // groupBy:  [{ key: 'screen', order: 'asc' }],
                 headers: [
                     { title: 'Screen', key: 'screen', width: '10%', minWidth: '100px' },
-                    { title: 'Test Agents', key: 'test agents', width: '30%', minWidth: '200px'  },
-                    { title: 'Dose Scheme', key: 'dose scheme', width: '30%', minWidth: '100px'  },
-                    { title: 'Time-Point', key: 'time-point', width: '15%', minWidth: '100px'  },
+                    { title: 'Test Agents', key: 'test_agents', width: '30%', minWidth: '200px'  },
+                    { title: 'Dose Scheme', key: 'dose_scheme', width: '30%', minWidth: '100px'  },
+                    { title: 'Time-Point', key: 'time_point', width: '15%', minWidth: '100px'  },
                     { title: '# of Cell Lines', key: 'num_cell_lines',  width: '15%', minWidth: '100px'  },
                 ],
                 items: [
                     {
                         'id': "MTS",
                         'screen': 'MTS',
-                        'test agents': 'Small molecule single agents',
-                        'num_cell_lines': 900,
-                        'dose scheme': `8-point dose, 3-fold dilution`,
-                        'time-point': '5-day',
+                        'test_agents': 'small molecule single agents',
+                        'num_cell_lines': '~900 (full PRISM cell set)',
+                        'dose_scheme': `8-point dose, 3-fold dilution`,
+                        'time_point': '5-day',
                         'description': 'We screen standard DMSO compounds at a top dose of your choice, diluted 3-fold over 8 dilutions. Compounds are plated with an Echo using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s).',
                     },
                     {
                         'id': "CPS",
                         'screen': 'CPS',
-                        'test agents': 'Small molecule combinations',
-                        'num_cell_lines': 900,
-                        'dose scheme': `7-point dose, 3-fold dilution of treatment test agent and 1 dose of anchor test agent alone and in combination`,
-                        'time-point': '5-day',
-                        'description': 'Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents.',
+                        'test_agents': 'small molecule combinations',
+                        'num_cell_lines': '~900 (full PRISM cell set)',
+                        'dose_scheme': `<ul>
+                            <li>7-point dose, 3-fold dilution (treatment agent)</li>
+                            <li>1-point dose (anchor agent)</li>
+                            <li>Test agents are screened at dose alone and in combination</li>
+                        </ul>`,
+                        'time_point': '5-day',
+                        'description': 'Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents. When selecting an anchor dose our recommendation is to select a dose that does not broadly affect cell viability but gives a reproducible phenotypic effect in a specific cell line or set of cell lines. <a href="https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism" target="_blank">CPS white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/CPS009/CPS_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal. Compounds are plated by Echo into plates and frozen prior to cell treatment. Cells are then tawed and plated onto the compound assay ready plates (ARP’s)',
                     },
                     {   'id': "APS",
                         'screen': 'APS',
-                        'test agents': 'Antibodies, ADCs, growth-inhibiting cytokines, peptides',
-                        'num_cell_lines': 900,
-                        'dose scheme': `Single dose or custom dose`,
-                        'time-point': '5-day',
-                        'description': 'For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents.',
+                        'test_agents': 'antibodies, ADCs, growth-inhibiting cytokines, aqueous test agents',
+                        'num_cell_lines': '~900 (full PRISM cell set)',
+                        'dose_scheme': `8-point dose, 3-fold dilution`,
+                        'time_point': '5-day',
+                        'description': `For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents. For more information, review the <a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal.`,
                     },
                     {
                         'id': "EPS",
                         'screen': 'EPS',
-                        'test agents': 'Small molecule single agents',
+                        'test_agents': 'small molecule single agents',
                         'num_cell_lines': 900,
-                        'dose scheme': `Single dose or custom dose`,
-                        'time-point': '10-day',
+                        'dose_scheme': `Single dose or custom dose`,
+                        'time_point': '10-day',
                         'description': 'For the extended day PRISM screen, small molecules are plated onto 96-well plates and frozen. Cell pools are plated on assay ready plates on day 0 and drug is re-added on day 6. Cell pools are lysed on day 10, gDNA is then PCR’ed and then sequenced.',
                     },
                 ],

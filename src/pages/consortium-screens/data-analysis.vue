@@ -16,7 +16,7 @@
     <v-row class="justify-center">
       <v-img style="max-width:800px;" :src="`${imgPath}${imgFiles[selectedIndex]}`" alt="Cell Line Collection"></v-img>
     </v-row>
-    <v-row class="justify-center mt-12">
+    <!-- <v-row class="justify-center mt-12">
       <v-btn
         v-for="(file, idx) in imgFiles"
         :key="file"
@@ -27,7 +27,7 @@
       >
         Image {{ idx + 1 }}
       </v-btn>
-    </v-row>
+    </v-row> -->
 
 
 
@@ -86,7 +86,7 @@ export default {
   name: 'DataAnalysis',
 data() {
     return {
-      selectedIndex: 0,
+      selectedIndex: 1,
       imgFiles: [
         'data-analysis-11.png',
         'data-analysis-09.png',
