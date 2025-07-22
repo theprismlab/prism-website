@@ -12,16 +12,20 @@
                             :headers="table.headers"
                             :items="table.items"
                             item-key="id"
-                            item-value="id"
+              
                             class="elevation-1"
                             show-expand
-                            :single-expand="true"
+                            single-expand
+                           v-model:expanded="expandedRows"
+         
+         
                             >
                             <template
-                            v-slot:expanded-row="{ columns, item, isExpanded, toggleExpand }"
+                            v-slot:expanded-row="{ columns, item }"
                             >
                             <tr>
                                 <td :colspan="columns.length">
+                                 
                                     <p class="test-body-2" v-html="item.description"> </p>
                                 </td>
                             </tr>
@@ -37,12 +41,18 @@
 </template>
 
 <script>
+
+//const expandedRows = ref([]); // Array to store the expanded row ids
+
 export default {
     name: 'Assays',
     data() {
         return {
+            expandedRows: [], // Array to store the expanded row ids
+            expanded: [], // Tracks the currently expanded rows
             table: {
-                groupBy:  [{ key: 'screen', order: 'asc' }],
+              
+                // groupBy:  [{ key: 'screen', order: 'asc' }],
                 headers: [
                     { title: 'Screen', key: 'screen' },
                     { title: 'Test Agents', key: 'test agents' },
@@ -52,7 +62,7 @@ export default {
                 ],
                 items: [
                     {
-                        'id': 1,
+                        'id': "MTS",
                         'screen': 'MTS',
                         'test agents': 'Small molecule single agents',
                         'num_cell_lines': 900,
@@ -61,7 +71,7 @@ export default {
                         'description': 'We screen standard DMSO compounds at a top dose of your choice, diluted 3-fold over 8 dilutions. Compounds are plated with an Echo using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s).',
                     },
                     {
-                        'id': 2,
+                        'id': "CPS",
                         'screen': 'CPS',
                         'test agents': 'Small molecule combinations',
                         'num_cell_lines': 900,
@@ -69,7 +79,7 @@ export default {
                         'time-point': '5-day',
                         'description': 'Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents.',
                     },
-                    {   'id': 3,
+                    {   'id': "APS",
                         'screen': 'APS',
                         'test agents': 'Antibodies, ADCs, growth-inhibiting cytokines, peptides',
                         'num_cell_lines': 900,
@@ -78,7 +88,7 @@ export default {
                         'description': 'For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents.',
                     },
                     {
-                        'id': 4,
+                        'id': "EPS",
                         'screen': 'EPS',
                         'test agents': 'Small molecule single agents',
                         'num_cell_lines': 900,
@@ -90,8 +100,26 @@ export default {
             },
         };
     },
+    mounted() {
+   
+    },
+    watch: {
+        expandedRows(newValue, oldValue) {
+            // if newValue does not equal oldValue, it means the expanded rows have changed
+            // update expanded row to the row id
+            // this.expanded = newValue.map(row => row.id);
+            this.expanded = newValue.map(row => row.id)[newValue.length-1];
+            // Handle changes to the expanded rows
+            console.log('Expanded rows changed:', newValue);
+        }
+        
+    },
     methods: {
+        handleRowClick(item, event) {
 
+
+         
+        },
     }
 };
 </script>
