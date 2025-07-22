@@ -1,47 +1,44 @@
 <template>
-    <page id="" class="mb-0">
-        <v-container>
-            <v-row class="mb-4 mt-4">
-                <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8" offset-sm="0" offset-md="2" offset-lg="2" offset-xl="2">
-                    <page-title>Assays</page-title>
-                    <p class="text-body-1">
-                        Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures in 384- or 96-well plates at either 5- or 10-day assay timepoints. To ensure high-quality data, validation compounds are run on each assay plate.
-                    </p>
-                    <section>
-                        <v-data-table
-                            :headers="table.headers"
-                            :items="table.items"
-                            item-key="id"
-                            class="elevation-1"
-                            show-expand
-                            :expanded.sync="expandedRows"
-                            @click:row="handleRowClick"
-                            >
-                            <template
-                                v-slot:expanded-row="{ columns, item }"
-                            >
-                            <tr>
-                                <td :colspan="columns.length">
-                                    <p class="test-body-2" v-html="item.description"> </p>
-                                </td>
-                            </tr>
-                            </template>
-                            <template v-slot:item.data-table-expand="{ toggleExpand, isExpanded, item, internalItem }">
-                                <v-icon  v-if="isExpanded(internalItem)" @click="toggleExpand(internalItem)">mdi-chevron-up</v-icon>
-                                <v-icon  v-else @click="toggleExpand(internalItem)">mdi-chevron-down</v-icon>
-                            </template>
+    <page id="" class="mb-0" style="min-height: 200vh;">
+        <container-sm>
+            <page-title>Assays</page-title>
+                <p class="text-body-1">
+                    Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures in 384- or 96-well plates at either 5- or 10-day assay timepoints. To ensure high-quality data, validation compounds are run on each assay plate.
+                </p>
+        </container-sm>
+        <container-md>
+            <v-data-table
+            fixed-header
+                :headers="table.headers"
+                :items="table.items"
+                item-key="id"
+                class="elevation-1"
+                show-expand
+                :expanded.sync="expandedRows"
+                @click:row="handleRowClick"
+                >
+                <template v-slot:expanded-row="{ columns, item }">
+                <tr>
+                    <td :colspan="columns.length">
+                        <v-card class="pa-3" flat>
+                            <v-card-text  v-html="item.description">
 
-                        </v-data-table>
-                    </section>
-                </v-col>
-            </v-row>
-        </v-container>
+                            </v-card-text>
+                         
+                        </v-card>
+              
+                    </td>
+                </tr>
+                </template>
+                <template v-slot:item.data-table-expand="{ toggleExpand, isExpanded, item, internalItem }">
+                    <v-icon  v-if="isExpanded(internalItem)" @click="toggleExpand(internalItem)">mdi-chevron-up</v-icon>
+                    <v-icon  v-else @click="toggleExpand(internalItem)">mdi-chevron-down</v-icon>
+                </template>
+            </v-data-table>
+        </container-md>
     </page>
 </template>
-
 <script>
-
-
 
 export default {
     name: 'Assays',
@@ -51,11 +48,11 @@ export default {
             table: {
                 // groupBy:  [{ key: 'screen', order: 'asc' }],
                 headers: [
-                    { title: 'Screen', key: 'screen' },
-                    { title: 'Test Agents', key: 'test agents' },
-                    { title: '# of Cell Lines', key: 'num_cell_lines' },
-                    { title: 'Dose Scheme', key: 'dose scheme' },
-                    { title: 'Time-Point', key: 'time-point' },
+                    { title: 'Screen', key: 'screen', width: '10%', minWidth: '100px' },
+                    { title: 'Test Agents', key: 'test agents', width: '30%', minWidth: '200px'  },
+                    { title: 'Dose Scheme', key: 'dose scheme', width: '30%', minWidth: '100px'  },
+                    { title: 'Time-Point', key: 'time-point', width: '15%', minWidth: '100px'  },
+                    { title: '# of Cell Lines', key: 'num_cell_lines',  width: '15%', minWidth: '100px'  },
                 ],
                 items: [
                     {
@@ -131,12 +128,16 @@ export default {
 <style>
 .v-data-table {
     margin-top: 16px;
+
 }
 .v-data-table th {
-    font-weight: bold;
+    font-weight: 800 !important;
 }
 .v-data-table td {
-    padding: 8px;
+    padding: 12px !important;
+}
+.v-card {
+    min-height:300px !important;
 }
 
 /* Disable pointer events for the expand button */
