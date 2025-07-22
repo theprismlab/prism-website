@@ -26,7 +26,10 @@
                                 </td>
                             </tr>
                             </template>
-
+                            <template v-slot:item.data-table-expand="{ toggleExpand, isExpanded, item, internalItem }">
+                                <v-icon  v-if="isExpanded(internalItem)" @click="toggleExpand(internalItem)">mdi-check</v-icon>
+                                <v-icon  v-else @click="toggleExpand(internalItem)">mdi-delete</v-icon>
+                            </template>
 
                         </v-data-table>
                     </section>
@@ -102,6 +105,15 @@ export default {
         
     },
     methods: {
+        // clickColumn(slotData) {
+        // const indexRow = slotData.index;
+        // const indexExpanded = this.expanded.findIndex(i => i === slotData.item);
+        // if (indexExpanded > -1) {
+        //     this.expanded.splice(indexExpanded, 1)
+        // } else {
+        //     this.expanded.push(slotData.item);
+        // }
+        // },
         handleRowClick(item, event) {
             // Keep only the clicked row in the expandedRows array
             if (this.expandedRows.includes(event.item.id)) {
@@ -129,6 +141,6 @@ export default {
 
 /* Disable pointer events for the expand button */
 .v-data-table__expand-icon {
-    pointer-events: none;
+    pointer-events: none !important;
 }
 </style>
