@@ -11,12 +11,11 @@
                         <v-data-table
                             :headers="table.headers"
                             :items="table.items"
-                            item-value="name"
+                            item-key="id"
+                            item-value="id"
                             class="elevation-1"
                             show-expand
-                            return-object
-                            @click:row="clickRow"
-                            :expand-on-click="true"
+                            :single-expand="true"
                             >
                             <template
                             v-slot:expanded-row="{ columns, item, isExpanded, toggleExpand }"
@@ -42,8 +41,6 @@ export default {
     name: 'Assays',
     data() {
         return {
-            expanded: [],
-            singleExpand: true,
             table: {
                 groupBy:  [{ key: 'screen', order: 'asc' }],
                 headers: [
@@ -55,6 +52,7 @@ export default {
                 ],
                 items: [
                     {
+                        'id': 1,
                         'screen': 'MTS',
                         'test agents': 'Small molecule single agents',
                         'num_cell_lines': 900,
@@ -63,6 +61,7 @@ export default {
                         'description': 'We screen standard DMSO compounds at a top dose of your choice, diluted 3-fold over 8 dilutions. Compounds are plated with an Echo using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s).',
                     },
                     {
+                        'id': 2,
                         'screen': 'CPS',
                         'test agents': 'Small molecule combinations',
                         'num_cell_lines': 900,
@@ -70,7 +69,7 @@ export default {
                         'time-point': '5-day',
                         'description': 'Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents.',
                     },
-                    {
+                    {   'id': 3,
                         'screen': 'APS',
                         'test agents': 'Antibodies, ADCs, growth-inhibiting cytokines, peptides',
                         'num_cell_lines': 900,
@@ -79,6 +78,7 @@ export default {
                         'description': 'For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents.',
                     },
                     {
+                        'id': 4,
                         'screen': 'EPS',
                         'test agents': 'Small molecule single agents',
                         'num_cell_lines': 900,
@@ -91,15 +91,8 @@ export default {
         };
     },
     methods: {
-        clickRow(item, event) {
-      if(event.isExpanded) {
-        const index = this.expanded.findIndex(i => i === item);
-        this.expanded.splice(index, 1)
-      } else {
-        this.expanded.push(item);
-      }
+
     }
-  },
 };
 </script>
 
