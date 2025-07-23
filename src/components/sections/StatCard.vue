@@ -1,5 +1,5 @@
 <template>
-    <v-card class="pa-2 fill-height d-flex align-center justify-center flex-column" align="center" elevation="1">
+    <v-card class="pa-2 fill-height d-flex align-center justify-center flex-column" align="center" :elevation="elevation" :variant="variant">
         <v-card-item>
             <div v-if="showIcon" :id="`icon-circle-${index}`" class="d-flex align-center justify-center" 
                 :style="{ 
@@ -35,6 +35,16 @@ export default {
         SvgIcon
     },
     props: {
+        variant: {
+            type: String,
+            required: false,
+            default: "elevated"
+        },
+        elevation: {
+            type: Number,
+            required: false,
+            default: 1
+        },
         index: {
             type: Number,
             required: true,

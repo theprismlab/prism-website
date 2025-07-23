@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-sm>
+    <container-xs>
       <page-title>Conference abstracts</page-title>
       <section class="section-margin-default">
         <v-row>
@@ -10,17 +10,14 @@
               <h4 class="mb-6">{{subgroup.key}}</h4>
               <div v-for="(value, index) in subgroup.values" :key="`${value.key}-${index}`" class="mb-4">
                 <v-divider v-if="index===0" class="mb-4"></v-divider>
-                  <icon-link 
-                    :href="value.url"
-                    :text="value.title"
-                  />
+                <a :href="value.url">{{value.title}} <v-icon size="x-small">mdi-open-in-new</v-icon></a>
                   <v-divider class="mt-4"></v-divider>
                 </div>
             </div>
           </v-col>
       </v-row>
       </section>
-    </container-sm>
+    </container-xs>
   </page>
   </template>
   

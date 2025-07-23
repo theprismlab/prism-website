@@ -15,6 +15,7 @@ import { createVuetify } from 'vuetify'
 import colors  from 'vuetify/util/colors'
 
 let secondary = 'amber';
+let primary = 'blue';
 function mixColors(color1, color2, ratio) {
   const r1 = parseInt(color1.slice(1, 3), 16);
   const g1 = parseInt(color1.slice(3, 5), 16);
@@ -41,6 +42,19 @@ function lightenColor(color, amount) {
 
   return `#${((1 << 24) + (rLightened << 16) + (gLightened << 8) + bLightened).toString(16).slice(1).toUpperCase()}`;
 }
+function darkenColor(color, amount) {
+  const r = parseInt(color.slice(1, 3), 16);
+  const g = parseInt(color.slice(3, 5), 16);
+  const b = parseInt(color.slice(5, 7), 16);
+
+  const rDarkened = Math.max(0, Math.round(r - r * amount));
+  const gDarkened = Math.max(0, Math.round(g - g * amount));
+  const bDarkened = Math.max(0, Math.round(b - b * amount));
+
+  return `#${((1 << 24) + (rDarkened << 16) + (gDarkened << 8) + bDarkened).toString(16).slice(1).toUpperCase()}`;
+}
+let primaryLighten6 = lightenColor(colors.blue.lighten5, 0.2);
+let primaryLighten7 = lightenColor(colors.blue.lighten5, 0.4);
 
 const prismTheme = {
   dark: false,
@@ -60,6 +74,8 @@ const prismTheme = {
     'primary-darken-2': colors.blue.darken2,
     'primary-darken-3': colors.blue.darken3,
     'primary-darken-4': colors.blue.darken4,
+    'primary-darken-5': darkenColor(colors.blue.darken4, 0.2),
+    'primary-darken-6': darkenColor(colors.blue.darken4, 0.4),
     'primary-lighten-1': colors.blue.lighten1,
     'primary-lighten-2': colors.blue.lighten2,
     'primary-lighten-3': colors.blue.lighten3,
@@ -163,6 +179,7 @@ const prismTheme = {
     'blue-lighten-5': colors.blue.lighten5,
     'blue-lighten-6': lightenColor(colors.blue.lighten5, 0.2), // custom lightened color
     'blue-lighten-7': lightenColor(colors.blue.lighten5, 0.4), // custom lightened color
+   
     'blue-darken-1': colors.blue.darken1,    
     'blue-darken-2': colors.blue.darken2,
     'blue-darken-3': colors.blue.darken3,
@@ -170,6 +187,39 @@ const prismTheme = {
     'blue-accent-2': colors.blue.accent2,
     'blue-accent-3': colors.blue.accent3,
     'blue-accent-4': colors.blue.accent4,
+    'blue-grey': colors.blueGrey.base,
+    'blue-grey-lighten-1': colors.blueGrey.lighten1,
+    'blue-grey-lighten-2': colors.blueGrey.lighten2,
+    'blue-grey-lighten-3': colors.blueGrey.lighten3,
+    'blue-grey-darken-1': colors.blueGrey.darken1,
+    'blue-grey-darken-2': colors.blueGrey.darken2,
+    'blue-grey-darken-3': colors.blueGrey.darken3,
+    'indigo': colors.indigo.base,
+    'indigo-lighten-1': colors.indigo.lighten1,
+    'indigo-lighten-2': colors.indigo.lighten2,
+    'indigo-lighten-3': colors.indigo.lighten3,
+    'indigo-darken-1': colors.indigo.darken1,
+    'indigo-darken-2': colors.indigo.darken2,
+    'indigo-darken-3': colors.indigo.darken3,
+    'indigo-accent-1': colors.indigo.accent1,
+    'indigo-accent-2': colors.indigo.accent2,
+    'indigo-accent-3': colors.indigo.accent3,
+    'indigo-accent-4': colors.indigo.accent4,
+    'primary-desaturated': mixColors(colors[primary].base, colors.grey.base, 0.5),
+    'primary-accent-1-desaturated': mixColors(colors[primary].accent1, colors.grey.base, 0.5),
+    'primary-accent-2-desaturated': mixColors(colors[primary].accent2, colors.grey.base, 0.5),
+    'primary-accent-3-desaturated': mixColors(colors[primary].accent3, colors.grey.base, 0.5),
+    'primary-accent-4-desaturated': mixColors(colors[primary].accent4, colors.grey.base, 0.5),
+    'primary-darken-1-desaturated': mixColors(colors[primary].darken1, colors.grey.darken1, 0.5),
+    'primary-darken-2-desaturated': mixColors(colors[primary].darken2, colors.grey.darken2, 0.5),
+    'primary-darken-3-desaturated': mixColors(colors[primary].darken3, colors.grey.darken3, 0.75),
+    'primary-darken-4-desaturated': mixColors(colors[primary].darken4, colors.grey.darken4, 0.7),
+    'primary-darken-5-desaturated': mixColors(darkenColor(colors[primary].darken4, 0.2), colors.grey.darken4, 0.75),
+     'primary-darken-6-desaturated': mixColors(darkenColor(colors[primary].darken4, 0.5), colors.grey.darken4, 0.75),
+ 'primary-lighten-6-desaturated': mixColors(primaryLighten6, colors.grey.lighten5, 0.5),
+ 'primary-lighten-7-desaturated': mixColors(primaryLighten7, colors.grey.lighten5, 0.5),
+
+    //'primary-darken-6-desaturated': mixColors(colors[primary].darken4, colors.grey.darken4, 0.75),
   },
   variables: {
     // 'y-spacer': 48,

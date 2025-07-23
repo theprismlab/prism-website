@@ -1,8 +1,11 @@
 <template>
   <page>
-    <container-sm>
+    <container-xs>
       <page-title>Publications</page-title>
-      <section class="section-margin-default">
+      </container-xs>
+      <container-md>
+            
+      <section>
         <section-overline> Featured</section-overline>
         <v-row class="mt-1">
           <v-col cols="12" xs=" 12" sm="12" md="12" lg="8" xl="8">
@@ -33,7 +36,7 @@
           </v-col>
         </v-row>
       </section>
-      <section  class="section-margin-default">
+      <section>
         <section-overline> Explore Publications</section-overline>
         <v-row class="mt-1">
           <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
@@ -99,7 +102,7 @@
           </v-col>
         </v-row>
       </section>
-      </container-sm>
+      </container-md>
     </page>
   </template>
   
