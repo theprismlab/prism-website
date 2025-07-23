@@ -27,8 +27,10 @@
       </container-xs>
 
       <MainVisual></MainVisual>
-
+      <div class="my-12">
       <our-portal></our-portal>
+      </div>
+
 
       <container-xs>
         <section-overline>Impact</section-overline>

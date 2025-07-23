@@ -1,15 +1,15 @@
 <template>
   <page>
-    <container-sm>
+    <container-xs>
         <page-title>Team</page-title>
-        <section>
-          <v-row class="justify-center">
+
+          <v-row class="mt-12">
             <v-col v-for="individual in teamMembers" cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
               <TeamCard :name="individual.name" :title="individual.title" :image="`${imgPath}${individual.image}`"></TeamCard>
             </v-col>
           </v-row>
-        </section>
-      </container-sm>
+    
+      </container-xs>
     </page>
 </template>
 <script>

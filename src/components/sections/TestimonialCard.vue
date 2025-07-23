@@ -54,7 +54,9 @@ export default {
 }
 </script>
 <style scoped>
-
+    .v-card {
+        border: 1px solid var(--v-secondary-lighten-4);
+    }
 
 </style>
 

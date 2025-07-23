@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-sm>
+    <container-xs>
       <page-title>About PRISM</page-title>
       <section>
         <p class="text-body-1">
@@ -11,7 +11,7 @@
         Since 2018, PRISM has been working with external collaborators, when we first offered PRISM to a biotech company. Now,  PRISM has worked with dozens of pharmaceutical and biotech companies and academics to uncover the true mechanism of action of their drugs. PRISM has helped identify new patient populations for clinical trials, our data has been used in Investigational New Drug (IND) filings, and we have been a part of over 40 publications. 
         </p>
     </section>  
-  </container-sm>
+  </container-xs>
 </page>
 </template>
 <script>

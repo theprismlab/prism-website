@@ -1,22 +1,7 @@
 <template>
-  <v-footer class="py-4" style="background-color: var(--v-primary-base)">
+      <v-footer class="py-4 background">
     <v-container>
       <v-row class="justify-space-between align-center">
-        <!-- <v-col cols="12" xs="12" sm="12" md="6" lg="6" xl="6" align-self="center">
-          <h4 class="text-white text-overline">Connect</h4>
-          <v-row class="justify-start pb-6">
-            <v-col cols="6" xs="12" sm="6" md="6" lg="4" xl="4">
-              <a style="line-height: 2rem" href="https://www.linkedin.com/company/prism-cancer-cell-line-screening/posts/?feedView=all" target="_blank">LinkedIn <v-icon style="font-size:1em;">mdi-open-in-new</v-icon></a>
-              <br>
-              <v-btn to="/contact-us" rounded size="small" class="text-primary mt-2" variant="flat">Contact us</v-btn>
-            </v-col>
-            <v-col cols="6" xs="12" sm="6" md="6" lg="4" xl="4">      
-              <a style="line-height: 2rem" href="https://www.broadinstitute.org/" target="_blank">Broad Institute <v-icon style="font-size:1em;">mdi-open-in-new</v-icon></a>
-              <br>
-              <a style="line-height: 2rem" href="https://depmap.org/portal/" target="_blank">Depmap Portal <v-icon style="font-size:1em;">mdi-open-in-new</v-icon></a>
-            </v-col>
-          </v-row>
-        </v-col> -->
         <v-col cols="12" xs="12" sm="12" md="7" lg="7" xl="6">
           <section-overline color="white">Connect</section-overline>
           <v-row class="justify-start align-top pb-4">
@@ -81,5 +66,11 @@ a{
 }
 a:hover{
   opacity:0.75;
+}
+/* .background{
+  background: linear-gradient(15deg, #0e0c1b, #161730 40%, #24286e);
+} */
+.background{
+  background: linear-gradient(120deg, var(--v-primary-base), var(--v-primary-darken-4));
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
 <page>
-  <container-sm>
+  <container-xs>
     <v-row>
       <v-col>
         <page-title>Data Analysis</page-title>
@@ -10,29 +10,11 @@
       </v-col>
     </v-row>  
   
-
-
-
-    <v-row class="justify-center">
+    <v-row class="justify-center mb-4">
       <v-img style="max-width:800px;" :src="`${imgPath}${imgFiles[selectedIndex]}`" alt="Cell Line Collection"></v-img>
     </v-row>
-    <!-- <v-row class="justify-center mt-12">
-      <v-btn
-        v-for="(file, idx) in imgFiles"
-        :key="file"
-        class="ma-2"
-        flat
-        :color="selectedIndex === idx ? 'grey-lighten-1' : 'grey-lighten-3'"
-        @click="selectedIndex = idx"
-      >
-        Image {{ idx + 1 }}
-      </v-btn>
-    </v-row> -->
 
-
-
-
-    <v-row class="mt-6 mb-6">
+    <v-row>
       <v-col>
         <p class="text-body-1">
           The Broad Institute feature sets used to understand the differences between sensitive and insensitive cell lines are from the 
@@ -57,8 +39,9 @@
         </p>
       </v-col>
     </v-row>
-
-      <v-row class="mt-6 mb-6">
+    </container-xs>
+    <container-sm>
+      <v-row>
         <v-col>
           <div style="height:250px; background-color:#e2e2e2; margin-bottom:4px;">
           <h2 class="text-center text-white pt-8">Plot</h2>

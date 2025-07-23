@@ -36,18 +36,14 @@ export default {
 }
 </script>
 <style scoped>
-.v-card{
-    border-radius: 0px;
-    background-color: transparent !important;
-}
+
 .v-card-title{
     font-size: var(--body-2-size) !important;
     padding-bottom: 2px;
 }
 .v-card-subtitle{
     padding-left:42px;
-    font-size: 0.85rem !important;
-    /* font-size: var(--body-2-size) !important; */
+
 }
 
 

@@ -1,10 +1,10 @@
 <template>
   <page>
-    <container-sm>
+    <container-xs>
         <page-title>White papers</page-title>
+       
         <section class="section-margin-default">
-          <v-row>
-          <v-col cols="12" xs="12" sm="12" md="10" lg="8" xl="8">
+
             <div v-for="each in data">
               <PublicationCard
                 size="sm"
@@ -17,10 +17,9 @@
               </PublicationCard>
               <v-divider style="max-width: 1000px"></v-divider>
             </div>
-          </v-col>
-        </v-row>
+
         </section>
-    </container-sm>
+    </container-xs>
   </page>
 </template>
   
