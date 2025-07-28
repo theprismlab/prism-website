@@ -7,8 +7,6 @@
             </p>
             <p class="text-body-2 mb-0 font-weight-bold text-secondary-darken-2" v-html="card.author"></p>
             <p class="text-body-2 mb-0 mt-0 text-grey-darken-1" v-html="card.company"></p>
-
-            
         </v-card-item>
     </v-card>
 </template>
@@ -25,7 +23,6 @@ export default {
         SvgIcon
     },
     props: {    
-        
         index: {
             type: Number,
             required: true,

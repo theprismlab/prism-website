@@ -27,10 +27,11 @@
         </p>
         <v-row>
           <v-col cols="12" xs="12" sm="12" md="8">
+            <collaborate-cards></collaborate-cards>
           <v-card elevation="0" variant="tonal"  color="teal-cyan-lighten-4" class="pa-5 pb-7">  
               <div v-for="card in agreements" :key="card.title">
                 <v-card-title class="d-flex align-center justify-start text-body-2 text-teal-cyan-darken-1">
-                <v-icon size="medium" class="mr-2">{{ card.icon }}</v-icon>
+                  <svg-icon :path="card.path"  type="mdi" :size="card.size"  class="mr-2"></svg-icon>
                 {{card.title}}
                 </v-card-title>
                 <v-card-subtitle class="text-grey-darken-4 mb-2" style="padding-left: 42px">{{card.text}}</v-card-subtitle>
@@ -51,7 +52,15 @@
 
 </template>
 <script>
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiDatabaseOutline } from '@mdi/js';
+import { mdiFileMultipleOutline } from '@mdi/js';
+import { mdiLightbulbOnOutline } from '@mdi/js';
+
   export default {
+    components: {
+      SvgIcon
+    },
     data() {
       return {
        steps: [
@@ -64,17 +73,23 @@
                 {
                     title: "Data Ownership",
                     text: "PRISM retains the right to use collaboratively generated data to validate and improve the PRISM platform. The structure and identity of your compound will not be shared with us. Unique identifiers are given to all test agents.",
-                    icon: "mdi-database"
+                    icon: "mdi-database",
+                    path: mdiDatabaseOutline,
+                    size: 24
+
                 },
                 {
                     title: "Intellectual Property",
                     text: "Non-exclusive royalty-free licenses are granted.",
-                    icon: "mdi-head-snowflake"
+                    path: mdiLightbulbOnOutline,
+                    size: 26
+
                 },
                 {
                     title: "Publication",
                     text: "Data may be jointly published when both partners agree.",
-                    icon: "mdi-newspaper"
+                    path: mdiFileMultipleOutline,
+                    size: 20
                 },
             ]
       }
