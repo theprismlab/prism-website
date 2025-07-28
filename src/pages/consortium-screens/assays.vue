@@ -104,8 +104,8 @@ export default {
                         'id': "EPS",
                         'screen': 'EPS',
                         'test_agents': 'small molecule single agents',
-                        'num_cell_lines': 900,
-                        'dose_scheme': `Single dose or custom dose`,
+                        'num_cell_lines': '+500',
+                        'dose_scheme': `5-pt dose, custom dilution `,
                         'time_point': '10-day',
                         'description': 'For the extended day PRISM screen, small molecules are plated onto 96-well plates and frozen. Cell pools are plated on assay ready plates on day 0 and drug is re-added on day 6. Cell pools are lysed on day 10, gDNA is then PCR’ed and then sequenced.',
                         'image': 'workflow-04.png'
