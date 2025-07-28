@@ -6,7 +6,7 @@
         <p class="text-body-1">
           If you have a test agent you want to screen in PRISM, participate in one of our PRISM Consortium Screens. These screens are run three times a year (Q1, Q2, and Q3), with specific dates available on the <a href="https://www.theprismlab.org/portal/submissions" target="_blank" class="text-link">PRISM Submission Hub</a>. Data for each screen is returned in approximately 4 months.
           <br><br>
-          Get on our <a href="">mailing list </a>below to receive updates on our screen offerings and submission windows!        
+          <a href="/contact-us">Contact us</a> to receive updates on our screen offerings and submission windows!        
         </p>
     </section>
         <section class="mt-12 mb-12">
