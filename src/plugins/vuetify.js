@@ -142,6 +142,7 @@ const prismTheme = {
     'cyan-lighten-1': colors.cyan.lighten1,
     'cyan-lighten-2': colors.cyan.lighten2,
     'cyan-lighten-3': colors.cyan.lighten3,
+    'cyan-lighten-4': colors.cyan.lighten4,
     'cyan-darken-1': colors.cyan.darken1,
     'cyan-darken-2': colors.cyan.darken2,
     'cyan-darken-3': colors.cyan.darken3,

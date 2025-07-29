@@ -28,7 +28,7 @@
         <v-row>
           <v-col cols="12" xs="12" sm="12" md="8">
             <collaborate-cards></collaborate-cards>
-          <v-card elevation="0" variant="tonal"  color="teal-cyan-lighten-4" class="pa-5 pb-7">  
+          <!-- <v-card elevation="0" variant="tonal"  color="teal-cyan-lighten-4" class="pa-5 pb-7">  
               <div v-for="card in agreements" :key="card.title">
                 <v-card-title class="d-flex align-center justify-start text-body-2 text-teal-cyan-darken-1">
                   <svg-icon :path="card.path"  type="mdi" :size="card.size"  class="mr-2"></svg-icon>
@@ -36,7 +36,7 @@
                 </v-card-title>
                 <v-card-subtitle class="text-grey-darken-4 mb-2" style="padding-left: 42px">{{card.text}}</v-card-subtitle>
               </div>
-        </v-card>
+        </v-card> -->
       </v-col>
     </v-row>
   </section>

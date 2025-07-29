@@ -1,7 +1,7 @@
 <template>
      <v-card :class="`pa-6 px-10 fill-height justify-start mb-6 ${colorScheme}-card`" 
      variant="tonal" color="secondary-lighten-3" max-width="700">
-        <h3 class="text-h4 d-flex align-center justify-start">
+        <h3 class="text-h5 d-flex align-center justify-start text-secondary-darken-3">
         <svg-icon :path="icon.path"  type="mdi" :size="icon.size"  class="mr-2"></svg-icon>
         {{title}}
         </h3>
@@ -48,7 +48,7 @@ export default {
 .secondary-card{
     border: 1px solid var(--v-secondary-lighten-4); 
 }
-.secondary-card >.text-h4  {
+/* .secondary-card >.text-h4  {
     color: var(--v-secondary-darken-3);
-}
+} */
 </style>
