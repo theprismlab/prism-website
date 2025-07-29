@@ -158,10 +158,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .v-data-table {
     margin-top: 16px;
-
 }
 .v-data-table th {
     font-weight: 800 !important;
