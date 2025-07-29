@@ -25,13 +25,12 @@
                 <tr :class="{ 'expanded-blue-row': expandedRows.includes(item.id) }">
                     <td :colspan="columns.length">
                         <v-row class="justify-center">
-                            <v-card class="pa-3" max-width="800px" flat>
-                            <v-card-item >
-                                <h3 class="text-h4 font-weight-bold text-center">{{ item.screen }} workflow</h3>
-                                <v-img :src="imgPath + item.image" max-height="300px" class="mb-2"></v-img>
-                            <p class="text-body-2"  style="margin:auto;" v-html="item.description"></p>
-                            </v-card-item>
-                           
+                            <v-card class="pa-3" flat>
+                                <v-card-item>
+                                    <h3 class="text-h4 font-weight-bold text-center">{{ item.screen }} workflow</h3>
+                                    <img :src="imgPath + item.image" class="mb-2 row-img"></img>
+                                <p class="text-body-2"  style="margin:auto; max-width:800px;" v-html="item.description"></p>
+                                </v-card-item>
                             </v-card>
                         </v-row>
                      
@@ -75,7 +74,7 @@ export default {
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
                         'description': 'We screen standard DMSO compounds at a top dose of your choice, diluted 3-fold over 8 dilutions. Compounds are plated with an Echo using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s).',
-                        'image': 'workflow-01.png'
+                        'image': 'PRISM Cell Line Workflow_MTS.png'
                     },
                     {
                         'id': "CPS",
@@ -89,7 +88,7 @@ export default {
                         </ul>`,
                         'time_point': '5-day',
                         'description': 'Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents. When selecting an anchor dose our recommendation is to select a dose that does not broadly affect cell viability but gives a reproducible phenotypic effect in a specific cell line or set of cell lines. <a href="https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism" target="_blank">CPS white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/CPS009/CPS_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal. Compounds are plated by Echo into plates and frozen prior to cell treatment. Cells are then thawed and plated onto the compound assay ready plates (ARP’s).',
-                        'image': 'workflow-02.png'
+                        'image': 'PRISM Cell Line Workflow_CPS.png'
                     },
                     {   'id': "APS",
                         'screen': 'APS',
@@ -98,7 +97,7 @@ export default {
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
                         'description': `For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents. For more information, review the <a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal.`,
-                        'image': 'workflow-03.png'
+                        'image': 'PRISM Cell Line Workflow_APS.png'
                     },
                     {
                         'id': "EPS",
@@ -108,7 +107,7 @@ export default {
                         'dose_scheme': `5-pt dose, custom dilution `,
                         'time_point': '10-day',
                         'description': 'For the extended day PRISM screen, small molecules are plated onto 96-well plates and frozen. Cell pools are plated on assay ready plates on day 0 and drug is re-added on day 6. Cell pools are lysed on day 10, gDNA is then PCR’ed and then sequenced.',
-                        'image': 'workflow-04.png'
+                        'image': 'PRISM Cell Line Workflow_EPS.png'
                     },
                 ],
             },
@@ -176,5 +175,7 @@ export default {
 .v-data-table__expand-icon {
     pointer-events: none !important;
 }
-
+.row-img{
+    max-height:250px !important;
+}
 </style>
