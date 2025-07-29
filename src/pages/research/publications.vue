@@ -39,48 +39,18 @@
       <section>
         <section-overline> Explore Publications</section-overline>
         <v-row class="mt-1">
-          <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
+          <v-col v-for="(key, index) in Object.keys(filters)" :key="index">
             <v-autocomplete
-              v-model="filters.titles"
-              :items="options.titles"
-              label="Filter titles"
+              v-model="filters[key].active"
+              :items="filters[key].options"
+              item-title="text"
+              item-value="value"
+              :label="`Filter ${key}`"
               multiple
               chips
               clearable
               hide-details
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
-            <v-autocomplete
-              v-model="filters.publishers"
-              :items="options.publishers"
-              label="Filter publishers"
-              multiple
-              chips
-              clearable
-              hide-details
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
-            <v-autocomplete
-              v-model="filters.years"
-              :items="options.years"
-              label="Filter years"
-              multiple
-              chips
-              clearable
-              hide-details
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
-            <v-autocomplete
-              v-model="filters.authors"
-              :items="options.authors"
-              label="Filter authors"
-              multiple
-              chips
-              clearable
-              hide-details
+               @update:modelValue="val => onFilterChange(key, val)"
             ></v-autocomplete>
           </v-col>
         </v-row>
@@ -108,31 +78,33 @@
   
   <script>
   import * as d3 from 'd3';
+  import CrossfilterManager from '@/utils/crossfilter-helpers.js';
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL+"data/" : "../../public/data/";
   const dataFile = "Website Content - 2025  - Publications.csv";
-
 
     export default {
       data() {
         return {
           data: [],
-          filteredData: [],
-          options: {
-            years: [],
-            publishers: [],
-            titles: [],
-            authors: []
-          },
           filters: {
-            years: [],
-            publishers: [],
-            titles: [],
-            authors: []
-          },
+              year: { options: [], active: [] },
+              publisher: { options: [], active: [] },
+              title: { options: [], active: [] },
+              author: { options: [], active: [] }
+            },
+            filteredData: [],
+            cfManager: null
         }
       },
-      async mounted() {
-        await this.getData();
+       async created() {
+        this.data = await this.getData();
+      
+        const cfManager = new CrossfilterManager(this.data, this.filters);
+        const filteredData =cfManager.filteredData;
+        console.log("filteredData", filteredData);
+        console.log("crossfilter", cfManager);
+        this.filteredData = filteredData;
+        this.cfManager = cfManager;
       },
       computed: {
         imgPath() {
@@ -140,14 +112,14 @@
         },
       },
       methods: {
-        async getData(){
+         async getData(){
           const self = this;
-          Promise.all([
+          return Promise.all([
             d3.csv(`${dataPath}${dataFile}`, function(d){
                 return {
                     title: d.Title,
                     publisher: d.Publication,
-                    date: +d.Date,
+                    year: d.Date.toString(),
                     author: d.Author,
                     url: d.Link,
                     abstract: d["Featured Abstract"],
@@ -156,24 +128,18 @@
                 }
             })
           ]).then(response=>{
-
-            let data = response[0].sort((a, b) => b.date - a.date);
+            let data = response[0].sort((a, b) => +b.year - +a.year);
             data.forEach(d=>{
               d.cardSuptitle = this.createSuptitle(d);
               d.cardTitle = this.createTitle(d);
               d.cardSubtitle = this.createSubtitle(d);
               d.cardText = this.createText(d);
             })
-            this.data = data;
-            this.filteredData = this.data;
-            this.options.years = [...new Set(this.data.map(item => item.date))];
-            this.options.publishers = [...new Set(this.data.map(item => item.publisher))];
-            this.options.titles = [...new Set(this.data.map(item => item.title))];
-            this.options.authors = [...new Set(this.data.map(item => item.author))];
+            return data;
           });
         },
         createSuptitle(d){
-          return `${d.date} <span class='ml-2 text-primary-accent-1'>${d.publisher}</span>`;
+          return `${d.year} <span class='ml-2 text-primary-accent-1'>${d.publisher}</span>`;
         },
         createTitle(d){
           return `<a href='${d.url}' target='_blank' class="text-black">${d.title}</a>`
@@ -184,22 +150,29 @@
         createText(d){
           return `${d.abstract}`;
         },
+        onFilterChange(field, values) {
+          this.cfManager.setActive(field, values);
+          console.log("filteredData", this.cfManager.filteredData);
+          this.filteredData = this.cfManager.filteredData;
+
+          // Now this.filters[field].options is updated for all fields
+        }
       },
       watch: {
-        filters: {
-          handler(current, previous) {
-            const self = this;
-            let filtered = self.data.filter(item => {
-              return (self.filters.years.length === 0 || self.filters.years.includes(item.date)) &&
-              (self.filters.publishers.length === 0 || self.filters.publishers.includes(item.publisher)) &&
-             (self.filters.titles.length === 0 || self.filters.titles.includes(item.title)) && 
-             (self.filters.authors.length === 0 || self.filters.authors.includes(item.author));
+        // filters: {
+        //   handler(current, previous) {
+        //     const self = this;
+        //     let filtered = self.data.filter(item => {
+        //       return (self.filters.years.length === 0 || self.filters.years.includes(item.date)) &&
+        //       (self.filters.publishers.length === 0 || self.filters.publishers.includes(item.publisher)) &&
+        //      (self.filters.titles.length === 0 || self.filters.titles.includes(item.title)) && 
+        //      (self.filters.authors.length === 0 || self.filters.authors.includes(item.author));
              
-            });
-            this.filteredData = filtered;
-          },
-          deep: true
-        },
+        //     });
+        //     this.filteredData = filtered;
+        //   },
+        //   deep: true
+        // },
       }
     }
   </script>
