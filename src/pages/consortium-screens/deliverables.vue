@@ -43,13 +43,8 @@
       <h2 class="text-h3">Secure PRISM Portal</h2>
       <p class="text-body-1">
         Screening data is delivered to collaborators on our secure PRISM Portal. Each project will assign one <i>Data Access Manager</i> who is solely responsible for granting data access to other team members through the Portal. 
-
-        
-        
-        
       </p>
     </section>
-
   </container-xs>
 </page>
 </template>
@@ -60,8 +55,6 @@ import { mdiFileChartOutline } from '@mdi/js';
 import { mdiChartBoxOutline } from '@mdi/js';
 import { mdiChartBoxMultipleOutline } from '@mdi/js';
 import { mdiDna } from '@mdi/js';
-import { mdiChartSankeyVariant } from '@mdi/js';
-import { mdiViewComfy } from '@mdi/js';
 
 export default {
   name: "my-component",
