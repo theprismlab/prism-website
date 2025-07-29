@@ -35,7 +35,7 @@
       <h2 class="text-h3">Validation compound data</h2>
       <p class="text-body-1">
         
-      For each PRISM screen, we run the same validation compounds to assess data quality over time, between compound plates, and to ensure biomarker analysis is identifying similar correlations over time. Public validation compound data to explore the type of data you can expect can be assessed on the <a href="http://www.theprismlab.org/portal/" target="_blank">PRISM Portal</a>.
+      For each PRISM screen, we run the same validation compounds to assess data quality over time, between compound plates, and to ensure biomarker analysis is identifying similar correlations over time. Public validation compound data can be accessed on the <a href="https://www.theprismlab.org/portal/projects/MTS026/MTS026_VALIDATION_COMPOUNDS/compounds" target="_blank">PRISM Portal</a>.
       </p>
     </section>
 

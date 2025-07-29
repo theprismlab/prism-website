@@ -25,7 +25,7 @@
         <p class="text-body-1">
           PRISM requires fully-executed collaboration agreements with our pharmaceutical and biotech collaborators in order to screen with us. In general, our agreements address the following three areas:
         </p>
-        <v-row>
+        <v-row class="mb-6 mt-6">
           <v-col cols="12" xs="12" sm="12" md="8">
             <collaborate-cards></collaborate-cards>
       </v-col>
