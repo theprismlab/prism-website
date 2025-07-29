@@ -1,26 +1,5 @@
 <template>
   <div class="background">
-    <!-- <container-md>
-      <v-row class="justify-center">
-        <v-col v-for="(card, index) in cards" :key="index" cols="12" xs="12" sm="12" md="4" lg="4">
-          <v-card class="pa-4 fill-height" variant="outlined" color="grey-lighten-2">
-            <v-row no-gutters>
-              <v-col cols="5" xs="5" sm="5" md="12" lg="12" xl="12">
-                  <v-img  style="margin:auto;" :src="card.img" width="100%" max-width="320px"></v-img>
-              </v-col>
-              <v-col>
-                <v-card-item>
-                <h4 class="text-h4 text-black">{{ card.title }}</h4>
-                <p class="text-body-2">{{ card.description }}</p>
-                <v-btn variant="outlined" rounded color="primary-base" :href="card.action.url" :target="card.action.target">{{ card.action.text }}<v-icon right>mdi-chevron-right</v-icon></v-btn>
-                </v-card-item>
-              </v-col>
-            </v-row>         
-          </v-card>
-        </v-col>
-      </v-row>
-    </container-md> -->
-
     <container-md>
       <v-row class="justify-center">
         <v-col v-for="(card, index) in cards" :key="index" cols="12" xs="12" sm="12" md="4" lg="4">
@@ -76,8 +55,8 @@ export default {
             description: "Features from the Dependency Map are correlated with the PRISM viability profile using univariate and multivariate predictive models",
              action: {
               text: 'Learn more',
-              url: '/consortium-screens/data-analysis',
-              target: '_self'
+              url: 'https://depmap.org/portal/',
+              target: '_blank'
             }
           },
           {

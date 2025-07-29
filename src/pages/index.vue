@@ -169,6 +169,6 @@ import { mdiAccountGroup } from '@mdi/js';
 
 .text-xl{
   font-size: 4.25rem;
-  line-height: 1em;
+  line-height: 1.1em;
 }
   </style>

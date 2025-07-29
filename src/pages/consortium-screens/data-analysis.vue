@@ -40,26 +40,7 @@
       </v-col>
     </v-row>
     </container-xs>
-    <container-sm>
-      <v-row>
-        <v-col>
-          <div style="height:250px; background-color:#e2e2e2; margin-bottom:4px;">
-          <h2 class="text-center text-white pt-8">Plot</h2>
-          </div>
-          <p class="text-subtitle-2  text-grey-darken-1">
-            PRISM sensitivity profiles of clinically approved BCR-ABL1 inhibitors correlated with fusion status shows stronger and more selective correlation to BCR-ABL1 status for asciminib. This is consistent with clinical findings with week 48 major molecular response rates of 66% for Asciminib, 44% for Nilotinib and 38% for Imatinib.
-          </p>
-        </v-col>
-        <v-col>
-          <div style="height:250px; background-color:#e2e2e2; margin-bottom:4px;">
-          <h2 class="text-center text-white pt-8">Plot</h2>
-          </div>
-          <p class="text-subtitle-2 text-grey-darken-1">
-            PRISM sensitivity profiles of CDK4/6 inhibitors are correlated with CDK4 or CDK6 CRISPR knockout or shRNA knockdown. Ribociclib and abemaciclib show stronger correlations with CDK4. Palbociclib shows strong correlation with CDK6 knockout and less correlation with CDK4. Ribociclib and abemaciclib have a median overall survival in a metastatic setting of 67.6 vs 51.8 months in an HR+ setting and 66.8 vs 53.7 months versus placebo. Palbociclib has a lower response of 53.8 vs 49.8 months versus placebo. 
-          </p>
-        </v-col>
-      </v-row>
-</container-sm>
+   
 </page>
 </template>
 
