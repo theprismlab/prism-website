@@ -2,13 +2,11 @@
   <page>
     <container-xs>
         <page-title>Team</page-title>
-
-          <v-row class="mt-12">
-            <v-col v-for="individual in teamMembers" cols="12" xs="12" sm="6" md="4" lg="3" xl="3">
+          <v-row class="mt-12" align="center" justify="center">
+            <div class="team-card-wrapper" v-for="individual in teamMembers">
               <TeamCard :name="individual.name" :title="individual.title" :image="`${imgPath}${individual.image}`"></TeamCard>
-            </v-col>
+            </div>
           </v-row>
-    
       </container-xs>
     </page>
 </template>
@@ -31,7 +29,7 @@ const dataFile = "Website Content - 2025  - Team Page.csv";
     },
     computed: {
       imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/team/" : "../../public/images/team/"
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/team_headshots/" : "../../public/images/team_headshots/"
         },
    
     },
@@ -57,3 +55,9 @@ const dataFile = "Website Content - 2025  - Team Page.csv";
     }
   }
 </script>
+
+<style scoped>
+.team-card-wrapper {
+  width:230px;
+}
+</style>
