@@ -1,16 +1,10 @@
 <template>
-    <v-card elevation="0" class="fill-height" max-width="350px">
-        <v-row class="fill-height" align="center" justify="center" style="text-align: center;">
-            <v-col>
-                <v-img :src="image" :height="200" :width="200" aspect-ratio="1/1" cover class="rounded-circle"></v-img>
-                <v-card-item>
-                    <h3 class="v-card-title">{{ name }}</h3>
-                    <p class="v-card-subtitle">{{ title }}</p>
-                </v-card-item>
-            </v-col>
-        </v-row>
-
-
+    <v-card elevation="0" class="fill-height" align="center" justify="center" >
+        <v-card-item>
+            <v-img :src="image" height="auto" width="90%" aspect-ratio="1/1" class="rounded-circle"></v-img>
+            <h3 class="text-h5 mt-2">{{ name }}</h3>
+            <p class="v-card-subtitle">{{ title }}</p>
+        </v-card-item>
     </v-card>
   </template>
   
