@@ -58,6 +58,6 @@ const dataFile = "Website Content - 2025  - Team Page.csv";
 
 <style scoped>
 .team-card-wrapper {
-  width:230px;
+  width:240px;
 }
 </style>

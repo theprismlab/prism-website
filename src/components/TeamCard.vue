@@ -42,7 +42,7 @@ export default {
     font-size: 1.15rem !important;
 }
 .v-card-subtitle{
-    font-size: 0.95rem !important;
+    font-size: 0.9rem !important;
     line-height: 1.3rem !important;
     margin-top:4px;
 }
