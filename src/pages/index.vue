@@ -9,7 +9,7 @@
         <v-container class="fill-height">
           <v-row>
             <v-col class="text-center" cols="12" xs="12" sm="12" md="9" lg="8" xl="8" offset-sm="0" offset-md="1" offset-lg="2" offset-xl="2">
-              <h1 class="text-xl mb-12 mt-0">Pioneering large-scale, cancer therapeutic mapping</h1>
+              <h1 class="text-xl mb-12 mt-0">DEVELOP: Pioneering large-scale, cancer therapeutic mapping</h1>
               <p class="text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
             </v-col>
           </v-row>
