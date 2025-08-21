@@ -1,7 +1,5 @@
 <template>
   <v-app :style="cssProps">
-    <AppBar/>
-    <!-- <AppBarMobile v-else/> -->
     <router-view />
   </v-app>
 </template>
