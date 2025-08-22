@@ -35,15 +35,19 @@
           </v-list>
         </v-menu>
       </v-tab>
-    </v-tabs>
-
-    <v-btn to="/contact-us" color="primary-base" variant="flat" rounded>
-      Contact us
-    </v-btn>
-    <v-spacer></v-spacer>
-    <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary-base" variant="text" rounded>
+      <v-list-item class="v-btn--size-large">
+        <v-btn to="/contact-us" color="primary-base" variant="flat" rounded>
+          Contact us
+        </v-btn>
+      </v-list-item>
+      <v-list-item class="v-btn--size-large">
+      <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary-base" variant="text" rounded>
       Portal <v-icon class="ml-1" style="font-size: 1em">mdi-open-in-new</v-icon>
       </v-btn>
+      </v-list-item>
+    </v-tabs>
+
+
   </v-app-bar>
 
   <!-- Navigation Drawer for mobile -->
@@ -200,7 +204,10 @@ width: 250px;
 .active-tab {
   background-color: #f5f5f5 !important; /* Light grey background for parent tabs */
 }
-
+.v-navigation-drawer--active{
+  width: 350px !important;
+  top: var(--v-toolbar-height) !important;
+}
 /* .v-tab-item--selected .v-tab--selected{
   color: var(--v-primary-base) !important;
   font-weight: bold;
