@@ -9,37 +9,24 @@
     </v-app-bar-title>
     <!-- Tabs for desktop -->
     <v-tabs class="d-none d-md-flex" hide-slider color="grey-darken-3">
-      <v-tab
-        v-for="(item, index) in items"
-        :key="index"
-        :id="item.title.toLowerCase().replace(/\s+/g, '-')"
-        :to="item.route || '#'"
-        :exact="!item.children || item.children.length === 0"
-      :class="{ 'active-tab': isParentActive(item), 'v-btn--size-large': true }"
-      >
+      <v-tab v-for="(item, index) in items" :key="index" :id="item.title.toLowerCase().replace(/\s+/g, '-')" :class="`v-btn--size-large ${item.class || ''}`" :to="item.route || '#'" :exact="!item.children || item.children.length === 0">
         {{ item.title }}
         <v-menu v-if="item.children && item.children.length > 0" offset-y activator="parent">
           <template v-slot:activator="{ on }">
             <v-icon v-on="on">mdi-menu-down</v-icon>
           </template>
           <v-list>
-            <v-list-item
-              v-for="child in item.children"
-              :key="child.id"
-              :to="child.route"
-              exact
-              active-class="active-menu-item"
-            >
-              <v-list-item-title class="">{{ child.title }}</v-list-item-title>
+            <v-list-item v-for="child in item.children" :key="child.id" :to="child.route">
+              <v-list-item-title>{{ child.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
       </v-tab>
     </v-tabs>
 
-    <v-btn to="/contact-us" color="primary-base" variant="flat" rounded>
+    <!-- <v-btn to="/contact-us" color="primary-base" variant="flat" rounded>
       Contact us
-    </v-btn>
+    </v-btn> -->
     <v-spacer></v-spacer>
     <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary-base" variant="text" rounded>
       Portal <v-icon class="ml-1" style="font-size: 1em">mdi-open-in-new</v-icon>
@@ -51,20 +38,13 @@
     <v-list>
       <v-list-item>
         <v-list-group v-for="item in items" :value="item.title" :key="item.title" no-action>
-          <template v-slot:activator="{ props }">
+        <template v-slot:activator="{ props }">
           <v-list-item
             v-bind="props"
             :title="item.title"
-            :class="{ 'active-menu-item': isParentActive(item) }"
           ></v-list-item>
         </template>
-        <v-list-item
-          v-for="child in item.children"
-          :key="child.id"
-          :to="child.route"
-          exact
-          active-class="active-menu-item"
-        >
+        <v-list-item v-for="child in item.children" :key="child.id" :to="child.route">
           <v-list-item-title>{{ child.title }}</v-list-item-title>
         </v-list-item>
       </v-list-group>
@@ -158,22 +138,16 @@ data() {
         ],
         
       },
-      // {
-      //   title: 'Contact us',
-      //   route: '/contact-us',
-      //   id: 'contact-us',
-      //   class: 'v-btn--text'
-      // }
+      {
+        title: 'Contact us',
+        route: '/contact-us',
+        id: 'contact-us',
+        class: 'v-btn--text'
+      }
     ],
       
   };
 },
-methods: {
-    isParentActive(item) {
-      // Check if the parent item is active based on its children
-      return item.children && item.children.some((child) => this.$route.path === child.route);
-    },
-  },
 };
 </script>
 
@@ -193,14 +167,6 @@ width: 250px;
   cursor: pointer;
   height: var(--v-toolbar-height) !important;
 }
-.active-menu-item {
-  background-color: #f5f5f5 !important; /* Light grey background */
-}
-
-.active-tab {
-  background-color: #f5f5f5 !important; /* Light grey background for parent tabs */
-}
-
 /* .v-tab-item--selected .v-tab--selected{
   color: var(--v-primary-base) !important;
   font-weight: bold;

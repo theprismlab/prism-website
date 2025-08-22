@@ -25,8 +25,8 @@
   <style scoped>
 
     .page {
-      padding-top: 90px;
-      padding-bottom: 90px;
+      padding-top: 50px;
+      padding-bottom: 70px;
     }
          /* xxl  */
         @media (min-width:  2560px) {
