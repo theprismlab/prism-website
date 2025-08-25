@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: "HubspotForm",
+    name: "HubspotFormV1",
     mounted() {
         const script = document.createElement("script");
         script.src="https://js.hsforms.net/forms/v2.js";

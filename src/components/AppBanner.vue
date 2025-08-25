@@ -28,11 +28,11 @@
         <p class="text-body-2">    PRISM is accepting DMSO-soluble single agents and combinations, and aqueous single agents, for our standard 5-day assay from Monday, August 25 - Friday, September 12. 
         </p>
     </v-banner-text> -->
- <v-row justify="space-between" align="top" class="mx-0 py-2">
+ <!-- <v-row justify="space-between" align="top" class="mx-0 py-2">
     <v-col cols="11">
-        <h4 class="text-body-2 font-weight-bold text-primary-base">PRISM Submission Window Now Open!</h4>
+        <h4 class="text-body-1 font-weight-bold text-primary-base">PRISM Submission Window Now Open!</h4>
         <p class="text-body-2 inline-block mb-0 mt-1 banner-text-body">PRISM is accepting DMSO-soluble single agents and combinations, and aqueous single agents, for our standard 5-day assay from <b>Monday, August 25 - Friday, September 12</b>. 
-        <a class="v-btn v-btn--size-default pa-0 px-4 font-weight-bold" href="/contact-us" target="_self">Learn More <v-icon right>mdi-chevron-right</v-icon></a>
+        <a class="v-btn v-btn--size-default pa-0 px-4" href="https://theprismlab.org/portal/submissions" target="_blank">Learn More <v-icon right size="small" class="pl-1">mdi-open-in-new</v-icon></a>
         </p>
     </v-col>
     <v-col cols="1">
@@ -40,19 +40,22 @@
             <v-icon right>mdi-close</v-icon>
         </v-btn>
     </v-col>
- </v-row>
-   
-  
+ </v-row> -->
 
 
-        
+    <v-row justify="center" align="center" class="mx-0 banner-wrapper">
+        <v-col cols="12" xs="12" sm="12" md="9" style="text-align: center;">
+            <h4 class="text-body-1 font-weight-bold text-primary-base">PRISM Submission Window Now Open!</h4>
+            <p class="text-body-2 mb-0 mt-1 banner-text-body" style="max-width:none;">PRISM is accepting DMSO-soluble single agents and combinations, and aqueous single agents, for our standard 5-day assay from <b>Monday, August 25 - Friday, September 12</b>. 
+            <a class="v-btn v-btn--size-default pa-0 px-4" href="https://theprismlab.org/portal/submissions" target="_blank">Learn More <v-icon right size="small" class="pl-1">mdi-open-in-new</v-icon></a>
+            </p>
+        </v-col>
+    </v-row>
 
-                <!-- <template v-slot:actions>
-                <v-btn text @click="showBanner = false">
-                    Close
-                </v-btn>
-            </template> -->
-    </v-banner>
+    <v-btn style="background: none; float: right;" size="x-small" icon @click="showBanner = false" flat>
+        <v-icon right>mdi-close</v-icon>
+    </v-btn>  
+</v-banner>
 </template>
 <script>
 export default {
@@ -65,22 +68,22 @@ export default {
     },
     methods: {},
     computed: {},
-    watch: {
-        // Watch for route changes
-        $route(to) {
-            if (to.path === '/contact-us') {
-                this.showBanner = false;
-            } else {
-                this.showBanner = true;
-            }
-        },
-    },
-    mounted() {
-        // Check the route when the component is mounted
-        if (this.$route.path === '/contact-us') {
-            this.showBanner = false;
-        }
-    },
+    // watch: {
+    //     // Watch for route changes
+    //     $route(to) {
+    //         if (to.path === '/contact-us') {
+    //             this.showBanner = false;
+    //         } else {
+    //             this.showBanner = true;
+    //         }
+    //     },
+    // },
+    // mounted() {
+    //     // Check the route when the component is mounted
+    //     if (this.$route.path === '/contact-us') {
+    //         this.showBanner = false;
+    //     }
+    // },
 }
 </script>
 <style scoped>
@@ -96,10 +99,19 @@ export default {
 }
 .banner-text-body{
     color: var(--v-grey-darken-3);
-    font-size: 0.85rem !important;
+    /* font-size: 0.85rem !important; */
 }
 .banner{
     top: var(--v-toolbar-height);
+}
+.banner-wrapper{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+}
+.v-banner__content{
+    width:100%;
 }
 </style>
   
