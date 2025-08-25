@@ -1,7 +1,7 @@
 <template>
       <v-container>
         <v-row>
-          <v-col cols="12" xs="12" sm="12" md="8" lg="8" xl="8" offset-sm="0" offset-md="2" offset-lg="2" offset-xl="2">
+          <v-col cols="12" xs="12" sm="12" md="10" lg="8" xl="8" offset-sm="0" offset-md="1" offset-lg="2" offset-xl="2">
             <slot></slot>
         </v-col>
      </v-row>

@@ -6,18 +6,30 @@
 
 <script>
   export default {
-    name: "HubspotForm",
+    name: "HubspotFormV1",
     mounted() {
         const script = document.createElement("script");
-        script.src="//js.hsforms.net/forms/embed/v2.js";
+        script.src="https://js.hsforms.net/forms/v2.js";
         document.body.appendChild(script);
         script.addEventListener("load", () => {
             if (window.hbspt) {
                 window.hbspt.forms.create({
-                       portalId: "23265540",
-                        formId: "545545e2-68a0-407d-b45e-8ce5f3044cdf",
-                        target: "#hbspt-form-31184627-79a8-4973-9ed3-8cfe47d1cdd3",
-                        region: "na1"
+                    portalId: "23265540",
+                    formId: "2a0b0448-c46f-4bd0-9ba5-84520afafd68",
+                    target: "#hbspt-form-31184627-79a8-4973-9ed3-8cfe47d1cdd3",
+                    onFormReady: function() {
+                        const paragraphs = document.querySelectorAll("p");
+                        paragraphs.forEach(paragraph => {
+                            if (paragraph.innerHTML === "Interested in collaborating? Tell us more about your project:") {
+                                // Do something with the paragraph
+                                const parentDiv = paragraph.closest('div');
+                                if (parentDiv) {
+                                    parentDiv.remove();
+                                }
+                            } 
+                        });
+                    
+                    },
                 });
             }
         });
@@ -38,18 +50,13 @@
   font-size: var(--body-1-size) !important;
   line-height: var(--body-1-line-height) !important;
 }
-label {
+.hbspt-form label, 
+.hbspt-form input {
     font-family: Inter, Sans-Serif !important;
     font-size: var(--body-1-size) !important;
     line-height: var(--body-1-line-height) !important;
     font-weight: 600;
 }
-.hbspt-form input {
-    font-family: Inter, Sans-Serif !important;
-    font-size: var(--body-1-size) !important;
-    line-height: var(--body-1-line-height) !important;
-}
-
 
 
 .hs-main-font-element p{
@@ -77,7 +84,7 @@ label {
 .hbspt-form .input {
     width: 100% !important;
     margin-right: 0px !important;
-    margin-top:12px !important;
+    margin-top:0px !important;
     margin-bottom: 0px !important;
 }
 .hbspt-form .submitted-message p{
@@ -95,8 +102,7 @@ label {
 }
 
 
-.hbspt-form input[type=radio],
-.hbspt-form input[type=checkbox] {
+.hbspt-form input[type=radio] {
     margin-right: 10px;
     font-weight: 300 !important;
 }
@@ -128,7 +134,7 @@ label {
   font-weight: 400 !important;
 }
 
-.hbspt-form .hs-form-radio-display, .hs-form-checkbox .hs-form-checkbox-display span{
+.hbspt-form .hs-form-radio-display{
   font-weight:400 !important;
   font-size: var(--body-2-size) !important;
 }

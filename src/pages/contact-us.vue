@@ -3,9 +3,10 @@
 <container-xs>
     <page-title>Contact us</page-title>
      <section>
-      <h2 class="text-43">Want to collaborate?</h2>
-          <p class="text-body-1">Tell us more about your project or inquiries using form below.</p>
-          <hubspot-form></hubspot-form>
+      <!-- <h2 class="text-43">Want to collaborate?</h2>
+          <p class="text-body-1">Tell us more about your project or inquiries using form below.</p> -->
+          <!-- <hubspot-form></hubspot-form> -->
+                 <hubspot-form-v1></hubspot-form-v1>
      </section>
 </container-xs>
 </page>

@@ -1,106 +1,215 @@
 <template>
-
-  <v-app-bar app color="white" light class="elevation-1 px-6">
-    <v-toolbar-title>
+  <v-app-bar density="comfortable" app color="white" light class="elevation-1 px-8">
+      <!-- Menu icon for mobile -->
+      <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
+    <v-app-bar-title>
       <router-link to="/" tag="span" style="cursor: pointer; text-decoration: none; border: none;">
-        <v-img id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png"/>
+        <v-img id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png" />
       </router-link>
-    </v-toolbar-title>
-    <v-spacer></v-spacer>
-    <v-tabs hide-slider>
-      <v-tab class="v-btn--size-large"> About us <v-icon>mdi-menu-down</v-icon>
-        <v-menu activator="parent">
+    </v-app-bar-title>
+    <!-- Tabs for desktop -->
+    <v-tabs class="d-none d-md-flex" hide-slider color="grey-darken-3">
+      <v-tab
+        v-for="(item, index) in items"
+        :key="index"
+        :id="item.title.toLowerCase().replace(/\s+/g, '-')"
+        :to="item.route || '#'"
+        :exact="!item.children || item.children.length === 0"
+      :class="{ 'active-tab': isParentActive(item), 'v-btn--size-large': true }"
+      >
+        {{ item.title }}
+        <v-menu v-if="item.children && item.children.length > 0" offset-y activator="parent">
+          <template v-slot:activator="{ on }">
+            <v-icon v-on="on">mdi-menu-down</v-icon>
+          </template>
           <v-list>
-            <v-list-item id="about-prism" to="/about-us/about-prism">
-              <v-list-item-title class="v-tab v-btn" >About PRISM</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="team" to="/about-us/team">
-              <v-list-item-title>Team</v-list-item-title>
+            <v-list-item
+              v-for="child in item.children"
+              :key="child.id"
+              :to="child.route"
+              exact
+              active-class="active-menu-item"
+            >
+              <v-list-item-title class="">{{ child.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
       </v-tab>
-
-      <v-tab class="v-btn--size-large">Research<v-icon>mdi-menu-down</v-icon>
-        <v-menu activator="parent">
-          <v-list>
-            <v-list-item id="publications" to="/research/publications">
-              <v-list-item-title>Publications</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="white-papers" to="/research/white-papers">
-              <v-list-item-title>White papers</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="conference-abstracts" to="/research/conference-abstracts">
-              <v-list-item-title>Conference abstracts</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-tab>
-
-      <v-tab class="v-btn--size-large">Consortium Screens<v-icon>mdi-menu-down</v-icon>
-        <v-menu activator="parent">
-          <v-list>
-            <v-list-item id="cell-line-collection" to="/consortium-screens/cell-line-collection">
-              <v-list-item-title>Cell line collection</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="assays" to="/consortium-screens/assays">
-              <v-list-item-title>Assays</v-list-item-title>
-            </v-list-item>
-
-            <v-list-item id="data-analysis" to="/consortium-screens/data-analysis">
-              <v-list-item-title>Data Analysis</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="deliverables" to="/consortium-screens/deliverables">
-              <v-list-item-title>Deliverables</v-list-item-title>
-            </v-list-item>
-            <v-list-item id="collaborating" to="/consortium-screens/collaborating">
-              <v-list-item-title>Collaborating</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-tab>
-    </v-tabs>        
-    <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary-base" variant="text" rounded>
+      <v-list-item class="v-btn--size-large">
+        <v-btn to="/contact-us" color="primary-base" variant="flat" rounded>
+          Contact us
+        </v-btn>
+      </v-list-item>
+      <v-list-item class="v-btn--size-large">
+      <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary-base" variant="text" rounded>
       Portal <v-icon class="ml-1" style="font-size: 1em">mdi-open-in-new</v-icon>
-    </v-btn>
+      </v-btn>
+      </v-list-item>
+    </v-tabs>
 
-    <v-spacer></v-spacer>
-    <v-btn to="/contact-us" color="primary-base" variant="flat" rounded>
-      Contact us
-    </v-btn>
 
-</v-app-bar>
-  </template>
-  <script>
-  // import Vue from 'vue';
-  export default {
-    name: "AppBar",
-  data(){
-    return {
+  </v-app-bar>
 
-    }
-  },
-    methods: {
+  <!-- Navigation Drawer for mobile -->
+  <v-navigation-drawer v-model="drawer" app temporary>
+    <v-list>
+      <v-list-item>
+        <v-list-group v-for="item in items" :value="item.title" :key="item.title" no-action>
+          <template v-slot:activator="{ props }">
+          <v-list-item
+            v-bind="props"
+            :title="item.title"
+            :class="{ 'active-menu-item': isParentActive(item) }"
+          ></v-list-item>
+        </template>
+        <v-list-item
+          v-for="child in item.children"
+          :key="child.id"
+          :to="child.route"
+          exact
+          active-class="active-menu-item"
+        >
+          <v-list-item-title>{{ child.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list-group>
+      </v-list-item>
+    
+      <v-list-item>
+        <v-btn href="https://theprismlab.org/portal" target="_blank" class="text-uppercase" color="primary-base" variant="text" rounded>
+        Portal <v-icon class="ml-1" style="font-size: 1em">mdi-open-in-new</v-icon>
+        </v-btn>
+      </v-list-item>
+      <v-list-item>
+        <v-btn to="/contact-us" color="primary-base" variant="flat" rounded>
+          Contact us
+        </v-btn>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+  
+</template>
 
-    },
-    computed: {
-      mobile () {
-        return this.$vuetify.display.mobile
+<script>
+export default {
+name: 'AppBar',
+data() {
+  return {
+    drawer: false,
+    items: [
+      {
+        title: 'About us',
+        children: [
+          {
+            title: 'About PRISM',
+            route: '/about-us/about-prism',
+            id: 'about-prism'
+          },
+          {
+            title: 'Team',
+            route: '/about-us/team',
+            id: 'team'
+          }
+        ]
       },
-    }
+      {
+        title: 'Research',
+        children: [
+          {
+            title: 'Publications',
+            route: '/research/publications',
+            id: 'publications'
+          },
+          {
+            title: 'White papers',
+            route: '/research/white-papers',
+            id: 'white-papers'
+          },
+          {
+            title: 'Conference abstracts',
+            route: '/research/conference-abstracts',
+            id: 'conference-abstracts'
+          }
+        ]
+      },
+      {
+        title: 'Consortium Screens',
+        children: [
+          {
+            title: 'Cell line collection',
+            route: '/consortium-screens/cell-line-collection',
+            id: 'cell-line-collection'
+          },
+          {
+            title: 'Assays',
+            route: '/consortium-screens/assays',
+            id: 'assays'
+          },
+          {
+            title: 'Data Analysis',
+            route: '/consortium-screens/data-analysis',
+            id: 'data-analysis'
+          },
+          {
+            title: 'Deliverables',
+            route: '/consortium-screens/deliverables',
+            id: 'deliverables'
+          },
+          {
+            title: 'Collaborating',
+            route: '/consortium-screens/collaborating',
+            id: 'collaborating'
+          }
+        ],
+        
+      },
+      // {
+      //   title: 'Contact us',
+      //   route: '/contact-us',
+      //   id: 'contact-us',
+      //   class: 'v-btn--text'
+      // }
+    ],
+      
   };
-  </script>
+},
+methods: {
+    isParentActive(item) {
+      // Check if the parent item is active based on its children
+      return item.children && item.children.some((child) => this.$route.path === child.route);
+    },
+  },
+};
+</script>
 
-<style lang="scss" scoped>
-// .v-tab{
-//   font-size: 1rem !important;
-//   font-weight: 500 !important;
-// }
-  .v-app-bar{
-    // border-bottom:2px solid var(--v-primary) !important;
-    // box-shadow: 0.5px 0.5px 15px 0px rgba(220, 220, 220, 0.5) !important;
-    z-index:1000;
-  }
-  
+<style scoped>
+/* Ensure the navigation drawer is styled properly */
+.v-navigation-drawer {
+width: 250px;
+}
+.v-app-bar{
+/*  border-bottom:2px solid var(--v-primary) !important;
+  box-shadow: 0.5px 0.5px 15px 0px rgba(220, 220, 220, 0.5) !important; */
+  z-index:1000;
+}
+
+
+.v-tabs, .v-tab{
+  cursor: pointer;
+  height: var(--v-toolbar-height) !important;
+}
+.active-menu-item {
+  background-color: #f5f5f5 !important; /* Light grey background */
+}
+
+.active-tab {
+  background-color: #f5f5f5 !important; /* Light grey background for parent tabs */
+}
+.v-navigation-drawer--active{
+  width: 350px !important;
+  top: var(--v-toolbar-height) !important;
+}
+/* .v-tab-item--selected .v-tab--selected{
+  color: var(--v-primary-base) !important;
+  font-weight: bold;
+} */
 </style>
-  

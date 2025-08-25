@@ -1,16 +1,16 @@
 <template>
-  <div class="background">
+  <div class="background py-12">
     <container-md>
-      <v-row class="justify-center">
+      <v-row justify="space-evenly">
         <v-col v-for="(card, index) in cards" :key="index" cols="12" xs="12" sm="12" md="4" lg="4">
           <v-card class="pa-4 fill-height" variant="flat">
             <v-row no-gutters>
               <v-col cols="5" xs="5" sm="5" md="12" lg="12" xl="12">
-                  <v-img  style="margin:auto;" :src="card.img" width="100%" max-width="320px"></v-img>
+                  <v-img  style="margin:auto;" :src="card.img" width="100%" max-width="250px"></v-img>
               </v-col>
               <v-col>
                 <v-card-item>
-                <h4 class="text-h4 text-black">{{ card.title }}</h4>
+                <h4 class="text-h5 text-black">{{ card.title }}</h4>
                 <p class="text-body-2 mb-2">{{ card.description }}</p>
                 <a class="v-btn v-btn--size-default pa-0" :href="card.action.url" :target="card.action.target">{{ card.action.text }} <v-icon right>mdi-chevron-right</v-icon></a>
               </v-card-item>
@@ -51,7 +51,7 @@ export default {
           },
           {
             img: `${this.imgPath}main-12.png`,
-            title: "Over 150K unique baseline genetic and functional genomic features",
+            title: "150K+ unique baseline genetic and functional genomic features",
             description: "Features from the Dependency Map are correlated with the PRISM viability profile using univariate and multivariate predictive models",
              action: {
               text: 'Learn more',
@@ -79,11 +79,12 @@ export default {
 </script>
 <style scoped>
 .background{
-  /* background-color: var(--v-grey-lighten-3); */
-  /* background-color: var(--v-primary-lighten-7); */
+  background-color: var(--v-grey-lighten-5);
+  /* background-color: var(--v-primary-lighten-6); */
 }
 .v-card{
   background-color: white;
+  border: 1px solid var(--v-grey-lighten-2);
 }
 p{
     max-width: 500px;

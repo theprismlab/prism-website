@@ -1,17 +1,21 @@
 <template>
   <page class="mt-0">
-    <section style="position: relative; height: 75vh; width: 100%;">
+    <section style="position: relative; height: 85vh; width: 100%;">
       <ThreeJsViabilityHeatmap :key="resizeCounter"/>
 
       <!-- <ThreeJsSpheres10/> -->
 
       <div style="position:absolute; width: 100%; height:100%;">
-        <v-container class="fill-height">
-          <v-row>
-            <v-col class="text-center" cols="12" xs="12" sm="12" md="9" lg="8" xl="8" offset-sm="0" offset-md="1" offset-lg="2" offset-xl="2">
-              <h1 class="text-xl mb-12 mt-0">Pioneering large-scale, cancer therapeutic mapping</h1>
-              <p class="text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</p>
-            </v-col>
+        <v-container class="fill-height pt-10">
+          <v-row justify="center" align="top" style="height:100%; width:100%;">
+          <div style="max-width:1000px;"class="text-center">
+
+                <h1 class="text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
+                <h2 class="text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
+          
+          </div>
+             
+
           </v-row>
         </v-container>
       </div>
@@ -25,42 +29,29 @@
               Cancer cell line models remain essential in drug development, providing a controlled system to assess potency and confirm on-target engagement. At a larger scale using PRISM, these models provide power to <span class="text-emphasize">understand heterogeneity</span> in drug response among cell lines harboring the targeted alteration(s), assess <span class="text-emphasize">selectivity relative to those without target alterations, and investigate potential biomarkers associated with these responses</span>.
             </p>
       </container-xs>
-
+      
       <MainVisual></MainVisual>
-      <div class="my-12">
       <our-portal></our-portal>
-      </div>
 
-
-      <container-xs>
+      <container-xs class="my-12">
         <section-overline>Impact</section-overline>
         <section-title>Dedicated to advancing oncology research</section-title>
         <p class="text-body-1">Working with pharmaceutical and biotech companies and academics to improve the outcome for cancer patients worldwide. </p>
+        <v-row class="mt-12">
+          <v-col v-for="(card, index) in ourImpactCards" :key="card.title" cols="12" xs="12" sm="4" md="4" lg="4" xl="4">
+              <stat-card :index="index" :title="card.title" :subtitle="card.subtitle" :icon="card.icon"></stat-card>
+          </v-col>
+        </v-row>
       </container-xs>
-     
-        <container-sm>
-          <v-row class="mt-6 mb-6">
-            <v-col v-for="(card, index) in ourImpactCards" :key="card.title" cols="12" xs="6" sm="6" md="4" lg="4" xl="4">
-                <stat-card :index="index" :title="card.title" :subtitle="card.subtitle" :icon="card.icon"></stat-card>
-            </v-col>
-          </v-row>
-        </container-sm>
 
-        <container-sm>
-          <v-row class="mt-6 mb-6">
-            <v-col cols="12" offset-sm="0" offset-md="1" offset-lg="1" offset-xl="1">
-              <section-overline>Testimonials</section-overline>
-            </v-col>
-            <v-col v-for="(card, index) in testimonialCards" :key="index" cols="12" xs="12" sm="6" md="6" lg="6" xl="6">
-                <testimonial-card :index="index" :card="card"></testimonial-card>
-            </v-col>
-          </v-row>
-
-        </container-sm>
-
-  
-
-  
+      <container-xs class="my-12">
+        <section-overline>Testimonials</section-overline>
+        <v-row class="mt-6 mb-6">  
+          <v-col v-for="(card, index) in testimonialCards" :key="index" cols="12" xs="12" sm="6" md="6" lg="6" xl="6">
+              <testimonial-card :index="index" :card="card"></testimonial-card>
+          </v-col>
+        </v-row>
+      </container-xs>  
   </page>
   </template>
   <script>
@@ -171,4 +162,12 @@ import { mdiAccountGroup } from '@mdi/js';
   font-size: 4.25rem;
   line-height: 1.1em;
 }
+      /* xs */
+      @media (max-width: 600px) {
+     
+        .text-xl{
+          font-size: 3.5rem;
+        }
+      }
+
   </style>
