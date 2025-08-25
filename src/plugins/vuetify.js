@@ -55,7 +55,7 @@ function darkenColor(color, amount) {
 }
 let primaryLighten6 = lightenColor(colors.blue.lighten5, 0.2);
 let primaryLighten7 = lightenColor(colors.blue.lighten5, 0.4);
-
+const primaryBase =mixColors(colors.blue.accent3, colors.blue.base, 0.2); 
 const prismTheme = {
   dark: false,
   colors: {
@@ -69,7 +69,16 @@ const prismTheme = {
     // 'primary': colors.blue.accent3,
     // 'primary': colors.blue.base,
     //'primary-base': colors.blue.accent3,
-    'primary-base': mixColors(colors.blue.accent3, colors.blue.base, 0.2), // testing
+    'primary-base': primaryBase,
+    'primary-base-darken-1': darkenColor(primaryBase, 0.1),
+    'primary-base-darken-2': darkenColor(primaryBase, 0.2),
+    'primary-base-lighten-1': lightenColor(primaryBase, 0.1),
+    'primary-base-lighten-2': lightenColor(primaryBase, 0.2),
+    'primary-base-lighten-3': lightenColor(primaryBase, 0.3),
+    'primary-base-lighten-4': lightenColor(primaryBase, 0.4),
+    'primary-base-lighten-5': lightenColor(primaryBase, 0.5),
+    'primary-accent-1-lighten-1': lightenColor(colors.blue.accent1, 0.1),
+    'primary-accent-1-lighten-2': lightenColor(colors.blue.accent1, 0.2),
     'primary-darken-1': colors.blue.darken1,
     'primary-darken-2': colors.blue.darken2,
     'primary-darken-3': colors.blue.darken3,
