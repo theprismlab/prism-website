@@ -17,6 +17,15 @@ const router = createRouter({
   routes: setupLayouts(routes),
 })
 
+router.afterEach(() => {
+  // HubSpot tracking (production only)
+  if (import.meta.env.PROD && typeof window._hsq !== 'undefined' && window._hsq) {
+    window._hsq.push(['setPath', window.location.pathname]);
+    window._hsq.push(['trackPageView']);
+  }
+});
+
+
 // Workaround for https://github.com/vitejs/vite/issues/11804
 router.onError((err, to) => {
   if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
@@ -35,5 +44,6 @@ router.onError((err, to) => {
 router.isReady().then(() => {
   localStorage.removeItem('vuetify:dynamic-reload')
 })
+
 
 export default router
