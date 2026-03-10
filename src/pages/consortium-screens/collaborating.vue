@@ -44,15 +44,8 @@
 
 </template>
 <script>
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiDatabaseOutline } from '@mdi/js';
-import { mdiFileMultipleOutline } from '@mdi/js';
-import { mdiLightbulbOnOutline } from '@mdi/js';
 
   export default {
-    components: {
-      SvgIcon
-    },
     data() {
       return {
        steps: [
@@ -60,30 +53,7 @@ import { mdiLightbulbOnOutline } from '@mdi/js';
         'Approve and fund a quote for your PRISM submission',
         'Ship a stock solution of your test agent(s) to the PRISM lab before the submission window deadline!',
         'Data will be released on the PRISM Portal approximately 4 months after the submission window closes'
-       ],
-       agreements:  [
-                {
-                    title: "Data Ownership",
-                    text: "PRISM retains the right to use collaboratively generated data to validate and improve the PRISM platform. The structure and identity of your compound will not be shared with us. Unique identifiers are given to all test agents.",
-                    icon: "mdi-database",
-                    path: mdiDatabaseOutline,
-                    size: 24
-
-                },
-                {
-                    title: "Intellectual Property",
-                    text: "Non-exclusive royalty-free licenses are granted.",
-                    path: mdiLightbulbOnOutline,
-                    size: 26
-
-                },
-                {
-                    title: "Publication",
-                    text: "Data may be jointly published when both partners agree.",
-                    path: mdiFileMultipleOutline,
-                    size: 20
-                },
-            ]
+       ]
       }
     },
     mounted() {
