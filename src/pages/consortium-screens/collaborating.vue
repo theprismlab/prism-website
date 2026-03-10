@@ -6,7 +6,7 @@
         <p class="text-body-1">
           If you have a test agent you want to screen in PRISM, participate in one of our <span class="text-emphasize">PRISM Consortium Screens</span>. These screens are run three times a year (Q1, Q2, and Q3), with specific dates available on the <a href="https://www.theprismlab.org/portal/submissions" target="_blank" class="text-link">PRISM Submission Hub</a>. Data for each screen is returned in approximately 4 months.
           <br><br>
-          <a href="/contact-us">Contact us</a> to receive updates on our screen offerings and submission windows!        
+          <a href="/contact-us">Contact us</a> to receive updates on our screen offerings, submission windows, and costs!        
         </p>
     </section>
         <section class="mt-12 mb-12">
@@ -56,7 +56,7 @@ import { mdiLightbulbOnOutline } from '@mdi/js';
     data() {
       return {
        steps: [
-        'Complete the forms on the submission hub during our 2-3 week submission window <a href="https://www.theprismlab.org/portal/submissions" target="_blank" class="text-link">PRISM Submission Hub</a>.',
+        'Complete the forms on the submission hub during our 2 week submission window on the <a href="https://www.theprismlab.org/portal/submissions" target="_blank" class="text-link">PRISM Submission Hub</a>.',
         'Approve and fund a quote for your PRISM submission',
         'Ship a stock solution of your test agent(s) to the PRISM lab before the submission window deadline!',
         'Data will be released on the PRISM Portal approximately 4 months after the submission window closes'
