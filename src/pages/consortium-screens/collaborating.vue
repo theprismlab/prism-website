@@ -35,7 +35,7 @@
    <section class="mt-12 mb-12">
       <h2 class="text-h3">Academic Collaborators</h2>
       <p class="text-body-1">
-        Collaboration agreements are not a requirement for academic collaborators to participate in our screens. If you would like to sign an agreement, please reach out to our team using the form below to receive additional information.
+        Collaboration agreements are not a requirement for academic collaborators to participate in our screens. If you would like to sign an agreement, please email our team at <a href="mailto:prism@broadinstitute.org" class="text-link">prism@broadinstitute.org</a>.
       </p>
    </section>
 </container-xs>
