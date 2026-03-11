@@ -122,7 +122,11 @@ export default {
             const yScale = d3
                 .scaleLinear()
                 .domain([0, 1])
-                .range([planeHeight * 6, planeHeight]);
+                .range([planeHeight * 4, -planeHeight * 4]);
+            const xRiseScale = d3
+                .scaleLinear()
+                .domain([0, 1])
+                .range([0, planeHeight * 4.0]);
 
             const xOffset = (xScale.range()[1] - xScale.range()[0]) / 2;
             const zOffset = (zScale.range()[1] - zScale.range()[0]) / 2;
@@ -142,14 +146,16 @@ export default {
                 xOffset,
                 zOffset,
                 planeHeight,
-                yScale
+                yScale,
+                xRiseScale
             });
 
             this.renderer.render(this.scene, this.camera);
         },
-        renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale }) {
+        renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale, xRiseScale }) {
             const sphereRadius = planeHeight * 0.18;
             const geometry = markRaw(new THREE.SphereGeometry(sphereRadius, 32, 32));
+            const xHalfRange = (xScale.range()[1] - xScale.range()[0]) / 2;
             if (!this.spheres) {
                 this.spheres = [];
             }
@@ -163,9 +169,11 @@ export default {
                     metalness: 0.0
                 }));
                 const sphere = markRaw(new THREE.Mesh(geometry, material));
+                const xPosition = xScale(d.x) - xOffset;
+                const xNormalized = Math.min(1, Math.abs(xPosition) / xHalfRange);
                 const basePosition = markRaw(new THREE.Vector3(
-                    xScale(d.x) - xOffset,
-                    yScale(d.viability) + sphereRadius * 0.2,
+                    xPosition,
+                    yScale(d.viability) + xRiseScale(xNormalized) + sphereRadius * 0.2,
                     zScale(d.z) - zOffset
                 ));
                 sphere.position.copy(basePosition);
