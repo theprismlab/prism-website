@@ -225,9 +225,13 @@ export default {
                     const waveSpeed = 0.6;
                     const waveAmplitude = 0.6;
                     const horizontalWaveAmplitude = 0.35;
+                    const wavePhase =
+                        basePosition.x * waveFrequency +
+                        basePosition.z * waveFrequency * 0.35 +
+                        elapsed * waveSpeed;
                     const waveY =
-                        Math.sin(basePosition.x * waveFrequency + elapsed * waveSpeed) +
-                        Math.cos(basePosition.z * waveFrequency + elapsed * waveSpeed * 0.9);
+                        Math.sin(wavePhase * 2) +
+                        Math.sin(wavePhase * 2 + 0.8) * 0.45;
                     const waveX = Math.sin(basePosition.z * waveFrequency + elapsed * waveSpeed * 0.7);
                     const waveZ = Math.cos(basePosition.x * waveFrequency + elapsed * waveSpeed * 0.8);
                     const floatingY =
