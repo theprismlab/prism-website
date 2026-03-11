@@ -146,6 +146,9 @@ export default {
         renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale }) {
             const sphereRadius = planeHeight * 0.18;
             const geometry = new THREE.SphereGeometry(sphereRadius, 16, 16);
+            // 2 below
+            const referenceDistance = this.camera.position.length();
+            const origin = new THREE.Vector3(0, 0, 0);
 
             this.heatmapData.forEach(d => {
                 const material = new THREE.MeshBasicMaterial({ color: d.rgba, transparent: true, opacity: 0.85 });
@@ -155,6 +158,10 @@ export default {
                     yScale(d.viability) + sphereRadius * 0.2,
                     zScale(d.z) - zOffset
                 );
+                // three below
+                const distance = this.camera.position.distanceTo(sphere.position || origin);
+                const scale = distance / referenceDistance;
+                sphere.scale.setScalar(scale);
                 this.scene.add(sphere);
             });
         }
