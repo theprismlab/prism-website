@@ -198,7 +198,7 @@ export default {
                 sphere.userData.opacityScale = zOpacityScale;
                 sphere.userData.floatPhase = Math.random() * Math.PI * 2;
                 sphere.userData.floatSpeed = 0.4 + Math.random() * 0.4;
-                sphere.userData.floatAmplitude = planeHeight * (0.08 + Math.random() * 0.06);
+                sphere.userData.floatAmplitude = planeHeight * (0.03 + Math.random() * 0.02);
                 this.scene.add(sphere);
                 this.spheres.push(sphere);
             });
@@ -221,19 +221,16 @@ export default {
                         opacityScale
                     } = sphere.userData;
                     // Layer a slow wave across X/Z to keep motion cohesive.
-                    const waveFrequency = 0.12;
-                    const waveSpeed = 0.6;
-                    const waveAmplitude = 0.6;
-                    const horizontalWaveAmplitude = 0.35;
-                    const wavePhase =
-                        basePosition.x * waveFrequency +
-                        basePosition.z * waveFrequency * 0.35 +
-                        elapsed * waveSpeed;
+                    const waveFrequency = 0.06;
+                    const waveSpeed = 0.5;
+                    const waveAmplitude = 1.1;
+                    const horizontalWaveAmplitude = 0.5;
+                    const wavePhase = basePosition.x * waveFrequency + elapsed * waveSpeed;
                     const waveY =
                         Math.sin(wavePhase * 2) +
-                        Math.sin(wavePhase * 2 + 0.8) * 0.45;
-                    const waveX = Math.sin(basePosition.z * waveFrequency + elapsed * waveSpeed * 0.7);
-                    const waveZ = Math.cos(basePosition.x * waveFrequency + elapsed * waveSpeed * 0.8);
+                        Math.sin(wavePhase * 2 + 0.8) * 0.35;
+                    const waveX = Math.sin(wavePhase);
+                    const waveZ = 0;
                     const floatingY =
                         basePosition.y +
                         Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude +
