@@ -29,7 +29,7 @@ const dataFile = "Website Content - 2025  - Team Page.csv";
     },
     computed: {
       imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/team_photos/" : "../../public/images/team_photos/"
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/team_headshots_jpg/" : "../../public/images/team_headshots_jpg/"
         },
    
     },
