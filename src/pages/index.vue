@@ -1,6 +1,6 @@
 <template>
   <page class="mt-0">
-    <section style="position: relative; height: 85vh; width: 100%;">
+    <section style="position: relative; height: 98vh; width: 100%;">
       <ThreeJsViabilityHeatmap2 :key="resizeCounter"/>
 
       <!-- <ThreeJsSpheres10/> -->

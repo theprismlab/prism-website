@@ -120,7 +120,6 @@ export default {
             const xScale = d3.scaleLinear().domain(xExtent).range([0, this.width]);
             const zScale = d3.scaleLinear().domain(zExtent).range([0, planeHeight * zExtent[1]]);
             const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
-            // Map viability to vertical space (0 => high, 1 => low).
             const yScale = d3
                 .scaleLinear()
                 .domain([0, 1])
@@ -194,23 +193,17 @@ export default {
 
                 this.spheres.forEach(sphere => {
                     const { basePosition, floatPhase, floatSpeed, floatAmplitude, minY } = sphere.userData;
-                    // Layer a slow wave across X/Z to keep motion cohesive.
                     const waveFrequency = 0.12;
                     const waveSpeed = 0.6;
                     const waveAmplitude = 0.6;
-                    const horizontalWaveAmplitude = 0.35;
                     const waveY =
                         Math.sin(basePosition.x * waveFrequency + elapsed * waveSpeed) +
                         Math.cos(basePosition.z * waveFrequency + elapsed * waveSpeed * 0.9);
-                    const waveX = Math.sin(basePosition.z * waveFrequency + elapsed * waveSpeed * 0.7);
-                    const waveZ = Math.cos(basePosition.x * waveFrequency + elapsed * waveSpeed * 0.8);
                     const floatingY =
                         basePosition.y +
                         Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude +
                         waveY * waveAmplitude;
                     sphere.position.y = Math.max(minY, floatingY);
-                    sphere.position.x = basePosition.x + waveX * horizontalWaveAmplitude;
-                    sphere.position.z = basePosition.z + waveZ * horizontalWaveAmplitude;
                 });
 
                 this.renderer.render(this.scene, this.camera);

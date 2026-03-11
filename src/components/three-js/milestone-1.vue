@@ -89,7 +89,6 @@ export default {
             this.scene = markRaw(new THREE.Scene());
             this.camera = markRaw(new THREE.PerspectiveCamera(30, this.width / this.height, 1.01, 200));
             this.camera.position.set(0, 6, 45);
-          //  this.camera.lookAt(0, 0, 0);
             this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
 
@@ -120,7 +119,6 @@ export default {
             const xScale = d3.scaleLinear().domain(xExtent).range([0, this.width]);
             const zScale = d3.scaleLinear().domain(zExtent).range([0, planeHeight * zExtent[1]]);
             const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
-            // Map viability to vertical space (0 => high, 1 => low).
             const yScale = d3
                 .scaleLinear()
                 .domain([0, 1])
@@ -160,21 +158,16 @@ export default {
                 const material = markRaw(new THREE.MeshStandardMaterial({
                     color: d.rgba,
                     transparent: true,
-                    opacity: 0.4,
+                    opacity: 0.6,
                     roughness: 0.0,
                     metalness: 0.0
                 }));
                 const sphere = markRaw(new THREE.Mesh(geometry, material));
-                const yMin = planeHeight;
-                const yMax = planeHeight * 6;
                 const basePosition = markRaw(new THREE.Vector3(
                     xScale(d.x) - xOffset,
                     yScale(d.viability) + sphereRadius * 0.2,
                     zScale(d.z) - zOffset
                 ));
-                const yNormalized = (basePosition.y - yMin) / (yMax - yMin);
-                const sizeScale = 0.55 + Math.max(0, Math.min(1, yNormalized)) * 0.45;
-                sphere.scale.setScalar(sizeScale);
                 sphere.position.copy(basePosition);
                 sphere.userData.basePosition = basePosition;
                 sphere.userData.minY = sphereRadius;
@@ -194,23 +187,8 @@ export default {
 
                 this.spheres.forEach(sphere => {
                     const { basePosition, floatPhase, floatSpeed, floatAmplitude, minY } = sphere.userData;
-                    // Layer a slow wave across X/Z to keep motion cohesive.
-                    const waveFrequency = 0.12;
-                    const waveSpeed = 0.6;
-                    const waveAmplitude = 0.6;
-                    const horizontalWaveAmplitude = 0.35;
-                    const waveY =
-                        Math.sin(basePosition.x * waveFrequency + elapsed * waveSpeed) +
-                        Math.cos(basePosition.z * waveFrequency + elapsed * waveSpeed * 0.9);
-                    const waveX = Math.sin(basePosition.z * waveFrequency + elapsed * waveSpeed * 0.7);
-                    const waveZ = Math.cos(basePosition.x * waveFrequency + elapsed * waveSpeed * 0.8);
-                    const floatingY =
-                        basePosition.y +
-                        Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude +
-                        waveY * waveAmplitude;
+                    const floatingY = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
                     sphere.position.y = Math.max(minY, floatingY);
-                    sphere.position.x = basePosition.x + waveX * horizontalWaveAmplitude;
-                    sphere.position.z = basePosition.z + waveZ * horizontalWaveAmplitude;
                 });
 
                 this.renderer.render(this.scene, this.camera);
