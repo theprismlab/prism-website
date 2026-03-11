@@ -115,6 +115,10 @@ export default {
             const xScale = d3.scaleLinear().domain(xExtent).range([0, this.width]);
             const zScale = d3.scaleLinear().domain(zExtent).range([0, planeHeight * zExtent[1]]);
             const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
+            const yScale = d3
+                .scaleLinear()
+                .domain(d3.extent(this.heatmapData, d => d.viability))
+                .range([planeHeight * 4, -planeHeight*4]);
 
             const xOffset = (xScale.range()[1] - xScale.range()[0]) / 2;
             const zOffset = (zScale.range()[1] - zScale.range()[0]) / 2;
@@ -133,12 +137,13 @@ export default {
                 zScale,
                 xOffset,
                 zOffset,
-                planeHeight
+                planeHeight,
+                yScale
             });
 
             this.renderer.render(this.scene, this.camera);
         },
-        renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight }) {
+        renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale }) {
             const sphereRadius = planeHeight * 0.18;
             const geometry = new THREE.SphereGeometry(sphereRadius, 16, 16);
 
@@ -147,7 +152,7 @@ export default {
                 const sphere = new THREE.Mesh(geometry, material);
                 sphere.position.set(
                     xScale(d.x) - xOffset,
-                    d.y + sphereRadius * 0.6,
+                    yScale(d.viability) + sphereRadius * 0.2,
                     zScale(d.z) - zOffset
                 );
                 this.scene.add(sphere);
