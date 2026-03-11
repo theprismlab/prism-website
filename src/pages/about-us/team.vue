@@ -6,8 +6,8 @@
             <!-- <div class="team-card-wrapper" v-for="individual in teamMembers">
               <TeamCard :name="individual.name" :title="individual.title" :image="`${imgPath}${individual.image}`"></TeamCard>
             </div> -->
-             <v-col cols="7" xs="4" sm="4" md="3" lg="3" xl="3" v-for="individual in teamMembers">
-              <TeamCard :name="individual.name" :title="individual.title" :image="`${imgPath}${individual.image}`"></TeamCard>
+             <v-col cols="7" xs="4" sm="4" md="3" lg="3" xl="3" v-for="(individual, index) in teamMembers" :key="index">
+              <TeamCard :name="individual.name" :title="individual.title" :image="`${imgPath}${individual.image}`" :index="index"></TeamCard>
              </v-col>
           </v-row>
       </container-md>
@@ -32,7 +32,7 @@ const dataFile = "Website Content - 2025  - Team Page.csv";
     },
     computed: {
       imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/team_headshots_jpg/" : "../../public/images/team_headshots_jpg/"
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/team_headshots_png/" : "../../public/images/team_headshots_png/"
         },
    
     },
@@ -44,7 +44,7 @@ const dataFile = "Website Content - 2025  - Team Page.csv";
                 return {
                     name: d["Team Member"],
                     title: d["Title"],
-                    image: `${d["Team Member"]}.JPG`,
+                    image: `${d["Team Member"]}.png`,
                 }
             })
           ]).then(response=>{
