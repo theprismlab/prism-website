@@ -197,8 +197,9 @@ export default {
                 sphere.userData.minY = sphereRadius;
                 sphere.userData.opacityScale = zOpacityScale;
                 sphere.userData.floatPhase = Math.random() * Math.PI * 2;
-                sphere.userData.floatSpeed = 0.4 + Math.random() * 0.4;
+                sphere.userData.floatSpeed = 0.2 + Math.random() * 0.2;
                 sphere.userData.floatAmplitude = planeHeight * (0.03 + Math.random() * 0.02);
+                sphere.userData.waveSpeed = 0.25 + Math.random() * 0.12;
                 this.scene.add(sphere);
                 this.spheres.push(sphere);
             });
@@ -216,13 +217,13 @@ export default {
                         floatPhase,
                         floatSpeed,
                         floatAmplitude,
+                        waveSpeed,
                         minY,
                         material,
                         opacityScale
                     } = sphere.userData;
                     // Layer a slow wave across X/Z to keep motion cohesive.
                     const waveFrequency = 0.06;
-                    const waveSpeed = 0.5;
                     const waveAmplitude = 1.1;
                     const horizontalWaveAmplitude = 0.5;
                     const wavePhase = basePosition.x * waveFrequency + elapsed * waveSpeed;
