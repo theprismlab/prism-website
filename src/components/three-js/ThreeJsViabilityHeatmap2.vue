@@ -27,9 +27,9 @@ export default {
             spheres: [],
             clock: null,
             animationFrameId: null,
-            xWrapMin: 0,
-            xWrapMax: 0,
-            xWrapSpan: 0,
+            yWrapMin: 0,
+            yWrapMax: 0,
+            yWrapSpan: 0,
         };
     },
     computed: {
@@ -132,9 +132,9 @@ export default {
             const xOffset = (xScale.range()[1] - xScale.range()[0]) / 2;
             const zOffset = (zScale.range()[1] - zScale.range()[0]) / 2;
 
-            this.xWrapMin = xScale.range()[0] - xOffset;
-            this.xWrapMax = xScale.range()[1] - xOffset;
-            this.xWrapSpan = this.xWrapMax - this.xWrapMin;
+            this.yWrapMin = planeHeight;
+            this.yWrapMax = planeHeight * 6;
+            this.yWrapSpan = this.yWrapMax - this.yWrapMin;
 
             this.heatmapData.forEach(d => {
                 const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
@@ -207,8 +207,8 @@ export default {
                 sphere.userData.floatSpeed = 0.2 + Math.random() * 0.2;
                 sphere.userData.floatAmplitude = planeHeight * (0.03 + Math.random() * 0.02);
                 sphere.userData.waveSpeed = 0.25 + Math.random() * 0.12;
-                sphere.userData.driftSpeed = 0.6 + Math.random() * 0.4;
-                sphere.userData.driftOffset = 0;
+                sphere.userData.riseSpeed = 0.7 + Math.random() * 0.4;
+                sphere.userData.riseOffset = Math.random() * this.yWrapSpan;
                 this.scene.add(sphere);
                 this.spheres.push(sphere);
             });
@@ -228,10 +228,10 @@ export default {
                         floatSpeed,
                         floatAmplitude,
                         waveSpeed,
-                        minY,
                         material,
                         opacityScale,
-                        driftSpeed
+                        riseSpeed,
+                        riseOffset
                     } = sphere.userData;
                     // Layer a slow wave across X/Z to keep motion cohesive.
                     const waveFrequency = 0.06;
@@ -247,17 +247,14 @@ export default {
                         basePosition.y +
                         Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude +
                         waveY * waveAmplitude;
-                    sphere.position.y = Math.max(minY, floatingY);
-                    sphere.userData.driftOffset += driftSpeed * delta;
-                    let nextX = basePosition.x + sphere.userData.driftOffset + waveX * horizontalWaveAmplitude;
-                    if (nextX > this.xWrapMax) {
-                        sphere.userData.driftOffset -= this.xWrapSpan;
-                        nextX -= this.xWrapSpan;
-                    } else if (nextX < this.xWrapMin) {
-                        sphere.userData.driftOffset += this.xWrapSpan;
-                        nextX += this.xWrapSpan;
+                    sphere.userData.riseOffset += riseSpeed * delta;
+                    let nextY = floatingY + sphere.userData.riseOffset;
+                    if (nextY > this.yWrapMax) {
+                        sphere.userData.riseOffset -= this.yWrapSpan;
+                        nextY -= this.yWrapSpan;
                     }
-                    sphere.position.x = nextX;
+                    sphere.position.y = nextY;
+                    sphere.position.x = basePosition.x + waveX * horizontalWaveAmplitude;
                     sphere.position.z = basePosition.z + waveZ * horizontalWaveAmplitude;
                     if (material && opacityScale) {
                         material.opacity = opacityScale(sphere.position.z);
