@@ -30,6 +30,7 @@ export default {
             yWrapMin: 0,
             yWrapMax: 0,
             yWrapSpan: 0,
+            yFadeHeight: 0,
         };
     },
     computed: {
@@ -135,6 +136,7 @@ export default {
             this.yWrapMin = planeHeight;
             this.yWrapMax = planeHeight * 6;
             this.yWrapSpan = this.yWrapMax - this.yWrapMin;
+            this.yFadeHeight = planeHeight * 1.5;
 
             this.heatmapData.forEach(d => {
                 const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
@@ -209,6 +211,11 @@ export default {
                 sphere.userData.waveSpeed = 0.25 + Math.random() * 0.12;
                 sphere.userData.riseSpeed = 0.7 + Math.random() * 0.4;
                 sphere.userData.riseOffset = Math.random() * this.yWrapSpan;
+                sphere.userData.driftAmplitude = planeHeight * (0.12 + Math.random() * 0.08);
+                sphere.userData.driftSpeedX = 0.15 + Math.random() * 0.2;
+                sphere.userData.driftSpeedZ = 0.12 + Math.random() * 0.18;
+                sphere.userData.driftPhaseX = Math.random() * Math.PI * 2;
+                sphere.userData.driftPhaseZ = Math.random() * Math.PI * 2;
                 this.scene.add(sphere);
                 this.spheres.push(sphere);
             });
@@ -231,7 +238,12 @@ export default {
                         material,
                         opacityScale,
                         riseSpeed,
-                        riseOffset
+                        riseOffset,
+                        driftAmplitude,
+                        driftSpeedX,
+                        driftSpeedZ,
+                        driftPhaseX,
+                        driftPhaseZ
                     } = sphere.userData;
                     // Layer a slow wave across X/Z to keep motion cohesive.
                     const waveFrequency = 0.06;
@@ -243,6 +255,8 @@ export default {
                         Math.sin(wavePhase * 2 + 0.8) * 0.35;
                     const waveX = Math.sin(wavePhase);
                     const waveZ = 0;
+                    const driftX = Math.sin(elapsed * driftSpeedX + driftPhaseX) * driftAmplitude;
+                    const driftZ = Math.cos(elapsed * driftSpeedZ + driftPhaseZ) * driftAmplitude;
                     const floatingY =
                         basePosition.y +
                         Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude +
@@ -254,10 +268,14 @@ export default {
                         nextY -= this.yWrapSpan;
                     }
                     sphere.position.y = nextY;
-                    sphere.position.x = basePosition.x + waveX * horizontalWaveAmplitude;
-                    sphere.position.z = basePosition.z + waveZ * horizontalWaveAmplitude;
+                    sphere.position.x = basePosition.x + waveX * horizontalWaveAmplitude + driftX;
+                    sphere.position.z = basePosition.z + waveZ * horizontalWaveAmplitude + driftZ;
                     if (material && opacityScale) {
-                        material.opacity = opacityScale(sphere.position.z);
+                        const fadeFactor = Math.min(
+                            1,
+                            Math.max(0, (sphere.position.y - this.yWrapMin) / this.yFadeHeight)
+                        );
+                        material.opacity = opacityScale(sphere.position.z) * fadeFactor;
                     }
                 });
 
