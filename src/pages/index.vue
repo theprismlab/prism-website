@@ -1,7 +1,7 @@
 <template>
   <page class="mt-0">
     <section style="position: relative; height: 85vh; width: 100%;">
-      <ThreeJsViabilityHeatmap :key="resizeCounter"/>
+      <ThreeJsViabilityHeatmap2 :key="resizeCounter"/>
 
       <!-- <ThreeJsSpheres10/> -->
 
@@ -55,13 +55,7 @@
   </page>
   </template>
   <script>
-  import * as content from '@/utils/content.js'
-  import SvgIcon from '@jamescoyle/vue-icon';
-  // import { mdiFormatQuoteOpen } from '@mdi/js';
-  // import { mdiFormatQuoteClose } from '@mdi/js';
-  import OurPortal from '@/components/sections/OurPortal.vue'
-
-
+import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiHexagonMultiple } from '@mdi/js';
 import { mdiFileMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
