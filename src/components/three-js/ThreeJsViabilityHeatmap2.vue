@@ -226,7 +226,7 @@ export default {
                     const waveFrequency = 0.06;
                     const waveAmplitude = 1.1;
                     const horizontalWaveAmplitude = 0.5;
-                    const wavePhase = basePosition.x * waveFrequency + elapsed * waveSpeed;
+                    const wavePhase = basePosition.x * waveFrequency - elapsed * waveSpeed;
                     const waveY =
                         Math.sin(wavePhase * 2) +
                         Math.sin(wavePhase * 2 + 0.8) * 0.35;
