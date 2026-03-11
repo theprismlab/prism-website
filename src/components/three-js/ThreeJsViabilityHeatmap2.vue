@@ -170,6 +170,7 @@ export default {
                 ));
                 sphere.position.copy(basePosition);
                 sphere.userData.basePosition = basePosition;
+                sphere.userData.minY = sphereRadius;
                 sphere.userData.floatPhase = Math.random() * Math.PI * 2;
                 sphere.userData.floatSpeed = 0.4 + Math.random() * 0.4;
                 sphere.userData.floatAmplitude = planeHeight * (0.08 + Math.random() * 0.06);
@@ -185,8 +186,9 @@ export default {
                 const elapsed = this.clock.getElapsedTime();
 
                 this.spheres.forEach(sphere => {
-                    const { basePosition, floatPhase, floatSpeed, floatAmplitude } = sphere.userData;
-                    sphere.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
+                    const { basePosition, floatPhase, floatSpeed, floatAmplitude, minY } = sphere.userData;
+                    const floatingY = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
+                    sphere.position.y = Math.max(minY, floatingY);
                 });
 
                 this.renderer.render(this.scene, this.camera);
