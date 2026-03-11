@@ -85,8 +85,8 @@ export default {
         },
         initThreeJs() {
             this.scene = new THREE.Scene();
-            this.camera = new THREE.PerspectiveCamera(70, this.width / this.height, 1.01, 200);
-            this.camera.position.set(0, 5, 25);
+            this.camera = new THREE.PerspectiveCamera(30, this.width / this.height, 1.01, 200);
+            this.camera.position.set(0, 6, 45);
             this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
 
@@ -146,9 +146,6 @@ export default {
         renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale }) {
             const sphereRadius = planeHeight * 0.18;
             const geometry = new THREE.SphereGeometry(sphereRadius, 16, 16);
-            // 2 below
-            const referenceDistance = this.camera.position.length();
-            const origin = new THREE.Vector3(0, 0, 0);
 
             this.heatmapData.forEach(d => {
                 const material = new THREE.MeshBasicMaterial({ color: d.rgba, transparent: true, opacity: 0.85 });
@@ -158,10 +155,6 @@ export default {
                     yScale(d.viability) + sphereRadius * 0.2,
                     zScale(d.z) - zOffset
                 );
-                // three below
-                const distance = this.camera.position.distanceTo(sphere.position || origin);
-                const scale = distance / referenceDistance;
-                sphere.scale.setScalar(scale);
                 this.scene.add(sphere);
             });
         }
