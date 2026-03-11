@@ -5,7 +5,7 @@
             <svg-icon :path="item.path"  type="mdi" :size="item.size"  class="mr-2"></svg-icon>
             {{item.title}}
             </h3>
-            <p class="text-grey-darken-2 text-body-2 ml-8">{{item.text}}</p>
+            <p class="text-grey-darken-2 text-body-2 ml-8" v-html="item.text"></p>
         </div>
     </v-card>
 </template>
@@ -28,7 +28,7 @@ export default {
             agreements: [
                 {
                     title: "Data Ownership",
-                    text: "PRISM retains the right to use collaboratively generated data to validate and improve the PRISM platform. The structure and identity of your compound will not be shared with us. Unique identifiers are given to all test agents.",
+                    text: "PRISM retains the right to use collaboratively generated data to validate and improve the PRISM platform; however, collaborators will own all of their test agent data, and Broad shall not make any claim of ownership to such results. <br><br>The structure and identity of collaborator test agents do not need to be shared with PRISM, and unique identifiers are given to all test agents after they are submitted.",
                     path: mdiDatabaseOutline,
                     size: 24
                 },
@@ -53,6 +53,4 @@ export default {
     .v-card {
         border: 1px solid var(--v-cyan-lighten-4);
     }
-
-
 </style>

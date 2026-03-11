@@ -29,7 +29,7 @@ export default {
         return {
             cards: [
                 {
-                    title: "150+",
+                    title: "200+",
                     subtitle: "Academic and industry partners",
                     text: "",
                     iconPath: mdiAccountGroup 
@@ -42,7 +42,7 @@ export default {
                     iconPath: mdiHexagonMultiple
                 },
                 {
-                    title: "40+",
+                    title: "50+",
                     subtitle: "Publications in high-impact journals",
                     text: "",
                     iconPath: mdiFileMultipleOutline
