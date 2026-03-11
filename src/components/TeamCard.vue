@@ -38,6 +38,10 @@ export default {
 </script>
 
 <style scoped>
+.v-card{
+    max-width: 300px;
+    min-width: 200px;
+}
 .v-card-title{
     font-size: 1.15rem !important;
 }
