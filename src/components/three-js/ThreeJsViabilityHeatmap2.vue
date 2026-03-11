@@ -145,10 +145,16 @@ export default {
         },
         renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale }) {
             const sphereRadius = planeHeight * 0.18;
-            const geometry = new THREE.SphereGeometry(sphereRadius, 16, 16);
+            const geometry = new THREE.SphereGeometry(sphereRadius, 32, 32);
 
             this.heatmapData.forEach(d => {
-                const material = new THREE.MeshBasicMaterial({ color: d.rgba, transparent: true, opacity: 0.85 });
+                const material = new THREE.MeshStandardMaterial({
+                    color: d.rgba,
+                    transparent: true,
+                    opacity: 0.6,
+                    roughness: 0.0,
+                    metalness: 0.0
+                });
                 const sphere = new THREE.Mesh(geometry, material);
                 sphere.position.set(
                     xScale(d.x) - xOffset,
