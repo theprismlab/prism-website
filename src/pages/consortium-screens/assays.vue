@@ -15,12 +15,12 @@
                     class="assay-panel"
                 >
                     <v-expansion-panel-title>
-                        <v-row class="align-center assay-panel__header" no-gutters>
+                        <v-row class="align-top assay-panel__header" no-gutters>
                             <v-col cols="12" md="2" class="assay-panel__cell assay-panel__cell--screen">
                                 <div class="assay-panel__label">Screen</div>
                                 <div class="assay-panel__value assay-panel__value--screen">{{ item.screen }}</div>
                             </v-col>
-                            <v-col cols="12" md="4" class="assay-panel__cell">
+                            <v-col cols="12" md="3" class="assay-panel__cell">
                                 <div class="assay-panel__label">Test agents</div>
                                 <div class="assay-panel__value">{{ item.test_agents }}</div>
                             </v-col>
@@ -32,7 +32,7 @@
                                 <div class="assay-panel__label">Time-point</div>
                                 <div class="assay-panel__value">{{ item.time_point }}</div>
                             </v-col>
-                            <v-col cols="6" md="1" class="assay-panel__cell">
+                            <v-col cols="6" md="2" class="assay-panel__cell">
                                 <div class="assay-panel__label">Cell lines</div>
                                 <div class="assay-panel__value">{{ item.num_cell_lines }}</div>
                             </v-col>
@@ -40,13 +40,11 @@
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
                         <v-row class="justify-center">
-                            <v-card class="pa-3 assay-panel__body" flat>
-                                <v-card-item>
-                                    <h3 class="text-h4 font-weight-bold text-center">{{ item.screen }} workflow</h3>
-                                    <img :src="imgPath + item.image" class="mb-2 row-img" />
-                                    <p class="text-body-2" style="margin:auto; max-width:800px;" v-html="item.description"></p>
-                                </v-card-item>
-                            </v-card>
+                            <v-col>
+                                <h3 class="text-h4 font-weight-bold text-center">{{ item.screen }} workflow</h3>
+                                <img :src="imgPath + item.image" class="mb-2 row-img" />
+                                <p class="text-body-2" style="margin:auto; max-width:800px;" v-html="item.description"></p>
+                            </v-col>
                         </v-row>
                     </v-expansion-panel-text>
                 </v-expansion-panel>
@@ -140,23 +138,13 @@ export default {
         
     },
     methods: {
-        // clickColumn(slotData) {
-        // const indexRow = slotData.index;
-        // const indexExpanded = this.expanded.findIndex(i => i === slotData.item);
-        // if (indexExpanded > -1) {
-        //     this.expanded.splice(indexExpanded, 1)
-        // } else {
-        //     this.expanded.push(slotData.item);
-        // }
-        // },
+
     }
 };
 </script>
 
 <style scoped>
-.assays-accordion {
-    margin-top: 16px;
-}
+
 .assay-panel {
     border: 1px solid rgba(9, 36, 64, 0.12);
     border-radius: 16px;
@@ -167,19 +155,13 @@ export default {
         inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 .assay-panel + .assay-panel {
-    margin-top: 14px;
+    margin-top: 8px;
 }
 .assay-panel__header {
     padding: 18px 12px;
-    gap: 8px;
 }
-.assay-panel__cell {
-    padding: 10px 12px;
-    border-left: 1px solid rgba(9, 36, 64, 0.08);
-}
-.assay-panel__cell:first-child {
-    border-left: none;
-}
+
+
 .assay-panel__label {
     font-size: 0.7rem;
     letter-spacing: 0.12em;
@@ -198,12 +180,10 @@ export default {
     color: #0b3a66;
 }
 .assay-panel__body {
-    background: #ffffff;
+    background: none !important;
     border-top: 1px solid rgba(9, 36, 64, 0.08);
 }
-.v-card {
-    min-height:300px !important;
-}
+
 
 .row-img{
     max-height:250px !important;
