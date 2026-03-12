@@ -12,29 +12,35 @@
                     v-for="item in table.items"
                     :key="item.id"
                     :value="item.id"
+                    class="assay-panel"
                 >
                     <v-expansion-panel-title>
-                        <v-row class="align-center" no-gutters>
-                            <v-col cols="12" md="2" class="text-subtitle-1 font-weight-bold">
-                                {{ item.screen }}
+                        <v-row class="align-center assay-panel__header" no-gutters>
+                            <v-col cols="12" md="2" class="assay-panel__cell assay-panel__cell--screen">
+                                <div class="assay-panel__label">Screen</div>
+                                <div class="assay-panel__value assay-panel__value--screen">{{ item.screen }}</div>
                             </v-col>
-                            <v-col cols="12" md="4" class="text-body-2">
-                                {{ item.test_agents }}
+                            <v-col cols="12" md="4" class="assay-panel__cell">
+                                <div class="assay-panel__label">Test agents</div>
+                                <div class="assay-panel__value">{{ item.test_agents }}</div>
                             </v-col>
-                            <v-col cols="12" md="3" class="text-body-2">
-                                <span v-html="item.dose_scheme"></span>
+                            <v-col cols="12" md="3" class="assay-panel__cell">
+                                <div class="assay-panel__label">Dose scheme</div>
+                                <div class="assay-panel__value" v-html="item.dose_scheme"></div>
                             </v-col>
-                            <v-col cols="6" md="2" class="text-body-2">
-                                {{ item.time_point }}
+                            <v-col cols="6" md="2" class="assay-panel__cell">
+                                <div class="assay-panel__label">Time-point</div>
+                                <div class="assay-panel__value">{{ item.time_point }}</div>
                             </v-col>
-                            <v-col cols="6" md="1" class="text-body-2">
-                                {{ item.num_cell_lines }}
+                            <v-col cols="6" md="1" class="assay-panel__cell">
+                                <div class="assay-panel__label">Cell lines</div>
+                                <div class="assay-panel__value">{{ item.num_cell_lines }}</div>
                             </v-col>
                         </v-row>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
                         <v-row class="justify-center">
-                            <v-card class="pa-3" flat>
+                            <v-card class="pa-3 assay-panel__body" flat>
                                 <v-card-item>
                                     <h3 class="text-h4 font-weight-bold text-center">{{ item.screen }} workflow</h3>
                                     <img :src="imgPath + item.image" class="mb-2 row-img" />
@@ -151,11 +157,68 @@ export default {
 .assays-accordion {
     margin-top: 16px;
 }
+.assay-panel {
+    border: 1px solid rgba(9, 36, 64, 0.12);
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(245, 250, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 60%);
+    box-shadow:
+        0 10px 24px rgba(9, 36, 64, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.assay-panel + .assay-panel {
+    margin-top: 14px;
+}
+.assay-panel__header {
+    padding: 18px 12px;
+    gap: 8px;
+}
+.assay-panel__cell {
+    padding: 10px 12px;
+    border-left: 1px solid rgba(9, 36, 64, 0.08);
+}
+.assay-panel__cell:first-child {
+    border-left: none;
+}
+.assay-panel__label {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(9, 36, 64, 0.55);
+    margin-bottom: 6px;
+}
+.assay-panel__value {
+    font-size: 0.95rem;
+    color: #0b2340;
+    line-height: 1.4;
+}
+.assay-panel__value--screen {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0b3a66;
+}
+.assay-panel__body {
+    background: #ffffff;
+    border-top: 1px solid rgba(9, 36, 64, 0.08);
+}
 .v-card {
     min-height:300px !important;
 }
 
 .row-img{
     max-height:250px !important;
+}
+
+@media (max-width: 960px) {
+    .assay-panel__header {
+        padding: 12px 8px;
+    }
+    .assay-panel__cell {
+        border-left: none;
+        border-top: 1px solid rgba(9, 36, 64, 0.08);
+    }
+    .assay-panel__cell:first-child {
+        border-top: none;
+    }
 }
 </style>
