@@ -69,7 +69,7 @@ export default {
                     {
                         'id': "MTS",
                         'screen': 'MTS',
-                        'test_agents': 'small molecule single agents',
+                        'test_agents': 'Small molecule single agents',
                         'num_cell_lines': '~900 (full PRISM cell set)',
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
@@ -79,7 +79,7 @@ export default {
                     {
                         'id': "CPS",
                         'screen': 'CPS',
-                        'test_agents': 'small molecule combinations',
+                        'test_agents': 'Small molecule combinations',
                         'num_cell_lines': '~900 (full PRISM cell set)',
                         'dose_scheme': `<ul>
                             <li>7-point dose, 3-fold dilution (treatment agent)</li>
@@ -92,17 +92,26 @@ export default {
                     },
                     {   'id': "APS",
                         'screen': 'APS',
-                        'test_agents': 'antibodies, ADCs, growth-inhibiting cytokines, aqueous test agents',
+                        'test_agents': 'Antibodies, ADCs, growth-inhibiting cytokines, aqueous test agents',
                         'num_cell_lines': '~900 (full PRISM cell set)',
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
                         'description': `For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents. For more information, review the <a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal.`,
                         'image': 'PRISM Cell Line Workflow_APS.png'
                     },
+                    {   'id': "AIR",
+                        'screen': 'AIR',
+                        'test_agents': 'Antibodies (IgG isotype, containing human or humanized Fc region)',
+                        'num_cell_lines': '~900 (full PRISM cell set)',
+                        'dose_scheme': `8-point dose, 3-fold dilution`,
+                        'time_point': '5-day',
+                        'description': `TBD...... For more information, review the <a href="https://assets.clue.io/prism/Overview-of-PRISM-AIR-Assay-for-Collaborators.pdf" target="_blank">AIR overview slides</a>`,
+                        'image': 'PRISM Cell Line Workflow_AIR.png'
+                    },
                     {
                         'id': "EPS",
                         'screen': 'EPS',
-                        'test_agents': 'small molecule single agents',
+                        'test_agents': 'Small molecule single agents',
                         'num_cell_lines': '+500',
                         'dose_scheme': `5-pt dose, custom dilution `,
                         'time_point': '10-day',
