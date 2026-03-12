@@ -15,43 +15,43 @@
                     class="assay-panel"
                 >
                     <v-expansion-panel-title>
-                        <v-row class="align-top assay-panel__header" no-gutters>
-                            <v-col cols="12" md="2" class="assay-panel__cell assay-panel__cell--screen">
-                                <div class="assay-panel__label">Screen</div>
-                                <div class="assay-panel__value assay-panel__value--screen">{{ item.screen }}</div>
-                            </v-col>
-                            <v-col cols="12" md="10" class="assay-panel__cell">
-                                <div class="assay-panel__label">Test agents</div>
-                                <div class="assay-panel__value">{{ item.test_agents }}</div>
-                            </v-col>
-                         
-                        </v-row>
+                        <div class="assay-panel__titlebar">
+                            <div class="assay-panel__headline">
+                                <div class="assay-panel__kicker">Assay</div>
+                                <div class="assay-panel__name">{{ item.screen }}</div>
+                                <div class="assay-panel__summary">{{ item.test_agents }}</div>
+                            </div>
+                            <div class="assay-panel__meta">
+                                <div class="assay-panel__pill">
+                                    <span class="assay-panel__pill-label">Time-point</span>
+                                    <span class="assay-panel__pill-value">{{ item.time_point }}</span>
+                                </div>
+                                <div class="assay-panel__pill">
+                                    <span class="assay-panel__pill-label">Cell lines</span>
+                                    <span class="assay-panel__pill-value">{{ item.num_cell_lines }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text class="assay-panel__text">
-                        <v-row class="assay-panel__content" align="top" justify="space-between">
-                            <v-col cols="12" md="auto" class="assay-panel__cell">
-                                <div class="assay-panel__label">Dose scheme</div>
-                                <div class="assay-panel__value" v-html="item.dose_scheme"></div>
-                            </v-col>
-                            <v-col cols="6" md="auto" class="assay-panel__cell">
-                                <div class="assay-panel__label">Time-point</div>
-                                <div class="assay-panel__value">{{ item.time_point }}</div>
-                            </v-col>
-                            <v-col cols="6" md="auto" class="assay-panel__cell">
-                                <div class="assay-panel__label">Cell lines</div>
-                                <div class="assay-panel__value">{{ item.num_cell_lines }}</div>
-                            </v-col>
-                            <v-col cols="12" md="7" class="assay-panel__copy">
-                                <div class="assay-panel__label">Details</div>
-                        
-                                <p class="assay-panel__description" v-html="item.description"></p>
-                            </v-col>
-
-                            <v-col cols="12" md="12" class="assay-panel__media">
-                                <div class="assay-panel__label">{{ item.screen }} workflow</div>
-                                <img :src="imgPath + item.image" class="row-img" />
-                            </v-col>
-                        </v-row>
+                        <div class="assay-panel__content">
+                            <div class="assay-panel__specs">
+                                <div class="assay-panel__spec">
+                                    <div class="assay-panel__spec-label">Dose scheme</div>
+                                    <div class="assay-panel__spec-value" v-html="item.dose_scheme"></div>
+                                </div>
+                            </div>
+                            <div class="assay-panel__body-grid">
+                                <div class="assay-panel__copy">
+                                    <div class="assay-panel__section-label">Details</div>
+                                    <p class="assay-panel__description" v-html="item.description"></p>
+                                </div>
+                                <div class="assay-panel__media assay-panel__media--full">
+                                    <div class="assay-panel__section-label">{{ item.screen }} workflow</div>
+                                    <img :src="imgPath + item.image" class="row-img" />
+                                </div>
+                            </div>
+                        </div>
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
@@ -190,11 +190,111 @@ export default {
     border-top: 1px solid rgba(9, 36, 64, 0.08);
 }
 
+.assay-panel__titlebar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    padding: 16px 18px;
+    align-items: center;
+}
+.assay-panel__headline {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+.assay-panel__kicker {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(9, 36, 64, 0.45);
+}
+.assay-panel__name {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #0b3a66;
+}
+.assay-panel__summary {
+    font-size: 0.98rem;
+    color: rgba(9, 36, 64, 0.78);
+    line-height: 1.4;
+}
+.assay-panel__meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.assay-panel__pill {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(11, 58, 102, 0.08);
+    border: 1px solid rgba(11, 58, 102, 0.18);
+    min-width: 120px;
+}
+.assay-panel__pill-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(9, 36, 64, 0.55);
+}
+.assay-panel__pill-value {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #0b2340;
+}
+
 .assay-panel__text {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 250, 255, 0.95) 100%);
 }
 .assay-panel__content {
     padding: 18px 18px 22px;
+}
+.assay-panel__specs {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(9, 36, 64, 0.08);
+    margin-bottom: 16px;
+}
+.assay-panel__spec {
+    min-width: 220px;
+}
+.assay-panel__spec-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(9, 36, 64, 0.5);
+    margin-bottom: 6px;
+}
+.assay-panel__spec-value {
+    font-size: 0.95rem;
+    color: rgba(9, 36, 64, 0.85);
+    line-height: 1.4;
+}
+.assay-panel__spec-value :deep(ul) {
+    margin: 6px 0 0 18px;
+    padding: 0;
+}
+.assay-panel__spec-value :deep(li) {
+    margin-bottom: 4px;
+}
+.assay-panel__body-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    align-items: start;
+}
+.assay-panel__section-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(9, 36, 64, 0.5);
+    margin-bottom: 8px;
 }
 
 .assay-panel__title {
@@ -232,7 +332,9 @@ export default {
     border: 1px solid rgba(9, 36, 64, 0.08);
     border-radius: 14px;
     padding: 12px;
-    margin-top: 18px;
+}
+.assay-panel__media--full {
+    width: 100%;
 }
 
 .row-img{
@@ -241,21 +343,19 @@ export default {
 }
 
 @media (max-width: 960px) {
-    .assay-panel__header {
-        padding: 12px 8px;
+    .assay-panel__titlebar {
+        grid-template-columns: 1fr;
+        padding: 14px 12px;
     }
-    .assay-panel__cell {
-        border-left: none;
-        border-top: 1px solid rgba(9, 36, 64, 0.08);
-    }
-    .assay-panel__cell:first-child {
-        border-top: none;
+    .assay-panel__meta {
+        justify-content: flex-start;
     }
     .assay-panel__content {
         padding: 14px 12px 18px;
     }
-    .assay-panel__title {
-        font-size: 1.25rem;
+    .assay-panel__specs {
+        flex-direction: column;
+        gap: 10px;
     }
 }
 </style>
