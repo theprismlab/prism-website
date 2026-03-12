@@ -39,14 +39,16 @@
                         </v-row>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text class="assay-panel__text">
-                        <v-row class="assay-panel__content" align="start">
-                            <v-col cols="12" md="5" class="assay-panel__media">
-                                <img :src="imgPath + item.image" class="row-img" />
-                            </v-col>
+                        <v-row class="assay-panel__content" align="start" justify="center">
+
                             <v-col cols="12" md="7" class="assay-panel__copy">
-                                <div class="assay-panel__eyebrow">Workflow</div>
+                                <div class="assay-panel__eyebrow">Details</div>
                                 <h3 class="assay-panel__title">{{ item.screen }} workflow</h3>
                                 <p class="assay-panel__description" v-html="item.description"></p>
+                            </v-col>
+
+                            <v-col cols="12" md="12" class="assay-panel__media">
+                                <img :src="imgPath + item.image" class="row-img" />
                             </v-col>
                         </v-row>
                     </v-expansion-panel-text>
@@ -80,7 +82,7 @@ export default {
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
                         'description': 'We screen standard DMSO compounds at a top dose of your choice, diluted 3-fold over 8 dilutions. Compounds are plated with an Echo using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s).',
-                        'image': 'PRISM Cell Line Workflow_MTS.png'
+                        'image': 'PRISM Assay Workflow_MTS.png'
                     },
                     {
                         'id': "CPS",
@@ -94,7 +96,7 @@ export default {
                         </ul>`,
                         'time_point': '5-day',
                         'description': 'Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents. When selecting an anchor dose our recommendation is to select a dose that does not broadly affect cell viability but gives a reproducible phenotypic effect in a specific cell line or set of cell lines. <a href="https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism" target="_blank">CPS white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/CPS009/CPS_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal. Compounds are plated by Echo into plates and frozen prior to cell treatment. Cells are then thawed and plated onto the compound assay ready plates (ARP’s).',
-                        'image': 'PRISM Cell Line Workflow_CPS.png'
+                        'image': 'PRISM Assay Workflow_CPS.png'
                     },
                     {   'id': "APS",
                         'screen': 'APS',
@@ -103,7 +105,7 @@ export default {
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
                         'description': `For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents. For more information, review the <a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal.`,
-                        'image': 'PRISM Cell Line Workflow_APS.png'
+                        'image': 'PRISM Assay Workflow_APS.png'
                     },
                     {   'id': "AIR",
                         'screen': 'AIR',
@@ -112,7 +114,7 @@ export default {
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
                         'description': `TBD...... For more information, review the <a href="https://assets.clue.io/prism/Overview-of-PRISM-AIR-Assay-for-Collaborators.pdf" target="_blank">AIR overview slides</a>`,
-                        'image': 'PRISM Cell Line Workflow_AIR.png'
+                        'image': 'PRISM Assay Workflow_AIR.png'
                     },
                     {
                         'id': "EPS",
@@ -122,7 +124,7 @@ export default {
                         'dose_scheme': `5-pt dose, custom dilution `,
                         'time_point': '10-day',
                         'description': 'For the extended day PRISM screen, small molecules are plated onto 96-well plates and frozen. Cell pools are plated on assay ready plates on day 0 and drug is re-added on day 6. Cell pools are lysed on day 10, gDNA is then PCR’ed and then sequenced.',
-                        'image': 'PRISM Cell Line Workflow_EPS.png'
+                        'image': 'PRISM Assay Workflow_EPS.png'
                     },
                 ],
             },
@@ -133,7 +135,7 @@ export default {
     },
     computed: {
     imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/" : "../../public/images/"
+          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/assay/" : "../../public/images/assay/"
         },
     },
     watch: {
@@ -194,11 +196,11 @@ export default {
     padding: 18px 18px 22px;
     gap: 16px;
 }
-.assay-panel__media {
+/* .assay-panel__media {
     display: flex;
     align-items: center;
     justify-content: center;
-}
+} */
 .assay-panel__eyebrow {
     font-size: 0.72rem;
     letter-spacing: 0.16em;
@@ -239,11 +241,12 @@ export default {
 
 
 .row-img{
-    max-height:250px !important;
+    height: auto;
     width: 100%;
     border-radius: 14px;
     border: 1px solid rgba(9, 36, 64, 0.08);
-    box-shadow: 0 10px 22px rgba(9, 36, 64, 0.12);
+    /* box-shadow: 0 10px 22px rgba(9, 36, 64, 0.12); */
+    background-color: white;
 }
 
 @media (max-width: 960px) {
