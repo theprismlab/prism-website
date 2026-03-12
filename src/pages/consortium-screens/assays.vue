@@ -38,12 +38,15 @@
                             </v-col>
                         </v-row>
                     </v-expansion-panel-title>
-                    <v-expansion-panel-text>
-                        <v-row class="justify-center">
-                            <v-col>
-                                <h3 class="text-h4 font-weight-bold text-center">{{ item.screen }} workflow</h3>
-                                <img :src="imgPath + item.image" class="mb-2 row-img" />
-                                <p class="text-body-2" style="margin:auto; max-width:800px;" v-html="item.description"></p>
+                    <v-expansion-panel-text class="assay-panel__text">
+                        <v-row class="assay-panel__content" align="start">
+                            <v-col cols="12" md="5" class="assay-panel__media">
+                                <img :src="imgPath + item.image" class="row-img" />
+                            </v-col>
+                            <v-col cols="12" md="7" class="assay-panel__copy">
+                                <div class="assay-panel__eyebrow">Workflow</div>
+                                <h3 class="assay-panel__title">{{ item.screen }} workflow</h3>
+                                <p class="assay-panel__description" v-html="item.description"></p>
                             </v-col>
                         </v-row>
                     </v-expansion-panel-text>
@@ -184,9 +187,63 @@ export default {
     border-top: 1px solid rgba(9, 36, 64, 0.08);
 }
 
+.assay-panel__text {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 250, 255, 0.95) 100%);
+}
+.assay-panel__content {
+    padding: 18px 18px 22px;
+    gap: 16px;
+}
+.assay-panel__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.assay-panel__eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(9, 36, 64, 0.55);
+    margin-bottom: 8px;
+}
+.assay-panel__title {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #0b2340;
+    margin: 0 0 10px;
+}
+.assay-panel__description {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: rgba(9, 36, 64, 0.85);
+    margin: 0;
+    max-width: 560px;
+}
+.assay-panel__description :deep(a) {
+    color: #0b3a66;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(11, 58, 102, 0.25);
+}
+.assay-panel__description :deep(a:hover) {
+    color: #0a2f54;
+    border-bottom-color: rgba(11, 58, 102, 0.5);
+}
+.assay-panel__description :deep(ul) {
+    margin: 8px 0 0 18px;
+    padding: 0;
+}
+.assay-panel__description :deep(li) {
+    margin-bottom: 6px;
+}
+
 
 .row-img{
     max-height:250px !important;
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid rgba(9, 36, 64, 0.08);
+    box-shadow: 0 10px 22px rgba(9, 36, 64, 0.12);
 }
 
 @media (max-width: 960px) {
@@ -199,6 +256,12 @@ export default {
     }
     .assay-panel__cell:first-child {
         border-top: none;
+    }
+    .assay-panel__content {
+        padding: 14px 12px 18px;
+    }
+    .assay-panel__title {
+        font-size: 1.25rem;
     }
 }
 </style>
