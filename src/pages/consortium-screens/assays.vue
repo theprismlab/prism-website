@@ -7,45 +7,44 @@
                 </p>
         </container-xs>
         <container-md class="mb-12">
-            <v-data-table
-            
-                fixed-header
-                :headers="table.headers"
-                :items="table.items"
-                item-key="id"
-                class="elevation-1"
-                show-expand
-                :expanded.sync="expandedRows"
-                @click:row="handleRowClick"
+            <v-expansion-panels v-model="expandedRows" variant="accordion" class="assays-accordion">
+                <v-expansion-panel
+                    v-for="item in table.items"
+                    :key="item.id"
+                    :value="item.id"
                 >
-                <template v-slot:item.dose_scheme="{ item }">
-                    <span v-html="item['dose_scheme']"></span>
-                </template>
-                <template v-slot:expanded-row="{ columns, item }">
-                <tr :class="{ 'expanded-blue-row': expandedRows.includes(item.id) }">
-                    <td :colspan="columns.length">
+                    <v-expansion-panel-title>
+                        <v-row class="align-center" no-gutters>
+                            <v-col cols="12" md="2" class="text-subtitle-1 font-weight-bold">
+                                {{ item.screen }}
+                            </v-col>
+                            <v-col cols="12" md="4" class="text-body-2">
+                                {{ item.test_agents }}
+                            </v-col>
+                            <v-col cols="12" md="3" class="text-body-2">
+                                <span v-html="item.dose_scheme"></span>
+                            </v-col>
+                            <v-col cols="6" md="2" class="text-body-2">
+                                {{ item.time_point }}
+                            </v-col>
+                            <v-col cols="6" md="1" class="text-body-2">
+                                {{ item.num_cell_lines }}
+                            </v-col>
+                        </v-row>
+                    </v-expansion-panel-title>
+                    <v-expansion-panel-text>
                         <v-row class="justify-center">
                             <v-card class="pa-3" flat>
                                 <v-card-item>
                                     <h3 class="text-h4 font-weight-bold text-center">{{ item.screen }} workflow</h3>
-                                    <img :src="imgPath + item.image" class="mb-2 row-img"></img>
-                                <p class="text-body-2"  style="margin:auto; max-width:800px;" v-html="item.description"></p>
+                                    <img :src="imgPath + item.image" class="mb-2 row-img" />
+                                    <p class="text-body-2" style="margin:auto; max-width:800px;" v-html="item.description"></p>
                                 </v-card-item>
                             </v-card>
                         </v-row>
-                     
-                    </td>
-                </tr>
-                </template>
-                <template v-slot:item.data-table-expand="{ toggleExpand, isExpanded, item, internalItem }">
-                                      <v-icon
-                      :class="{'blue--text': isExpanded(internalItem)}"
-                      @click="toggleExpand(internalItem)"
-                    >
-                      {{ isExpanded(internalItem) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                    </v-icon>
-                </template>
-            </v-data-table>
+                    </v-expansion-panel-text>
+                </v-expansion-panel>
+            </v-expansion-panels>
         </container-md>
     </page>
 </template>
@@ -55,7 +54,7 @@ export default {
     name: 'Assays',
     data() {
         return {
-            expandedRows: [],
+            expandedRows: null,
             table: {
                 // groupBy:  [{ key: 'screen', order: 'asc' }],
                 headers: [
@@ -144,46 +143,18 @@ export default {
         //     this.expanded.push(slotData.item);
         // }
         // },
-        handleRowClick(item, event) {
-            // console.log(item, event)
-            //   // Remove 'selected' class from all rows
-            //     document.querySelectorAll('tr[data-row-id]').forEach(row => {
-            //     row.classList.remove('selected');
-            //     });
-            //     // Add 'selected' class to the clicked row
-            //     const row = event.currentTarget;
-            //     if (row) row.classList.add('selected');
-            // Keep only the clicked row in the expandedRows array
-            if (this.expandedRows.includes(event.item.id)) {
-                // Collapse the row if it's already expanded
-                this.expandedRows = [];
-            } else {
-                // Expand the clicked row and collapse others
-                this.expandedRows = [event.item.id];
-            }
-        },
     }
 };
 </script>
 
 <style scoped>
-.v-data-table {
+.assays-accordion {
     margin-top: 16px;
-}
-.v-data-table th {
-    font-weight: 800 !important;
-}
-.v-data-table td {
-    padding: 12px !important;
 }
 .v-card {
     min-height:300px !important;
 }
 
-/* Disable pointer events for the expand button */
-.v-data-table__expand-icon {
-    pointer-events: none !important;
-}
 .row-img{
     max-height:250px !important;
 }
