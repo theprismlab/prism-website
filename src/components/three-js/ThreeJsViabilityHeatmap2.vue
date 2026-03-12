@@ -91,14 +91,19 @@ export default {
         },
         initThreeJs() {
             this.scene = markRaw(new THREE.Scene());
-            this.camera = markRaw(new THREE.PerspectiveCamera(30, this.width / this.height, 1.01, 200));
-            this.camera.position.set(0, 6, 45);
-          //  this.camera.lookAt(0, 0, 0);
+            this.camera = markRaw(new THREE.PerspectiveCamera(30, this.width / this.height, 1.01, 200)); // FOV, aspect ratio, near plane, far plane
+
+            // three values representing the x, y, and z coordinates of the camera's position in 3D space.
+            //  this.camera.position.set(0, 6, 45);
+
+            this.camera.position.set(0, 35, 70);
+            this.camera.lookAt(0, 10, 0);
+
             this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
 
             this.light = markRaw(new THREE.DirectionalLight(0xffffff, 1));
-            this.light.position.set(5, 5, 5);
+            this.light.position.set(5, 5, 5); // three values representing the x, y, and z coordinates of the light's position in 3D space.
             this.light.castShadow = true;
             this.scene.add(this.light);
 
