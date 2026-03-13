@@ -122,10 +122,20 @@ export default class CrossfilterManager {
       this.dimensions[f].filter(prevFilters[f]);
     });
 
-    // Sort: by filtered count desc, then total count desc, then value
+    // Sort: available (count > 0) first, then alphabetically or numerically
     options.sort((a, b) => {
-      if (b.count !== a.count) return b.count - a.count;
-      if (b.total !== a.total) return b.total - a.total;
+      const aHas = a.count > 0;
+      const bHas = b.count > 0;
+      if (aHas !== bHas) return Number(bHas) - Number(aHas);
+
+      const isNumeric = v => {
+        const num = Number(v);
+        return !Number.isNaN(num) && String(v).trim() !== "";
+      };
+
+      const aIsNum = isNumeric(a.value);
+      const bIsNum = isNumeric(b.value);
+      if (aIsNum && bIsNum) return Number(a.value) - Number(b.value);
       return String(a.value).localeCompare(String(b.value));
     });
 
