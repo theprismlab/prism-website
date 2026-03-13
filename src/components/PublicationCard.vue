@@ -73,9 +73,6 @@ export default {
         textSize(){
             return this.size === "lg" ? "body-1" : "body-2"
         }
-    },
-    mounted(){
-        console.log(this.elevation)
     }
 }
 </script>
