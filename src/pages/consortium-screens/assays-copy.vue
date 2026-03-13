@@ -16,22 +16,20 @@
                 >
                     <v-expansion-panel-title>
                         <v-row class="assay-panel__title assay-row" align="start">
-                            <v-col cols="12" md="12" class="pa-0">
-                                <div class="screen-row">
-                                    <img :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" class="avatar" />
-                                    <div class="ml-3">
-                                        <div class="value value-strong">{{ item.screen }}</div>
-                                        <div class="value">{{ item.test_agents }}</div>
-                                    </div>
-                                </div>
+                            <v-col cols="12" md="2">
+                                <div class="label">Screen</div>
+                                <div class="value value-strong">{{ item.screen }}</div>
                             </v-col>
-
+                            <v-col cols="12" md="10">
+                                <div class="label">Test agents</div>
+                                <div class="value">{{ item.test_agents }}</div>
+                            </v-col>
                          
                         </v-row>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text class="assay-panel__text">
                         <v-row class="assay-panel__content assay-row" align="start" justify="space-between">
-                            <v-col cols="12" md="auto" style="max-width: 380px;">
+                            <v-col cols="12" md="auto">
                                 <div class="label">Dose scheme</div>
                                 <div class="value" v-html="item.dose_scheme"></div>
                             </v-col>
@@ -168,45 +166,6 @@ export default {
         0 10px 24px rgba(9, 36, 64, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
-/* .v-expansion-panel-title:not(.v-expansion-panel-title--static){
-    background-color: var(--v-primary);
-}
-.v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-    background-color: var(--v-primary);
-} */
-.v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(245,250,255,0.92) 100%);
-  border-bottom: 1px solid rgba(9, 36, 64, 0.08);
-  padding: 14px 18px;
-  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
-}
-
-.v-expansion-panel-title:not(.v-expansion-panel-title--static):hover {
-  background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(238,246,255,0.96) 100%);
-  box-shadow: 0 6px 16px rgba(9, 36, 64, 0.08);
-  transform: translateY(-1px);
-}
-
-.v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-  background: linear-gradient(180deg, rgba(236,244,255,1) 0%, rgba(226,239,255,0.95) 100%);
-  border-bottom-color: rgba(9, 36, 64, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
-}
-
-.v-expansion-panel-title:focus-visible {
-  outline: 2px solid rgba(11, 58, 102, 0.35);
-  outline-offset: 2px;
-}
-
-.v-expansion-panel-title__icon {
-  color: #0b3a66;
-  transition: transform 180ms ease, color 180ms ease;
-}
-
-.v-expansion-panel--active .v-expansion-panel-title__icon {
-  color: #072a4f;
-  transform: rotate(180deg);
-}
 .assay-panel + .assay-panel {
     margin-top: 8px;
 }
@@ -238,23 +197,6 @@ export default {
     font-size: 1.15rem;
     font-weight: 700;
     color: #0b3a66;
-}
-
-.screen-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 10px;
-    border: 1px solid rgba(9, 36, 64, 0.12);
-    background: #fff;
-    object-fit: contain;
-    padding: 4px;
-    box-shadow: 0 2px 6px rgba(9, 36, 64, 0.05);
 }
 
 .section-title {

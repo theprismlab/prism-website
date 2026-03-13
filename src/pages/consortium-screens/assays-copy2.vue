@@ -16,22 +16,24 @@
                 >
                     <v-expansion-panel-title>
                         <v-row class="assay-panel__title assay-row" align="start">
-                            <v-col cols="12" md="12" class="pa-0">
-                                <div class="screen-row">
-                                    <img :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" class="avatar" />
-                                    <div class="ml-3">
-                                        <div class="value value-strong">{{ item.screen }}</div>
-                                        <div class="value">{{ item.test_agents }}</div>
-                                    </div>
-                                </div>
+                            <v-col cols="12" md="2">
+                                <div class="label">Screen</div>
+                                   <div class="value value-strong">{{ item.screen }}</div>
+                                <!-- <div class="screen-row">
+                                    <img :src="imgPath + 'APS.svg'" :alt="item.screen + ' thumbnail'" class="avatar" />
+                                    <div class="value value-strong">{{ item.screen }}</div>
+                                </div> -->
                             </v-col>
-
+                            <v-col cols="12" md="10">
+                                <div class="label">Test agents</div>
+                                <div class="value">{{ item.test_agents }}</div>
+                            </v-col>
                          
                         </v-row>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text class="assay-panel__text">
                         <v-row class="assay-panel__content assay-row" align="start" justify="space-between">
-                            <v-col cols="12" md="auto" style="max-width: 380px;">
+                            <v-col cols="12" md="auto">
                                 <div class="label">Dose scheme</div>
                                 <div class="value" v-html="item.dose_scheme"></div>
                             </v-col>
@@ -247,14 +249,14 @@ export default {
 }
 
 .avatar {
-    width: 100px;
-    height: 100px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
     border: 1px solid rgba(9, 36, 64, 0.12);
     background: #fff;
     object-fit: contain;
-    padding: 4px;
-    box-shadow: 0 2px 6px rgba(9, 36, 64, 0.05);
+    padding: 6px;
+    box-shadow: 0 4px 12px rgba(9, 36, 64, 0.08);
 }
 
 .section-title {

@@ -69,7 +69,7 @@
             cellLineGroups = cellLineGroups.sort(function(a, b){
                 return d3.ascending(a.mean, b.mean)
             })
-            console.log("cellLineGroups", cellLineGroups)
+
 
             let cellLineToNumber = {}
            cellLineGroups.forEach(function(d, i){
@@ -102,7 +102,7 @@
           const width = this.width, 
           height = this.height,
           canvas = this.canvas;
-            console.log("heatmapData", heatmapData)
+      
   
           // init
           const scene = new THREE.Scene();

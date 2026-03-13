@@ -69,7 +69,7 @@
             cellLineGroups = cellLineGroups.sort(function(a, b){
                 return d3.ascending(a.mean, b.mean)
             })
-            console.log("cellLineGroups", cellLineGroups)
+        
 
             let cellLineToNumber = {}
            cellLineGroups.forEach(function(d, i){

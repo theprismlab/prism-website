@@ -68,8 +68,7 @@
                   })
               }
             });
-            console.log(groups);
-            self.data = groups
+            self.data = groups.sort((a,b)=> b.key - a.key);
 
           
           });

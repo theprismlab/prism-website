@@ -225,10 +225,7 @@
      
       },
       watch:{
-        // width(){
-        //     console.log("width changed")
-        //     this.init();
-        //  },
+
   
       }
   }

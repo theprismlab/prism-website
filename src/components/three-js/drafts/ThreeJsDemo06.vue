@@ -124,7 +124,6 @@ name: 'ThreeJsDemo06',
             let pd = pointsData[idx];
             let normal = pd.normal;
             let group = pd.group;
-            //console.log(pd, group);
             let center = groups[group].center;
             p.applyAxisAngle(normal, 0.001);
             g.attributes.position.setXYZ(idx, p.x + center.x, p.y + center.y, p.z + center.z);
