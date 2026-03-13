@@ -6,7 +6,7 @@
                     Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures in 384- or 96-well plates at either 5- or 10-day assay timepoints. To ensure high-quality data, validation compounds are run on each assay plate.
                 </p>
         </container-xs>
-        <container-md class="mb-12">
+        <container-xs class="mb-12">
             <v-expansion-panels v-model="expandedRows" variant="accordion" class="assays-accordion">
                 <v-expansion-panel
                     v-for="item in table.items"
@@ -20,28 +20,30 @@
                                 <div class="label">Screen</div>
                                 <div class="value value-strong">{{ item.screen }}</div>
                             </v-col>
-                            <v-col cols="12" md="3">
+                            <v-col cols="12" md="10">
                                 <div class="label">Test agents</div>
                                 <div class="value">{{ item.test_agents }}</div>
                             </v-col>
-                            <v-col cols="12" md="3">
+                         
+                        </v-row>
+                    </v-expansion-panel-title>
+                    <v-expansion-panel-text class="assay-panel__text">
+                        <v-row class="assay-panel__content assay-row" align="start" justify="space-between">
+                            <v-col cols="12" md="auto">
                                 <div class="label">Dose scheme</div>
                                 <div class="value" v-html="item.dose_scheme"></div>
                             </v-col>
-                            <v-col cols="6" md="2">
+                            <v-col cols="6" md="auto">
                                 <div class="label">Time-point</div>
                                 <div class="value">{{ item.time_point }}</div>
                             </v-col>
-                            <v-col cols="6" md="2">
+                            <v-col cols="6" md="auto">
                                 <div class="label">Cell lines</div>
                                 <div class="value">{{ item.num_cell_lines }}</div>
                             </v-col>
                         </v-row>
-                    </v-expansion-panel-title>
-
-                    <v-expansion-panel-text class="assay-panel__text">
                         <v-row class="assay-panel__content assay-row" align="start">
-                            <v-col cols="12" md="8">
+                            <v-col cols="12" md="9">
                                 <div class="section-title">Details</div>
                                 <p class="description" v-html="item.description"></p>
                             </v-col>
@@ -56,7 +58,7 @@
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
-        </container-md>
+        </container-xs>
     </page>
 </template>
 <script>

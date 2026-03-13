@@ -6,7 +6,7 @@
                     Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures in 384- or 96-well plates at either 5- or 10-day assay timepoints. To ensure high-quality data, validation compounds are run on each assay plate.
                 </p>
         </container-xs>
-        <container-md class="mb-12">
+        <container-xs class="mb-12">
             <v-expansion-panels v-model="expandedRows" variant="accordion" class="assays-accordion">
                 <v-expansion-panel
                     v-for="item in table.items"
@@ -20,34 +20,48 @@
                                 <div class="label">Screen</div>
                                 <div class="value value-strong">{{ item.screen }}</div>
                             </v-col>
-                            <v-col cols="12" md="3">
+                            <v-col cols="12" md="10">
                                 <div class="label">Test agents</div>
                                 <div class="value">{{ item.test_agents }}</div>
                             </v-col>
-                            <v-col cols="12" md="3">
-                                <div class="label">Dose scheme</div>
-                                <div class="value" v-html="item.dose_scheme"></div>
-                            </v-col>
-                            <v-col cols="6" md="2">
-                                <div class="label">Time-point</div>
-                                <div class="value">{{ item.time_point }}</div>
-                            </v-col>
-                            <v-col cols="6" md="2">
-                                <div class="label">Cell lines</div>
-                                <div class="value">{{ item.num_cell_lines }}</div>
-                            </v-col>
+                         
                         </v-row>
                     </v-expansion-panel-title>
-
                     <v-expansion-panel-text class="assay-panel__text">
-                        <v-row class="assay-panel__content assay-row" align="start">
-                            <v-col cols="12" md="8">
-                                <div class="section-title">Details</div>
-                                <p class="description" v-html="item.description"></p>
+                        
+                        <v-row class="assay-panel__content assay-row" align="start" justify="space-between">
+                            <v-col>
+                                <v-row>
+                                     <v-col cols="12" md="5">
+                                        <div>
+                                            <div class="section-title">Dose scheme</div>
+                                            <div class="value" v-html="item.dose_scheme"></div>
+                                        </div>
+                                       
+                                        <div class="mt-6">
+                                        <div class="section-title">Time-point</div>
+                                        <div class="value">{{ item.time_point }}</div>
+                                        </div>
+                                        <div class="mt-6">
+                                        <div class="section-title">Cell lines</div>
+                                        <div class="value">{{ item.num_cell_lines }}</div>
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="12" md="7">
+                                        <div class="section-title">Details</div>
+                                        <p class="description" v-html="item.description"></p>
+                                    </v-col>
+
+                                </v-row>
                             </v-col>
 
+                           
+                        </v-row>
+                        <v-row class="assay-panel__content assay-row" align="start">
+
+
                             <v-col cols="12" md="12">
-                                <div class="section-title">{{ item.screen }} workflow</div>
+                                <div class="section-title">{{ item.screen }} Workflow</div>
                                 <div class="media">
                                     <img :src="imgPath + item.image" class="media__img" />
                                 </div>
@@ -56,7 +70,7 @@
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
-        </container-md>
+        </container-xs>
     </page>
 </template>
 <script>
@@ -198,10 +212,10 @@ export default {
 }
 
 .section-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #0b2340;
-    margin: 0 0 10px;
+    margin: 0 0 5px;
 }
 
 .description {
