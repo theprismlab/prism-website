@@ -156,30 +156,49 @@ export default {
 
 <style scoped>
 .assay-panel {
-        --assay-label-color: var(--v-grey);
+        --assay-label-color: var(--v-grey-darken-2);
     --assay-avatar-size: 65px;
     --assay-avatar-pad: 4px;
     --assay-pad: 12px;
     --assay-gap: 0px;
-    --assay-border: 1px solid rgba(240, 240, 240, 1);
-    --assay-bg: linear-gradient(-30deg, rgba(236, 236, 236, 0.5) 0%, rgba(255, 255, 255, 0.5) 60%);
+    --assay-border: 1px solid rgba(9, 36, 64, 0.12);
+    --assay-bg: linear-gradient(135deg, rgba(245, 250, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 60%);
     border: var(--assay-border);
-    background: var(--assay-bg);
+    border-radius: 16px;
     overflow: hidden;
+    background: var(--assay-bg);
     box-shadow:
-        0 10px 24px rgba(50, 50, 50, 0.08);
+        0 10px 24px rgba(9, 36, 64, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+/* .v-expansion-panel-title:not(.v-expansion-panel-title--static){
+    background-color: var(--v-primary);
+}
+.v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
+    background-color: var(--v-primary);
+} */
+.v-expansion-panel-title:not(.v-expansion-panel-title--static) {
+  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(245,250,255,0.92) 100%);
+  border-bottom: 1px solid rgba(9, 36, 64, 0.08);
+  padding: 10px 18px;
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
-.v-expansion-panel-title:not(.v-expansion-panel-title--static){
-    background-color: var(--v-grey-lighten-4);
-    border-bottom: var(--assay-border);
-    border-left: var(--assay-border);
-    border-right: var(--assay-border);
+.v-expansion-panel-title:not(.v-expansion-panel-title--static):hover {
+  background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(238,246,255,0.96) 100%);
+  box-shadow: 0 6px 16px rgba(9, 36, 64, 0.08);
+  transform: translateY(-1px);
 }
 
 .v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-    background-color: var(--v-grey-lighten-4);
-      border-bottom: var(--assay-border);
+  background: linear-gradient(180deg, rgba(236,244,255,1) 0%, rgba(226,239,255,0.95) 100%);
+  border-bottom-color: rgba(9, 36, 64, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.v-expansion-panel-title:focus-visible {
+  outline: 2px solid rgba(11, 58, 102, 0.35);
+  outline-offset: 2px;
 }
 
 .v-expansion-panel-title__icon {
@@ -191,7 +210,6 @@ export default {
 
   transform: rotate(180deg);
 }
-
 .assay-panel + .assay-panel {
     margin-top: 8px;
 }
@@ -199,7 +217,6 @@ export default {
 .assay-panel__content {
     padding: var(--assay-pad);
 }
-
 .assay-panel__title {
     padding: var(--assay-pad);
 }
@@ -209,9 +226,8 @@ export default {
 }
 
 .label {
-    font-weight: 700;
     font-size: 0.8rem;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--assay-label-color);
     margin-bottom: 6px;
@@ -254,6 +270,7 @@ export default {
 .description {
     font-size: 1rem;
     line-height: 1.65;
+
     margin: 0;
 }
 
@@ -263,7 +280,7 @@ export default {
     border: var(--assay-border);
     border-radius: 12px;
     background: #fff;
-    /* box-shadow: 0 4px 12px rgba(9, 36, 64, 0.08); */
+    box-shadow: 0 4px 12px rgba(9, 36, 64, 0.08);
 }
 
 .media__img {

@@ -149,7 +149,7 @@ data() {
             route: '/consortium-screens/assays-1',
             id: 'assays'
           },
-                    {
+          {
             title: 'Assays-2',
             route: '/consortium-screens/assays-2',
             id: 'assays'
