@@ -18,7 +18,7 @@
                         <v-row class="assay-panel__title assay-row" align="start">
                             <v-col cols="12" md="2">
                                 <div class="label">Screen</div>
-                                <div class="value value-strong">{{ item.screen }}</div>
+                                   <div class="value value-strong">{{ item.screen }}</div>
                             </v-col>
                             <v-col cols="12" md="10">
                                 <div class="label">Test agents</div>
@@ -28,40 +28,28 @@
                         </v-row>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text class="assay-panel__text">
-                        
                         <v-row class="assay-panel__content assay-row" align="start" justify="space-between">
-                            <v-col>
-                                <v-row>
-                                     <v-col cols="12" md="5">
-                                        <div>
-                                            <div class="section-title">Dose scheme</div>
-                                            <div class="value" v-html="item.dose_scheme"></div>
-                                        </div>
-                                       
-                                        <div class="mt-6">
-                                        <div class="section-title">Time-point</div>
-                                        <div class="value">{{ item.time_point }}</div>
-                                        </div>
-                                        <div class="mt-6">
-                                        <div class="section-title">Cell lines</div>
-                                        <div class="value">{{ item.num_cell_lines }}</div>
-                                        </div>
-                                    </v-col>
-                                    <v-col cols="12" md="7">
-                                        <div class="section-title">Details</div>
-                                        <p class="description" v-html="item.description"></p>
-                                    </v-col>
-
-                                </v-row>
+                            <v-col cols="12" md="auto">
+                                <div class="label">Dose scheme</div>
+                                <div class="value" v-html="item.dose_scheme"></div>
                             </v-col>
-
-                           
+                            <v-col cols="6" md="auto">
+                                <div class="label">Time-point</div>
+                                <div class="value">{{ item.time_point }}</div>
+                            </v-col>
+                            <v-col cols="6" md="auto">
+                                <div class="label">Cell lines</div>
+                                <div class="value">{{ item.num_cell_lines }}</div>
+                            </v-col>
                         </v-row>
                         <v-row class="assay-panel__content assay-row" align="start">
-
+                            <v-col cols="12" md="9">
+                                <div class="section-title">Details</div>
+                                <p class="description" v-html="item.description"></p>
+                            </v-col>
 
                             <v-col cols="12" md="12">
-                                <div class="section-title">{{ item.screen }} Workflow</div>
+                                <div class="section-title">{{ item.screen }} workflow</div>
                                 <div class="media">
                                     <img :src="imgPath + item.image" class="media__img" />
                                 </div>
@@ -166,6 +154,7 @@ export default {
 
 <style scoped>
 .assay-panel {
+    --assay-label-color: var(--v-grey-darken-2);
     --assay-pad: 16px;
     --assay-gap: 0px;
     --assay-border: 1px solid rgba(9, 36, 64, 0.12);
@@ -177,6 +166,45 @@ export default {
     box-shadow:
         0 10px 24px rgba(9, 36, 64, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+/* .v-expansion-panel-title:not(.v-expansion-panel-title--static){
+    background-color: var(--v-primary);
+}
+.v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
+    background-color: var(--v-primary);
+} */
+.v-expansion-panel-title:not(.v-expansion-panel-title--static) {
+  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(245,250,255,0.92) 100%);
+  border-bottom: 1px solid rgba(9, 36, 64, 0.08);
+  padding: 14px 18px;
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.v-expansion-panel-title:not(.v-expansion-panel-title--static):hover {
+  background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(238,246,255,0.96) 100%);
+  box-shadow: 0 6px 16px rgba(9, 36, 64, 0.08);
+  transform: translateY(-1px);
+}
+
+.v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
+  background: linear-gradient(180deg, rgba(236,244,255,1) 0%, rgba(226,239,255,0.95) 100%);
+  border-bottom-color: rgba(9, 36, 64, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.v-expansion-panel-title:focus-visible {
+  outline: 2px solid rgba(11, 58, 102, 0.35);
+  outline-offset: 2px;
+}
+
+.v-expansion-panel-title__icon {
+  /* color: #0b3a66; */
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.v-expansion-panel--active .v-expansion-panel-title__icon {
+  /* color: #072a4f; */
+  transform: rotate(180deg);
 }
 .assay-panel + .assay-panel {
     margin-top: 8px;
@@ -193,45 +221,60 @@ export default {
 
 .label {
     font-size: 0.8rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: rgba(9, 36, 64, 0.55);
+    color: var(--assay-label-color);
     margin-bottom: 6px;
 }
 
 .value {
     font-size: 0.95rem;
-    color: #0b2340;
     line-height: 1.4;
 }
 
 .value-strong {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #0b3a66;
+}
+
+.screen-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid rgba(9, 36, 64, 0.12);
+    background: #fff;
+    object-fit: contain;
+    padding: 6px;
+    box-shadow: 0 4px 12px rgba(9, 36, 64, 0.08);
 }
 
 .section-title {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    color: #0b2340;
-    margin: 0 0 5px;
+    /* color: #0b2340; */
+    margin: 0 0 10px;
 }
 
 .description {
     font-size: 1rem;
     line-height: 1.65;
-    color: rgba(9, 36, 64, 0.85);
+    /* color: rgba(9, 36, 64, 0.85); */
     margin: 0;
 }
 .description :deep(a) {
-    color: #0b3a66;
+    /* color: #0b3a66; */
     font-weight: 600;
     text-decoration: none;
     border-bottom: 1px solid rgba(11, 58, 102, 0.25);
 }
 .description :deep(a:hover) {
-    color: #0a2f54;
+    /* color: #0a2f54; */
     border-bottom-color: rgba(11, 58, 102, 0.5);
 }
 .description :deep(ul) {

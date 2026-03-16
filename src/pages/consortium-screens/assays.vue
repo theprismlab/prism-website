@@ -162,8 +162,9 @@ export default {
     --assay-pad: 12px;
     --assay-gap: 0px;
     --assay-border: 1px solid rgba(240, 240, 240, 1);
-    --assay-bg: linear-gradient(135deg, rgba(245, 250, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 60%);
+    --assay-bg: linear-gradient(-30deg, rgba(236, 236, 236, 0.5) 0%, rgba(255, 255, 255, 0.5) 60%);
     border: var(--assay-border);
+    background: var(--assay-bg);
     overflow: hidden;
     box-shadow:
         0 10px 24px rgba(50, 50, 50, 0.08);
@@ -177,7 +178,8 @@ export default {
 }
 
 .v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-    background-color: var(--v-grey-lighten-3);
+    background-color: var(--v-grey-lighten-4);
+      border-bottom: var(--assay-border);
 }
 
 .v-expansion-panel-title__icon {

@@ -16,20 +16,22 @@
                 >
                     <v-expansion-panel-title>
                         <v-row class="assay-panel__title assay-row" align="start">
-                            <v-col cols="12" md="2">
-                                <div class="label">Screen</div>
-                                <div class="value value-strong">{{ item.screen }}</div>
+                            <v-col cols="12" md="12" class="pa-0">
+                                <div class="screen-row">
+                                    <img :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" class="avatar" />
+                                    <div class="ml-3">
+                                        <div class="value value-title">{{ item.screen }}</div>
+                                        <div class="value value-subtitle">{{ item.test_agents }}</div>
+                                    </div>
+                                </div>
                             </v-col>
-                            <v-col cols="12" md="10">
-                                <div class="label">Test agents</div>
-                                <div class="value">{{ item.test_agents }}</div>
-                            </v-col>
+
                          
                         </v-row>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text class="assay-panel__text">
                         <v-row class="assay-panel__content assay-row" align="start" justify="space-between">
-                            <v-col cols="12" md="auto">
+                            <v-col cols="12" md="auto" style="max-width: 380px;">
                                 <div class="label">Dose scheme</div>
                                 <div class="value" v-html="item.dose_scheme"></div>
                             </v-col>
@@ -154,24 +156,51 @@ export default {
 
 <style scoped>
 .assay-panel {
-    --assay-pad: 16px;
+        --assay-label-color: var(--v-grey);
+    --assay-avatar-size: 65px;
+    --assay-avatar-pad: 4px;
+    --assay-pad: 12px;
     --assay-gap: 0px;
-    --assay-border: 1px solid rgba(9, 36, 64, 0.12);
-    --assay-bg: linear-gradient(135deg, rgba(245, 250, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 60%);
+    --assay-border: 1px solid rgba(240, 240, 240, 1);
+    --assay-bg: linear-gradient(-30deg, rgba(236, 236, 236, 0.5) 0%, rgba(255, 255, 255, 0.5) 60%);
     border: var(--assay-border);
-    border-radius: 16px;
-    overflow: hidden;
     background: var(--assay-bg);
+    overflow: hidden;
     box-shadow:
-        0 10px 24px rgba(9, 36, 64, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        0 10px 24px rgba(50, 50, 50, 0.08);
 }
+
+.v-expansion-panel-title:not(.v-expansion-panel-title--static){
+    background-color: var(--v-grey-lighten-4);
+    border-bottom: var(--assay-border);
+    border-left: var(--assay-border);
+    border-right: var(--assay-border);
+}
+
+.v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
+    background-color: var(--v-grey-lighten-4);
+      border-bottom: var(--assay-border);
+}
+
+.v-expansion-panel-title__icon {
+  color: var(--assay-label-color);
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.v-expansion-panel--active .v-expansion-panel-title__icon {
+
+  transform: rotate(180deg);
+}
+
 .assay-panel + .assay-panel {
     margin-top: 8px;
 }
 
-.assay-panel__title,
 .assay-panel__content {
+    padding: var(--assay-pad);
+}
+
+.assay-panel__title {
     padding: var(--assay-pad);
 }
 
@@ -180,62 +209,61 @@ export default {
 }
 
 .label {
+    font-weight: 700;
     font-size: 0.8rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: rgba(9, 36, 64, 0.55);
+    color: var(--assay-label-color);
     margin-bottom: 6px;
 }
 
 .value {
     font-size: 0.95rem;
-    color: #0b2340;
+
     line-height: 1.4;
 }
 
-.value-strong {
+
+.value-title{
     font-size: 1.15rem;
     font-weight: 700;
-    color: #0b3a66;
+
+}
+/* .value-subtitle{
+
+} */
+.screen-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: var(--assay-avatar-size);
+    height: var(--assay-avatar-size);
+    object-fit: contain;
+    padding: var(--assay-avatar-pad);
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #0b2340;
     margin: 0 0 10px;
 }
 
 .description {
     font-size: 1rem;
     line-height: 1.65;
-    color: rgba(9, 36, 64, 0.85);
     margin: 0;
 }
-.description :deep(a) {
-    color: #0b3a66;
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 1px solid rgba(11, 58, 102, 0.25);
-}
-.description :deep(a:hover) {
-    color: #0a2f54;
-    border-bottom-color: rgba(11, 58, 102, 0.5);
-}
-.description :deep(ul) {
-    margin: 8px 0 0 18px;
-    padding: 0;
-}
-.description :deep(li) {
-    margin-bottom: 6px;
-}
+
 
 .media {
     padding: 12px;
     border: var(--assay-border);
     border-radius: 12px;
     background: #fff;
-    box-shadow: 0 4px 12px rgba(9, 36, 64, 0.08);
+    /* box-shadow: 0 4px 12px rgba(9, 36, 64, 0.08); */
 }
 
 .media__img {

@@ -41,16 +41,18 @@
 
                     <v-expansion-panel-text class="assay-panel__text">
                         <v-row class="assay-panel__content assay-row" align="start">
-                            <v-col cols="12" md="8">
-                                <div class="section-title">Details</div>
-                                <p class="description" v-html="item.description"></p>
-                            </v-col>
+   
 
                             <v-col cols="12" md="12">
                                 <div class="section-title">{{ item.screen }} workflow</div>
                                 <div class="media">
                                     <img :src="imgPath + item.image" class="media__img" />
                                 </div>
+                            </v-col>                        
+                            
+                            <v-col cols="12" md="8">
+                                <div class="section-title">Details</div>
+                                <p class="description" v-html="item.description"></p>
                             </v-col>
                         </v-row>
                     </v-expansion-panel-text>
@@ -152,6 +154,7 @@ export default {
 
 <style scoped>
 .assay-panel {
+        --assay-label-color: var(--v-grey-darken-2);
     --assay-pad: 16px;
     --assay-gap: 0px;
     --assay-border: 1px solid rgba(9, 36, 64, 0.12);
@@ -179,54 +182,34 @@ export default {
 
 .label {
     font-size: 0.8rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: rgba(9, 36, 64, 0.55);
     margin-bottom: 6px;
+    color: var(--assay-label-color);
 }
 
 .value {
     font-size: 0.95rem;
-    color: #0b2340;
     line-height: 1.4;
 }
 
 .value-strong {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #0b3a66;
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #0b2340;
     margin: 0 0 10px;
 }
 
 .description {
     font-size: 1rem;
     line-height: 1.65;
-    color: rgba(9, 36, 64, 0.85);
     margin: 0;
 }
-.description :deep(a) {
-    color: #0b3a66;
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 1px solid rgba(11, 58, 102, 0.25);
-}
-.description :deep(a:hover) {
-    color: #0a2f54;
-    border-bottom-color: rgba(11, 58, 102, 0.5);
-}
-.description :deep(ul) {
-    margin: 8px 0 0 18px;
-    padding: 0;
-}
-.description :deep(li) {
-    margin-bottom: 6px;
-}
+
 
 .media {
     padding: 12px;
