@@ -15,7 +15,7 @@
                     class="assay-panel"
                 >
                     <v-expansion-panel-title>
-                        <v-row class="assay-panel__title assay-row" align="start">
+                        <v-row class="assay-panel__title" align="start">
                             <v-col cols="12" md="12" class="pa-0">
                                 <div class="screen-row">
                                     <img :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" class="avatar" />
@@ -29,32 +29,35 @@
                          
                         </v-row>
                     </v-expansion-panel-title>
-                    <v-expansion-panel-text class="assay-panel__text">
-                        <v-row class="assay-panel__content assay-row" align="start" justify="space-between">
-                            <v-col cols="12" md="auto" style="max-width: 380px;">
-                                <div class="label">Dose scheme</div>
-                                <div class="value" v-html="item.dose_scheme"></div>
+                    <v-expansion-panel-text class="assay-panel__text py-4">
+                        <v-row class="assay-panel__content pb-0" align="start" justify="space-around">
+                            <v-col cols="12" md="10">
+                                <div class="section-title mb-0">{{ item.screen }} Workflow</div>
                             </v-col>
-                            <v-col cols="6" md="auto">
-                                <div class="label">Time-point</div>
-                                <div class="value">{{ item.time_point }}</div>
-                            </v-col>
-                            <v-col cols="6" md="auto">
-                                <div class="label">Cell lines</div>
-                                <div class="value">{{ item.num_cell_lines }}</div>
-                            </v-col>
-                        </v-row>
-                        <v-row class="assay-panel__content assay-row" align="start">
-                            <v-col cols="12" md="9">
-                                <div class="section-title">Details</div>
-                                <p class="description" v-html="item.description"></p>
-                            </v-col>
-
-                            <v-col cols="12" md="12">
-                                <div class="section-title">{{ item.screen }} Workflow</div>
                                 <div class="media">
                                     <img :src="imgPath + item.image" class="media__img" />
                                 </div>
+                            <v-col cols="12" md="10">
+                                <div class="section-title">Details</div>
+                                <p class="description mb-0" v-html="item.description"></p>
+                            </v-col>
+                        </v-row>
+                        <v-row class="assay-panel__content" align="start" justify="space-around">
+                            <v-col cols="12" md="10">
+                                <v-row justify="space-between">
+                                    <v-col cols="12" md="5" lg="5" sm="12" xs="12">
+                                        <div class="label">Dose scheme</div>
+                                        <div class="value" v-html="item.dose_scheme"></div>
+                                    </v-col>
+                                    <v-col cols="12" md="3" lg="3" sm="12" xs="12">
+                                        <div class="label">Time-point</div>
+                                        <div class="value">{{ item.time_point }}</div>
+                                    </v-col>
+                                    <v-col cols="12" md="4" lg="4" sm="12" xs="12">
+                                        <div class="label">Cell lines</div>
+                                        <div class="value">{{ item.num_cell_lines }}</div>
+                                    </v-col>
+                                </v-row>
                             </v-col>
                         </v-row>
                     </v-expansion-panel-text>
@@ -119,7 +122,7 @@ export default {
                         'num_cell_lines': '~900 (full PRISM cell set)',
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
-                        'description': `TBD...... For more information, review the <a href="https://assets.clue.io/prism/Overview-of-PRISM-AIR-Assay-for-Collaborators.pdf" target="_blank">AIR overview slides</a>`,
+                        'description': `For more information, review the <a href="https://assets.clue.io/prism/Overview-of-PRISM-AIR-Assay-for-Collaborators.pdf" target="_blank">AIR overview slides</a>`,
                         'image': 'PRISM_Assay_Workflow_AIR.png'
                     },
                     {
@@ -157,7 +160,7 @@ export default {
 <style scoped>
 
  .assay-panel {
-    --assay-label-color: var(--v-grey);
+    --assay-label-color: var(--v-grey-darken-1);
     --assay-avatar-size: 65px;
     --assay-avatar-pad: 4px;
     --assay-pad: 12px;
@@ -197,9 +200,6 @@ export default {
     padding: var(--assay-pad);
 }
 
-.assay-row {
-    gap: var(--assay-gap);
-}
 
 .label {
  font-size: 0.8rem;
@@ -267,11 +267,11 @@ export default {
     width: 100%;
     display: block;
 }
-
 @media (max-width: 960px) {
     .assay-panel__title,
     .assay-panel__content {
         padding: 12px;
     }
+    
 }
 </style>

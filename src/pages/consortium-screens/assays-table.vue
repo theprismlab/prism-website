@@ -16,23 +16,23 @@
                 >
                     <v-expansion-panel-title>
                         <v-row class="assay-panel__title assay-row" align="start">
-                            <v-col cols="12" md="2">
+                            <v-col cols="12" md="2" sm="12">
                                 <div class="label">Screen</div>
                                 <div class="value value-strong">{{ item.screen }}</div>
                             </v-col>
-                            <v-col cols="12" md="3">
+                            <v-col cols="12" md="3" sm="12">
                                 <div class="label">Test agents</div>
                                 <div class="value">{{ item.test_agents }}</div>
                             </v-col>
-                            <v-col cols="12" md="3">
+                            <v-col cols="12" md="3" sm="12">
                                 <div class="label">Dose scheme</div>
                                 <div class="value" v-html="item.dose_scheme"></div>
                             </v-col>
-                            <v-col cols="6" md="2">
+                            <v-col cols="12" md="2" sm="12">
                                 <div class="label">Time-point</div>
                                 <div class="value">{{ item.time_point }}</div>
                             </v-col>
-                            <v-col cols="6" md="2">
+                            <v-col cols="12" md="2" sm="12">
                                 <div class="label">Cell lines</div>
                                 <div class="value">{{ item.num_cell_lines }}</div>
                             </v-col>
@@ -40,15 +40,16 @@
                     </v-expansion-panel-title>
 
                     <v-expansion-panel-text class="assay-panel__text">
-                        <v-row class="assay-panel__content assay-row" align="start">
-   
+                        <v-row class="assay-panel__content assay-row" align="start" justify="center">
+                            <v-col cols="12" md="8">
+                                <div class="section-title mb-0">{{ item.screen }} Workflow</div>
+                            </v-col>
 
-                            <v-col cols="12" md="12">
-                                <div class="section-title">{{ item.screen }} workflow</div>
+                         
                                 <div class="media">
                                     <img :src="imgPath + item.image" class="media__img" />
                                 </div>
-                            </v-col>                        
+                                             
                             
                             <v-col cols="12" md="8">
                                 <div class="section-title">Details</div>
@@ -156,7 +157,7 @@ export default {
 
 
 .assay-panel {
-        --assay-label-color: var(--v-grey);
+        --assay-label-color: var(--v-grey-darken-1);
     --assay-avatar-size: 65px;
     --assay-avatar-pad: 4px;
     --assay-pad: 12px;
@@ -226,9 +227,14 @@ export default {
     line-height: 1.65;
     margin: 0;
 }
+.media-title {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 10px;
+}
 
-
-.media {
+/* .media {
     padding: 12px;
     border: var(--assay-border);
     border-radius: 12px;
@@ -239,6 +245,20 @@ export default {
     height: auto;
     width: 100%;
     border-radius: 8px;
+} */
+ .media {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    overflow: hidden;
+}
+
+.media__img {
+    height: auto;
+    width: 90%;
+    margin: auto;
+    display: block;
 }
 
 @media (max-width: 960px) {
