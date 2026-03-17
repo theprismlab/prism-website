@@ -1,7 +1,7 @@
 <template>
   <v-container>
-        <v-row class="justify-center">  
-          <v-col cols="12" xs="12" sm="12" md="12" lg="11" xl="10" offset-sm="0" offset-md="0" offset-lg="0" offset-xl="0">
+     <v-row justify="space-around">
+          <v-col cols="12" xs="12" sm="12" md="12" lg="10" xl="10">
             <slot></slot>
         </v-col>
      </v-row>

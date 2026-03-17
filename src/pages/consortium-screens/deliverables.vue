@@ -1,6 +1,6 @@
 <template>
 <page>
-  <container-xs>
+  <container-sm>
     <page-title>Deliverables</page-title>
     <p class="text-body-1">
       We provide a complete analysis of your data via a secure data portal. Data analysis includes the viability of all 900 cell lines, metrics for the quality of the assay, univariate and multivariate feature set correlation analysis, and all the raw data from your test agents. Validation compounds run on each assay plate are shared also. See below for more details.
@@ -45,7 +45,7 @@
         Screening data is delivered to collaborators on our secure PRISM Portal. Each project will assign one <i>Data Access Manager</i> who is solely responsible for granting data access to other team members through the Portal. 
       </p>
     </section>
-  </container-xs>
+  </container-sm>
 </page>
 </template>
 

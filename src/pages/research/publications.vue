@@ -1,8 +1,8 @@
 <template>
   <page>
-    <container-xs>
+    <container-sm>
       <page-title>Publications</page-title>
-      </container-xs>
+      </container-sm>
       <container-md>
             
       <section>

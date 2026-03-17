@@ -1,8 +1,8 @@
 <template>
   <page>
-    <container-xs>
+    <container-sm>
       <page-title>Design Playground</page-title>
-    </container-xs>
+    </container-sm>
 
     <!-- <div class="bkg halftone-01"></div>
     <div class="bkg background-01"></div>

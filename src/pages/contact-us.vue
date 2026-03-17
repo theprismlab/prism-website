@@ -1,6 +1,6 @@
 <template>
 <page>
-<container-xs>
+<container-sm>
     <page-title>Contact us</page-title>
      <section>
       <!-- <h2 class="text-43">Want to collaborate?</h2>
@@ -8,7 +8,7 @@
           <!-- <hubspot-form></hubspot-form> -->
                  <hubspot-form></hubspot-form>
      </section>
-</container-xs>
+</container-sm>
 </page>
 
 </template>
