@@ -6,7 +6,7 @@
                     Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures in 384- or 96-well plates at either 5- or 10-day assay timepoints. To ensure high-quality data, validation compounds are run on each assay plate.
                 </p>
         </container-xs>
-        <container-xs class="mb-12">
+        <container-md class="mb-12">
             <v-expansion-panels v-model="expandedRows" variant="accordion" class="assays-accordion">
                 <v-expansion-panel
                     v-for="item in table.items"
@@ -18,47 +18,47 @@
                         <v-row class="assay-panel__title assay-row" align="start">
                             <v-col cols="12" md="2">
                                 <div class="label">Screen</div>
-                                   <div class="value value-strong">{{ item.screen }}</div>
+                                <div class="value value-strong">{{ item.screen }}</div>
                             </v-col>
-                            <v-col cols="12" md="10">
+                            <v-col cols="12" md="3">
                                 <div class="label">Test agents</div>
                                 <div class="value">{{ item.test_agents }}</div>
                             </v-col>
-                         
-                        </v-row>
-                    </v-expansion-panel-title>
-                    <v-expansion-panel-text class="assay-panel__text">
-                        <v-row class="assay-panel__content assay-row" align="start" justify="space-between">
-                            <v-col cols="12" md="auto">
+                            <v-col cols="12" md="3">
                                 <div class="label">Dose scheme</div>
                                 <div class="value" v-html="item.dose_scheme"></div>
                             </v-col>
-                            <v-col cols="6" md="auto">
+                            <v-col cols="6" md="2">
                                 <div class="label">Time-point</div>
                                 <div class="value">{{ item.time_point }}</div>
                             </v-col>
-                            <v-col cols="6" md="auto">
+                            <v-col cols="6" md="2">
                                 <div class="label">Cell lines</div>
                                 <div class="value">{{ item.num_cell_lines }}</div>
                             </v-col>
                         </v-row>
+                    </v-expansion-panel-title>
+
+                    <v-expansion-panel-text class="assay-panel__text">
                         <v-row class="assay-panel__content assay-row" align="start">
-                            <v-col cols="12" md="9">
-                                <div class="section-title">Details</div>
-                                <p class="description" v-html="item.description"></p>
-                            </v-col>
+   
 
                             <v-col cols="12" md="12">
                                 <div class="section-title">{{ item.screen }} workflow</div>
                                 <div class="media">
                                     <img :src="imgPath + item.image" class="media__img" />
                                 </div>
+                            </v-col>                        
+                            
+                            <v-col cols="12" md="8">
+                                <div class="section-title">Details</div>
+                                <p class="description" v-html="item.description"></p>
                             </v-col>
                         </v-row>
                     </v-expansion-panel-text>
                 </v-expansion-panel>
             </v-expansion-panels>
-        </container-xs>
+        </container-md>
     </page>
 </template>
 <script>
@@ -86,7 +86,7 @@ export default {
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
                         'description': 'We screen standard DMSO compounds at a top dose of your choice, diluted 3-fold over 8 dilutions. Compounds are plated with an Echo using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s).',
-                        'image': 'PRISM Assay Workflow_MTS.png'
+                        'image': 'PRISM_Assay_Workflow_MTS.png'
                     },
                     {
                         'id': "CPS",
@@ -100,7 +100,7 @@ export default {
                         </ul>`,
                         'time_point': '5-day',
                         'description': 'Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents. When selecting an anchor dose our recommendation is to select a dose that does not broadly affect cell viability but gives a reproducible phenotypic effect in a specific cell line or set of cell lines. <a href="https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism" target="_blank">CPS white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/CPS009/CPS_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal. Compounds are plated by Echo into plates and frozen prior to cell treatment. Cells are then thawed and plated onto the compound assay ready plates (ARP’s).',
-                        'image': 'PRISM Assay Workflow_CPS.png'
+                        'image': 'PRISM_Assay_Workflow_CPS.png'
                     },
                     {   'id': "APS",
                         'screen': 'APS',
@@ -109,7 +109,7 @@ export default {
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
                         'description': `For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents. For more information, review the <a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal.`,
-                        'image': 'PRISM Assay Workflow_APS.png'
+                        'image': 'PRISM_Assay_Workflow_APS.png'
                     },
                     {   'id': "AIR",
                         'screen': 'AIR',
@@ -118,7 +118,7 @@ export default {
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
                         'description': `TBD...... For more information, review the <a href="https://assets.clue.io/prism/Overview-of-PRISM-AIR-Assay-for-Collaborators.pdf" target="_blank">AIR overview slides</a>`,
-                        'image': 'PRISM Assay Workflow_AIR.png'
+                        'image': 'PRISM_Assay_Workflow_AIR.png'
                     },
                     {
                         'id': "EPS",
@@ -128,7 +128,7 @@ export default {
                         'dose_scheme': `5-pt dose, custom dilution `,
                         'time_point': '10-day',
                         'description': 'For the extended day PRISM screen, small molecules are plated onto 96-well plates and frozen. Cell pools are plated on assay ready plates on day 0 and drug is re-added on day 6. Cell pools are lysed on day 10, gDNA is then PCR’ed and then sequenced.',
-                        'image': 'PRISM Assay Workflow_EPS.png'
+                        'image': 'PRISM_Assay_Workflow_EPS.png'
                     },
                 ],
             },
@@ -153,59 +153,37 @@ export default {
 </script>
 
 <style scoped>
+
+
 .assay-panel {
-    --assay-label-color: var(--v-grey-darken-2);
-    --assay-pad: 16px;
+        --assay-label-color: var(--v-grey);
+    --assay-avatar-size: 65px;
+    --assay-avatar-pad: 4px;
+    --assay-pad: 12px;
     --assay-gap: 0px;
-    --assay-border: 1px solid rgba(9, 36, 64, 0.12);
-    --assay-bg: linear-gradient(135deg, rgba(245, 250, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 60%);
+    --assay-border: 1px solid rgba(240, 240, 240, 1);
+    --assay-bg: linear-gradient(0deg, rgb(250, 250, 250) 0%, rgb(252, 252, 252) 40%);
+    --assay-bg-dark: linear-gradient(0deg, rgb(243, 243, 243) 0%, rgb(246, 246, 246) 40%);
     border: var(--assay-border);
-    border-radius: 16px;
-    overflow: hidden;
     background: var(--assay-bg);
+    overflow: hidden;
     box-shadow:
-        0 10px 24px rgba(9, 36, 64, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.7);
-}
-/* .v-expansion-panel-title:not(.v-expansion-panel-title--static){
-    background-color: var(--v-primary);
-}
-.v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-    background-color: var(--v-primary);
-} */
-.v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(245,250,255,0.92) 100%);
-  border-bottom: 1px solid rgba(9, 36, 64, 0.08);
-  padding: 14px 18px;
-  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+        0 10px 24px rgba(50, 50, 50, 0.08);
 }
 
-.v-expansion-panel-title:not(.v-expansion-panel-title--static):hover {
-  background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(238,246,255,0.96) 100%);
-  box-shadow: 0 6px 16px rgba(9, 36, 64, 0.08);
-  transform: translateY(-1px);
+.v-expansion-panel-title:not(.v-expansion-panel-title--static){
+    background: var(--assay-bg);
+    border-bottom: var(--assay-border);
+    border-left: var(--assay-border);
+    border-right: var(--assay-border);
 }
 
 .v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-  background: linear-gradient(180deg, rgba(236,244,255,1) 0%, rgba(226,239,255,0.95) 100%);
-  border-bottom-color: rgba(9, 36, 64, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    background: var(--assay-bg-dark);
+    border-bottom: var(--assay-border);
 }
 
-.v-expansion-panel-title:focus-visible {
-  outline: 2px solid rgba(11, 58, 102, 0.35);
-  outline-offset: 2px;
-}
 
-.v-expansion-panel-title__icon {
-  /* color: #0b3a66; */
-  transition: transform 180ms ease, color 180ms ease;
-}
-
-.v-expansion-panel--active .v-expansion-panel-title__icon {
-  /* color: #072a4f; */
-  transform: rotate(180deg);
-}
 .assay-panel + .assay-panel {
     margin-top: 8px;
 }
@@ -223,8 +201,8 @@ export default {
     font-size: 0.8rem;
     letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--assay-label-color);
     margin-bottom: 6px;
+    color: var(--assay-label-color);
 }
 
 .value {
@@ -237,60 +215,24 @@ export default {
     font-weight: 700;
 }
 
-.screen-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    border: 1px solid rgba(9, 36, 64, 0.12);
-    background: #fff;
-    object-fit: contain;
-    padding: 6px;
-    box-shadow: 0 4px 12px rgba(9, 36, 64, 0.08);
-}
-
 .section-title {
     font-size: 1.1rem;
     font-weight: 700;
-    /* color: #0b2340; */
     margin: 0 0 10px;
 }
 
 .description {
     font-size: 1rem;
     line-height: 1.65;
-    /* color: rgba(9, 36, 64, 0.85); */
     margin: 0;
 }
-.description :deep(a) {
-    /* color: #0b3a66; */
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 1px solid rgba(11, 58, 102, 0.25);
-}
-.description :deep(a:hover) {
-    /* color: #0a2f54; */
-    border-bottom-color: rgba(11, 58, 102, 0.5);
-}
-.description :deep(ul) {
-    margin: 8px 0 0 18px;
-    padding: 0;
-}
-.description :deep(li) {
-    margin-bottom: 6px;
-}
+
 
 .media {
     padding: 12px;
     border: var(--assay-border);
     border-radius: 12px;
     background: #fff;
-    box-shadow: 0 4px 12px rgba(9, 36, 64, 0.08);
 }
 
 .media__img {

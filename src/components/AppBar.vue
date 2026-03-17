@@ -145,14 +145,9 @@ data() {
             id: 'assays'
           },
           {
-            title: 'Assays-1',
-            route: '/consortium-screens/assays-1',
-            id: 'assays'
-          },
-          {
-            title: 'Assays-2',
-            route: '/consortium-screens/assays-2',
-            id: 'assays'
+            title: 'Assays Table Layout',
+            route: '/consortium-screens/assays-table',
+            id: 'assays-table'
           },
           {
             title: 'Data Analysis',
