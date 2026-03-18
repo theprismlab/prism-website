@@ -5,7 +5,7 @@
         :scene="scene.state.scene"
         :data="scene.state.heatmapData"
         :scales="scene.state.scales"
-        :zoom="heatmapZoom"
+        :zoom="heatmapZoom*1.2"
     />
     <HeatmapSpheres
         v-if="ready"
