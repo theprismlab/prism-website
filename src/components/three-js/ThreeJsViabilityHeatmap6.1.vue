@@ -49,7 +49,6 @@ export default {
                 pert_dose: +d["Dose"]
             }));
             this.heatmapData = this.parseHeatmapData(data);
-
             this.initThreeJs();
             this.renderScene();
             this.startAnimation();
@@ -61,7 +60,7 @@ export default {
                 mean: d3.mean(d[1], e => e.viability)
             }));
 
-            cellLineGroups.sort((a, b) => d3.descending(a.mean, b.mean))
+            cellLineGroups.sort((a, b) => d3.descending(a.mean, b.mean));
 
             let cellLineToNumber = {};
             cellLineGroups.forEach((d, i) => {
@@ -78,14 +77,13 @@ export default {
 
             data.forEach(d => {
                 d.x = cellLineToNumber[d.ccle_name];
-                
                 d.z = doseToNumber[d.pert_dose];
                 d.y = 0;
                 d.c = colorScale(d.viability);
                 d.rgba = new THREE.Color(d.c);
             });
-            
-            return data.filter(d=> d.x > 300);
+
+            return data;
         },
         initThreeJs() {
             this.scene = markRaw(new THREE.Scene());
