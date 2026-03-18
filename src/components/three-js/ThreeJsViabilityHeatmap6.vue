@@ -96,12 +96,24 @@ export default {
             this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
 
-            this.light = markRaw(new THREE.DirectionalLight(0xffffff, 1));
-            this.light.position.set(5, 5, 5);
+            this.light = markRaw(new THREE.DirectionalLight(0xffffff, 0.5));
+            this.light.position.set(5, 10, 5);
             this.light.castShadow = true;
+            this.light.shadow.mapSize.width = 2048;
+            this.light.shadow.mapSize.height = 2048;
+            this.light.shadow.camera.left = -30;
+            this.light.shadow.camera.right = 30;
+            this.light.shadow.camera.top = 30;
+            this.light.shadow.camera.bottom = -30;
+            this.light.shadow.camera.near = 0.1;
+            this.light.shadow.camera.far = 60;
+            this.light.shadow.radius = 8;
+            this.light.shadow.blurSamples = 25;
+            this.light.shadow.opacity = 0.15;
+            this.light.shadow.camera.far = 60;
             this.scene.add(this.light);
 
-            this.ambientLight = markRaw(new THREE.AmbientLight('rgb(255, 255, 255)', 2));
+            this.ambientLight = markRaw(new THREE.AmbientLight('rgb(255, 255, 255)', 2.5));
             this.scene.add(this.ambientLight);
 
             this.renderer = markRaw(new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true }));
@@ -109,6 +121,7 @@ export default {
             this.renderer.setClearColor(0xffffff, 0);
             this.renderer.setPixelRatio(window.devicePixelRatio);
             this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = THREE.VSMShadowMap;
 
             this.clock = markRaw(new THREE.Clock());
         },
@@ -140,8 +153,9 @@ export default {
 
             this.heatmapData.forEach(d => {
                 const geometry = new THREE.PlaneGeometry(planeWidth*1.6, planeHeight);
-                const material = new THREE.MeshBasicMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true, depthWrite: false });
+                const material = new THREE.MeshLambertMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true, depthWrite: false });
                 const plane = new THREE.Mesh(geometry, material);
+                plane.receiveShadow = true;
                 plane.rotation.x = -Math.PI / 2;
                 plane.position.set(xScale(d.x) - xOffset, -1, zScale(d.z) - zOffset);
                 this.scene.add(plane);
@@ -192,6 +206,7 @@ export default {
                     yScale(d.viability) + radius * 0.2,
                     zScale(d.z) - zOffset
                 ));
+                sphere.castShadow = true;
                 sphere.position.copy(basePosition);
                 sphere.userData.basePosition = basePosition;
                 sphere.userData.floatPhase = Math.random() * Math.PI * 2;
