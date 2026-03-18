@@ -140,7 +140,7 @@ export default {
                 const material = new THREE.MeshBasicMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true });
                 const plane = new THREE.Mesh(geometry, material);
                 plane.rotation.x = -Math.PI / 2;
-                plane.position.set(xScale(d.x) - xOffset, 0, zScale(d.z) - zOffset);
+                plane.position.set(xScale(d.x) - xOffset, -2, zScale(d.z) - zOffset);
                 this.scene.add(plane);
             });
 
