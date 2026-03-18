@@ -128,17 +128,18 @@ export default {
 
             const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
             const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
-            const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
+            const opacityScale = d3.scaleLinear().domain(zExtent).range([0.5, 1]);
+            const ySpread = 16;
             const yScale = d3
                 .scaleLinear()
                 .domain(d3.extent(this.heatmapData, d => d.viability))
-                .range([planeHeight * 4, -planeHeight * 4]);
+                .range([ySpread, -ySpread]);
 
             const xOffset = sceneWidth / 2;
             const zOffset = visibleHeight / 2;
 
             this.heatmapData.forEach(d => {
-                const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
+                const geometry = new THREE.PlaneGeometry(planeWidth * 1.01, planeHeight * 1.01);
                 const material = new THREE.MeshBasicMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true });
                 const plane = new THREE.Mesh(geometry, material);
                 plane.rotation.x = -Math.PI / 2;
