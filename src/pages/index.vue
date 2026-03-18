@@ -142,11 +142,13 @@ import { mdiAccountGroup } from '@mdi/js';
   <style scoped lang="scss">
 .hero-section {
   display: grid;
-  height: 100vh;
+  // height: calc(100vh - var(--v-layout-top, 64px) - var(--v-banner-height, 0px));
+    height: calc(100vh - var(--v-layout-top, 64px) - var(--v-banner-height, 0px));
   overflow: hidden;
   > * {
     grid-area: 1 / 1;
   }
+  border: 1px solid red;
 }
 .hero-heatmap {
   position: relative;
