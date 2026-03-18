@@ -10,6 +10,9 @@ export default {
         scales: { type: Object, required: true },
         zoom: { type: Number, default: 0.75 },
     },
+    data() {
+        return { planes: [] };
+    },
     mounted() {
         this.addPlanes();
     },
@@ -31,10 +34,11 @@ export default {
                 plane.rotation.x = -Math.PI / 2;
                 plane.position.set(
                     (xScale(d.x) - xOffset) * this.zoom,
-                    -1,
+                    10,
                     (zScale(d.z) - zOffset) * this.zoom
                 );
                 this.scene.add(plane);
+                this.planes.push(plane);
             });
         }
     },

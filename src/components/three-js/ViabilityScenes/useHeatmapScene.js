@@ -75,8 +75,9 @@ export function useHeatmapScene(options = {}) {
 
     function initThreeJs(canvasEl) {
         canvas = canvasEl;
-        state.width = canvas.clientWidth;
-        state.height = canvas.clientHeight;
+        const parent = canvas.parentElement;
+        state.width = parent.clientWidth;
+        state.height = parent.clientHeight;
 
         state.scene = markRaw(new THREE.Scene());
         state.camera = markRaw(new THREE.PerspectiveCamera(fov, state.width / state.height, 1.01, 200));
@@ -102,7 +103,7 @@ export function useHeatmapScene(options = {}) {
         state.scene.add(ambientLight);
 
         state.renderer = markRaw(new THREE.WebGLRenderer({ canvas, antialias: true }));
-        state.renderer.setSize(state.width, state.height);
+        state.renderer.setSize(state.width, state.height, false);
         state.renderer.setClearColor(0xffffff, 0);
         state.renderer.setPixelRatio(window.devicePixelRatio);
         state.renderer.shadowMap.enabled = true;
@@ -151,10 +152,6 @@ export function useHeatmapScene(options = {}) {
         animationCallbacks.value.push(callback);
     }
 
-    function resetAnimationCallbacks() {
-        animationCallbacks.value = [];
-    }
-
     function startAnimation() {
         if (animationFrameId) return;
         const animate = () => {
@@ -177,26 +174,14 @@ export function useHeatmapScene(options = {}) {
         state.renderer.render(state.scene, state.camera);
     }
 
-    function resize() {
-        if (!canvas || !state.renderer) return;
-        state.width = canvas.clientWidth;
-        state.height = canvas.clientHeight;
-        state.camera.aspect = state.width / state.height;
-        state.camera.updateProjectionMatrix();
-        state.renderer.setSize(state.width, state.height);
-        computeScales();
-    }
-
     return {
         state,
         loadData,
         initThreeJs,
         computeScales,
         onAnimate,
-        resetAnimationCallbacks,
         startAnimation,
         stopAnimation,
         render,
-        resize,
     };
 }
