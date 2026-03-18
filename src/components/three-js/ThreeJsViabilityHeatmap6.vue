@@ -191,9 +191,9 @@ export default {
             const sizeScale = d3.scaleLinear().domain([zExtent[0], zExtent[1]]).range([1.0, 0.3]);
             const opacityDepthScale = d3.scaleLinear().domain([zExtent[0], zExtent[1]]).range([0.7, 0.15]);
 
-            // Viability-based radius scale: lower viability → larger sphere
+            // Viability-based radius scale: lower viability → larger sphere (power scale for few large, many small)
             const viabilityExtent = d3.extent(this.heatmapData, d => d.viability);
-            const radiusScale = d3.scaleLinear().domain(viabilityExtent).range([1.5, 0.4]);
+            const radiusScale = d3.scalePow().exponent(1).domain(viabilityExtent).range([1.5, 0.2]);
 
             sampled.forEach(d => {
                 const t = sizeScale(d.z);
