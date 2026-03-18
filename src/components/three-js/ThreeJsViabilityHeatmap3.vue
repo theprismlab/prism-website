@@ -87,20 +87,10 @@ export default {
         },
         initThreeJs() {
             this.scene = markRaw(new THREE.Scene());
-
-            const aspect = this.width / this.height;
-            const fov = 30;
-            const cameraZ = 45;
-
-            this.camera = markRaw(new THREE.PerspectiveCamera(fov, aspect, 0.1, 200));
-            this.camera.position.set(0, 6, cameraZ);
+            this.camera = markRaw(new THREE.PerspectiveCamera(30, this.width / this.height, 1.01, 200));
+            this.camera.position.set(0, 6, 45);
+            this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
-
-            // Calculate visible frustum at y=0 (scene ground plane)
-            const dist = cameraZ - 0; // distance from camera to y=0 plane along z
-            const vFov = THREE.MathUtils.degToRad(fov);
-            this.visibleHeight = 2 * Math.tan(vFov / 2) * dist;
-            this.visibleWidth = this.visibleHeight * aspect;
 
             this.light = markRaw(new THREE.DirectionalLight(0xffffff, 1));
             this.light.position.set(5, 5, 5);
@@ -117,6 +107,8 @@ export default {
             this.renderer.shadowMap.enabled = true;
 
             this.clock = markRaw(new THREE.Clock());
+
+         //   window.addEventListener('resize', this.onWindowResize);
         },
         renderScene() {
             const zExtent = d3.extent(this.heatmapData, d => d.z);

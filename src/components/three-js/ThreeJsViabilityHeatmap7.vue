@@ -90,11 +90,19 @@ export default {
 
             const aspect = this.width / this.height;
             const fov = 35;
+            const cameraY = 35;
+            const cameraZ = 30;
 
             this.camera = markRaw(new THREE.PerspectiveCamera(fov, aspect, 0.1, 300));
-            this.camera.position.set(0, 35, 30);
-            this.camera.lookAt(0, 0, -10);
+            this.camera.position.set(0, cameraY, cameraZ);
+            this.camera.lookAt(0, 0, 0);
             this.camera.updateProjectionMatrix();
+
+            // Approximate visible frustum width at the scene center
+            const dist = Math.sqrt(cameraY * cameraY + cameraZ * cameraZ);
+            const vFov = THREE.MathUtils.degToRad(fov);
+            this.visibleHeight = 2 * Math.tan(vFov / 2) * dist;
+            this.visibleWidth = this.visibleHeight * aspect;
 
             this.light = markRaw(new THREE.DirectionalLight(0xffffff, 1));
             this.light.position.set(5, 5, 5);
@@ -112,33 +120,14 @@ export default {
 
             this.clock = markRaw(new THREE.Clock());
         },
-        // Raycast from NDC screen coordinate to the y=0 ground plane
-        screenToGround(ndcX, ndcY) {
-            const near = new THREE.Vector3(ndcX, ndcY, -1).unproject(this.camera);
-            const far = new THREE.Vector3(ndcX, ndcY, 1).unproject(this.camera);
-            const dir = far.clone().sub(near).normalize();
-            const t = -near.y / dir.y;
-            return near.clone().add(dir.clone().multiplyScalar(t));
-        },
         renderScene() {
             const zExtent = d3.extent(this.heatmapData, d => d.z);
             const xExtent = d3.extent(this.heatmapData, d => d.x);
 
-            // Project viewport edges onto y=0 ground plane
-            // With camera looking down, bottom of screen = farthest ground point
-            // Back row (far) at bottom of viewport (NDC y = -1)
-            // Front row (near) at 1/3 up from bottom (NDC y = -0.333)
-            const farLeft = this.screenToGround(-1, -1);
-            const farRight = this.screenToGround(1, -1);
-            const nearLeft = this.screenToGround(-1, -0.333);
-            const nearRight = this.screenToGround(1, -0.333);
-
-            // Far edge width fills the canvas exactly
-            const sceneWidth = farRight.x - farLeft.x;
-            const farZ = (farLeft.z + farRight.z) / 2;
-            const nearZ = (nearLeft.z + nearRight.z) / 2;
-            const sceneDepth = nearZ - farZ;
-
+            // Use frustum-based world units so content fills the viewport
+            const padding = 0.95;
+            const sceneWidth = this.visibleWidth * padding;
+            const sceneDepth = this.visibleHeight * 0.6;
             const planeWidth = sceneWidth / xExtent[1];
             const planeHeight = sceneDepth / Math.max(zExtent[1], 1);
 
@@ -151,13 +140,14 @@ export default {
                 .range([planeHeight * 4, -planeHeight * 4]);
 
             const xOffset = sceneWidth / 2;
+            const zOffset = sceneDepth / 2;
 
             this.heatmapData.forEach(d => {
                 const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
                 const material = new THREE.MeshBasicMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true });
                 const plane = new THREE.Mesh(geometry, material);
                 plane.rotation.x = -Math.PI / 2;
-                plane.position.set(xScale(d.x) - xOffset, 0, farZ + zScale(d.z));
+                plane.position.set(xScale(d.x) - xOffset, d.y, zScale(d.z) - zOffset);
                 this.scene.add(plane);
             });
 
@@ -165,7 +155,7 @@ export default {
                 xScale,
                 zScale,
                 xOffset,
-                farZ,
+                zOffset,
                 planeHeight,
                 yScale,
                 zExtent
@@ -173,15 +163,15 @@ export default {
 
             this.renderer.render(this.scene, this.camera);
         },
-        renderScatterPoints({ xScale, zScale, xOffset, farZ, planeHeight, yScale, zExtent }) {
+        renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale, zExtent }) {
             const baseRadius = planeHeight * 0.18;
             if (!this.spheres) {
                 this.spheres = [];
             }
 
             // Sample every Nth cell line and every Mth dose to reduce sphere count
-            const xStep = 3;
-            const zStep = 2;
+            const xStep = 3;  // keep every 3rd cell line
+            const zStep = 2;  // keep every 2nd dose
 
             const sampled = this.heatmapData.filter(d => d.x % xStep === 0 && d.z % zStep === 0);
 
@@ -204,7 +194,7 @@ export default {
                 const basePosition = markRaw(new THREE.Vector3(
                     xScale(d.x) - xOffset,
                     yScale(d.viability) + radius * 0.2,
-                    farZ + zScale(d.z)
+                    zScale(d.z) - zOffset
                 ));
                 sphere.position.copy(basePosition);
                 sphere.userData.basePosition = basePosition;
