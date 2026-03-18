@@ -17,19 +17,19 @@
       </div>
     </section>
 
-      <container-xs>
+      <container-sm>
            <p class="text-h3 text-center">Our lab partners with researchers to reveal clinically important differences in drug behavior by screening over 900 cancer cell lines and correlating the viability results with baseline and functional genomic features </p>
-      </container-xs>
-      <container-xs>
+      </container-sm>
+      <container-sm>
           <p class="text-body-1"> 
               Cancer cell line models remain essential in drug development, providing a controlled system to assess potency and confirm on-target engagement. At a larger scale using PRISM, these models provide power to <span class="text-emphasize">understand heterogeneity</span> in drug response among cell lines harboring the targeted alteration(s), assess <span class="text-emphasize">selectivity relative to those without target alterations, and investigate potential biomarkers associated with these responses</span>.
             </p>
-      </container-xs>
+      </container-sm>
       
       <MainVisual></MainVisual>
       <our-portal></our-portal>
 
-      <container-xs class="my-12">
+      <container-sm class="my-12">
         <section-overline>Impact</section-overline>
         <section-title>Dedicated to advancing oncology research</section-title>
         <p class="text-body-1">Working with pharmaceutical and biotech companies and academics to improve the outcome for cancer patients worldwide. </p>
@@ -38,16 +38,16 @@
               <stat-card :index="index" :title="card.title" :subtitle="card.subtitle" :icon="card.icon"></stat-card>
           </v-col>
         </v-row>
-      </container-xs>
+      </container-sm>
 
-      <container-xs class="my-12">
+      <container-sm class="my-12">
         <section-overline>Testimonials</section-overline>
         <v-row class="mt-6 mb-6">  
           <v-col v-for="(card, index) in testimonialCards" :key="index" cols="12" xs="12" sm="6" md="6" lg="6" xl="6">
               <testimonial-card :index="index" :card="card"></testimonial-card>
           </v-col>
         </v-row>
-      </container-xs>  
+      </container-sm>  
   </page>
   </template>
   <script>

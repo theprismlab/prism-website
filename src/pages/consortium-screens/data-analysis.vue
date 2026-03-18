@@ -1,6 +1,6 @@
 <template>
 <page>
-  <container-xs>
+  <container-sm>
     <v-row>
       <v-col>
         <page-title>Data Analysis</page-title>
@@ -39,7 +39,7 @@
         </p>
       </v-col>
     </v-row>
-    </container-xs>
+    </container-sm>
    
 </page>
 </template>

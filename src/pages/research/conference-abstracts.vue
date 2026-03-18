@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-xs>
+    <container-sm>
       <page-title>Conference abstracts</page-title>
       <section class="section-margin-default">
         <v-row>
@@ -17,7 +17,7 @@
           </v-col>
       </v-row>
       </section>
-    </container-xs>
+    </container-sm>
   </page>
   </template>
   

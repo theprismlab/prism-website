@@ -2,14 +2,21 @@
   <AppBar/>
   <v-main>
       
-       <!-- <app-banner></app-banner> -->
+       <app-banner v-if="showBanner"></app-banner>
     <router-view />
   </v-main>
   <AppFooter />
 </template>
 
-<script setup>
-  //
+<script>
+export default {
+  name: 'Default',
+  data: function() {
+    return {
+      showBanner: true
+    }
+  }
+}
 </script>
 <style scoped>
 

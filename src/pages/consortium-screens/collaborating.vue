@@ -1,6 +1,6 @@
 <template>
 <page>
-  <container-xs>
+  <container-sm>
     <section>
       <page-title>Collaborate with us!</page-title>
         <p class="text-body-1">
@@ -38,7 +38,7 @@
         Collaboration agreements are not a requirement for academic collaborators to participate in our screens. If you would like to sign an agreement, please email our team at <a href="mailto:prism@broadinstitute.org" class="text-link">prism@broadinstitute.org</a>.
       </p>
    </section>
-</container-xs>
+</container-sm>
 
 </page>
 
