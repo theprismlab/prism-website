@@ -139,8 +139,8 @@ export default {
             const zOffset = visibleHeight / 2;
 
             this.heatmapData.forEach(d => {
-                const geometry = new THREE.PlaneGeometry(planeWidth * 1.01, planeHeight * 1.01);
-                const material = new THREE.MeshBasicMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true });
+                const geometry = new THREE.PlaneGeometry(planeWidth*1.6, planeHeight);
+                const material = new THREE.MeshBasicMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true, depthWrite: false });
                 const plane = new THREE.Mesh(geometry, material);
                 plane.rotation.x = -Math.PI / 2;
                 plane.position.set(xScale(d.x) - xOffset, -1, zScale(d.z) - zOffset);
