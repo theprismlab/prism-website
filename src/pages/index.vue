@@ -2,7 +2,7 @@
   <page class="mt-0 pt-0">
     <section class="hero-section">
       <div class="hero-heatmap">
-        <ThreeJsViabilityHeatmap3 :key="resizeCounter"/>
+        <ThreeJsViabilityHeatmap6 :key="resizeCounter"/>
       </div>
       <div class="hero-overlay text-center">
             <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>

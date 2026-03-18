@@ -121,19 +121,24 @@ export default {
         renderScene() {
             const zExtent = d3.extent(this.heatmapData, d => d.z);
             const xExtent = d3.extent(this.heatmapData, d => d.x);
-            const planeWidth = this.width / xExtent[1];
-            const planeHeight = 4;
 
-            const xScale = d3.scaleLinear().domain(xExtent).range([0, this.width]);
-            const zScale = d3.scaleLinear().domain(zExtent).range([0, planeHeight * zExtent[1]]);
+            // Use frustum-based world units so content fills the viewport
+            const padding = 0.95; // slight inset so edges aren't clipped
+            const sceneWidth = this.visibleWidth * padding;
+            const sceneDepth = this.visibleHeight * 0.4; // depth range for dose rows
+            const planeWidth = sceneWidth / xExtent[1];
+            const planeHeight = sceneDepth / Math.max(zExtent[1], 1);
+
+            const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
+            const zScale = d3.scaleLinear().domain(zExtent).range([0, sceneDepth]);
             const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
             const yScale = d3
                 .scaleLinear()
                 .domain(d3.extent(this.heatmapData, d => d.viability))
-                .range([planeHeight * 4, -planeHeight*4]);
+                .range([planeHeight * 4, -planeHeight * 4]);
 
-            const xOffset = (xScale.range()[1] - xScale.range()[0]) / 2;
-            const zOffset = (zScale.range()[1] - zScale.range()[0]) / 2;
+            const xOffset = sceneWidth / 2;
+            const zOffset = sceneDepth / 2;
 
             this.heatmapData.forEach(d => {
                 const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
