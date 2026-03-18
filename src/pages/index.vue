@@ -1,19 +1,12 @@
 <template>
-  <page class="mt-0">
-    <section style="position: relative; height: 100vh; width: 100%;">
-      <ThreeJsViabilityHeatmap3 :key="resizeCounter"/>
-
-      <!-- <ThreeJsSpheres10/> -->
-
-      <div style="position:absolute; width: 100%; height:100%;">
-        <v-container class="fill-height">
-          <v-row justify="center" align="center" style="height:100%; width:100%;">
-          <div style="max-width:1000px;"class="text-center">
-                <h1 class=" text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
-                <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
-          </div>
-          </v-row>
-        </v-container>
+  <page class="mt-0 pt-0">
+    <section class="hero-section">
+      <div class="hero-heatmap">
+        <ThreeJsViabilityHeatmap3 :key="resizeCounter"/>
+      </div>
+      <div class="hero-overlay text-center">
+            <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
+            <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
       </div>
     </section>
 
@@ -147,11 +140,26 @@ import { mdiAccountGroup } from '@mdi/js';
   </script>
   
   <style scoped lang="scss">
+.hero-section {
+  display: grid;
+  height: calc(100vh - var(--v-toolbar-height) - var(--v-banner-height));
+  overflow: hidden;
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+.hero-heatmap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.hero-overlay {
+  place-self: center;
+  max-width: 1000px;
+  padding: 0 24px;
+  z-index: 1;
+}
 .text-hero{
-  // background-color: rgba(255, 255, 255, 0.5);
-  // // round the corners
-  // border-radius: 24px;
-  // add white shadow make it bigger
   text-shadow: 0px 0px 20px rgba(255, 255, 255, 1);
 }
 .text-xl{
