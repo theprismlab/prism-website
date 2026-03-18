@@ -16,6 +16,9 @@ export default {
     mounted() {
         this.addPlanes();
     },
+    beforeUnmount() {
+        this.planes.forEach(p => { this.scene.remove(p); p.geometry.dispose(); p.material.dispose(); });
+    },
     methods: {
         addPlanes() {
             const { xScale, zScale, opacityScale, xOffset, zOffset, planeWidth, planeHeight } = this.scales;

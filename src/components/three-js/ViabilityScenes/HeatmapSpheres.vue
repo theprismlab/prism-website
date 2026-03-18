@@ -20,7 +20,11 @@ export default {
     },
     mounted() {
         this.addSpheres();
-        this.onAnimate(this.animate);
+        this._off = this.onAnimate(this.animate);
+    },
+    beforeUnmount() {
+        if (this._off) this._off();
+        this.spheres.forEach(s => { this.scene.remove(s); s.geometry.dispose(); s.material.dispose(); });
     },
     methods: {
         addSpheres() {

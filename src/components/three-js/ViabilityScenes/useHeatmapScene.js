@@ -102,6 +102,9 @@ export function useHeatmapScene(options = {}) {
         const ambientLight = markRaw(new THREE.AmbientLight('rgb(255, 255, 255)', 2.5));
         state.scene.add(ambientLight);
 
+        // Keep references so clearMeshes can preserve them
+        state.lights = [light, ambientLight];
+
         state.renderer = markRaw(new THREE.WebGLRenderer({ canvas, antialias: true }));
         state.renderer.setSize(state.width, state.height, false);
         state.renderer.setClearColor(0xffffff, 0);
@@ -150,6 +153,9 @@ export function useHeatmapScene(options = {}) {
 
     function onAnimate(callback) {
         animationCallbacks.value.push(callback);
+        return () => {
+            animationCallbacks.value = animationCallbacks.value.filter(cb => cb !== callback);
+        };
     }
 
     function startAnimation() {
@@ -174,6 +180,30 @@ export function useHeatmapScene(options = {}) {
         state.renderer.render(state.scene, state.camera);
     }
 
+    function resize() {
+        if (!canvas || !state.renderer) return;
+        const parent = canvas.parentElement;
+        state.width = parent.clientWidth;
+        state.height = parent.clientHeight;
+        state.camera.aspect = state.width / state.height;
+        state.camera.updateProjectionMatrix();
+        state.renderer.setSize(state.width, state.height, false);
+        clearMeshes();
+        computeScales();
+    }
+
+    function clearMeshes() {
+        const keep = new Set(state.lights || []);
+        keep.add(state.camera);
+        const toRemove = state.scene.children.filter(c => !keep.has(c));
+        toRemove.forEach(c => {
+            state.scene.remove(c);
+            if (c.geometry) c.geometry.dispose();
+            if (c.material) c.material.dispose();
+        });
+        animationCallbacks.value = [];
+    }
+
     return {
         state,
         loadData,
@@ -183,5 +213,7 @@ export function useHeatmapScene(options = {}) {
         startAnimation,
         stopAnimation,
         render,
+        resize,
+        clearMeshes,
     };
 }

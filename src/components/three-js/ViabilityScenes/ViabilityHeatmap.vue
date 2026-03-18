@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useHeatmapScene } from './useHeatmapScene.js';
 import HeatmapPlanes from './HeatmapPlanes.vue';
 import HeatmapSpheres from './HeatmapSpheres.vue';
@@ -32,6 +32,8 @@ const props = defineProps({
 
 const ready = ref(false);
 const canvasEl = ref(null);
+let resizeObserver = null;
+let resizeTimer = null;
 
 const scene = useHeatmapScene({
     cameraZoom: props.cameraZoom,
@@ -48,9 +50,25 @@ onMounted(async () => {
     await new Promise(r => requestAnimationFrame(r));
     scene.render();
     scene.startAnimation();
+
+    resizeObserver = new ResizeObserver(() => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(async () => {
+            ready.value = false;
+            scene.resize();
+            await nextTick();
+            ready.value = true;
+        }, 100);
+    });
+    // Skip the initial fire by deferring observe
+    requestAnimationFrame(() => {
+        resizeObserver.observe(canvas.parentElement);
+    });
 });
 
 onBeforeUnmount(() => {
     scene.stopAnimation();
+    if (resizeObserver) resizeObserver.disconnect();
+    clearTimeout(resizeTimer);
 });
 </script>
