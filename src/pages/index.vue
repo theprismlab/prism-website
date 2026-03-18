@@ -142,7 +142,7 @@ import { mdiAccountGroup } from '@mdi/js';
   <style scoped lang="scss">
 .hero-section {
   display: grid;
-  height: calc(100vh - var(--v-toolbar-height) - var(--v-banner-height));
+  height: 100vh;
   overflow: hidden;
   > * {
     grid-area: 1 / 1;
