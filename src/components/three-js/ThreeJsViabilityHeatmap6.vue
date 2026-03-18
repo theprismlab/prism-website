@@ -182,7 +182,7 @@ export default {
             }
 
             // Sample every Nth cell line and every Mth dose to reduce sphere count
-            const xStep = 3;
+            const xStep = 8;
             const zStep = 2;
 
             const sampled = this.heatmapData.filter(d => d.x % xStep === 0 && d.z % zStep === 0);
