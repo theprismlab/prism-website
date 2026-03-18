@@ -34,6 +34,7 @@ const props = defineProps({
 });
 
 const ready = ref(false);
+let resizeObserver = null;
 const scene = useHeatmapScene({
     cameraZoom: props.cameraZoom,
     fov: props.fov,
@@ -50,9 +51,16 @@ onMounted(async () => {
     await new Promise(r => requestAnimationFrame(r));
     scene.render();
     scene.startAnimation();
+
+    // Observe canvas resize to update scene
+    resizeObserver = new ResizeObserver(() => {
+        scene.resize();
+    });
+    resizeObserver.observe(canvas);
 });
 
 onBeforeUnmount(() => {
     scene.stopAnimation();
+    if (resizeObserver) resizeObserver.disconnect();
 });
 </script>

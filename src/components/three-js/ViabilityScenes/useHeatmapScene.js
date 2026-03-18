@@ -71,7 +71,10 @@ export function useHeatmapScene(options = {}) {
         return data.filter(d => d.x > minCellLine);
     }
 
-    function initThreeJs(canvas) {
+    let canvas = null;
+
+    function initThreeJs(canvasEl) {
+        canvas = canvasEl;
         state.width = canvas.clientWidth;
         state.height = canvas.clientHeight;
 
@@ -170,6 +173,16 @@ export function useHeatmapScene(options = {}) {
         state.renderer.render(state.scene, state.camera);
     }
 
+    function resize() {
+        if (!canvas || !state.renderer) return;
+        state.width = canvas.clientWidth;
+        state.height = canvas.clientHeight;
+        state.camera.aspect = state.width / state.height;
+        state.camera.updateProjectionMatrix();
+        state.renderer.setSize(state.width, state.height);
+        computeScales();
+    }
+
     return {
         state,
         loadData,
@@ -179,5 +192,6 @@ export function useHeatmapScene(options = {}) {
         startAnimation,
         stopAnimation,
         render,
+        resize,
     };
 }
