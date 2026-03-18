@@ -1,5 +1,5 @@
 <template>
-    <canvas id="viability-heatmap-canvas" style="position: absolute; width:100%; height:100%;"></canvas>
+    <canvas id="viability-heatmap-canvas" ref="canvasEl" style="position: absolute; width:100%; height:100%;"></canvas>
     <HeatmapPlanes
         v-if="ready"
         :scene="scene.state.scene"
@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useHeatmapScene } from './useHeatmapScene.js';
 import HeatmapPlanes from './ViabilityScenes/HeatmapPlanes.vue/index.js';
 import HeatmapSpheres from './ViabilityScenes/HeatmapSpheres.vue/index.js';
@@ -34,14 +34,31 @@ const props = defineProps({
 });
 
 const ready = ref(false);
+const canvasEl = ref(null);
 let resizeObserver = null;
+let resizeTimer = null;
 const scene = useHeatmapScene({
     cameraZoom: props.cameraZoom,
     fov: props.fov,
 });
 
+async function rebuildLayers() {
+    ready.value = false;
+    scene.stopAnimation();
+    scene.resetAnimationCallbacks();
+
+    await nextTick();
+    scene.resize();
+    scene.computeScales();
+    ready.value = true;
+
+    await new Promise(r => requestAnimationFrame(r));
+    scene.render();
+    scene.startAnimation();
+}
+
 onMounted(async () => {
-    const canvas = document.getElementById('viability-heatmap-canvas');
+    const canvas = canvasEl.value || document.getElementById('viability-heatmap-canvas');
     scene.initThreeJs(canvas);
     await scene.loadData();
     scene.computeScales();
@@ -52,15 +69,21 @@ onMounted(async () => {
     scene.render();
     scene.startAnimation();
 
-    // Observe canvas resize to update scene
     resizeObserver = new ResizeObserver(() => {
-        scene.resize();
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            rebuildLayers();
+        }, 100);
     });
-    resizeObserver.observe(canvas);
+
+    const resizeTarget = canvas.parentElement || canvas;
+    resizeObserver.observe(resizeTarget);
 });
 
 onBeforeUnmount(() => {
     scene.stopAnimation();
+    scene.resetAnimationCallbacks();
     if (resizeObserver) resizeObserver.disconnect();
+    if (resizeTimer) clearTimeout(resizeTimer);
 });
 </script>

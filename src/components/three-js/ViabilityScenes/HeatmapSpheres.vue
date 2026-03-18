@@ -18,26 +18,11 @@ export default {
             spheres: [],
         };
     },
-    watch: {
-        scales: {
-            handler() { this.rebuild(); },
-            deep: false,
-        }
-    },
     mounted() {
         this.addSpheres();
         this.onAnimate(this.animate);
     },
     methods: {
-        rebuild() {
-            this.spheres.forEach(s => {
-                this.scene.remove(s);
-                s.geometry.dispose();
-                s.material.dispose();
-            });
-            this.spheres = [];
-            this.addSpheres();
-        },
         addSpheres() {
             const { xScale, zScale, xOffset, zOffset, planeHeight, yScale, zExtent } = this.scales;
             const baseRadius = xScale.range()[1] * 0.018;

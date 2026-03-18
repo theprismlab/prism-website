@@ -151,6 +151,10 @@ export function useHeatmapScene(options = {}) {
         animationCallbacks.value.push(callback);
     }
 
+    function resetAnimationCallbacks() {
+        animationCallbacks.value = [];
+    }
+
     function startAnimation() {
         if (animationFrameId) return;
         const animate = () => {
@@ -189,6 +193,7 @@ export function useHeatmapScene(options = {}) {
         initThreeJs,
         computeScales,
         onAnimate,
+        resetAnimationCallbacks,
         startAnimation,
         stopAnimation,
         render,
