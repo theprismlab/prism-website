@@ -197,8 +197,7 @@ export default {
 
             sampled.forEach(d => {
                 const t = sizeScale(d.z);
-                const randomJitter = 0.8 + Math.random() * 0.4; // 0.8–1.2
-                const radius = baseRadius * t * radiusScale(d.viability) * randomJitter;
+                const radius = baseRadius * t * radiusScale(d.viability);
                 const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
                 const material = markRaw(new THREE.MeshStandardMaterial({
                     color: d.rgba,
