@@ -151,20 +151,13 @@ export default {
             const xOffset = sceneWidth / 2;
             const zOffset = visibleHeight / 2;
 
-            // Heatmap zoom — scales plane positions and sizes independently of spheres
-            const heatmapZoom = 1.5;
-
             this.heatmapData.forEach(d => {
-                const geometry = new THREE.PlaneGeometry(planeWidth * 1.6 * heatmapZoom, planeHeight * heatmapZoom);
+                const geometry = new THREE.PlaneGeometry(planeWidth*1.6, planeHeight);
                 const material = new THREE.MeshLambertMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true, depthWrite: false });
                 const plane = new THREE.Mesh(geometry, material);
                 plane.receiveShadow = true;
                 plane.rotation.x = -Math.PI / 2;
-                plane.position.set(
-                    (xScale(d.x) - xOffset) * heatmapZoom,
-                    -1,
-                    (zScale(d.z) - zOffset) * heatmapZoom
-                );
+                plane.position.set(xScale(d.x) - xOffset, -1, zScale(d.z) - zOffset);
                 this.scene.add(plane);
             });
 
