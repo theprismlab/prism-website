@@ -152,7 +152,7 @@ export default {
             const zOffset = visibleHeight / 2;
 
             // Heatmap zoom — scales plane positions and sizes independently of spheres
-            const heatmapZoom = 1.5;
+            const heatmapZoom = 0.75;
 
             this.heatmapData.forEach(d => {
                 const geometry = new THREE.PlaneGeometry(planeWidth * 1.6 * heatmapZoom, planeHeight * heatmapZoom);
