@@ -27,6 +27,8 @@ export default {
             spheres: [],
             clock: null,
             animationFrameId: null,
+            cameraZoom: 35,
+            fov: 35
         };
     },
     computed: {
@@ -89,8 +91,8 @@ export default {
         },
         initThreeJs() {
             this.scene = markRaw(new THREE.Scene());
-            this.camera = markRaw(new THREE.PerspectiveCamera(30, this.width / this.height, 1.01, 200));
-            this.camera.position.set(0, 6, 45);
+            this.camera = markRaw(new THREE.PerspectiveCamera(this.fov, this.width / this.height, 1.01, 200));
+            this.camera.position.set(0, 6, this.cameraZoom);
             this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
 
@@ -115,8 +117,8 @@ export default {
             const xExtent = d3.extent(this.heatmapData, d => d.x);
 
             // Calculate visible frustum at z=0
-            const cameraZ = 45;
-            const vFov = THREE.MathUtils.degToRad(30);
+            const cameraZ = this.cameraZoom;
+            const vFov = THREE.MathUtils.degToRad(this.fov);
             const visibleHeight = 2 * Math.tan(vFov / 2) * cameraZ;
             const visibleWidth = visibleHeight * (this.width / this.height);
 
@@ -140,7 +142,7 @@ export default {
                 const material = new THREE.MeshBasicMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true });
                 const plane = new THREE.Mesh(geometry, material);
                 plane.rotation.x = -Math.PI / 2;
-                plane.position.set(xScale(d.x) - xOffset, -2, zScale(d.z) - zOffset);
+                plane.position.set(xScale(d.x) - xOffset, -1, zScale(d.z) - zOffset);
                 this.scene.add(plane);
             });
 
