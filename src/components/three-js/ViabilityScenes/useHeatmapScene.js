@@ -81,8 +81,8 @@ export function useHeatmapScene(options = {}) {
 
         state.scene = markRaw(new THREE.Scene());
         state.camera = markRaw(new THREE.PerspectiveCamera(fov, state.width / state.height, 1.01, 200));
-        state.camera.position.set(0, 1, cameraZoom);
-        state.camera.lookAt(0, 6.7, 0);
+        state.camera.position.set(0, 5, cameraZoom);
+        state.camera.lookAt(0, 6.5, 0);
         state.camera.updateProjectionMatrix();
 
         const light = markRaw(new THREE.DirectionalLight(0xffffff, 0.5));

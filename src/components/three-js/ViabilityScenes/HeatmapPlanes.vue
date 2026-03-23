@@ -38,7 +38,7 @@ export default {
                 plane.rotation.x = -Math.PI / 2;
                 plane.position.set(
                     (xScale(d.x) - xOffset) * this.zoom,
-                    -1,
+                    -5,
                     (zScale(d.z) - zOffset) * this.zoom
                 );
                 this.scene.add(plane);
