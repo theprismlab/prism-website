@@ -48,7 +48,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiHexagonMultiple } from '@mdi/js';
 import { mdiFileMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
-import TheScene from '@/components/three-js/BubbleScenes/TheScene.vue';
+import TheScene from '@/components/three-js/BubbleScene/TheScene.vue';
   export default {
     components: {
       SvgIcon,
