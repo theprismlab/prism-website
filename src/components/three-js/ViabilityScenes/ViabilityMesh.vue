@@ -23,7 +23,6 @@ const meshConfig = {
 
     // ── Planes / Mesh ──
     planeZoom: 10.8,
-    planeWidthMultiplier: 1.6,
     planeYPosition: 1,
     planeOpacityRange: [0.5, 1],
 
@@ -35,6 +34,8 @@ const meshConfig = {
 
     // ── Subdivision (smooth interpolation) ──
     meshSubdivisions: 4,    // subdivisions between each data point (1 = no smoothing)
+    meshTension: 0.5,       // 0 = standard Catmull-Rom, 1 = linear (no overshoot)
+    meshSmoothing: 1,        // Gaussian blur passes on data before interpolation (0 = none)
 };
 
 const props = defineProps({
@@ -85,40 +86,67 @@ function computeScales(data) {
     };
 }
 
-// ── Catmull-Rom helpers ──
+// ── Smoothing & interpolation helpers ──
 
-function catmullRom(p0, p1, p2, p3, t) {
+function catmullRom(p0, p1, p2, p3, t, tension) {
+    const s = (1 - tension) / 2;
     const t2 = t * t, t3 = t2 * t;
-    return 0.5 * (
+    return (
         (2 * p1) +
-        (-p0 + p2) * t +
-        (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
-        (-p0 + 3 * p1 - 3 * p2 + p3) * t3
+        (-p0 + p2) * s * 2 * t +
+        (2 * p0 - 5 * p1 + 4 * p2 - p3) * s * 2 * t2 +
+        (-p0 + 3 * p1 - 3 * p2 + p3) * s * 2 * t3
     );
 }
 
 function sampleGrid(grid2d, rows, cols, r, c) {
-    const rr = Math.max(0, Math.min(rows - 1, r));
-    const cc = Math.max(0, Math.min(cols - 1, c));
-    return grid2d[rr][cc];
+    return grid2d[Math.max(0, Math.min(rows - 1, r))][Math.max(0, Math.min(cols - 1, c))];
 }
 
-function bicubicSample(grid2d, rows, cols, fr, fc) {
+function bicubicSample(grid2d, rows, cols, fr, fc, tension) {
     const r0 = Math.floor(fr);
     const c0 = Math.floor(fc);
     const tr = fr - r0;
     const tc = fc - c0;
 
-    // Interpolate 4 rows along columns, then interpolate the results along the row direction
     const rowVals = [];
     for (let dr = -1; dr <= 2; dr++) {
         const p0 = sampleGrid(grid2d, rows, cols, r0 + dr, c0 - 1);
         const p1 = sampleGrid(grid2d, rows, cols, r0 + dr, c0);
         const p2 = sampleGrid(grid2d, rows, cols, r0 + dr, c0 + 1);
         const p3 = sampleGrid(grid2d, rows, cols, r0 + dr, c0 + 2);
-        rowVals.push(catmullRom(p0, p1, p2, p3, tc));
+        rowVals.push(catmullRom(p0, p1, p2, p3, tc, tension));
     }
-    return catmullRom(rowVals[0], rowVals[1], rowVals[2], rowVals[3], tr);
+    return catmullRom(rowVals[0], rowVals[1], rowVals[2], rowVals[3], tr, tension);
+}
+
+// Gaussian-ish blur: one pass of 3×3 weighted average
+function blurGrid(grid2d, rows, cols) {
+    const out = [];
+    for (let r = 0; r < rows; r++) {
+        const row = [];
+        for (let c = 0; c < cols; c++) {
+            let sum = 0, w = 0;
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    const rr = r + dr, cc = c + dc;
+                    if (rr < 0 || rr >= rows || cc < 0 || cc >= cols) continue;
+                    const weight = (dr === 0 && dc === 0) ? 4 : (dr === 0 || dc === 0) ? 2 : 1;
+                    sum += grid2d[rr][cc] * weight;
+                    w += weight;
+                }
+            }
+            row.push(sum / w);
+        }
+        out.push(row);
+    }
+    return out;
+}
+
+function smoothGrid(grid2d, rows, cols, passes) {
+    let g = grid2d;
+    for (let i = 0; i < passes; i++) g = blurGrid(g, rows, cols);
+    return g;
 }
 
 // ── Mesh Creation ──
@@ -159,6 +187,13 @@ function buildMesh(data) {
         bGrid.push(bRow);
     }
 
+    // Pre-smooth the grids to reduce sharp transitions
+    const passes = config.meshSmoothing;
+    const syGrid = smoothGrid(yGrid, rows, cols, passes);
+    const srGrid = smoothGrid(rGrid, rows, cols, passes);
+    const sgGrid = smoothGrid(gGrid, rows, cols, passes);
+    const sbGrid = smoothGrid(bGrid, rows, cols, passes);
+
     // Subdivided grid dimensions
     const subCols = (cols - 1) * sub + 1;
     const subRows = (rows - 1) * sub + 1;
@@ -178,10 +213,11 @@ function buildMesh(data) {
 
             const idx = sr * subCols + sc;
 
-            const interpY = bicubicSample(yGrid, rows, cols, fr, fc);
-            const interpR = Math.max(0, Math.min(1, bicubicSample(rGrid, rows, cols, fr, fc)));
-            const interpG = Math.max(0, Math.min(1, bicubicSample(gGrid, rows, cols, fr, fc)));
-            const interpB = Math.max(0, Math.min(1, bicubicSample(bGrid, rows, cols, fr, fc)));
+            const tension = config.meshTension;
+            const interpY = bicubicSample(syGrid, rows, cols, fr, fc, tension);
+            const interpR = Math.max(0, Math.min(1, bicubicSample(srGrid, rows, cols, fr, fc, tension)));
+            const interpG = Math.max(0, Math.min(1, bicubicSample(sgGrid, rows, cols, fr, fc, tension)));
+            const interpB = Math.max(0, Math.min(1, bicubicSample(sbGrid, rows, cols, fr, fc, tension)));
 
             const flatX = (xScale(xVal) - xOffset) * planeZoom;
             const flatZ = (zScale(zVal) - zOffset) * planeZoom;
