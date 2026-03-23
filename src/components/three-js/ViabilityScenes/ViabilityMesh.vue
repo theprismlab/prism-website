@@ -29,6 +29,12 @@ const meshConfig = {
 
     // ── Y-axis spread ──
     ySpread: 12,
+
+    // ── Curvature ──
+    meshCurveRadius: 100,   // cylinder radius — smaller = more curve, 0 = flat
+
+    // ── Subdivision (smooth interpolation) ──
+    meshSubdivisions: 4,    // subdivisions between each data point (1 = no smoothing)
 };
 
 const props = defineProps({
@@ -79,21 +85,55 @@ function computeScales(data) {
     };
 }
 
+// ── Catmull-Rom helpers ──
+
+function catmullRom(p0, p1, p2, p3, t) {
+    const t2 = t * t, t3 = t2 * t;
+    return 0.5 * (
+        (2 * p1) +
+        (-p0 + p2) * t +
+        (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
+        (-p0 + 3 * p1 - 3 * p2 + p3) * t3
+    );
+}
+
+function sampleGrid(grid2d, rows, cols, r, c) {
+    const rr = Math.max(0, Math.min(rows - 1, r));
+    const cc = Math.max(0, Math.min(cols - 1, c));
+    return grid2d[rr][cc];
+}
+
+function bicubicSample(grid2d, rows, cols, fr, fc) {
+    const r0 = Math.floor(fr);
+    const c0 = Math.floor(fc);
+    const tr = fr - r0;
+    const tc = fc - c0;
+
+    // Interpolate 4 rows along columns, then interpolate the results along the row direction
+    const rowVals = [];
+    for (let dr = -1; dr <= 2; dr++) {
+        const p0 = sampleGrid(grid2d, rows, cols, r0 + dr, c0 - 1);
+        const p1 = sampleGrid(grid2d, rows, cols, r0 + dr, c0);
+        const p2 = sampleGrid(grid2d, rows, cols, r0 + dr, c0 + 1);
+        const p3 = sampleGrid(grid2d, rows, cols, r0 + dr, c0 + 2);
+        rowVals.push(catmullRom(p0, p1, p2, p3, tc));
+    }
+    return catmullRom(rowVals[0], rowVals[1], rowVals[2], rowVals[3], tr);
+}
+
 // ── Mesh Creation ──
 
 function buildMesh(data) {
     const scales = computeScales(data);
     const { xScale, zScale, yScale, xOffset, zOffset } = scales;
     const { planeZoom } = config;
+    const sub = Math.max(1, config.meshSubdivisions);
 
     // Build a lookup: grid[z][x] = datum
     const grid = new Map();
-    let maxX = 0, maxZ = 0;
     data.forEach(d => {
         if (!grid.has(d.z)) grid.set(d.z, new Map());
         grid.get(d.z).set(d.x, d);
-        if (d.x > maxX) maxX = d.x;
-        if (d.z > maxZ) maxZ = d.z;
     });
 
     const zKeys = [...grid.keys()].sort((a, b) => a - b);
@@ -101,49 +141,81 @@ function buildMesh(data) {
     const cols = xKeys.length;
     const rows = zKeys.length;
 
-    // Map grid coords to sequential indices
-    const xIdx = new Map(xKeys.map((k, i) => [k, i]));
-    const zIdx = new Map(zKeys.map((k, i) => [k, i]));
-
-    // Vertex arrays
-    const positions = new Float32Array(cols * rows * 3);
-    const colors = new Float32Array(cols * rows * 3);
-
+    // Build 2D arrays for y, r, g, b
+    const yGrid = [], rGrid = [], gGrid = [], bGrid = [];
     for (let rr = 0; rr < rows; rr++) {
-        const zk = zKeys[rr];
-        const rowMap = grid.get(zk);
+        const yRow = [], rRow = [], gRow = [], bRow = [];
+        const rowMap = grid.get(zKeys[rr]);
         for (let cc = 0; cc < cols; cc++) {
-            const xk = xKeys[cc];
-            const idx = rr * cols + cc;
-            const d = rowMap?.get(xk);
+            const d = rowMap?.get(xKeys[cc]);
+            yRow.push(d ? yScale(d.viability) : 0);
+            rRow.push(d ? d.rgba.r : 0.8);
+            gRow.push(d ? d.rgba.g : 0.8);
+            bRow.push(d ? d.rgba.b : 0.8);
+        }
+        yGrid.push(yRow);
+        rGrid.push(rRow);
+        gGrid.push(gRow);
+        bGrid.push(bRow);
+    }
 
-            const px = (xScale(xk) - xOffset) * planeZoom;
-            const pz = (zScale(zk) - zOffset) * planeZoom;
-            const py = d
-                ? config.planeYPosition + yScale(d.viability)
-                : config.planeYPosition;
+    // Subdivided grid dimensions
+    const subCols = (cols - 1) * sub + 1;
+    const subRows = (rows - 1) * sub + 1;
+
+    const positions = new Float32Array(subCols * subRows * 3);
+    const colors = new Float32Array(subCols * subRows * 3);
+
+    for (let sr = 0; sr < subRows; sr++) {
+        const fr = sr / sub;                           // fractional row in original grid
+        const origZ = fr / (rows - 1);                 // 0..1 normalized
+        const zVal = zKeys[0] + origZ * (zKeys[zKeys.length - 1] - zKeys[0]);
+
+        for (let sc = 0; sc < subCols; sc++) {
+            const fc = sc / sub;                       // fractional col in original grid
+            const origX = fc / (cols - 1);             // 0..1 normalized
+            const xVal = xKeys[0] + origX * (xKeys[xKeys.length - 1] - xKeys[0]);
+
+            const idx = sr * subCols + sc;
+
+            const interpY = bicubicSample(yGrid, rows, cols, fr, fc);
+            const interpR = Math.max(0, Math.min(1, bicubicSample(rGrid, rows, cols, fr, fc)));
+            const interpG = Math.max(0, Math.min(1, bicubicSample(gGrid, rows, cols, fr, fc)));
+            const interpB = Math.max(0, Math.min(1, bicubicSample(bGrid, rows, cols, fr, fc)));
+
+            const flatX = (xScale(xVal) - xOffset) * planeZoom;
+            const flatZ = (zScale(zVal) - zOffset) * planeZoom;
+            const py = config.planeYPosition + interpY;
+
+            // Cylindrical curvature
+            let px, pz;
+            const R = config.meshCurveRadius;
+            if (R > 0) {
+                const theta = flatX / R;
+                px = R * Math.sin(theta);
+                pz = flatZ + R * (1 - Math.cos(theta));
+            } else {
+                px = flatX;
+                pz = flatZ;
+            }
 
             positions[idx * 3]     = px;
             positions[idx * 3 + 1] = py;
             positions[idx * 3 + 2] = pz;
 
-            if (d) {
-                colors[idx * 3]     = d.rgba.r;
-                colors[idx * 3 + 1] = d.rgba.g;
-                colors[idx * 3 + 2] = d.rgba.b;
-            } else {
-                colors[idx * 3] = colors[idx * 3 + 1] = colors[idx * 3 + 2] = 0.8;
-            }
+            colors[idx * 3]     = interpR;
+            colors[idx * 3 + 1] = interpG;
+            colors[idx * 3 + 2] = interpB;
         }
     }
 
-    // Triangle indices — two triangles per grid cell
+    // Triangle indices
     const indices = [];
-    for (let rr = 0; rr < rows - 1; rr++) {
-        for (let cc = 0; cc < cols - 1; cc++) {
-            const tl = rr * cols + cc;
+    for (let sr = 0; sr < subRows - 1; sr++) {
+        for (let sc = 0; sc < subCols - 1; sc++) {
+            const tl = sr * subCols + sc;
             const tr = tl + 1;
-            const bl = (rr + 1) * cols + cc;
+            const bl = (sr + 1) * subCols + sc;
             const br = bl + 1;
             indices.push(tl, bl, tr);
             indices.push(tr, bl, br);
