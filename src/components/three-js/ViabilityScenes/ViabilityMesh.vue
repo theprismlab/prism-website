@@ -8,14 +8,37 @@ import * as d3 from 'd3';
 import { ref, onMounted } from 'vue';
 import { useViabilityScene } from './useViabilityScene.js';
 
+const meshConfig = {
+    // ── Camera ──
+    fov: 25,
+    cameraDistance: 25,
+    cameraPosition: [0, 4.5, 25],
+    cameraLookAt: [0, 6.5, 0],
+    nearClip: 1.01,
+    farClip: 200,
+
+    // ── Lighting ──
+    directionalLightIntensity: 0.5,
+    ambientLightIntensity: 2.5,
+
+    // ── Planes / Mesh ──
+    planeZoom: 10.8,
+    planeWidthMultiplier: 1.6,
+    planeYPosition: 1,
+    planeOpacityRange: [0.5, 1],
+
+    // ── Y-axis spread ──
+    ySpread: 12,
+};
+
 const props = defineProps({
     data: { type: Array, required: true },
     sceneConfig: { type: Object, default: () => ({}) },
 });
 
 const canvasEl = ref(null);
-const scene = useViabilityScene(canvasEl, props.sceneConfig);
-const { config } = scene;
+const config = { ...meshConfig, ...props.sceneConfig };
+const scene = useViabilityScene(canvasEl, config);
 
 onMounted(async () => {
     buildMesh(props.data);

@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { markRaw, ref, onMounted, onBeforeUnmount } from 'vue';
-import { defaultConfig } from './defaultConfig.js';
 
 /**
  * Three.js scene composable for viability visualizations (heatmap + spheres).
@@ -20,8 +19,7 @@ import { defaultConfig } from './defaultConfig.js';
  *       scene.onRebuild(() => { // recreate meshes after resize });
  *   });
  */
-export function useViabilityScene(canvasEl, configOverrides = {}) {
-    const config = { ...defaultConfig, ...configOverrides };
+export function useViabilityScene(canvasEl, config = {}) {
     const width = ref(0);
     const height = ref(0);
 

@@ -1,13 +1,19 @@
 import * as THREE from 'three';
 import * as d3 from 'd3';
-import { defaultConfig } from './defaultConfig.js';
+
+const dataDefaults = {
+    fileName: 'BRD-K05804044-viability-heatmap.csv',
+    minCellLine: 300,
+    colorInterpolator: d3.interpolateYlOrRd,
+    colorDomain: [1, 0.2],
+};
 
 const basePath = import.meta.env.PROD
     ? import.meta.env.BASE_URL + 'data/'
     : '../../public/data/';
 
 export async function loadViabilityCSV(configOverrides = {}) {
-    const config = { ...defaultConfig, ...configOverrides };
+    const config = { ...dataDefaults, ...configOverrides };
 
     return d3.csv(`${basePath}${config.fileName}`, d => ({
         ccle_name: d['Cell line'],
@@ -17,7 +23,7 @@ export async function loadViabilityCSV(configOverrides = {}) {
 }
 
 export function parseViabilityData(raw, configOverrides = {}) {
-    const config = { ...defaultConfig, ...configOverrides };
+    const config = { ...dataDefaults, ...configOverrides };
 
     const cellLineGroups = d3.groups(raw, d => d.ccle_name)
         .map(([key, values]) => ({ key, mean: d3.mean(values, v => v.viability) }))

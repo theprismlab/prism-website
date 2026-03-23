@@ -8,14 +8,47 @@ import * as d3 from 'd3';
 import { markRaw, ref, onMounted } from 'vue';
 import { useViabilityScene } from './useViabilityScene.js';
 
+const sphereConfig = {
+    // ── Camera ──
+    fov: 25,
+    cameraDistance: 25,
+    cameraPosition: [0, 4.5, 25],
+    cameraLookAt: [0, 6.5, 0],
+    nearClip: 1.01,
+    farClip: 200,
+
+    // ── Lighting ──
+    directionalLightIntensity: 0.5,
+    ambientLightIntensity: 2.5,
+
+    // ── Planes ──
+    planeZoom: 10.8,
+
+    // ── Spheres ──
+    sphereXStep: 8,
+    sphereZStep: 2,
+    sphereBaseRadiusMultiplier: 0.018,
+    sphereSizeScaleRange: [1.0, 0.3],
+    sphereOpacityRange: [0.7, 0.15],
+    sphereRadiusScaleRange: [1.5, 0.2],
+    sphereFloatSpeedMin: 0.4,
+    sphereFloatSpeedRange: 0.4,
+    sphereFloatAmplitudeBase: 0.08,
+    sphereFloatAmplitudeRange: 0.06,
+
+    // ── Y-axis spread ──
+    ySpread: 12,
+    ySpreadOffset: 10,
+};
+
 const props = defineProps({
     data: { type: Array, required: true },
     sceneConfig: { type: Object, default: () => ({}) },
 });
 
 const canvasEl = ref(null);
-const scene = useViabilityScene(canvasEl, props.sceneConfig);
-const { config } = scene;
+const config = { ...sphereConfig, ...props.sceneConfig };
+const scene = useViabilityScene(canvasEl, config);
 
 onMounted(async () => {
     buildSpheres(props.data);
