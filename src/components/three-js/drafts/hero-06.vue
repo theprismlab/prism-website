@@ -9,7 +9,7 @@ import { markRaw } from 'vue';
 const fileName = "BRD-K05804044-viability-heatmap.csv";
 
 export default {
-    name: 'ThreeJsViabilityHeatmap2',
+    name: 'ViabilityHeatmap',
     props: {
         windowSize: Object
     },
@@ -27,6 +27,9 @@ export default {
             spheres: [],
             clock: null,
             animationFrameId: null,
+            xWrapMin: 0,
+            xWrapMax: 0,
+            xWrapSpan: 0,
         };
     },
     computed: {
@@ -89,6 +92,7 @@ export default {
             this.scene = markRaw(new THREE.Scene());
             this.camera = markRaw(new THREE.PerspectiveCamera(30, this.width / this.height, 1.01, 200));
             this.camera.position.set(0, 6, 45);
+          //  this.camera.lookAt(0, 0, 0);
             this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
 
@@ -119,6 +123,7 @@ export default {
             const xScale = d3.scaleLinear().domain(xExtent).range([0, this.width]);
             const zScale = d3.scaleLinear().domain(zExtent).range([0, planeHeight * zExtent[1]]);
             const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
+            // Map viability to vertical space (0 => high, 1 => low).
             const yScale = d3
                 .scaleLinear()
                 .domain([0, 1])
@@ -126,6 +131,10 @@ export default {
 
             const xOffset = (xScale.range()[1] - xScale.range()[0]) / 2;
             const zOffset = (zScale.range()[1] - zScale.range()[0]) / 2;
+
+            this.xWrapMin = xScale.range()[0] - xOffset;
+            this.xWrapMax = xScale.range()[1] - xOffset;
+            this.xWrapSpan = this.xWrapMax - this.xWrapMin;
 
             this.heatmapData.forEach(d => {
                 const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
@@ -150,30 +159,56 @@ export default {
         renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale }) {
             const sphereRadius = planeHeight * 0.18;
             const geometry = markRaw(new THREE.SphereGeometry(sphereRadius, 32, 32));
+            const zExtent = d3.extent(this.heatmapData, d => {
+                const x = xScale(d.x) - xOffset;
+                const y = yScale(d.viability) + sphereRadius * 0.2;
+                const z = zScale(d.z) - zOffset;
+                return new THREE.Vector3(x, y, z).z;
+            });
+            const zOpacityScale = d3
+                .scalePow()
+                .exponent(1.8)
+                .domain(zExtent[0] === zExtent[1] ? [0, 1] : zExtent)
+                .range([0.9, 0.05]);
+            const zSizeScale = d3
+                .scaleLinear()
+                .domain(zExtent[0] === zExtent[1] ? [0, 1] : zExtent)
+                .range([1.25, 0.7]);
             if (!this.spheres) {
                 this.spheres = [];
             }
 
             this.heatmapData.forEach(d => {
-                const material = markRaw(new THREE.MeshStandardMaterial({
-                    color: d.rgba,
-                    transparent: true,
-                    opacity: 0.6,
-                    roughness: 0.0,
-                    metalness: 0.0
-                }));
-                const sphere = markRaw(new THREE.Mesh(geometry, material));
                 const basePosition = markRaw(new THREE.Vector3(
                     xScale(d.x) - xOffset,
                     yScale(d.viability) + sphereRadius * 0.2,
                     zScale(d.z) - zOffset
                 ));
+                const material = markRaw(new THREE.MeshStandardMaterial({
+                    color: d.rgba,
+                    transparent: true,
+                    opacity: zOpacityScale(basePosition.z),
+                    roughness: 0.0,
+                    metalness: 0.0
+                }));
+                const sphere = markRaw(new THREE.Mesh(geometry, material));
+                const yMin = planeHeight;
+                const yMax = planeHeight * 6;
+                const yNormalized = (basePosition.y - yMin) / (yMax - yMin);
+                const sizeScale = 0.55 + Math.max(0, Math.min(1, yNormalized)) * 0.45;
+                const zSizeMultiplier = zSizeScale(basePosition.z);
+                sphere.scale.setScalar(sizeScale * zSizeMultiplier);
                 sphere.position.copy(basePosition);
                 sphere.userData.basePosition = basePosition;
+                sphere.userData.material = material;
                 sphere.userData.minY = sphereRadius;
+                sphere.userData.opacityScale = zOpacityScale;
                 sphere.userData.floatPhase = Math.random() * Math.PI * 2;
-                sphere.userData.floatSpeed = 0.4 + Math.random() * 0.4;
-                sphere.userData.floatAmplitude = planeHeight * (0.08 + Math.random() * 0.06);
+                sphere.userData.floatSpeed = 0.2 + Math.random() * 0.2;
+                sphere.userData.floatAmplitude = planeHeight * (0.03 + Math.random() * 0.02);
+                sphere.userData.waveSpeed = 0.25 + Math.random() * 0.12;
+                sphere.userData.driftSpeed = 0.6 + Math.random() * 0.4;
+                sphere.userData.driftOffset = 0;
                 this.scene.add(sphere);
                 this.spheres.push(sphere);
             });
@@ -183,12 +218,50 @@ export default {
                 return;
             }
             const animate = () => {
-                const elapsed = this.clock.getElapsedTime();
+                const delta = this.clock.getDelta();
+                const elapsed = this.clock.elapsedTime;
 
                 this.spheres.forEach(sphere => {
-                    const { basePosition, floatPhase, floatSpeed, floatAmplitude, minY } = sphere.userData;
-                    const floatingY = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
+                    const {
+                        basePosition,
+                        floatPhase,
+                        floatSpeed,
+                        floatAmplitude,
+                        waveSpeed,
+                        minY,
+                        material,
+                        opacityScale,
+                        driftSpeed
+                    } = sphere.userData;
+                    // Layer a slow wave across X/Z to keep motion cohesive.
+                    const waveFrequency = 0.06;
+                    const waveAmplitude = 1.1;
+                    const horizontalWaveAmplitude = 0.5;
+                    const wavePhase = basePosition.x * waveFrequency - elapsed * waveSpeed;
+                    const waveY =
+                        Math.sin(wavePhase * 2) +
+                        Math.sin(wavePhase * 2 + 0.8) * 0.35;
+                    const waveX = Math.sin(wavePhase);
+                    const waveZ = 0;
+                    const floatingY =
+                        basePosition.y +
+                        Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude +
+                        waveY * waveAmplitude;
                     sphere.position.y = Math.max(minY, floatingY);
+                    sphere.userData.driftOffset += driftSpeed * delta;
+                    let nextX = basePosition.x + sphere.userData.driftOffset + waveX * horizontalWaveAmplitude;
+                    if (nextX > this.xWrapMax) {
+                        sphere.userData.driftOffset -= this.xWrapSpan;
+                        nextX -= this.xWrapSpan;
+                    } else if (nextX < this.xWrapMin) {
+                        sphere.userData.driftOffset += this.xWrapSpan;
+                        nextX += this.xWrapSpan;
+                    }
+                    sphere.position.x = nextX;
+                    sphere.position.z = basePosition.z + waveZ * horizontalWaveAmplitude;
+                    if (material && opacityScale) {
+                        material.opacity = opacityScale(sphere.position.z);
+                    }
                 });
 
                 this.renderer.render(this.scene, this.camera);

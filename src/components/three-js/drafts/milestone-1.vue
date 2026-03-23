@@ -9,7 +9,7 @@ import { markRaw } from 'vue';
 const fileName = "BRD-K05804044-viability-heatmap.csv";
 
 export default {
-    name: 'ThreeJsViabilityHeatmap2',
+    name: 'ViabilityHeatmap',
     props: {
         windowSize: Object
     },
@@ -89,7 +89,6 @@ export default {
             this.scene = markRaw(new THREE.Scene());
             this.camera = markRaw(new THREE.PerspectiveCamera(30, this.width / this.height, 1.01, 200));
             this.camera.position.set(0, 6, 45);
-          //  this.camera.lookAt(0, 0, 0);
             this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
 
@@ -159,21 +158,16 @@ export default {
                 const material = markRaw(new THREE.MeshStandardMaterial({
                     color: d.rgba,
                     transparent: true,
-                    opacity: 0.4,
+                    opacity: 0.6,
                     roughness: 0.0,
                     metalness: 0.0
                 }));
                 const sphere = markRaw(new THREE.Mesh(geometry, material));
-                const yMin = planeHeight;
-                const yMax = planeHeight * 6;
                 const basePosition = markRaw(new THREE.Vector3(
                     xScale(d.x) - xOffset,
                     yScale(d.viability) + sphereRadius * 0.2,
                     zScale(d.z) - zOffset
                 ));
-                const yNormalized = (basePosition.y - yMin) / (yMax - yMin);
-                const sizeScale = 0.55 + Math.max(0, Math.min(1, yNormalized)) * 0.45;
-                sphere.scale.setScalar(sizeScale);
                 sphere.position.copy(basePosition);
                 sphere.userData.basePosition = basePosition;
                 sphere.userData.minY = sphereRadius;
@@ -193,16 +187,7 @@ export default {
 
                 this.spheres.forEach(sphere => {
                     const { basePosition, floatPhase, floatSpeed, floatAmplitude, minY } = sphere.userData;
-                    const waveFrequency = 0.12;
-                    const waveSpeed = 0.6;
-                    const waveAmplitude = 0.6;
-                    const waveY =
-                        Math.sin(basePosition.x * waveFrequency + elapsed * waveSpeed) +
-                        Math.cos(basePosition.z * waveFrequency + elapsed * waveSpeed * 0.9);
-                    const floatingY =
-                        basePosition.y +
-                        Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude +
-                        waveY * waveAmplitude;
+                    const floatingY = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
                     sphere.position.y = Math.max(minY, floatingY);
                 });
 
