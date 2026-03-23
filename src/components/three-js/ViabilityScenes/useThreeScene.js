@@ -5,7 +5,7 @@ import { markRaw, reactive, ref } from 'vue';
  * Composable that owns the Three.js scene, camera, renderer, and animation loop.
  * Does NOT load data or compute scales — those are handled externally.
  */
-export function useHeatmapScene(config) {
+export function useThreeScene(config) {
     const { fov, cameraDistance, cameraPosition, cameraLookAt, nearClip, farClip,
             directionalLightIntensity, ambientLightIntensity } = config;
 

@@ -1,6 +1,6 @@
 <template>
     <canvas ref="canvasEl" style="position: absolute; width:100%; height:100%;"></canvas>
-    <HeatmapPlanes
+    <PlaneLayer
         v-if="ready"
         :scene="scene.state.scene"
         :data="heatmapData"
@@ -12,7 +12,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useViabilityScene } from './useViabilityScene.js';
-import HeatmapPlanes from './HeatmapPlanes.vue';
+import PlaneLayer from './PlaneLayer.vue';
 
 const props = defineProps({
     sceneConfig: { type: Object, default: () => ({}) },

@@ -1,6 +1,6 @@
 <template>
     <canvas ref="canvasEl" style="position: absolute; width:100%; height:100%;"></canvas>
-    <HeatmapSpheres
+    <SphereLayer
         v-if="ready"
         :scene="scene.state.scene"
         :data="heatmapData"
@@ -13,7 +13,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useViabilityScene } from './useViabilityScene.js';
-import HeatmapSpheres from './HeatmapSpheres.vue';
+import SphereLayer from './SphereLayer.vue';
 
 const props = defineProps({
     sceneConfig: { type: Object, default: () => ({}) },

@@ -2,7 +2,7 @@ import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { defaultConfig } from './defaultConfig.js';
 import { loadViabilityData } from './loadViabilityData.js';
 import { computeScales } from './computeScales.js';
-import { useHeatmapScene } from './useHeatmapScene.js';
+import { useThreeScene } from './useThreeScene.js';
 
 /**
  * Shared setup for any viability visualization.
@@ -10,7 +10,7 @@ import { useHeatmapScene } from './useHeatmapScene.js';
  */
 export function useViabilityScene(canvasEl, sceneConfig = {}) {
     const config = { ...defaultConfig, ...sceneConfig };
-    const scene = useHeatmapScene(config);
+    const scene = useThreeScene(config);
 
     const ready = ref(false);
     const heatmapData = ref([]);
