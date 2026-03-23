@@ -8,13 +8,14 @@ export default {
         scene: { type: Object, required: true },
         data: { type: Array, required: true },
         scales: { type: Object, required: true },
-        zoom: { type: Number, default: 0.75 },
+        zoom: { type: Number, default: 1.75 },
     },
     data() {
         return { planes: [] };
     },
     mounted() {
-        this.addPlanes();
+        this.addPlanes(); // normal perspective planes
+
     },
     beforeUnmount() {
         this.planes.forEach(p => { this.scene.remove(p); p.geometry.dispose(); p.material.dispose(); });

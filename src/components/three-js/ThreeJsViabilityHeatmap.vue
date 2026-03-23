@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import * as d3 from 'd3';
 const fileName = "BRD-K05804044-viability-heatmap.csv";
-
+const cameraPosition = { x: 0, y: 6, z: 35 };
 export default {
     name: 'ThreeJsDemo02',
     props: {
@@ -86,7 +86,7 @@ export default {
         initThreeJs() {
             this.scene = new THREE.Scene();
             this.camera = new THREE.PerspectiveCamera(70, this.width / this.height, 1.01, 200);
-            this.camera.position.set(0, 5, 25);
+            this.camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
             this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
 
