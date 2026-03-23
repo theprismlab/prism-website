@@ -31,6 +31,7 @@ const sphereConfig = {
     sphereRadius: 0.4,
     sphereSegments: 16,
     planeOpacityRange: [0.4, 1],
+    animSpeed: 0.5,         // fraction of the gap covered per second
 };
 
 const props = defineProps({
@@ -92,7 +93,7 @@ function computeScales(data) {
     };
 }
 
-// ── Sphere Creation ──
+// ── Sphere Creation & Animation ──
 
 function buildSpheres(data) {
     const { xScale, zScale, yScale, opacityScale, xOffset, zOffset } = computeScales(data);
@@ -100,24 +101,67 @@ function buildSpheres(data) {
 
     const geometry = new THREE.SphereGeometry(config.sphereRadius, config.sphereSegments, config.sphereSegments);
 
+    // Group data by x so we know the y-cycle per column
+    const columnMap = new Map();
     data.forEach(d => {
-        const material = new THREE.MeshStandardMaterial({
-            color: d.rgba,
-            transparent: true,
-            opacity: opacityScale(d.z),
-            roughness: 0.3,
-            metalness: 0.0,
+        if (!columnMap.has(d.x)) columnMap.set(d.x, []);
+        columnMap.get(d.x).push(d);
+    });
+    // Sort each column by z so ordering is consistent
+    columnMap.forEach(col => col.sort((a, b) => a.z - b.z));
+
+    // Build spheres and track animation state
+    const animatedSpheres = [];
+
+    columnMap.forEach((colData, xKey) => {
+        const yPositions = colData.map(d => planeYPosition + yScale(d.viability));
+
+        colData.forEach((d, i) => {
+            const material = new THREE.MeshStandardMaterial({
+                color: d.rgba,
+                transparent: true,
+                opacity: opacityScale(d.z),
+                roughness: 0.3,
+                metalness: 0.0,
+            });
+
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.castShadow = true;
+
+            const px = (xScale(d.x) - xOffset) * planeZoom;
+            const pz = (zScale(d.z) - zOffset) * planeZoom;
+
+            sphere.position.set(px, yPositions[i], pz);
+            scene.scene.add(sphere);
+
+            animatedSpheres.push({
+                sphere,
+                yPositions,
+                currentIndex: i,
+                progress: 0,
+            });
         });
+    });
 
-        const sphere = new THREE.Mesh(geometry, material);
-        sphere.castShadow = true;
+    let prevElapsed = 0;
+    scene.onAnimate((elapsed) => {
+        const dt = elapsed - prevElapsed;
+        prevElapsed = elapsed;
 
-        sphere.position.set(
-            (xScale(d.x) - xOffset) * planeZoom,
-            planeYPosition + yScale(d.viability),
-            (zScale(d.z) - zOffset) * planeZoom,
-        );
-        scene.scene.add(sphere);
+        animatedSpheres.forEach(s => {
+            const from = s.yPositions[s.currentIndex];
+            const to = s.yPositions[(s.currentIndex + 1) % s.yPositions.length];
+
+            s.progress += dt * config.animSpeed;
+
+            if (s.progress >= 1) {
+                s.progress = 0;
+                s.currentIndex = (s.currentIndex + 1) % s.yPositions.length;
+                s.sphere.position.y = s.yPositions[s.currentIndex];
+            } else {
+                s.sphere.position.y = from + (to - from) * s.progress;
+            }
+        });
     });
 }
 </script>
