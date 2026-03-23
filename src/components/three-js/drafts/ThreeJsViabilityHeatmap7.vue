@@ -27,6 +27,8 @@ export default {
             spheres: [],
             clock: null,
             animationFrameId: null,
+            cameraZoom: 35,
+            fov: 35
         };
     },
     computed: {
@@ -49,6 +51,7 @@ export default {
                 pert_dose: +d["Dose"]
             }));
             this.heatmapData = this.parseHeatmapData(data);
+
             this.initThreeJs();
             this.renderScene();
             this.startAnimation();
@@ -60,7 +63,7 @@ export default {
                 mean: d3.mean(d[1], e => e.viability)
             }));
 
-            cellLineGroups.sort((a, b) => d3.descending(a.mean, b.mean));
+            cellLineGroups.sort((a, b) => d3.descending(a.mean, b.mean))
 
             let cellLineToNumber = {};
             cellLineGroups.forEach((d, i) => {
@@ -77,39 +80,40 @@ export default {
 
             data.forEach(d => {
                 d.x = cellLineToNumber[d.ccle_name];
+                
                 d.z = doseToNumber[d.pert_dose];
                 d.y = 0;
                 d.c = colorScale(d.viability);
                 d.rgba = new THREE.Color(d.c);
             });
-
-            return data;
+            
+            return data.filter(d=> d.x > 300);
         },
         initThreeJs() {
             this.scene = markRaw(new THREE.Scene());
-
-            const aspect = this.width / this.height;
-            const fov = 35;
-            const cameraY = 35;
-            const cameraZ = 30;
-
-            this.camera = markRaw(new THREE.PerspectiveCamera(fov, aspect, 0.1, 300));
-            this.camera.position.set(0, cameraY, cameraZ);
-            this.camera.lookAt(0, 0, 0);
+            this.camera = markRaw(new THREE.PerspectiveCamera(this.fov, this.width / this.height, 1.01, 200));
+            this.camera.position.set(0, 6, this.cameraZoom);
+            this.camera.aspect = this.width / this.height;
             this.camera.updateProjectionMatrix();
 
-            // Approximate visible frustum width at the scene center
-            const dist = Math.sqrt(cameraY * cameraY + cameraZ * cameraZ);
-            const vFov = THREE.MathUtils.degToRad(fov);
-            this.visibleHeight = 2 * Math.tan(vFov / 2) * dist;
-            this.visibleWidth = this.visibleHeight * aspect;
-
-            this.light = markRaw(new THREE.DirectionalLight(0xffffff, 1));
-            this.light.position.set(5, 5, 5);
+            this.light = markRaw(new THREE.DirectionalLight(0xffffff, 0.5));
+            this.light.position.set(5, 10, 5);
             this.light.castShadow = true;
+            this.light.shadow.mapSize.width = 2048;
+            this.light.shadow.mapSize.height = 2048;
+            this.light.shadow.camera.left = -30;
+            this.light.shadow.camera.right = 30;
+            this.light.shadow.camera.top = 30;
+            this.light.shadow.camera.bottom = -30;
+            this.light.shadow.camera.near = 0.1;
+            this.light.shadow.camera.far = 60;
+            this.light.shadow.radius = 8;
+            this.light.shadow.blurSamples = 25;
+            this.light.shadow.opacity = 0.15;
+            this.light.shadow.camera.far = 60;
             this.scene.add(this.light);
 
-            this.ambientLight = markRaw(new THREE.AmbientLight('rgb(255, 255, 255)', 2));
+            this.ambientLight = markRaw(new THREE.AmbientLight('rgb(255, 255, 255)', 2.5));
             this.scene.add(this.ambientLight);
 
             this.renderer = markRaw(new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true }));
@@ -117,6 +121,7 @@ export default {
             this.renderer.setClearColor(0xffffff, 0);
             this.renderer.setPixelRatio(window.devicePixelRatio);
             this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = THREE.VSMShadowMap;
 
             this.clock = markRaw(new THREE.Clock());
         },
@@ -124,30 +129,35 @@ export default {
             const zExtent = d3.extent(this.heatmapData, d => d.z);
             const xExtent = d3.extent(this.heatmapData, d => d.x);
 
-            // Use frustum-based world units so content fills the viewport
-            const padding = 0.95;
-            const sceneWidth = this.visibleWidth * padding;
-            const sceneDepth = this.visibleHeight * 0.6;
+            // Calculate visible frustum at z=0
+            const cameraZ = this.cameraZoom;
+            const vFov = THREE.MathUtils.degToRad(this.fov);
+            const visibleHeight = 2 * Math.tan(vFov / 2) * cameraZ;
+            const visibleWidth = visibleHeight * (this.width / this.height);
+
+            const sceneWidth = visibleWidth;
             const planeWidth = sceneWidth / xExtent[1];
-            const planeHeight = sceneDepth / Math.max(zExtent[1], 1);
+            const planeHeight = visibleHeight / Math.max(zExtent[1], 1);
 
             const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
-            const zScale = d3.scaleLinear().domain(zExtent).range([0, sceneDepth]);
-            const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
+            const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
+            const opacityScale = d3.scaleLinear().domain(zExtent).range([0.5, 1]);
+            const ySpread = 16;
             const yScale = d3
                 .scaleLinear()
                 .domain(d3.extent(this.heatmapData, d => d.viability))
-                .range([planeHeight * 4, -planeHeight * 4]);
+                .range([ySpread, -ySpread+8]);
 
             const xOffset = sceneWidth / 2;
-            const zOffset = sceneDepth / 2;
+            const zOffset = visibleHeight / 2;
 
             this.heatmapData.forEach(d => {
-                const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
-                const material = new THREE.MeshBasicMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true });
+                const geometry = new THREE.PlaneGeometry(planeWidth*1.6, planeHeight);
+                const material = new THREE.MeshLambertMaterial({ color: d.rgba, side: THREE.DoubleSide, opacity: opacityScale(d.z), transparent: true, depthWrite: false });
                 const plane = new THREE.Mesh(geometry, material);
+                plane.receiveShadow = true;
                 plane.rotation.x = -Math.PI / 2;
-                plane.position.set(xScale(d.x) - xOffset, d.y, zScale(d.z) - zOffset);
+                plane.position.set(xScale(d.x) - xOffset, -1, zScale(d.z) - zOffset);
                 this.scene.add(plane);
             });
 
@@ -158,20 +168,22 @@ export default {
                 zOffset,
                 planeHeight,
                 yScale,
-                zExtent
+                zExtent,
+                xExtent
             });
 
             this.renderer.render(this.scene, this.camera);
         },
-        renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale, zExtent }) {
-            const baseRadius = planeHeight * 0.18;
+        renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale, zExtent, xExtent }) {
+           // const baseRadius = planeHeight * 0.18;
+            const baseRadius = xScale.range()[1] * 0.018;
             if (!this.spheres) {
                 this.spheres = [];
             }
 
             // Sample every Nth cell line and every Mth dose to reduce sphere count
-            const xStep = 3;  // keep every 3rd cell line
-            const zStep = 2;  // keep every 2nd dose
+            const xStep = 3;
+            const zStep = 2;
 
             const sampled = this.heatmapData.filter(d => d.x % xStep === 0 && d.z % zStep === 0);
 
@@ -179,9 +191,13 @@ export default {
             const sizeScale = d3.scaleLinear().domain([zExtent[0], zExtent[1]]).range([1.0, 0.3]);
             const opacityDepthScale = d3.scaleLinear().domain([zExtent[0], zExtent[1]]).range([0.7, 0.15]);
 
+            // Viability-based radius scale: lower viability → larger sphere
+            const viabilityExtent = d3.extent(this.heatmapData, d => d.viability);
+            const radiusScale = d3.scaleLinear().domain(viabilityExtent).range([1.5, 0.4]);
+
             sampled.forEach(d => {
                 const t = sizeScale(d.z);
-                const radius = baseRadius * t;
+                const radius = baseRadius * t * radiusScale(d.viability);
                 const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
                 const material = markRaw(new THREE.MeshStandardMaterial({
                     color: d.rgba,
@@ -196,6 +212,7 @@ export default {
                     yScale(d.viability) + radius * 0.2,
                     zScale(d.z) - zOffset
                 ));
+                sphere.castShadow = true;
                 sphere.position.copy(basePosition);
                 sphere.userData.basePosition = basePosition;
                 sphere.userData.floatPhase = Math.random() * Math.PI * 2;

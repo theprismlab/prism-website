@@ -3,6 +3,7 @@
     <section class="hero-section">
       <div class="hero-heatmap">
         <TheScene />  
+
       </div>
       <div class="hero-overlay text-center">
             <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -49,10 +50,11 @@ import { mdiHexagonMultiple } from '@mdi/js';
 import { mdiFileMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
 import TheScene from '@/components/three-js/BubbleScene/TheScene.vue';
+
   export default {
     components: {
       SvgIcon,
-      TheScene,
+      TheScene
     },
     data() {
       return {
