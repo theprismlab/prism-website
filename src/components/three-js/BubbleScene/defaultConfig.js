@@ -12,17 +12,17 @@ export const defaultConfig = {
     // ── Animation ──
     // Key into the animations registry (see animations.js): 'float' | 'stream' | 'none' | 'wave' | 'gravity' | 'swirl'
 
-    animation: 'bezier',
+    animation: 'groupBezier',
 
     // ── Color ──
     colorInterpolator: d3.interpolateTurbo,
     colorDomain: [0, 1],          // value domain mapped to interpolator
 
     // ── Camera ──
-    fov: 75,
+    fov: 50,
     cameraDistance: 100,
-    cameraPosition: [0, 15, 25],
-    cameraLookAt: [0, 15, 0],
+    cameraPosition: [0, 25, 25],
+    cameraLookAt: [0, 25, 0],
     nearClip: 1.01,
     farClip: 600,
 

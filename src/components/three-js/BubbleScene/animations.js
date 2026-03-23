@@ -333,11 +333,11 @@ export const animations = {
 
             // start: left edge, scattered y/z
             sphere.userData.s0x = -hw;
-            sphere.userData.s0y = (Math.random() - 0.5) * hh * 0.3;
-            sphere.userData.s0z = (Math.random() - 0.5) * hh * 0.3;
+            sphere.userData.s0y = (Math.random() - 0.15) * hh * 0.3;
+            sphere.userData.s0z = (Math.random() - 0.15) * hh * 0.3;
 
             // control point 1: upper-back quadrant
-            sphere.userData.c1x = (Math.random() - 0.5) * sceneWidth * 0.8;
+            sphere.userData.c1x = (Math.random() - 0.15) * sceneWidth * 0.8;
             sphere.userData.c1y = hh * (0.3 + Math.random() * 0.5);
             sphere.userData.c1z = -(0.6 + Math.random() * 0.4) * hh;
 
@@ -348,11 +348,80 @@ export const animations = {
 
             // end: right edge, scattered y/z
             sphere.userData.e3x = hw;
-            sphere.userData.e3y = (Math.random() - 0.5) * hh * 0.3;
-            sphere.userData.e3z = (Math.random() - 0.5) * hh * 0.3;
+            // sphere.userData.e3y = (Math.random() - 0.15) * hh * 0.3;
+            // sphere.userData.e3z = (Math.random() - 0.15) * hh * 0.3;
+                        sphere.userData.e3y = hh * 0.3;
+            sphere.userData.e3z =  hh * 0.3;
 
             // stagger: each sphere starts at a different phase in the cycle
             sphere.userData.bzOffset   = Math.random() * duration;
+            sphere.userData.bzDuration = duration;
+
+            // gentle scale pulse so spheres aren't static during travel
+            sphere.userData.pulsePhase = Math.random() * Math.PI * 2;
+            sphere.userData.pulseSpeed = 0.2 + Math.random() * 0.3;
+        },
+        animate(sphere, elapsed) {
+            const u = sphere.userData;
+
+            // normalised progress [0,1] within the looping duration
+            const t = ((elapsed + u.bzOffset) % u.bzDuration) / u.bzDuration;
+
+            // cubic Bézier: B(t) = (1-t)³P₀ + 3(1-t)²tC₁ + 3(1-t)t²C₂ + t³P₃
+            const nt  = 1 - t;
+            const nt2 = nt * nt;
+            const nt3 = nt2 * nt;
+            const t2  = t * t;
+            const t3  = t2 * t;
+            const w0  = nt3;
+            const w1  = 3 * nt2 * t;
+            const w2  = 3 * nt * t2;
+            const w3  = t3;
+
+            sphere.position.x = w0 * u.s0x + w1 * u.c1x + w2 * u.c2x + w3 * u.e3x;
+            sphere.position.y = w0 * u.s0y + w1 * u.c1y + w2 * u.c2y + w3 * u.e3y;
+            sphere.position.z = w0 * u.s0z + w1 * u.c1z + w2 * u.c2z + w3 * u.e3z;
+
+            // subtle scale pulse
+            const pulse = 0.85 + 0.15 * Math.sin(elapsed * u.pulseSpeed + u.pulsePhase);
+            sphere.scale.setScalar(pulse);
+        },
+    },
+        bezier2: {
+        init(sphere, { d, sceneWidth, sceneHeight }) {
+            const hw = sceneWidth / 2;
+            const hh = sceneHeight / 2;
+            const duration = 10.0;
+
+            // value (0-1) drives color — map it to an x band so similar
+            // colours cluster together. Add a small random spread so they
+            // don't collapse into a line.
+            const v = d.value;                           // 0 → left, 1 → right
+            const bandX = (v - 0.5) * sceneWidth * 0.9; // centre of the colour band
+            const jitter = (Math.random() - 0.5) * sceneWidth * 0.15;
+
+            // start: colour-grouped x, scattered y/z
+            sphere.userData.s0x = bandX + jitter;
+            sphere.userData.s0y = (Math.random() - 0.5) * hh * 0.3;
+            sphere.userData.s0z = (Math.random() - 0.5) * hh * 0.3;
+
+            // control point 1: stay near the colour band, arc upward & back
+            sphere.userData.c1x = bandX + (Math.random() - 0.5) * sceneWidth * 0.25;
+            sphere.userData.c1y = hh * (0.3 + Math.random() * 0.5);
+            sphere.userData.c1z = -(0.6 + Math.random() * 0.4) * hh;
+
+            // control point 2: stay near the colour band, arc downward & front
+            sphere.userData.c2x = bandX + (Math.random() - 0.5) * sceneWidth * 0.25;
+            sphere.userData.c2y = -hh * (0.3 + Math.random() * 0.5);
+            sphere.userData.c2z = (0.6 + Math.random() * 0.4) * hh;
+
+            // end: return to the same colour band neighbourhood
+            sphere.userData.e3x = bandX + jitter * -1;   // mirror the jitter
+            sphere.userData.e3y = (Math.random() - 0.5) * hh * 0.3;
+            sphere.userData.e3z = (Math.random() - 0.5) * hh * 0.3;
+
+            // stagger by value so each colour group phases together
+            sphere.userData.bzOffset   = v * duration * 0.6 + Math.random() * duration * 0.4;
             sphere.userData.bzDuration = duration;
 
             // gentle scale pulse so spheres aren't static during travel
@@ -383,6 +452,155 @@ export const animations = {
             // subtle scale pulse
             const pulse = 0.85 + 0.15 * Math.sin(elapsed * u.pulseSpeed + u.pulsePhase);
             sphere.scale.setScalar(pulse);
+        },
+    },
+        bezier3: {
+        init(sphere, { d, sceneWidth, sceneHeight }) {
+            const hw = sceneWidth / 2;
+            const hh = sceneHeight / 2;
+            const duration = 4.0;
+
+            // start: left edge, scattered y/z
+            sphere.userData.s0x = -hw;
+            sphere.userData.s0y = (Math.random() - 0.5) * hh * 0.3;
+            sphere.userData.s0z = (Math.random() - 0.5) * hh * 0.3;
+
+            // control point 1: left-centre, arcing back
+            sphere.userData.c1x = -hw * 0.3 + (Math.random() - 0.5) * hw * 0.4;
+            sphere.userData.c1y = (Math.random() - 0.5) * hh * 0.4;
+            sphere.userData.c1z = -(0.4 + Math.random() * 0.4) * hh;
+
+            // control point 2: right-centre, arcing front
+            sphere.userData.c2x = hw * 0.3 + (Math.random() - 0.5) * hw * 0.4;
+            sphere.userData.c2y = (Math.random() - 0.5) * hh * 0.4;
+            sphere.userData.c2z = (0.4 + Math.random() * 0.4) * hh;
+
+            // end: right edge, scattered y/z
+            sphere.userData.e3x = hw;
+            sphere.userData.e3y = (Math.random() - 0.5) * hh * 0.3;
+            sphere.userData.e3z = (Math.random() - 0.5) * hh * 0.3;
+
+            // damped wave overlay
+            sphere.userData.waveAmp   = 1.0 + Math.random() * 0.8;
+            sphere.userData.waveFreq  = 3.0 + Math.random() * 2.0;
+            sphere.userData.wavePhase = Math.random() * Math.PI * 2;
+
+            // stagger: each sphere starts at a different phase in the cycle
+            sphere.userData.bzOffset   = Math.random() * duration;
+            sphere.userData.bzDuration = duration;
+        },
+        animate(sphere, elapsed) {
+            const u = sphere.userData;
+
+            // normalised progress [0,1] within the looping duration
+            const t = ((elapsed + u.bzOffset) % u.bzDuration) / u.bzDuration;
+
+            // cubic Bézier weights
+            const nt  = 1 - t;
+            const nt2 = nt * nt;
+            const nt3 = nt2 * nt;
+            const t2  = t * t;
+            const t3  = t2 * t;
+            const w0  = nt3;
+            const w1  = 3 * nt2 * t;
+            const w2  = 3 * nt * t2;
+            const w3  = t3;
+
+            sphere.position.x = w0 * u.s0x + w1 * u.c1x + w2 * u.c2x + w3 * u.e3x;
+            sphere.position.z = w0 * u.s0z + w1 * u.c1z + w2 * u.c2z + w3 * u.e3z;
+
+            // Bézier y baseline
+            const baseY = w0 * u.s0y + w1 * u.c1y + w2 * u.c2y + w3 * u.e3y;
+            // damped sine wave: strong at start (t≈0), fades toward end (t≈1)
+            const amp = u.waveAmp * Math.exp(-t * 3.0);
+            const wave = Math.sin(t * Math.PI * 2 * u.waveFreq + u.wavePhase) * amp;
+            sphere.position.y = baseY + wave;
+        },
+    },
+
+    /**
+     * Spheres are bucketed into colour groups by value thresholds.
+     * Each group shares a distinct Bézier curve so same-coloured
+     * spheres travel together, with small per-sphere jitter for variety.
+     */
+    groupBezier: {
+        // deterministic pseudo-random per group index (simple hash)
+        _groupRand(groupIdx, salt) {
+            const x = Math.sin(groupIdx * 127.1 + salt * 311.7) * 43758.5453;
+            return x - Math.floor(x);
+        },
+        init(sphere, { d, sceneWidth, sceneHeight }) {
+            const hw = sceneWidth / 2;
+            const hh = sceneHeight / 2;
+            const duration = 12.0;
+            const numGroups = 5;
+
+            // bucket value into a group 0…numGroups-1
+            const group = Math.min(Math.floor(d.value * numGroups), numGroups - 1);
+            const gr = (salt) => this._groupRand(group, salt);
+
+            // ── per-group curve — all flow left→right, each with a unique arc ──
+
+            // start: always left edge, each group at a different y and z
+            const gs0x = -hw;
+            const gs0y = (gr(0) - 0.5) * hh * 1.2;
+            const gs0z = (gr(1) - 0.5) * hh * 0.8;
+
+            // control 1: left-centre x, unique y/z arc per group
+            const gc1x = -hw * (0.1 + gr(2) * 0.4);
+            const gc1y = (gr(3) - 0.5) * hh * 1.6;
+            const gc1z = (gr(4) - 0.5) * hh * 1.2;
+
+            // control 2: right-centre x, unique y/z arc per group
+            const gc2x = hw * (0.1 + gr(5) * 0.4);
+            const gc2y = (gr(6) - 0.5) * hh * 1.6;
+            const gc2z = (gr(7) - 0.5) * hh * 1.2;
+
+            // end: always right edge, each group at a different y and z
+            const ge3x = hw;
+            const ge3y = (gr(8) - 0.5) * hh * 1.2;
+            const ge3z = (gr(9) - 0.5) * hh * 0.8;
+
+            // ── per-sphere jitter around the group curve ──
+            const j = 0.1;
+            sphere.userData.s0x = gs0x + (Math.random() - 0.5) * hw * j;
+            sphere.userData.s0y = gs0y + (Math.random() - 0.5) * hh * j;
+            sphere.userData.s0z = gs0z + (Math.random() - 0.5) * hh * j;
+
+            sphere.userData.c1x = gc1x + (Math.random() - 0.5) * hw * j;
+            sphere.userData.c1y = gc1y + (Math.random() - 0.5) * hh * j;
+            sphere.userData.c1z = gc1z + (Math.random() - 0.5) * hh * j;
+
+            sphere.userData.c2x = gc2x + (Math.random() - 0.5) * hw * j;
+            sphere.userData.c2y = gc2y + (Math.random() - 0.5) * hh * j;
+            sphere.userData.c2z = gc2z + (Math.random() - 0.5) * hh * j;
+
+            sphere.userData.e3x = ge3x + (Math.random() - 0.5) * hw * j;
+            sphere.userData.e3y = ge3y + (Math.random() - 0.5) * hh * j;
+            sphere.userData.e3z = ge3z + (Math.random() - 0.5) * hh * j;
+
+            // stagger within the group
+            sphere.userData.bzOffset   = gr(11) * duration * 0.3 + Math.random() * duration * 0.7;
+            sphere.userData.bzDuration = duration;
+        },
+        animate(sphere, elapsed) {
+            const u = sphere.userData;
+
+            const t = ((elapsed + u.bzOffset) % u.bzDuration) / u.bzDuration;
+
+            const nt  = 1 - t;
+            const nt2 = nt * nt;
+            const nt3 = nt2 * nt;
+            const t2  = t * t;
+            const t3  = t2 * t;
+            const w0  = nt3;
+            const w1  = 3 * nt2 * t;
+            const w2  = 3 * nt * t2;
+            const w3  = t3;
+
+            sphere.position.x = w0 * u.s0x + w1 * u.c1x + w2 * u.c2x + w3 * u.e3x;
+            sphere.position.y = w0 * u.s0y + w1 * u.c1y + w2 * u.c2y + w3 * u.e3y;
+            sphere.position.z = w0 * u.s0z + w1 * u.c1z + w2 * u.c2z + w3 * u.e3z;
         },
     },
 };
