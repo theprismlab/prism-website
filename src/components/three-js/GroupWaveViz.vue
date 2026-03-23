@@ -16,25 +16,25 @@ import { markRaw, ref, onMounted, onBeforeUnmount } from 'vue';
 
 // ── Config ─────────────────────────────────────────────────────
 const CONFIG = {
-    sphereCount: 500,
-    cols: 25,
+    sphereCount: 600,              // more spheres to fill wide 16:9 canvas
+    cols: 30,                      // wider grid (30 cols × 20 rows)
     colorInterpolator: d3.interpolateTurbo,
     colorDomain: [0, 1],
-    fov: 50,
-    cameraDistance: 100,
-    cameraPosition: [0, 25],
-    cameraLookAt: [0, 25, 0],
-    nearClip: 1.01,
-    farClip: 600,
+    fov: 45,                       // tighter FOV for less distortion on wide screens
+    cameraDistance: 110,           // pull back slightly for wider coverage
+    cameraPosition: [0, 20],       // lower eye for more dramatic depth
+    cameraLookAt: [0, 18, 0],     // look slightly below center
+    nearClip: 0.5,
+    farClip: 800,
     directionalLightIntensity: 0.5,
     ambientLightIntensity: 2.5,
-    radiusBase: 0.01,
-    radiusRange: [0.5, 0.05],
+    radiusBase: 0.012,             // slightly larger base for QHD clarity
+    radiusRange: [0.6, 0.08],     // wider size variation
     depthRange: [1, 0],
-    opacityRange: [0.7, 0.15],
+    opacityRange: [0.8, 0.1],     // crisper foreground, softer background
 };
 
-const NUM_GROUPS = 5;
+const NUM_GROUPS = 12;
 
 // ── Template ref ───────────────────────────────────────────────
 const canvasEl = ref(null);
@@ -59,7 +59,7 @@ function generateSpheres() {
         const row = Math.floor(i / cols);
         const nx = col / (cols - 1);
         const nz = row / Math.max(rows - 1, 1);
-        const value = 0.5 + 0.5 * Math.sin(nx * Math.PI * 3 + nz * Math.PI * 2);
+        const value = i / (sphereCount - 1);  // uniform 0‥1 for even group coverage
         data.push({
             x: col,
             z: row,
@@ -80,19 +80,25 @@ function groupRand(groupIdx, salt) {
 // ── Shared wave parameters per group ───────────────────────────
 // Each group gets one clean sine on y and one on z with distinct
 // frequencies, producing smooth Lissajous-like curves.
-function groupWaveParams(group, viewH) {
+// viewH = visible frustum height, viewW = visible frustum width.
+function groupWaveParams(group, viewH, viewW) {
     const gr = (salt) => groupRand(group, salt);
     const depthMul = 1.0 + gr(50) * 4.0;
-    const yAmpScale = viewH / 25;
+
+    // y amplitude: fraction of half-height so peaks stay on screen
+    const maxYAmp = (viewH / 2) * 0.35;
+    const yAmp = maxYAmp * (0.4 + gr(10) * 0.6);
+
+    // z amplitude scaled by depth multiplier
+    const maxZAmp = (viewH / 2) * 0.3;
+    const zAmp = maxZAmp * (0.3 + gr(20) * 0.7) * depthMul;
 
     return {
-        // y: amplitude scaled to view, frequency 1–2.5 cycles across the path
-        yAmp:  (2.0 + gr(10) * 2.5) * yAmpScale,
-        yFreq: 1.0 + gr(11) * 1.5,
+        yAmp,
+        yFreq: 1.0 + gr(11) * 2.0,
         yPhase: gr(12) * Math.PI * 2,
-        // z: deeper groups swing further into the distance
-        zAmp:  (1.5 + gr(20) * 2.0) * depthMul,
-        zFreq: 1.0 + gr(21) * 1.5,
+        zAmp,
+        zFreq: 1.0 + gr(21) * 2.0,
         zPhase: gr(22) * Math.PI * 2,
         depthMul,
     };
@@ -127,10 +133,18 @@ function evalPath(baseY, baseZ, wp, t) {
 // ── Group baseline for a given group index ─────────────────────
 function groupBaseline(g, sceneWidth, sceneHeight) {
     const hh = sceneHeight / 2;
+    const wp = groupWaveParams(g, sceneHeight, sceneWidth);
+
+    // Evenly distribute baselines across the visible height
+    // with a small deterministic offset so they don't look gridded
     const gr = (salt) => groupRand(g, salt);
-    const wp = groupWaveParams(g, sceneHeight);
-    const baseY = (gr(0) - 0.5) * sceneHeight * 0.8;
-    const baseZ = (gr(1) - 0.5) * hh * 1.2 * wp.depthMul;
+    const slot = (g + 0.5) / NUM_GROUPS;           // 0‥1 evenly spaced
+    const jitter = (gr(0) - 0.5) * 0.06;           // ±3% of height
+    const baseY = (slot + jitter - 0.5) * sceneHeight * 0.9;
+
+    // z baseline: spread across depth
+    const baseZ = (gr(1) - 0.5) * hh * 0.8 * wp.depthMul;
+
     return { baseY, baseZ, wp };
 }
 
