@@ -11,9 +11,9 @@ import { useViabilityScene } from './useViabilityScene.js';
 const meshConfig = {
     // ── Camera ──
     fov: 25,
-    cameraDistance: 25,
-    cameraPosition: [0, 4.5, 25],
-    cameraLookAt: [0, 6.5, 0],
+    cameraDistance: 50,
+    cameraPosition: [0, 16.5, 25],
+    cameraLookAt: [0, 16.5, 0],
     nearClip: 1.01,
     farClip: 200,
 
