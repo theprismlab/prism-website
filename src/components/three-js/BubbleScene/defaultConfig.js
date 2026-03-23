@@ -12,7 +12,7 @@ export const defaultConfig = {
     // ── Animation ──
     // Key into the animations registry (see animations.js): 'float' | 'stream' | 'none' | 'wave' | 'gravity' | 'swirl'
 
-    animation: 'groupBezier',
+    animation: 'groupWave',
 
     // ── Color ──
     colorInterpolator: d3.interpolateTurbo,

@@ -562,26 +562,29 @@ export const animations = {
             const ge3z = (gr(9) - 0.5) * hh * 0.8;
 
             // ── per-sphere jitter around the group curve ──
-            const j = 0.1;
-            sphere.userData.s0x = gs0x + (Math.random() - 0.5) * hw * j;
-            sphere.userData.s0y = gs0y + (Math.random() - 0.5) * hh * j;
-            sphere.userData.s0z = gs0z + (Math.random() - 0.5) * hh * j;
+            const jx = 0.1;   // x jitter (keep tight so left→right stays clean)
+            const jyz = 0.3;  // y/z jitter (wide spread for variety)
+            sphere.userData.s0x = gs0x + (Math.random() - 0.5) * hw * jx;
+            sphere.userData.s0y = gs0y + (Math.random() - 0.5) * hh * jyz;
+            sphere.userData.s0z = gs0z + (Math.random() - 0.5) * hh * jyz;
 
-            sphere.userData.c1x = gc1x + (Math.random() - 0.5) * hw * j;
-            sphere.userData.c1y = gc1y + (Math.random() - 0.5) * hh * j;
-            sphere.userData.c1z = gc1z + (Math.random() - 0.5) * hh * j;
+            sphere.userData.c1x = gc1x + (Math.random() - 0.5) * hw * jx;
+            sphere.userData.c1y = gc1y + (Math.random() - 0.5) * hh * jyz;
+            sphere.userData.c1z = gc1z + (Math.random() - 0.5) * hh * jyz;
 
-            sphere.userData.c2x = gc2x + (Math.random() - 0.5) * hw * j;
-            sphere.userData.c2y = gc2y + (Math.random() - 0.5) * hh * j;
-            sphere.userData.c2z = gc2z + (Math.random() - 0.5) * hh * j;
+            sphere.userData.c2x = gc2x + (Math.random() - 0.5) * hw * jx;
+            sphere.userData.c2y = gc2y + (Math.random() - 0.5) * hh * jyz;
+            sphere.userData.c2z = gc2z + (Math.random() - 0.5) * hh * jyz;
 
-            sphere.userData.e3x = ge3x + (Math.random() - 0.5) * hw * j;
-            sphere.userData.e3y = ge3y + (Math.random() - 0.5) * hh * j;
-            sphere.userData.e3z = ge3z + (Math.random() - 0.5) * hh * j;
+            sphere.userData.e3x = ge3x + (Math.random() - 0.5) * hw * jx;
+            sphere.userData.e3y = ge3y + (Math.random() - 0.5) * hh * jyz;
+            sphere.userData.e3z = ge3z + (Math.random() - 0.5) * hh * jyz;
 
-            // stagger within the group
-            sphere.userData.bzOffset   = gr(11) * duration * 0.3 + Math.random() * duration * 0.7;
-            sphere.userData.bzDuration = duration;
+            // per-sphere speed variation: ±40% of base duration
+            const speedVar = 0.6 + Math.random() * 0.8;
+            const myDuration = duration * speedVar;
+            sphere.userData.bzOffset   = gr(11) * myDuration * 0.3 + Math.random() * myDuration * 0.7;
+            sphere.userData.bzDuration = myDuration;
         },
         animate(sphere, elapsed) {
             const u = sphere.userData;
@@ -601,6 +604,83 @@ export const animations = {
             sphere.position.x = w0 * u.s0x + w1 * u.c1x + w2 * u.c2x + w3 * u.e3x;
             sphere.position.y = w0 * u.s0y + w1 * u.c1y + w2 * u.c2y + w3 * u.e3y;
             sphere.position.z = w0 * u.s0z + w1 * u.c1z + w2 * u.c2z + w3 * u.e3z;
+        },
+    },
+
+    /**
+     * Grouped 3D wave: spheres are bucketed by colour into groups.
+     * Each group drifts left→right along a unique 3-axis sine wave
+     * (y and z oscillate at different frequencies/amplitudes per group).
+     * Per-sphere jitter in speed, amplitude and phase keeps it organic.
+     */
+    groupWave: {
+        _groupRand(groupIdx, salt) {
+            const x = Math.sin(groupIdx * 127.1 + salt * 311.7) * 43758.5453;
+            return x - Math.floor(x);
+        },
+        init(sphere, { d, sceneWidth, sceneHeight }) {
+            const hw = sceneWidth / 2;
+            const hh = sceneHeight / 2;
+            const numGroups = 5;
+            const numHarmonics = 3; // layered sine waves per axis
+
+            const group = Math.min(Math.floor(d.value * numGroups), numGroups - 1);
+            const gr = (salt) => this._groupRand(group, salt);
+
+            // group baselines
+            const groupBaseY = (gr(0) - 0.5) * hh * 1.0;
+            const groupBaseZ = (gr(1) - 0.5) * hh * 0.8;
+
+            // build harmonic arrays for y and z via loop
+            const yWaves = [];
+            const zWaves = [];
+            for (let i = 0; i < numHarmonics; i++) {
+                const harmonic = i + 1;
+                yWaves.push({
+                    amp:   (0.4 + gr(10 + i * 2) * 1.2) / harmonic * (0.7 + Math.random() * 0.6),
+                    freq:  (1.5 + gr(11 + i * 2) * 2.5) * harmonic * (0.8 + Math.random() * 0.4),
+                    phase: Math.random() * Math.PI * 2,
+                });
+                zWaves.push({
+                    amp:   (0.3 + gr(20 + i * 2) * 0.8) / harmonic * (0.7 + Math.random() * 0.6),
+                    freq:  (1.0 + gr(21 + i * 2) * 3.0) * harmonic * (0.8 + Math.random() * 0.4),
+                    phase: Math.random() * Math.PI * 2,
+                });
+            }
+
+            sphere.userData.xMin   = -hw;
+            sphere.userData.xRange = sceneWidth;
+            sphere.userData.xSpeed = 1.0 + Math.random() * 10.0;
+            sphere.userData.baseY  = groupBaseY + (Math.random() - 0.5) * hh * 0.25;
+            sphere.userData.baseZ  = groupBaseZ + (Math.random() - 0.5) * hh * 0.2;
+            sphere.userData.yWaves = yWaves;
+            sphere.userData.zWaves = zWaves;
+        },
+        animate(sphere, elapsed) {
+            const u = sphere.userData;
+
+            // advance x left→right, wrap
+            let x = u.xMin + elapsed * u.xSpeed;
+            x = u.xMin + ((x - u.xMin) % u.xRange + u.xRange) % u.xRange;
+            sphere.position.x = x;
+
+            const t = (x - u.xMin) / u.xRange;
+
+            // sum harmonics for y
+            let y = u.baseY;
+            for (let i = 0; i < u.yWaves.length; i++) {
+                const w = u.yWaves[i];
+                y += Math.sin(t * Math.PI * 2 * w.freq + w.phase) * w.amp;
+            }
+            sphere.position.y = y;
+
+            // sum harmonics for z
+            let z = u.baseZ;
+            for (let i = 0; i < u.zWaves.length; i++) {
+                const w = u.zWaves[i];
+                z += Math.sin(t * Math.PI * 2 * w.freq + w.phase) * w.amp;
+            }
+            sphere.position.z = z;
         },
     },
 };
