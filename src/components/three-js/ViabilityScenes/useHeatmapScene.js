@@ -1,110 +1,63 @@
 import * as THREE from 'three';
-import * as d3 from 'd3';
 import { markRaw, reactive, ref } from 'vue';
 
-const fileName = "BRD-K05804044-viability-heatmap.csv";
-
-export function useHeatmapScene(options = {}) {
-    const {
-        cameraZoom = 35,
-        fov = 35,
-        minCellLine = 300,
-    } = options;
+/**
+ * Composable that owns the Three.js scene, camera, renderer, and animation loop.
+ * Does NOT load data or compute scales — those are handled externally.
+ */
+export function useHeatmapScene(config) {
+    const { fov, cameraDistance, cameraPosition, cameraLookAt, nearClip, farClip,
+            directionalLightIntensity, ambientLightIntensity } = config;
 
     const state = reactive({
-        heatmapData: [],
         width: 0,
         height: 0,
         scene: null,
         camera: null,
         renderer: null,
         clock: null,
-        scales: null,
     });
 
     const animationCallbacks = ref([]);
     let animationFrameId = null;
-
-    const path = import.meta.env.PROD
-        ? import.meta.env.BASE_URL + "data/"
-        : "../../public/data/";
-
-    async function loadData() {
-        const data = await d3.csv(`${path}${fileName}`, d => ({
-            ccle_name: d["Cell line"],
-            viability: +d["Viability"],
-            pert_dose: +d["Dose"]
-        }));
-        state.heatmapData = parseHeatmapData(data);
-    }
-
-    function parseHeatmapData(data) {
-        let cellLineGroups = d3.groups(data, d => d.ccle_name).map(d => ({
-            key: d[0],
-            values: d[1],
-            mean: d3.mean(d[1], e => e.viability)
-        }));
-
-        cellLineGroups.sort((a, b) => d3.descending(a.mean, b.mean));
-
-        let cellLineToNumber = {};
-        cellLineGroups.forEach((d, i) => {
-            cellLineToNumber[d.key] = i;
-        });
-
-        let doses = [...new Set(data.map(d => d.pert_dose))].sort((a, b) => b - a);
-        let doseToNumber = {};
-        doses.forEach((d, i) => {
-            doseToNumber[d] = i;
-        });
-
-        const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1, 0.2]);
-
-        data.forEach(d => {
-            d.x = cellLineToNumber[d.ccle_name];
-            d.z = doseToNumber[d.pert_dose];
-            d.y = 0;
-            d.c = colorScale(d.viability);
-            d.rgba = new THREE.Color(d.c);
-        });
-
-        return data.filter(d => d.x > minCellLine);
-    }
-
     let canvas = null;
+    let lights = [];
 
-    function initThreeJs(canvasEl) {
+    function init(canvasEl) {
         canvas = canvasEl;
         const parent = canvas.parentElement;
         state.width = parent.clientWidth;
         state.height = parent.clientHeight;
 
         state.scene = markRaw(new THREE.Scene());
-        state.camera = markRaw(new THREE.PerspectiveCamera(fov, state.width / state.height, 1.01, 200));
-        state.camera.position.set(0, 4.5, cameraZoom);
-        state.camera.lookAt(0, 6.5, 0);
+
+        state.camera = markRaw(new THREE.PerspectiveCamera(
+            fov, state.width / state.height, nearClip, farClip,
+        ));
+        const [cx, cy] = cameraPosition;
+        state.camera.position.set(cx, cy, cameraDistance);
+        state.camera.lookAt(...cameraLookAt);
         state.camera.updateProjectionMatrix();
 
-        const light = markRaw(new THREE.DirectionalLight(0xffffff, 0.5));
-        light.position.set(5, 10, 5);
-        light.castShadow = true;
-        light.shadow.mapSize.width = 2048;
-        light.shadow.mapSize.height = 2048;
-        light.shadow.camera.left = -30;
-        light.shadow.camera.right = 30;
-        light.shadow.camera.top = 30;
-        light.shadow.camera.bottom = -30;
-        light.shadow.camera.near = 0.1;
-        light.shadow.camera.far = 60;
-        light.shadow.radius = 8;
-        light.shadow.blurSamples = 25;
-        state.scene.add(light);
+        const dirLight = markRaw(new THREE.DirectionalLight(0xffffff, directionalLightIntensity));
+        dirLight.position.set(5, 10, 5);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.left = -30;
+        dirLight.shadow.camera.right = 30;
+        dirLight.shadow.camera.top = 30;
+        dirLight.shadow.camera.bottom = -30;
+        dirLight.shadow.camera.near = 0.1;
+        dirLight.shadow.camera.far = 60;
+        dirLight.shadow.radius = 8;
+        dirLight.shadow.blurSamples = 25;
+        state.scene.add(dirLight);
 
-        const ambientLight = markRaw(new THREE.AmbientLight('rgb(255, 255, 255)', 2.5));
-        state.scene.add(ambientLight);
+        const ambLight = markRaw(new THREE.AmbientLight(0xffffff, ambientLightIntensity));
+        state.scene.add(ambLight);
 
-        // Keep references so clearMeshes can preserve them
-        state.lights = [light, ambientLight];
+        lights = [dirLight, ambLight];
 
         state.renderer = markRaw(new THREE.WebGLRenderer({ canvas, antialias: true }));
         state.renderer.setSize(state.width, state.height, false);
@@ -114,42 +67,6 @@ export function useHeatmapScene(options = {}) {
         state.renderer.shadowMap.type = THREE.VSMShadowMap;
 
         state.clock = markRaw(new THREE.Clock());
-    }
-
-    function computeScales() {
-        const data = state.heatmapData;
-        const zExtent = d3.extent(data, d => d.z);
-        const xExtent = d3.extent(data, d => d.x);
-
-        const vFov = THREE.MathUtils.degToRad(fov);
-        const visibleHeight = 2 * Math.tan(vFov / 2) * cameraZoom;
-        const visibleWidth = visibleHeight * (state.width / state.height);
-
-        const sceneWidth = visibleWidth;
-        const planeWidth = sceneWidth / xExtent[1];
-        const planeHeight = visibleHeight / Math.max(zExtent[1], 1);
-
-        const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
-        const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
-        const opacityScale = d3.scaleLinear().domain(zExtent).range([0.5, 1]);
-
-        const ySpread = 12;
-        const yScale = d3.scaleLinear()
-            .domain(d3.extent(data, d => d.viability))
-            .range([ySpread, -ySpread+10]);
-
-        const xOffset = sceneWidth / 2;
-        const zOffset = visibleHeight / 2;
-
-        state.scales = markRaw({
-            xScale, zScale, opacityScale, yScale,
-            xOffset, zOffset,
-            xExtent, zExtent,
-            planeWidth, planeHeight,
-            sceneWidth, visibleHeight
-        });
-
-        return state.scales;
     }
 
     function onAnimate(callback) {
@@ -181,8 +98,9 @@ export function useHeatmapScene(options = {}) {
         state.renderer.render(state.scene, state.camera);
     }
 
+    /** Resize renderer + camera. Returns new { width, height } for scale recomputation. */
     function resize() {
-        if (!canvas || !state.renderer) return;
+        if (!canvas || !state.renderer) return null;
         const parent = canvas.parentElement;
         state.width = parent.clientWidth;
         state.height = parent.clientHeight;
@@ -190,31 +108,21 @@ export function useHeatmapScene(options = {}) {
         state.camera.updateProjectionMatrix();
         state.renderer.setSize(state.width, state.height, false);
         clearMeshes();
-        computeScales();
+        return { width: state.width, height: state.height };
     }
 
     function clearMeshes() {
-        const keep = new Set(state.lights || []);
+        const keep = new Set(lights);
         keep.add(state.camera);
-        const toRemove = state.scene.children.filter(c => !keep.has(c));
-        toRemove.forEach(c => {
-            state.scene.remove(c);
-            if (c.geometry) c.geometry.dispose();
-            if (c.material) c.material.dispose();
-        });
+        state.scene.children
+            .filter(c => !keep.has(c))
+            .forEach(c => {
+                state.scene.remove(c);
+                if (c.geometry) c.geometry.dispose();
+                if (c.material) c.material.dispose();
+            });
         animationCallbacks.value = [];
     }
 
-    return {
-        state,
-        loadData,
-        initThreeJs,
-        computeScales,
-        onAnimate,
-        startAnimation,
-        stopAnimation,
-        render,
-        resize,
-        clearMeshes,
-    };
+    return { state, init, onAnimate, startAnimation, stopAnimation, render, resize, clearMeshes };
 }
