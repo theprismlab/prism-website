@@ -10,7 +10,20 @@
  *
  * Drop into any container — it fills the parent 100 %.
  */
+
+
+//  cameraPosition: [12.34, -54.87]
+//  cameraDistance: 48.48
+//  cameraLookAt: [0.00, 18.00, 0.00]
+
+// cameraPosition: [63.21, -106.74]
+// cameraDistance: 111.84
+// cameraLookAt: [0.00, 18.00, 0.00]
+
+
+
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as d3 from 'd3';
 import { markRaw, ref, onMounted, onBeforeUnmount } from 'vue';
 
@@ -21,16 +34,19 @@ const CONFIG = {
     colorInterpolator: d3.interpolateTurbo,
     colorDomain: [0, 1],
     fov: 45,                       // tighter FOV for less distortion on wide screens
-    cameraDistance: 110,           // pull back slightly for wider coverage
-    cameraPosition: [0, 20],       // lower eye for more dramatic depth
-    cameraLookAt: [0, 18, 0],     // look slightly below center
+    // cameraDistance: 110,           // pull back slightly for wider coverage
+    // cameraPosition: [0, 20],       // lower eye for more dramatic depth
+    // cameraLookAt: [0, 18, 0],     // look slightly below center
+    cameraPosition: [63.21, -106.74],
+    cameraDistance: 111.84,
+    cameraLookAt: [0.00, 18.00, 0.00],
     nearClip: 0.5,
     farClip: 800,
     directionalLightIntensity: 0.5,
     ambientLightIntensity: 2.5,
     radiusBase: 0.012,             // slightly larger base for QHD clarity
-    radiusRange: [0.6, 0.08],     // wider size variation
-    depthRange: [1, 0],
+    radiusRange: [1.6, 0.1],     // wider size variation
+    depthRange: [1, 0.1],
     opacityRange: [0.8, 0.1],     // crisper foreground, softer background
 };
 
@@ -40,7 +56,7 @@ const NUM_GROUPS = 12;
 const canvasEl = ref(null);
 
 // ── Scene state ────────────────────────────────────────────────
-let scene, camera, renderer, clock;
+let scene, camera, renderer, clock, controls;
 let lights = [];
 let animationFrameId = null;
 let resizeObserver = null;
@@ -185,22 +201,32 @@ function initSphereAnim(sphere, d, sceneWidth, sceneHeight) {
     sphere.userData.xMin = -hw;
     sphere.userData.xRange = sceneWidth;
     sphere.userData.xSpeed = 1.0 + Math.random() * 10.0;
+    sphere.userData.xOffset = Math.random() * sceneWidth;  // stagger start positions
     sphere.userData.baseY = baseY + (Math.random() - 0.5) * sceneHeight * 0.08;
     sphere.userData.baseZ = baseZ + (Math.random() - 0.5) * hh * 0.06 * wp.depthMul;
+    sphere.userData.baseOpacity = sphere.material.opacity;
     sphere.userData.wp = wp;
 }
 
 // ── Per-frame animation ────────────────────────────────────────
 function animateSphere(sphere, elapsed) {
     const u = sphere.userData;
-    let x = u.xMin + elapsed * u.xSpeed;
-    x = u.xMin + ((x - u.xMin) % u.xRange + u.xRange) % u.xRange;
+
+    // advance x left→right, wrap when past right edge
+    let x = u.xMin + ((elapsed * u.xSpeed + u.xOffset) % u.xRange + u.xRange) % u.xRange;
     sphere.position.x = x;
 
-    const t = (x - u.xMin) / u.xRange;
+    const t = (x - u.xMin) / u.xRange;   // 0 at left, 1 at right
     const { y, z } = evalPath(u.baseY, u.baseZ, u.wp, t);
     sphere.position.y = y;
     sphere.position.z = z;
+
+    // fade in on the left 10%, fade out on the right 10%
+    const fadeIn  = Math.min(t / 0.1, 1.0);
+    const fadeOut = Math.min((1.0 - t) / 0.1, 1.0);
+    const opacity = u.baseOpacity * fadeIn * fadeOut;
+    sphere.material.opacity = opacity;
+    sphere.visible = opacity > 0.005;
 }
 
 // ── Build all spheres ──────────────────────────────────────────
@@ -295,6 +321,24 @@ onMounted(() => {
 
     clock = markRaw(new THREE.Clock());
 
+    // Orbit controls — drag to rotate, scroll to zoom, right-drag to pan
+    controls = new OrbitControls(camera, canvas);
+    controls.target.set(...CONFIG.cameraLookAt);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.minDistance = 20;
+    controls.maxDistance = 400;
+    controls.update();
+
+    // Log camera state when user interacts
+    controls.addEventListener('end', () => {
+        const p = camera.position;
+        const t = controls.target;
+        console.log(`cameraPosition: [${p.x.toFixed(2)}, ${p.y.toFixed(2)}]`);
+        console.log(`cameraDistance: ${p.z.toFixed(2)}`);
+        console.log(`cameraLookAt: [${t.x.toFixed(2)}, ${t.y.toFixed(2)}, ${t.z.toFixed(2)}]`);
+    });
+
     // Visible-area calculation
     const vFov = THREE.MathUtils.degToRad(CONFIG.fov);
     const viewH = 2 * Math.tan(vFov / 2) * CONFIG.cameraDistance;
@@ -308,6 +352,7 @@ onMounted(() => {
     const loop = () => {
         const elapsed = clock.getElapsedTime();
         spheres.forEach(s => animateSphere(s, elapsed));
+        controls.update();
         renderer.render(scene, camera);
         animationFrameId = requestAnimationFrame(loop);
     };
@@ -333,6 +378,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    if (controls) controls.dispose();
     if (resizeObserver) resizeObserver.disconnect();
     clearTimeout(resizeTimer);
 });
