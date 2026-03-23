@@ -28,13 +28,14 @@ const CONFIG = {
     farClip: 600,
     directionalLightIntensity: 0.5,
     ambientLightIntensity: 2.5,
-    radiusBase: 0.01,
-    radiusRange: [0.5, 0.05],
-    depthRange: [1, 0],
+    radiusBase: 0.018,
+    radiusRange: [1.5, 0.2],
+    depthRange: [1.0, 0.1],
     opacityRange: [0.7, 0.15],
 };
 
 const NUM_GROUPS = 5;
+const NUM_HARMONICS = 3;
 
 // ── Template ref ───────────────────────────────────────────────
 const canvasEl = ref(null);
@@ -77,25 +78,27 @@ function groupRand(groupIdx, salt) {
     return x - Math.floor(x);
 }
 
-// ── Shared wave parameters per group ───────────────────────────
-// Each group gets one clean sine on y and one on z with distinct
-// frequencies, producing smooth Lissajous-like curves.
-function groupWaveParams(group, viewH) {
+// ── Shared harmonic tables ─────────────────────────────────────
+function groupHarmonics(group, viewH) {
     const gr = (salt) => groupRand(group, salt);
     const depthMul = 1.0 + gr(50) * 4.0;
     const yAmpScale = viewH / 25;
-
-    return {
-        // y: amplitude scaled to view, frequency 1–2.5 cycles across the path
-        yAmp:  (2.0 + gr(10) * 2.5) * yAmpScale,
-        yFreq: 1.0 + gr(11) * 1.5,
-        yPhase: gr(12) * Math.PI * 2,
-        // z: deeper groups swing further into the distance
-        zAmp:  (1.5 + gr(20) * 2.0) * depthMul,
-        zFreq: 1.0 + gr(21) * 1.5,
-        zPhase: gr(22) * Math.PI * 2,
-        depthMul,
-    };
+    const yWaves = [];
+    const zWaves = [];
+    for (let i = 0; i < NUM_HARMONICS; i++) {
+        const h = i + 1;
+        yWaves.push({
+            amp: (1.5 + gr(10 + i * 2) * 3.0) / h * yAmpScale,
+            freq: (1.5 + gr(11 + i * 2) * 2.5) * h,
+            phase: 0,
+        });
+        zWaves.push({
+            amp: (1.0 + gr(20 + i * 2) * 2.5) / h * depthMul,
+            freq: (1.0 + gr(21 + i * 2) * 3.0) * h,
+            phase: 0,
+        });
+    }
+    return { yWaves, zWaves, depthMul };
 }
 
 // ── Scale helpers ──────────────────────────────────────────────
@@ -115,38 +118,30 @@ function computeScales(data, viewW, viewH) {
     });
 }
 
-// ── Evaluate a path at parameter t (0‥1) ──────────────────────
-function evalPath(baseY, baseZ, wp, t) {
-    // exponential decay: full amplitude at t=0, ~15% at t=1
-    const envelope = Math.exp(-t * 2.0);
-    const y = baseY + Math.sin(t * Math.PI * 2 * wp.yFreq + wp.yPhase) * wp.yAmp * envelope;
-    const z = baseZ + Math.sin(t * Math.PI * 2 * wp.zFreq + wp.zPhase) * wp.zAmp * envelope;
-    return { y, z };
-}
-
-// ── Group baseline for a given group index ─────────────────────
-function groupBaseline(g, sceneWidth, sceneHeight) {
-    const hh = sceneHeight / 2;
-    const gr = (salt) => groupRand(g, salt);
-    const wp = groupWaveParams(g, sceneHeight);
-    const baseY = (gr(0) - 0.5) * sceneHeight * 0.8;
-    const baseZ = (gr(1) - 0.5) * hh * 1.2 * wp.depthMul;
-    return { baseY, baseZ, wp };
-}
-
 // ── Build path lines per group ─────────────────────────────────
 function buildPaths(sceneWidth, sceneHeight) {
     const hw = sceneWidth / 2;
-    const segments = 100;
+    const hh = sceneHeight / 2;
+    const segments =   100;
 
     for (let g = 0; g < NUM_GROUPS; g++) {
-        const { baseY, baseZ, wp } = groupBaseline(g, sceneWidth, sceneHeight);
+        const gr = (salt) => groupRand(g, salt);
+        const { yWaves, zWaves, depthMul } = groupHarmonics(g, sceneHeight);
+        const baseY = (gr(0) - 0.5) * sceneHeight * 0.8;
+        const baseZ = (gr(1) - 0.5) * hh * 1.2 * depthMul;
 
         const points = [];
         for (let s = 0; s <= segments; s++) {
             const t = s / segments;
             const px = -hw + t * sceneWidth;
-            const { y: py, z: pz } = evalPath(baseY, baseZ, wp, t);
+            let py = baseY;
+            for (let i = 0; i < yWaves.length; i++) {
+                py += Math.sin(t * Math.PI * 2 * yWaves[i].freq + yWaves[i].phase) * yWaves[i].amp;
+            }
+            let pz = baseZ;
+            for (let i = 0; i < zWaves.length; i++) {
+                pz += Math.sin(t * Math.PI * 2 * zWaves[i].freq + zWaves[i].phase) * zWaves[i].amp;
+            }
             points.push(new THREE.Vector3(px, py, pz));
         }
 
@@ -164,16 +159,38 @@ function buildPaths(sceneWidth, sceneHeight) {
 function initSphereAnim(sphere, d, sceneWidth, sceneHeight) {
     const hw = sceneWidth / 2;
     const hh = sceneHeight / 2;
-    const group = Math.min(Math.floor(d.value * NUM_GROUPS), NUM_GROUPS - 1);
-    const { baseY, baseZ, wp } = groupBaseline(group, sceneWidth, sceneHeight);
 
-    // per-sphere: small baseline jitter + shared group wave params
+    const group = Math.min(Math.floor(d.value * NUM_GROUPS), NUM_GROUPS - 1);
+    const gr = (salt) => groupRand(group, salt);
+    const { depthMul } = groupHarmonics(group, sceneHeight);
+
+    const groupBaseY = (gr(0) - 0.5) * sceneHeight * 0.8;
+    const groupBaseZ = (gr(1) - 0.5) * hh * 1.2 * depthMul;
+
+    const yWaves = [];
+    const zWaves = [];
+    const yAmpScale = sceneHeight / 25;
+    for (let i = 0; i < NUM_HARMONICS; i++) {
+        const harmonic = i + 1;
+        yWaves.push({
+            amp: (1.5 + gr(10 + i * 2) * 3.0) / harmonic * yAmpScale * (0.9 + Math.random() * 0.2),
+            freq: (1.5 + gr(11 + i * 2) * 2.5) * harmonic * (0.95 + Math.random() * 0.1),
+            phase: Math.random() * Math.PI * 2,
+        });
+        zWaves.push({
+            amp: (1.0 + gr(20 + i * 2) * 2.5) / harmonic * depthMul * (0.9 + Math.random() * 0.2),
+            freq: (1.0 + gr(21 + i * 2) * 3.0) * harmonic * (0.95 + Math.random() * 0.1),
+            phase: Math.random() * Math.PI * 2,
+        });
+    }
+
     sphere.userData.xMin = -hw;
     sphere.userData.xRange = sceneWidth;
     sphere.userData.xSpeed = 1.0 + Math.random() * 10.0;
-    sphere.userData.baseY = baseY + (Math.random() - 0.5) * sceneHeight * 0.08;
-    sphere.userData.baseZ = baseZ + (Math.random() - 0.5) * hh * 0.06 * wp.depthMul;
-    sphere.userData.wp = wp;
+    sphere.userData.baseY = groupBaseY + (Math.random() - 0.5) * sceneHeight * 0.08;
+    sphere.userData.baseZ = groupBaseZ + (Math.random() - 0.5) * hh * 0.06 * depthMul;
+    sphere.userData.yWaves = yWaves;
+    sphere.userData.zWaves = zWaves;
 }
 
 // ── Per-frame animation ────────────────────────────────────────
@@ -184,8 +201,19 @@ function animateSphere(sphere, elapsed) {
     sphere.position.x = x;
 
     const t = (x - u.xMin) / u.xRange;
-    const { y, z } = evalPath(u.baseY, u.baseZ, u.wp, t);
+
+    let y = u.baseY;
+    for (let i = 0; i < u.yWaves.length; i++) {
+        const w = u.yWaves[i];
+        y += Math.sin(t * Math.PI * 2 * w.freq + w.phase) * w.amp;
+    }
     sphere.position.y = y;
+
+    let z = u.baseZ;
+    for (let i = 0; i < u.zWaves.length; i++) {
+        const w = u.zWaves[i];
+        z += Math.sin(t * Math.PI * 2 * w.freq + w.phase) * w.amp;
+    }
     sphere.position.z = z;
 }
 
