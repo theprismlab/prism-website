@@ -1,3 +1,5 @@
+import * as d3 from 'd3';
+
 /**
  * All tunable parameters for the viability heatmap scene.
  * Override any subset when instantiating ViabilityHeatmap.
@@ -6,6 +8,10 @@ export const defaultConfig = {
     // ── Data ──
     fileName: 'BRD-K05804044-viability-heatmap.csv',
     minCellLine: 300,
+
+    // ── Color ──
+    colorInterpolator: d3.interpolateYlOrRd,
+    colorDomain: [1, 0.2],
 
     // ── Camera ──
     fov: 25,
