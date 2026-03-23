@@ -7,6 +7,7 @@
 
 <!-- Floating spheres -->
 <ViabilitySpheres/>
+
       </div>
       <div class="hero-overlay text-center">
             <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>

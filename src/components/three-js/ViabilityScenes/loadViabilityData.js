@@ -29,7 +29,7 @@ export async function loadViabilityData(config) {
     const doses = [...new Set(raw.map(d => d.pert_dose))].sort((a, b) => b - a);
     const doseToIndex = Object.fromEntries(doses.map((d, i) => [d, i]));
 
-    const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1, 0.2]);
+    const colorScale = d3.scaleSequential(config.colorInterpolator).domain(config.colorDomain);
 
     raw.forEach(d => {
         d.x = cellLineToIndex[d.ccle_name];
