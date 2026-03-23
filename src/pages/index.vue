@@ -2,7 +2,11 @@
   <page class="mt-0 pt-0">
     <section class="hero-section">
       <div class="hero-heatmap">
+<!-- Heatmap planes -->
 <ViabilityHeatmap />
+
+<!-- Floating spheres -->
+<ViabilitySpheres/>
       </div>
       <div class="hero-overlay text-center">
             <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -49,10 +53,12 @@ import { mdiHexagonMultiple } from '@mdi/js';
 import { mdiFileMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
   import ViabilityHeatmap from '@/components/three-js/ViabilityScenes/ViabilityHeatmap.vue';
+  import ViabilitySpheres from '@/components/three-js/ViabilityScenes/ViabilitySpheres.vue';
   export default {
     components: {
       SvgIcon,
-      ViabilityHeatmap
+      ViabilityHeatmap,
+      ViabilitySpheres
     },
     data() {
       return {
