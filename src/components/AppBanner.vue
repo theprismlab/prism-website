@@ -1,7 +1,6 @@
 <template>
 
-        <v-banner v-if="isOpen" :sticky="true" class="banner banner-gradient px-8 pt-3 pb-5">
-          
+        <v-banner v-if="isOpen" :sticky="true" class="banner banner-gradient">
             <v-btn
                 class="banner-close"
                 icon
@@ -110,7 +109,8 @@ function reopenBanner() {
 } */
 
 .banner-wrapper {
-    min-height: 84px;
+    min-height: var(--v-banner-height);
+    padding: 16px 24px 16px 60px;
 }
 
 .banner-overline {
@@ -165,7 +165,7 @@ function reopenBanner() {
 
 @media (max-width: 959px) {
     .banner-wrapper {
-        padding: 12px 16px;
+        padding: 12px 16px 12px 48px;
     }
 
     .banner-action-col {

@@ -87,10 +87,22 @@ export default {
         },
         initThreeJs() {
             this.scene = markRaw(new THREE.Scene());
-            this.camera = markRaw(new THREE.PerspectiveCamera(30, this.width / this.height, 1.01, 200));
-            this.camera.position.set(0, 6, 45);
-            this.camera.aspect = this.width / this.height;
+
+            const aspect = this.width / this.height;
+            const fov = 30;
+            const cameraY = 40;
+            const cameraZ = 20;
+
+            this.camera = markRaw(new THREE.PerspectiveCamera(fov, aspect, 0.1, 300));
+            this.camera.position.set(0, cameraY, cameraZ);
+            this.camera.lookAt(0, 0, -5);
             this.camera.updateProjectionMatrix();
+
+            // Approximate visible frustum width at the scene center
+            const dist = Math.sqrt(cameraY * cameraY + cameraZ * cameraZ);
+            const vFov = THREE.MathUtils.degToRad(fov);
+            this.visibleHeight = 2 * Math.tan(vFov / 2) * dist;
+            this.visibleWidth = this.visibleHeight * aspect;
 
             this.light = markRaw(new THREE.DirectionalLight(0xffffff, 1));
             this.light.position.set(5, 5, 5);
@@ -107,25 +119,28 @@ export default {
             this.renderer.shadowMap.enabled = true;
 
             this.clock = markRaw(new THREE.Clock());
-
-         //   window.addEventListener('resize', this.onWindowResize);
         },
         renderScene() {
             const zExtent = d3.extent(this.heatmapData, d => d.z);
             const xExtent = d3.extent(this.heatmapData, d => d.x);
-            const planeWidth = this.width / xExtent[1];
-            const planeHeight = 4;
 
-            const xScale = d3.scaleLinear().domain(xExtent).range([0, this.width]);
-            const zScale = d3.scaleLinear().domain(zExtent).range([0, planeHeight * zExtent[1]]);
+            // Use frustum-based world units so content fills the viewport
+            const padding = 0.95;
+            const sceneWidth = this.visibleWidth * padding;
+            const sceneDepth = this.visibleHeight * 1.2; // increased depth for overhead tilt
+            const planeWidth = sceneWidth / xExtent[1];
+            const planeHeight = sceneDepth / Math.max(zExtent[1], 1);
+
+            const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
+            const zScale = d3.scaleLinear().domain(zExtent).range([0, sceneDepth]);
             const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
             const yScale = d3
                 .scaleLinear()
-                .domain([0, 1])
-                .range([planeHeight * 6, planeHeight]);
+                .domain(d3.extent(this.heatmapData, d => d.viability))
+                .range([planeHeight * 4, -planeHeight * 4]);
 
-            const xOffset = (xScale.range()[1] - xScale.range()[0]) / 2;
-            const zOffset = (zScale.range()[1] - zScale.range()[0]) / 2;
+            const xOffset = sceneWidth / 2;
+            const zOffset = sceneDepth / 2;
 
             this.heatmapData.forEach(d => {
                 const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
@@ -142,38 +157,45 @@ export default {
                 xOffset,
                 zOffset,
                 planeHeight,
-                yScale
+                yScale,
+                zExtent
             });
 
             this.renderer.render(this.scene, this.camera);
         },
-        renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale }) {
-            const sphereRadius = planeHeight * 0.18;
-            const geometry = markRaw(new THREE.SphereGeometry(sphereRadius, 32, 32));
+        renderScatterPoints({ xScale, zScale, xOffset, zOffset, planeHeight, yScale, zExtent }) {
+            const baseRadius = planeHeight * 0.18;
             if (!this.spheres) {
                 this.spheres = [];
             }
 
+            // Scales for depth-based attenuation: far rows get smaller and lighter
+            const depthRange = zExtent[1] - zExtent[0] || 1;
+            const sizeScale = d3.scaleLinear().domain([zExtent[0], zExtent[1]]).range([1.0, 0.3]);
+            const opacityDepthScale = d3.scaleLinear().domain([zExtent[0], zExtent[1]]).range([0.7, 0.15]);
+
             this.heatmapData.forEach(d => {
+                const t = sizeScale(d.z);
+                const radius = baseRadius * t;
+                const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
                 const material = markRaw(new THREE.MeshStandardMaterial({
                     color: d.rgba,
                     transparent: true,
-                    opacity: 0.6,
+                    opacity: opacityDepthScale(d.z),
                     roughness: 0.0,
                     metalness: 0.0
                 }));
                 const sphere = markRaw(new THREE.Mesh(geometry, material));
                 const basePosition = markRaw(new THREE.Vector3(
                     xScale(d.x) - xOffset,
-                    yScale(d.viability) + sphereRadius * 0.2,
+                    yScale(d.viability) + radius * 0.2,
                     zScale(d.z) - zOffset
                 ));
                 sphere.position.copy(basePosition);
                 sphere.userData.basePosition = basePosition;
-                sphere.userData.minY = sphereRadius;
                 sphere.userData.floatPhase = Math.random() * Math.PI * 2;
                 sphere.userData.floatSpeed = 0.4 + Math.random() * 0.4;
-                sphere.userData.floatAmplitude = planeHeight * (0.08 + Math.random() * 0.06);
+                sphere.userData.floatAmplitude = planeHeight * (0.08 + Math.random() * 0.06) * t;
                 this.scene.add(sphere);
                 this.spheres.push(sphere);
             });
@@ -186,9 +208,8 @@ export default {
                 const elapsed = this.clock.getElapsedTime();
 
                 this.spheres.forEach(sphere => {
-                    const { basePosition, floatPhase, floatSpeed, floatAmplitude, minY } = sphere.userData;
-                    const floatingY = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
-                    sphere.position.y = Math.max(minY, floatingY);
+                    const { basePosition, floatPhase, floatSpeed, floatAmplitude } = sphere.userData;
+                    sphere.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
                 });
 
                 this.renderer.render(this.scene, this.camera);
