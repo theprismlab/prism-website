@@ -31,32 +31,30 @@ onMounted(async () => {
 // ── Scale Computation ──
 
 function computeScales(data) {
-    const { fov, cameraDistance, ySpread, ySpreadOffset } = config;
+    const { fov, cameraDistance } = config;
 
-    const zExtent = d3.extent(data, d => d.z);
     const xExtent = d3.extent(data, d => d.x);
+    const zExtent = d3.extent(data, d => d.z);
+    const viabilityExtent = d3.extent(data, d => d.viability);
 
     const vFov = THREE.MathUtils.degToRad(fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
     const visibleWidth = visibleHeight * (bubble.width.value / bubble.height.value);
-
-    const sceneWidth = visibleWidth;
-    const cellWidth = sceneWidth / xExtent[1];
     const cellHeight = visibleHeight / Math.max(zExtent[1], 1);
 
-    const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
+    const xScale = d3.scaleLinear().domain(xExtent).range([0, visibleWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
-
-    const yScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => d.viability))
-        .range([ySpread, -ySpread + ySpreadOffset]);
+    const yScale = d3.scaleLinear().domain(viabilityExtent).range(config.yRange);
+    const radiusScale = d3.scaleLinear().domain(viabilityExtent).range(config.radiusRange);
+    const depthScale = d3.scaleLinear().domain(zExtent).range(config.depthRange);
+    const opacityScale = d3.scaleLinear().domain(zExtent).range(config.opacityRange);
 
     return markRaw({
-        xScale, zScale, yScale,
-        xOffset: sceneWidth / 2,
+        xScale, zScale, yScale, radiusScale, depthScale, opacityScale,
+        xOffset: visibleWidth / 2,
         zOffset: visibleHeight / 2,
-        xExtent, zExtent,
-        cellWidth, cellHeight,
+        baseRadius: visibleWidth * config.radiusBase,
+        cellHeight,
     });
 }
 
@@ -64,47 +62,37 @@ function computeScales(data) {
 
 function buildSpheres(data) {
     const scales = computeScales(data);
-    const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, zExtent } = scales;
     const {
-        sphereXStep, sphereZStep, sphereBaseRadiusMultiplier,
-        sphereSizeScaleRange, sphereOpacityRange, sphereRadiusScaleRange,
-    } = config;
+        xScale, zScale, yScale, radiusScale, depthScale, opacityScale,
+        xOffset, zOffset, baseRadius, cellHeight,
+    } = scales;
 
     const anim = animations[config.animation] ?? animations.float;
-
-    const baseRadius = xScale.range()[1] * sphereBaseRadiusMultiplier;
-    const sampled = data.filter(d => d.x % sphereXStep === 0 && d.z % sphereZStep === 0);
-
-    const sizeScale = d3.scaleLinear().domain(zExtent).range(sphereSizeScaleRange);
-    const opacityDepthScale = d3.scaleLinear().domain(zExtent).range(sphereOpacityRange);
-
-    const viabilityExtent = d3.extent(data, d => d.viability);
-    const radiusScale = d3.scalePow().exponent(1).domain(viabilityExtent).range(sphereRadiusScaleRange);
-
+    const sampled = data.filter(d => d.x % config.xStep === 0 && d.z % config.zStep === 0);
     const spheres = [];
 
     sampled.forEach(d => {
-        const t = sizeScale(d.z);
-        const randomJitter = 0.8 + Math.random() * 0.4;
-        const radius = baseRadius * t * radiusScale(d.viability) * randomJitter;
+        const jitter = 0.8 + Math.random() * 0.4;
+        const radius = baseRadius * depthScale(d.z) * radiusScale(d.viability) * jitter;
+
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
         const material = markRaw(new THREE.MeshStandardMaterial({
             color: d.rgba,
             transparent: true,
-            opacity: opacityDepthScale(d.z),
+            opacity: opacityScale(d.z),
             roughness: 0.0,
             metalness: 0.0,
         }));
         const sphere = markRaw(new THREE.Mesh(geometry, material));
         const basePosition = markRaw(new THREE.Vector3(
             xScale(d.x) - xOffset,
-            yScale(d.viability) + radius * 0.2,
+            yScale(d.viability),
             zScale(d.z) - zOffset,
         ));
         sphere.castShadow = true;
         sphere.position.copy(basePosition);
         sphere.userData.basePosition = basePosition;
-        anim.init(sphere, { d, config, cellHeight, sizeScale });
+        anim.init(sphere, { d, config, cellHeight, depthScale });
         bubble.scene.add(sphere);
         spheres.push(sphere);
     });
