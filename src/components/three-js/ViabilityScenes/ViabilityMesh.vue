@@ -91,12 +91,12 @@ function computeScales(data) {
 function catmullRom(p0, p1, p2, p3, t, tension) {
     const s = (1 - tension) / 2;
     const t2 = t * t, t3 = t2 * t;
-    return (
-        (2 * p1) +
-        (-p0 + p2) * s * 2 * t +
-        (2 * p0 - 5 * p1 + 4 * p2 - p3) * s * 2 * t2 +
-        (-p0 + 3 * p1 - 3 * p2 + p3) * s * 2 * t3
-    );
+    const m0 = s * (p2 - p0);
+    const m1 = s * (p3 - p1);
+    return (2 * t3 - 3 * t2 + 1) * p1
+         + (t3 - 2 * t2 + t) * m0
+         + (-2 * t3 + 3 * t2) * p2
+         + (t3 - t2) * m1;
 }
 
 function sampleGrid(grid2d, rows, cols, r, c) {
