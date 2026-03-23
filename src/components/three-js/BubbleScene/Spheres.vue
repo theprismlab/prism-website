@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import * as d3 from 'd3';
 import { markRaw, ref, onMounted } from 'vue';
-import { useViabilityScene } from './useViabilityScene.js';
+import { useBubbleScene } from './useBubbleScene.js';
 
 const props = defineProps({
     data: { type: Array, required: true },
@@ -14,17 +14,17 @@ const props = defineProps({
 });
 
 const canvasEl = ref(null);
-const scene = useViabilityScene(canvasEl, props.sceneConfig);
-const { config } = scene;
+const bubble = useBubbleScene(canvasEl, props.sceneConfig);
+const { config } = bubble;
 
 onMounted(async () => {
     buildSpheres(props.data);
 
     await new Promise(r => requestAnimationFrame(r));
-    scene.render();
-    scene.startAnimation();
+    bubble.render();
+    bubble.startAnimation();
 
-    scene.onRebuild(() => buildSpheres(props.data));
+    bubble.onRebuild(() => buildSpheres(props.data));
 });
 
 // ── Scale Computation ──
@@ -37,7 +37,7 @@ function computeScales(data) {
 
     const vFov = THREE.MathUtils.degToRad(fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
-    const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
+    const visibleWidth = visibleHeight * (bubble.width.value / bubble.height.value);
 
     const sceneWidth = visibleWidth;
     const cellWidth = sceneWidth / xExtent[1];
@@ -106,11 +106,11 @@ function buildSpheres(data) {
         sphere.userData.floatPhase = Math.random() * Math.PI * 2;
         sphere.userData.floatSpeed = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
         sphere.userData.floatAmplitude = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * t;
-        scene.scene.add(sphere);
+        bubble.scene.add(sphere);
         spheres.push(sphere);
     });
 
-    scene.onAnimate((elapsed) => {
+    bubble.onAnimate((elapsed) => {
         spheres.forEach(s => {
             const { basePosition, floatPhase, floatSpeed, floatAmplitude } = s.userData;
             s.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;

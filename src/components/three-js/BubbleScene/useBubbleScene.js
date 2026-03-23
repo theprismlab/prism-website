@@ -133,6 +133,7 @@ export function useBubbleScene(canvasEl, configOverrides = {}) {
                 renderer.setSize(width.value, height.value, false);
                 clearMeshes();
                 rebuildCallbacks.forEach(cb => cb());
+                render();
             }, 100);
         });
         requestAnimationFrame(() => {

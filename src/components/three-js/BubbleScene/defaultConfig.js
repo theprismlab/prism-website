@@ -7,17 +7,17 @@ import * as d3 from 'd3';
 export const defaultConfig = {
     // ── Data ──
     fileName: 'BRD-K05804044-viability-heatmap.csv',
-    minCellLine: 300,
+    minCellLine:200,
 
     // ── Color ──
-    colorInterpolator: d3.interpolateYlOrRd,
+    colorInterpolator: d3.interpolateTurbo,
     colorDomain: [1, 0.2],
 
     // ── Camera ──
     fov: 25,
-    cameraDistance: 25,
-    cameraPosition: [0, 4.5, 25],
-    cameraLookAt: [0, 6.5, 0],
+    cameraDistance: 50,
+    cameraPosition: [0, 5, 25],
+    cameraLookAt: [0, 5, 0],
     nearClip: 1.01,
     farClip: 200,
 
@@ -29,7 +29,7 @@ export const defaultConfig = {
     sphereXStep: 8,
     sphereZStep: 2,
     sphereBaseRadiusMultiplier: 0.018,
-    sphereSizeScaleRange: [1.0, 0.3],
+    sphereSizeScaleRange: [2.0, 0.1],
     sphereOpacityRange: [0.7, 0.15],
     sphereRadiusScaleRange: [1.5, 0.2],
     sphereFloatSpeedMin: 0.4,

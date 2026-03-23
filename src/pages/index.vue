@@ -2,8 +2,9 @@
   <page class="mt-0 pt-0">
     <section class="hero-section">
       <div class="hero-heatmap">
-        <TheScene />  
+        <!-- <TheViabilityScene />   -->
 
+        <TheBubbleScene />  
       </div>
       <div class="hero-overlay text-center">
             <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -49,12 +50,14 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiHexagonMultiple } from '@mdi/js';
 import { mdiFileMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
-import TheScene from '@/components/three-js/BubbleScene/TheScene.vue';
+import TheViabilityScene from '@/components/three-js/ViabilityScenes/TheViabilityScene.vue';
+import TheBubbleScene from '@/components/three-js/BubbleScene/TheBubbleScene.vue';
 
   export default {
     components: {
       SvgIcon,
-      TheScene
+      TheViabilityScene,
+      TheBubbleScene  
     },
     data() {
       return {
