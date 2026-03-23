@@ -8,7 +8,7 @@
  */
 
 import { simplex2 } from './simplex2.js';
-
+import * as THREE from 'three';
 export const animations = {
 
     /**
@@ -618,6 +618,74 @@ export const animations = {
             const x = Math.sin(groupIdx * 127.1 + salt * 311.7) * 43758.5453;
             return x - Math.floor(x);
         },
+        _groupHarmonics(group, numHarmonics) {
+            const gr = (salt) => this._groupRand(group, salt);
+            // per-group depth reach: some groups stay close, others sweep far back
+            const depthMul = 1.0 + gr(50) * 4.0;   // 1× – 5×
+            const yWaves = [];
+            const zWaves = [];
+            for (let i = 0; i < numHarmonics; i++) {
+                const h = i + 1;
+                yWaves.push({
+                    amp:  (1.5 + gr(10 + i * 2) * 3.0) / h,
+                    freq: (1.5 + gr(11 + i * 2) * 2.5) * h,
+                    phase: 0,
+                });
+                zWaves.push({
+                    amp:  (1.0 + gr(20 + i * 2) * 2.5) / h * depthMul,
+                    freq: (1.0 + gr(21 + i * 2) * 3.0) * h,
+                    phase: 0,
+                });
+            }
+            return { yWaves, zWaves, depthMul };
+        },
+        /**
+         * Build a THREE.Line per group showing the deterministic wave path.
+         * Call after spheres are created. Returns the line meshes for cleanup.
+         */
+        buildPaths(scene, { sceneWidth, sceneHeight, colorInterpolator }) {
+            const hw = sceneWidth / 2;
+            const hh = sceneHeight / 2;
+            const numGroups = 5;
+            const numHarmonics = 3;
+            const segments = 200;
+            const lines = [];
+
+            for (let g = 0; g < numGroups; g++) {
+                const gr = (salt) => this._groupRand(g, salt);
+                const { yWaves, zWaves, depthMul } = this._groupHarmonics(g, numHarmonics);
+                const baseY = (gr(0) - 0.5) * hh * 0.4;
+                const baseZ = (gr(1) - 0.5) * hh * 1.2 * depthMul;
+
+                const points = [];
+                for (let s = 0; s <= segments; s++) {
+                    const t = s / segments;
+                    const px = -hw + t * sceneWidth;
+
+                    let py = baseY;
+                    for (let i = 0; i < yWaves.length; i++) {
+                        py += Math.sin(t * Math.PI * 2 * yWaves[i].freq + yWaves[i].phase) * yWaves[i].amp;
+                    }
+
+                    let pz = baseZ;
+                    for (let i = 0; i < zWaves.length; i++) {
+                        pz += Math.sin(t * Math.PI * 2 * zWaves[i].freq + zWaves[i].phase) * zWaves[i].amp;
+                    }
+
+                    points.push(new THREE.Vector3(px, py, pz));
+                }
+
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                // colour from the group's midpoint value
+                const midValue = (g + 0.5) / numGroups;
+                const color = new THREE.Color(colorInterpolator(midValue));
+                const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.35, linewidth: 1 });
+                const line = new THREE.Line(geometry, material);
+                scene.add(line);
+                lines.push(line);
+            }
+            return lines;
+        },
         init(sphere, { d, sceneWidth, sceneHeight }) {
             const hw = sceneWidth / 2;
             const hh = sceneHeight / 2;
@@ -627,9 +695,10 @@ export const animations = {
             const group = Math.min(Math.floor(d.value * numGroups), numGroups - 1);
             const gr = (salt) => this._groupRand(group, salt);
 
-            // group baselines
-            const groupBaseY = (gr(0) - 0.5) * hh * 1.0;
-            const groupBaseZ = (gr(1) - 0.5) * hh * 0.8;
+            // group baselines — depth varies per group
+            const { depthMul } = this._groupHarmonics(group, numHarmonics);
+            const groupBaseY = (gr(0) - 0.5) * hh * 0.4;
+            const groupBaseZ = (gr(1) - 0.5) * hh * 1.2 * depthMul;
 
             // build harmonic arrays for y and z via loop
             const yWaves = [];
@@ -637,12 +706,12 @@ export const animations = {
             for (let i = 0; i < numHarmonics; i++) {
                 const harmonic = i + 1;
                 yWaves.push({
-                    amp:   (0.4 + gr(10 + i * 2) * 1.2) / harmonic * (0.7 + Math.random() * 0.6),
+                    amp:   (1.5 + gr(10 + i * 2) * 3.0) / harmonic * (0.7 + Math.random() * 0.6),
                     freq:  (1.5 + gr(11 + i * 2) * 2.5) * harmonic * (0.8 + Math.random() * 0.4),
                     phase: Math.random() * Math.PI * 2,
                 });
                 zWaves.push({
-                    amp:   (0.3 + gr(20 + i * 2) * 0.8) / harmonic * (0.7 + Math.random() * 0.6),
+                    amp:   (1.0 + gr(20 + i * 2) * 2.5) / harmonic * depthMul * (0.7 + Math.random() * 0.6),
                     freq:  (1.0 + gr(21 + i * 2) * 3.0) * harmonic * (0.8 + Math.random() * 0.4),
                     phase: Math.random() * Math.PI * 2,
                 });
@@ -652,7 +721,7 @@ export const animations = {
             sphere.userData.xRange = sceneWidth;
             sphere.userData.xSpeed = 1.0 + Math.random() * 10.0;
             sphere.userData.baseY  = groupBaseY + (Math.random() - 0.5) * hh * 0.25;
-            sphere.userData.baseZ  = groupBaseZ + (Math.random() - 0.5) * hh * 0.2;
+            sphere.userData.baseZ  = groupBaseZ + (Math.random() - 0.5) * hh * 0.3 * depthMul;
             sphere.userData.yWaves = yWaves;
             sphere.userData.zWaves = zWaves;
         },

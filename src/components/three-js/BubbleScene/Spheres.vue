@@ -101,5 +101,14 @@ function buildSpheres(data) {
     bubble.onAnimate((elapsed) => {
         spheres.forEach(s => anim.animate(s, elapsed));
     });
+
+    // draw group trajectory paths if the animation supports it
+    if (anim.buildPaths) {
+        anim.buildPaths(bubble.scene, {
+            sceneWidth,
+            sceneHeight,
+            colorInterpolator: config.colorInterpolator,
+        });
+    }
 }
 </script>
