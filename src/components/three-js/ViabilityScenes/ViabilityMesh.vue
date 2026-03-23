@@ -11,9 +11,9 @@ import { useViabilityScene } from './useViabilityScene.js';
 const meshConfig = {
     // ── Camera ──
     fov: 25,
-    cameraDistance: 50,
+    cameraDistance: 80,
     cameraPosition: [0, 16.5, 25],
-    cameraLookAt: [0, 16.5, 0],
+    cameraLookAt: [0, 17.5, 0],
     nearClip: 1.01,
     farClip: 200,
 
@@ -22,8 +22,8 @@ const meshConfig = {
     ambientLightIntensity: 2.5,
 
     // ── Planes / Mesh ──
-    planeZoom: 10.8,
-    planeYPosition: 1,
+    planeZoom: 1.8,
+    planeYPosition: 10,
     planeOpacityRange: [0.5, 1],
 
     // ── Y-axis spread ──
