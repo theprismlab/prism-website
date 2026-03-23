@@ -4,7 +4,7 @@
         <!-- <ViabilityHeatmap v-if="data.length" :data="data" /> -->
 
         <!-- Mesh -->
-        <ViabilityMeshSpheres v-if="data.length" :data="data" />
+        <ViabilityGridSpheres v-if="data.length" :data="data" />
 
         <!-- Floating spheres -->
         <!-- <ViabilitySpheres v-if="data.length" :data="data" /> -->
@@ -15,7 +15,7 @@ import { ref, onMounted } from 'vue';
 import { loadViabilityCSV, parseViabilityData } from './loadViabilityData.js';
 import ViabilityHeatmap from './ViabilityHeatmap.vue';
 import ViabilitySpheres from './ViabilitySpheres.vue';
-import ViabilityMeshSpheres from './ViabilityMeshSpheres.vue';
+import ViabilityGridSpheres from './ViabilityGridSpheres.vue';
 
 const data = ref([]);
 
