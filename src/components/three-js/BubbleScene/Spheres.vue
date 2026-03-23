@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import * as d3 from 'd3';
 import { markRaw, ref, onMounted } from 'vue';
 import { useBubbleScene } from './useBubbleScene.js';
+import { animations } from './animations.js';
 
 const props = defineProps({
     data: { type: Array, required: true },
@@ -67,9 +68,9 @@ function buildSpheres(data) {
     const {
         sphereXStep, sphereZStep, sphereBaseRadiusMultiplier,
         sphereSizeScaleRange, sphereOpacityRange, sphereRadiusScaleRange,
-        sphereFloatSpeedMin, sphereFloatSpeedRange,
-        sphereFloatAmplitudeBase, sphereFloatAmplitudeRange,
     } = config;
+
+    const anim = animations[config.animation] ?? animations.float;
 
     const baseRadius = xScale.range()[1] * sphereBaseRadiusMultiplier;
     const sampled = data.filter(d => d.x % sphereXStep === 0 && d.z % sphereZStep === 0);
@@ -103,18 +104,13 @@ function buildSpheres(data) {
         sphere.castShadow = true;
         sphere.position.copy(basePosition);
         sphere.userData.basePosition = basePosition;
-        sphere.userData.floatPhase = Math.random() * Math.PI * 2;
-        sphere.userData.floatSpeed = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
-        sphere.userData.floatAmplitude = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * t;
+        anim.init(sphere, { d, config, cellHeight, sizeScale });
         bubble.scene.add(sphere);
         spheres.push(sphere);
     });
 
     bubble.onAnimate((elapsed) => {
-        spheres.forEach(s => {
-            const { basePosition, floatPhase, floatSpeed, floatAmplitude } = s.userData;
-            s.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
-        });
+        spheres.forEach(s => anim.animate(s, elapsed));
     });
 }
 </script>

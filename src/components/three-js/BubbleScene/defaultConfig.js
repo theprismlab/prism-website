@@ -9,6 +9,10 @@ export const defaultConfig = {
     fileName: 'BRD-K05804044-viability-heatmap.csv',
     minCellLine:200,
 
+    // ── Animation ──
+    // Key into the animations registry (see animations.js): 'float' | 'pulse' | 'none'
+    animation: 'pulse',
+
     // ── Color ──
     colorInterpolator: d3.interpolateTurbo,
     colorDomain: [1, 0.2],
@@ -29,13 +33,12 @@ export const defaultConfig = {
     sphereXStep: 8,
     sphereZStep: 2,
     sphereBaseRadiusMultiplier: 0.018,
-    sphereSizeScaleRange: [2.0, 0.1],
+    sphereSizeScaleRange: [1.0, 0.1],
     sphereOpacityRange: [0.7, 0.15],
     sphereRadiusScaleRange: [1.5, 0.2],
-    sphereFloatSpeedMin: 0.4,
-    sphereFloatSpeedRange: 0.4,
-    sphereFloatAmplitudeBase: 0.08,
-    sphereFloatAmplitudeRange: 0.06,
+    pulseSpeedMin: 0.3,
+    pulseSpeedRange: 0.4,
+    pulseAmplitude: 0.15,
 
     // ── Y-axis spread (sphere height mapping) ──
     ySpread: 12,

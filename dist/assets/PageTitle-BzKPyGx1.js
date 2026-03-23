@@ -1,1 +1,0 @@
-import{_ as t,o,c as s,a4 as n}from"./index-CPvo5oNK.js";const a={name:"PageTitle",props:{},data(){return{}},methods:{},watch:{}},c={class:"text-h1 font-weight-bold"};function r(e,_,d,p,l,i){return o(),s("h1",c,[n(e.$slots,"default",{},void 0)])}const u=t(a,[["render",r],["__scopeId","data-v-d23583eb"]]);export{u as _};
