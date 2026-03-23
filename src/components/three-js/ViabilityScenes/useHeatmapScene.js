@@ -81,7 +81,7 @@ export function useHeatmapScene(options = {}) {
 
         state.scene = markRaw(new THREE.Scene());
         state.camera = markRaw(new THREE.PerspectiveCamera(fov, state.width / state.height, 1.01, 200));
-        state.camera.position.set(0, 5, cameraZoom);
+        state.camera.position.set(0, 4.5, cameraZoom);
         state.camera.lookAt(0, 6.5, 0);
         state.camera.updateProjectionMatrix();
 
@@ -133,10 +133,10 @@ export function useHeatmapScene(options = {}) {
         const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
         const opacityScale = d3.scaleLinear().domain(zExtent).range([0.5, 1]);
 
-        const ySpread = 16;
+        const ySpread = 12;
         const yScale = d3.scaleLinear()
             .domain(d3.extent(data, d => d.viability))
-            .range([ySpread, -ySpread + 8]);
+            .range([ySpread, -ySpread+10]);
 
         const xOffset = sceneWidth / 2;
         const zOffset = visibleHeight / 2;

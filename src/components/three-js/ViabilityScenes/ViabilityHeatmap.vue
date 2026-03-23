@@ -25,8 +25,8 @@ import HeatmapPlanes from './HeatmapPlanes.vue';
 import HeatmapSpheres from './HeatmapSpheres.vue';
 
 const props = defineProps({
-    heatmapZoom: { type: Number, default: 5.5 },
-    cameraZoom: { type: Number, default: 45 },
+    heatmapZoom: { type: Number, default: 9 },
+    cameraZoom: { type: Number, default: 25 },
     fov: { type: Number, default: 25 },
 });
 
