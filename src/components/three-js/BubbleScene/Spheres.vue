@@ -35,7 +35,7 @@ function computeScales(data) {
 
     const xExtent = d3.extent(data, d => d.x);
     const zExtent = d3.extent(data, d => d.z);
-    const viabilityExtent = d3.extent(data, d => d.viability);
+    const valueExtent = d3.extent(data, d => d.value);
 
     const vFov = THREE.MathUtils.degToRad(fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
@@ -44,13 +44,13 @@ function computeScales(data) {
 
     const xScale = d3.scaleLinear().domain(xExtent).range([0, visibleWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
-    const yScale = d3.scaleLinear().domain(viabilityExtent).range(config.yRange);
-    const radiusScale = d3.scaleLinear().domain(viabilityExtent).range(config.radiusRange);
+    const yScale = d3.scaleLinear().domain(valueExtent).range(config.yRange);
+    const sizeScale = d3.scaleLinear().domain([0, 1]).range(config.radiusRange);
     const depthScale = d3.scaleLinear().domain(zExtent).range(config.depthRange);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(config.opacityRange);
 
     return markRaw({
-        xScale, zScale, yScale, radiusScale, depthScale, opacityScale,
+        xScale, zScale, yScale, sizeScale, depthScale, opacityScale,
         xOffset: visibleWidth / 2,
         zOffset: visibleHeight / 2,
         baseRadius: visibleWidth * config.radiusBase,
@@ -63,17 +63,18 @@ function computeScales(data) {
 function buildSpheres(data) {
     const scales = computeScales(data);
     const {
-        xScale, zScale, yScale, radiusScale, depthScale, opacityScale,
+        xScale, zScale, yScale, sizeScale, depthScale, opacityScale,
         xOffset, zOffset, baseRadius, cellHeight,
     } = scales;
 
     const anim = animations[config.animation] ?? animations.float;
-    const sampled = data.filter(d => d.x % config.xStep === 0 && d.z % config.zStep === 0);
     const spheres = [];
+    const sceneWidth = scales.xOffset * 2;
+    const sceneHeight = scales.zOffset * 2;
 
-    sampled.forEach(d => {
+    data.forEach(d => {
         const jitter = 0.8 + Math.random() * 0.4;
-        const radius = baseRadius * depthScale(d.z) * radiusScale(d.viability) * jitter;
+        const radius = baseRadius * depthScale(d.z) * sizeScale(d.size) * jitter;
 
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
         const material = markRaw(new THREE.MeshStandardMaterial({
@@ -86,13 +87,13 @@ function buildSpheres(data) {
         const sphere = markRaw(new THREE.Mesh(geometry, material));
         const basePosition = markRaw(new THREE.Vector3(
             xScale(d.x) - xOffset,
-            yScale(d.viability),
+            yScale(d.value),
             zScale(d.z) - zOffset,
         ));
         sphere.castShadow = true;
         sphere.position.copy(basePosition);
         sphere.userData.basePosition = basePosition;
-        anim.init(sphere, { d, config, cellHeight, depthScale });
+        anim.init(sphere, { d, sceneWidth, sceneHeight });
         bubble.scene.add(sphere);
         spheres.push(sphere);
     });

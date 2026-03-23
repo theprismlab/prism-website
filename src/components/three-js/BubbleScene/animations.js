@@ -1,58 +1,61 @@
 /**
  * Animation registry for bubble-scene spheres.
  *
- * Each animation is an object with:
- *   init(sphere, ctx)        – called once per sphere during creation
- *   animate(sphere, elapsed) – called every frame
+ * Each animation is self-contained — it owns its own defaults.
+ * init(sphere, ctx) is called once per sphere; animate(sphere, elapsed) every frame.
  *
- * ctx contains: { d, config, cellHeight, depthScale }
- *   d          – the data point for this sphere
- *   config     – the full scene config
- *   cellHeight – computed cell height (for amplitude scaling)
- *   depthScale – z → depth multiplier scale function
- *
- * To add a new animation, add an entry here and set `animation` in config.
+ * ctx: { d, sceneWidth, sceneHeight }
  */
 
 export const animations = {
 
     /**
-     * Gentle vertical bobbing. Each sphere floats up and down
-     * around its base position with randomised phase, speed, and amplitude.
+     * Gentle vertical bobbing in place.
      */
     float: {
-        init(sphere, { d, config, cellHeight, depthScale }) {
-            const t = depthScale(d.z);
-            const [speedMin, speedRange] = config.floatSpeed;
-            const [ampBase, ampRange] = config.floatAmplitude;
-            sphere.userData.floatPhase = Math.random() * Math.PI * 2;
-            sphere.userData.floatSpeed = speedMin + Math.random() * speedRange;
-            sphere.userData.floatAmplitude = cellHeight * (ampBase + Math.random() * ampRange) * t;
+        init(sphere) {
+            sphere.userData.phase = Math.random() * Math.PI * 2;
+            sphere.userData.speed = 0.4 + Math.random() * 0.4;
+            sphere.userData.amp   = 0.3 + Math.random() * 0.3;
         },
         animate(sphere, elapsed) {
-            const { basePosition, floatPhase, floatSpeed, floatAmplitude } = sphere.userData;
-            sphere.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
+            const { basePosition, phase, speed, amp } = sphere.userData;
+            sphere.position.y = basePosition.y + Math.sin(elapsed * speed + phase) * amp;
         },
     },
 
     /**
-     * A sine wave that rolls from back (high z) to front (low z).
-     * All spheres share the same wave; their z-position determines phase offset.
+     * Each sphere drifts left→right along its own sine-wave path.
+     * When it exits the right edge it wraps to the left.
      */
-    wave: {
-        init(sphere, { config }) {
-            sphere.userData.waveSpeed = config.waveSpeed;
-            sphere.userData.waveAmplitude = config.waveAmplitude;
-            sphere.userData.waveLength = config.waveLength;
+    stream: {
+        init(sphere, { sceneWidth }) {
+            const hw = sceneWidth / 2;
+            // horizontal travel
+            sphere.userData.xSpeed = 0.3 + Math.random() * 0.5;
+            sphere.userData.xMin   = -hw;
+            sphere.userData.xMax   =  hw;
+            // vertical wave path
+            sphere.userData.waveAmp   = 0.3 + Math.random() * 0.5;
+            sphere.userData.waveFreq  = 1.0 + Math.random() * 2.0;
+            sphere.userData.wavePhase = Math.random() * Math.PI * 2;
         },
         animate(sphere, elapsed) {
-            const { basePosition, waveSpeed, waveAmplitude, waveLength } = sphere.userData;
-            sphere.position.y = basePosition.y +
-                Math.sin(elapsed * waveSpeed - basePosition.z / waveLength) * waveAmplitude;
+            const u  = sphere.userData;
+            const bp = u.basePosition;
+            const range = u.xMax - u.xMin;
+
+            // advance x, wrap around
+            let x = bp.x + elapsed * u.xSpeed;
+            x = u.xMin + ((x - u.xMin) % range + range) % range;
+            sphere.position.x = x;
+
+            // y follows a sine wave keyed to current x
+            sphere.position.y = bp.y + Math.sin(x * u.waveFreq + u.wavePhase) * u.waveAmp;
         },
     },
 
-    /** No animation – spheres remain static. */
+    /** No animation — spheres stay put. */
     none: {
         init() {},
         animate() {},
