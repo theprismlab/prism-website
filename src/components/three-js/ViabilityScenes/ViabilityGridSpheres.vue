@@ -101,22 +101,36 @@ function buildSpheres(data) {
 
     const geometry = new THREE.SphereGeometry(config.sphereRadius, config.sphereSegments, config.sphereSegments);
 
-    // Group data by x so we know the y-cycle per column
+    // Group data by x (columns) for y-cycle, and by z (rows) for x-cycle
     const columnMap = new Map();
+    const rowMap = new Map();
     data.forEach(d => {
         if (!columnMap.has(d.x)) columnMap.set(d.x, []);
         columnMap.get(d.x).push(d);
+        if (!rowMap.has(d.z)) rowMap.set(d.z, []);
+        rowMap.get(d.z).push(d);
     });
-    // Sort each column by z so ordering is consistent
     columnMap.forEach(col => col.sort((a, b) => a.z - b.z));
+    rowMap.forEach(row => row.sort((a, b) => a.x - b.x));
+
+    // Pre-compute x positions per row and y positions per column
+    const yPosByCol = new Map();
+    columnMap.forEach((colData, xKey) => {
+        yPosByCol.set(xKey, colData.map(d => planeYPosition + yScale(d.viability)));
+    });
+
+    const xPosByRow = new Map();
+    rowMap.forEach((rowData, zKey) => {
+        xPosByRow.set(zKey, rowData.map(d => (xScale(d.x) - xOffset) * planeZoom));
+    });
 
     // Build spheres and track animation state
     const animatedSpheres = [];
 
     columnMap.forEach((colData, xKey) => {
-        const yPositions = colData.map(d => planeYPosition + yScale(d.viability));
+        const yPositions = yPosByCol.get(xKey);
 
-        colData.forEach((d, i) => {
+        colData.forEach((d, colIdx) => {
             const material = new THREE.MeshStandardMaterial({
                 color: d.rgba,
                 transparent: true,
@@ -128,16 +142,22 @@ function buildSpheres(data) {
             const sphere = new THREE.Mesh(geometry, material);
             sphere.castShadow = true;
 
+            const xPositions = xPosByRow.get(d.z);
+            const rowData = rowMap.get(d.z);
+            const rowIdx = rowData.findIndex(rd => rd.x === d.x);
+
             const px = (xScale(d.x) - xOffset) * planeZoom;
             const pz = (zScale(d.z) - zOffset) * planeZoom;
 
-            sphere.position.set(px, yPositions[i], pz);
+            sphere.position.set(px, yPositions[colIdx], pz);
             scene.scene.add(sphere);
 
             animatedSpheres.push({
                 sphere,
                 yPositions,
-                currentIndex: i,
+                yIndex: colIdx,
+                xPositions,
+                xIndex: rowIdx,
                 progress: 0,
             });
         });
@@ -149,18 +169,21 @@ function buildSpheres(data) {
         prevElapsed = elapsed;
 
         animatedSpheres.forEach(s => {
-            const from = s.yPositions[s.currentIndex];
-            const to = s.yPositions[(s.currentIndex + 1) % s.yPositions.length];
-
             s.progress += dt * config.animSpeed;
 
             if (s.progress >= 1) {
                 s.progress = 0;
-                s.currentIndex = (s.currentIndex + 1) % s.yPositions.length;
-                s.sphere.position.y = s.yPositions[s.currentIndex];
-            } else {
-                s.sphere.position.y = from + (to - from) * s.progress;
+                s.yIndex = (s.yIndex + 1) % s.yPositions.length;
+                s.xIndex = (s.xIndex + 1) % s.xPositions.length;
             }
+
+            const yFrom = s.yPositions[s.yIndex];
+            const yTo = s.yPositions[(s.yIndex + 1) % s.yPositions.length];
+            s.sphere.position.y = yFrom + (yTo - yFrom) * s.progress;
+
+            const xFrom = s.xPositions[s.xIndex];
+            const xTo = s.xPositions[(s.xIndex + 1) % s.xPositions.length];
+            s.sphere.position.x = xFrom + (xTo - xFrom) * s.progress;
         });
     });
 }
