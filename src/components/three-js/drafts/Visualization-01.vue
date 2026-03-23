@@ -9,7 +9,7 @@ import { markRaw } from 'vue';
 const fileName = "BRD-K05804044-viability-heatmap.csv";
 
 export default {
-    name: 'ViabilityHeatmap',
+    name: 'Visualization',
     props: {
         windowSize: Object
     },

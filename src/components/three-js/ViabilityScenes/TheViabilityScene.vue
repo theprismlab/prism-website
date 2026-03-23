@@ -1,7 +1,10 @@
 <template>
 
         <!-- Heatmap planes -->
-        <ViabilityHeatmap v-if="data.length" :data="data" />
+        <!-- <ViabilityHeatmap v-if="data.length" :data="data" /> -->
+
+        <!-- Mesh -->
+        <ViabilityMesh v-if="data.length" :data="data" />
 
         <!-- Floating spheres -->
         <ViabilitySpheres v-if="data.length" :data="data" />
@@ -12,6 +15,7 @@ import { ref, onMounted } from 'vue';
 import { loadViabilityCSV, parseViabilityData } from './loadViabilityData.js';
 import ViabilityHeatmap from './ViabilityHeatmap.vue';
 import ViabilitySpheres from './ViabilitySpheres.vue';
+import ViabilityMesh from './ViabilityMesh.vue';
 
 const data = ref([]);
 

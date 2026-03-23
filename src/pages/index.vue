@@ -2,7 +2,9 @@
   <page class="mt-0 pt-0">
     <section class="hero-section">
       <div class="hero-heatmap">
-        <GroupWaveViz /> 
+        <TheViabilityScene />
+        <!-- <GroupWaveViz />  -->
+          <!-- <Visualization /> -->
       </div>
       <div class="hero-overlay text-center">
             <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -50,12 +52,15 @@ import { mdiFileMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
 
 import GroupWaveViz from '@/components/three-js/GroupWaveViz.vue';
-
+import Visualization from '@/components/three-js/drafts/Visualization-02.vue';
+import TheViabilityScene from '@/components/three-js/ViabilityScenes/TheViabilityScene.vue';
   export default {
     components: {
       SvgIcon,
 
       GroupWaveViz,  
+      Visualization,
+      TheViabilityScene,
     },
     data() {
       return {

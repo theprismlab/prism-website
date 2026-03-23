@@ -35,6 +35,7 @@ export function parseViabilityData(raw, configOverrides = {}) {
         d.y = 0;
         d.c = colorScale(d.viability);
         d.rgba = new THREE.Color(d.c);
+        d.value = d.viability; // for easier access in mesh generation
     });
 
     return raw.filter(d => d.x > config.minCellLine);
