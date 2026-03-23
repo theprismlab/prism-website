@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 
 /**
- * Default parameters for bubble scene visualizations.
- * Override any subset via the sceneConfig prop.
+ * All tunable parameters for the viability heatmap scene.
+ * Override any subset when instantiating ViabilityHeatmap.
  */
 export const defaultConfig = {
     // ── Data ──
@@ -16,7 +16,7 @@ export const defaultConfig = {
     // ── Camera ──
     fov: 25,
     cameraDistance: 25,
-    cameraPosition: [0, 4.5, 25],
+    cameraPosition: [0, 4.5, 25],   // [x, y, z] — z is overridden by cameraDistance
     cameraLookAt: [0, 6.5, 0],
     nearClip: 1.01,
     farClip: 200,
@@ -24,6 +24,12 @@ export const defaultConfig = {
     // ── Lighting ──
     directionalLightIntensity: 0.5,
     ambientLightIntensity: 2.5,
+
+    // ── Planes ──
+    planeZoom: 10.8,          // heatmapZoom * 1.2, controls plane spread
+    planeWidthMultiplier: 1.6,
+    planeYPosition: 1,
+    planeOpacityRange: [0.5, 1],
 
     // ── Spheres ──
     sphereXStep: 8,
