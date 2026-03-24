@@ -19,7 +19,7 @@
                     
                                     <img :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" class="assay-avatar" />
                                     <div class="assay-title">
-                                        <div class="assay-name">{{ item.screen_full }} ({{ item.screen }})</div>
+                                        <div class="assay-name text-h5">{{ item.screen_full }} ({{ item.screen }})</div>
                                         <div class="assay-text-agents">{{ item.test_agents }}</div>
                                     </div>
                                     <div class="ml-auto mr-4 assay-time-point">{{ item.time_point }}</div>
@@ -172,7 +172,7 @@ export default {
     --assay-label-color: var(--v-grey-darken-1);
     --assay-avatar-size: 65px;
     --assay-avatar-pad: 4px;
-    --assay-pad: 12px;
+    --assay-pad: 16px 12px;
     --assay-gap: 0px;
     --assay-border: 1px solid rgba(240, 240, 240, 1);
     --assay-bg: linear-gradient(0deg, rgb(250, 250, 250) 0%, rgb(252, 252, 252) 40%);
