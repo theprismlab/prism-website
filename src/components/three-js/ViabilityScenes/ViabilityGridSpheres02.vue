@@ -177,6 +177,7 @@ function buildSpheres(data) {
                 sphere,
                 curve,
                 curveT: colIdx / numInCol,
+                speedMult: 0.5 + Math.random(),
                 xPositions,
                 xIndex: rowIdx,
                 xProgress: 0,
@@ -191,7 +192,7 @@ function buildSpheres(data) {
 
         animatedSpheres.forEach(s => {
             // Advance along the curve
-            s.curveT += dt * config.animSpeed * 0.1;
+            s.curveT += dt * config.animSpeed * 0.1 * s.speedMult;
             if (s.curveT >= 1) s.curveT -= 1;
 
             // Sample y and z from the curve, keep x fixed
