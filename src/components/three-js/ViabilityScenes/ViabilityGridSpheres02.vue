@@ -11,26 +11,31 @@ import { useViabilityScene } from './useViabilityScene.js';
 
 const sphereConfig = {
     // ── Camera ──
-    fov: 25,
-    cameraDistance: 100,
-    cameraPosition: [0, 16.5, 25],
-    cameraLookAt: [0, 12.5, 0],
+    fov: 40,
+    // cameraDistance: 100,
+    // cameraPosition: [0, 5, 13],
+    // cameraLookAt: [0, 12.5, 0],
+
+    cameraPosition: [-114.66, 43.28],
+    cameraDistance: 312,
+    cameraLookAt: [0.00, 12.50, 0.00],
     nearClip: 1.01,
     farClip: 200,
 
     // ── Lighting ──
-    directionalLightIntensity: 0.5,
-    ambientLightIntensity: 2.5,
+    directionalLightIntensity: 1.5,
+    ambientLightIntensity: 1.5,
 
     // ── Layout ──
-    planeZoom: 10.8,
-    planeYPosition: 1,
-    ySpread: 12,
+    planeZoom: 1.8,
+    planeYPosition: -50,
+    ySpread: 22,
 
     // ── Spheres ──
     sphereRadius: 0.4,
     sphereSegments: 16,
-    animSpeed: 0.5,         // fraction of the gap covered per second
+    animSpeed: 0.35,         // fraction of the gap covered per second
+    pathColor: "#e2e2e2",
 };
 
 const props = defineProps({
@@ -54,6 +59,13 @@ onMounted(async () => {
 
     scene.onAnimate(() => {
         controls.update();
+    });
+
+    controls.addEventListener('end', () => {
+        const cam = scene.camera;
+        console.log(`cameraPosition: [${cam.position.x.toFixed(2)}, ${cam.position.y.toFixed(2)}]`);
+        console.log(`cameraDistance: ${cam.position.z.toFixed(2)}`);
+        console.log(`cameraLookAt: [${controls.target.x.toFixed(2)}, ${controls.target.y.toFixed(2)}, ${controls.target.z.toFixed(2)}]`);
     });
 
     await new Promise(r => requestAnimationFrame(r));
@@ -81,7 +93,7 @@ function computeScales(data) {
     const zHeight = numZRows * config.sphereRadius * 2;
 
     const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
-    const zScale = d3.scaleLinear().domain(zExtent).range([0, zHeight]);
+    const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
     const yScale = d3.scaleLinear().domain(valueExtent).range([config.ySpread, -config.ySpread]);
 
     return {
@@ -123,7 +135,7 @@ function buildSpheres(data) {
     });
 
     // Draw a red line path for each x-group through its (x, y, z) points
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    const lineMaterial = new THREE.LineBasicMaterial({ color: config.pathColor });
     const curveByCol = new Map();
 
     columnMap.forEach((colData, xKey) => {
@@ -177,9 +189,15 @@ function buildSpheres(data) {
                 floating: false,
                 floatProgress: 0,
                 floatStartY: 0,
+                floatStartZ: 0,
             });
         });
     });
+
+    // // Rainbow color scale based on y position
+    const yColorScale = d3.scaleSequential(d3.interpolateRainbow)
+        .domain([-config.ySpread, config.ySpread]);
+    const tempColor = new THREE.Color();
 
     let prevElapsed = 0;
     scene.onAnimate((elapsed) => {
@@ -190,6 +208,7 @@ function buildSpheres(data) {
             if (s.floating) {
                 s.floatProgress += dt * config.animSpeed * 0.5 * s.speedMult;
                 s.sphere.position.y = s.floatStartY + s.floatProgress * 15;
+                s.sphere.position.z = s.floatStartZ + s.floatProgress * 15;
 
                 // Reset back to start once floated away
                 if (s.floatProgress >= 1) {
@@ -212,12 +231,17 @@ function buildSpheres(data) {
                     s.sphere.position.y = endPt.y;
                     s.sphere.position.z = endPt.z;
                     s.floatStartY = endPt.y;
+                    s.floatStartZ = endPt.z;
                 } else {
                     const pt = s.curve.getPoint(s.curveT);
                     s.sphere.position.y = pt.y;
                     s.sphere.position.z = pt.z;
                 }
             }
+
+            // // Update color based on current y position
+            tempColor.setStyle(yColorScale(s.sphere.position.y));
+            s.sphere.material.color.copy(tempColor);
         });
     });
 }
