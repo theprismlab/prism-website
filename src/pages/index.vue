@@ -2,7 +2,7 @@
   <page class="mt-0 pt-0">
     <section class="hero-section">
       <div class="hero-heatmap">
-        <ViabilityHeatmap/>
+<ViabilityHeatmap />
       </div>
       <div class="hero-overlay text-center">
             <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -149,7 +149,6 @@ import { mdiAccountGroup } from '@mdi/js';
   > * {
     grid-area: 1 / 1;
   }
-  border: 1px solid red;
 }
 .hero-heatmap {
   position: relative;

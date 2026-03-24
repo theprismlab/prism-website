@@ -3,48 +3,60 @@
     <HeatmapPlanes
         v-if="ready"
         :scene="scene.state.scene"
-        :data="scene.state.heatmapData"
-        :scales="scene.state.scales"
-        :zoom="heatmapZoom*1.2"
+        :data="heatmapData"
+        :scales="scales"
+        :config="config"
     />
     <HeatmapSpheres
         v-if="ready"
         :scene="scene.state.scene"
-        :data="scene.state.heatmapData"
-        :scales="scene.state.scales"
+        :data="heatmapData"
+        :scales="scales"
+        :config="config"
         :on-animate="scene.onAnimate"
-        :x-step="8"
-        :z-step="2"
     />
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { defaultConfig } from './defaultConfig.js';
+import { loadHeatmapData } from './loadHeatmapData.js';
+import { computeScales } from './computeScales.js';
 import { useHeatmapScene } from './useHeatmapScene.js';
 import HeatmapPlanes from './HeatmapPlanes.vue';
 import HeatmapSpheres from './HeatmapSpheres.vue';
 
 const props = defineProps({
-    heatmapZoom: { type: Number, default: 9 },
-    cameraZoom: { type: Number, default: 25 },
-    fov: { type: Number, default: 25 },
+    /** Override any key from defaultConfig */
+    sceneConfig: { type: Object, default: () => ({}) },
 });
+
+// Merge caller overrides onto defaults
+const config = { ...defaultConfig, ...props.sceneConfig };
 
 const ready = ref(false);
 const canvasEl = ref(null);
+const heatmapData = ref([]);
+const scales = ref(null);
+
 let resizeObserver = null;
 let resizeTimer = null;
 
-const scene = useHeatmapScene({
-    cameraZoom: props.cameraZoom,
-    fov: props.fov,
-});
+const scene = useHeatmapScene(config);
+
+function recomputeScales() {
+    scales.value = computeScales(
+        heatmapData.value, config, scene.state.width, scene.state.height,
+    );
+}
 
 onMounted(async () => {
     const canvas = canvasEl.value;
-    scene.initThreeJs(canvas);
-    await scene.loadData();
-    scene.computeScales();
+    scene.init(canvas);
+
+    // Load data once at the parent level
+    heatmapData.value = await loadHeatmapData(config);
+    recomputeScales();
     ready.value = true;
 
     await new Promise(r => requestAnimationFrame(r));
@@ -56,11 +68,11 @@ onMounted(async () => {
         resizeTimer = setTimeout(async () => {
             ready.value = false;
             scene.resize();
+            recomputeScales();
             await nextTick();
             ready.value = true;
         }, 100);
     });
-    // Skip the initial fire by deferring observe
     requestAnimationFrame(() => {
         resizeObserver.observe(canvas.parentElement);
     });
