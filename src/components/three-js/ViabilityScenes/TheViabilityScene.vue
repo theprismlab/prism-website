@@ -1,7 +1,7 @@
 <template>
 
         <!-- Heatmap planes -->
-        <!-- <ViabilityHeatmap v-if="data.length" :data="data" /> -->
+        <ViabilityHeatmap v-if="data.length" :data="data" />
 
         <!-- Mesh -->
         <ViabilityGridSpheres v-if="data.length" :data="data" />

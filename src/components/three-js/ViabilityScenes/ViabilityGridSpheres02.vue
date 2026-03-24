@@ -8,7 +8,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as d3 from 'd3';
 import { ref, onMounted } from 'vue';
 import { useViabilityScene } from './useViabilityScene.js';
-
+const showLines = true;
 const sphereConfig = {
     // ── Camera ──
     fov: 40,
@@ -16,19 +16,19 @@ const sphereConfig = {
     // cameraPosition: [0, 5, 13],
     // cameraLookAt: [0, 12.5, 0],
 
-    cameraPosition: [-114.66, 43.28],
+    cameraPosition: [0, 0],
     cameraDistance: 312,
-    cameraLookAt: [0.00, 12.50, 0.00],
+    cameraLookAt: [0, 0, 0],
     nearClip: 1.01,
-    farClip: 200,
+    farClip: 1000,
 
     // ── Lighting ──
     directionalLightIntensity: 1.5,
     ambientLightIntensity: 1.5,
 
     // ── Layout ──
-    planeZoom: 1.8,
-    planeYPosition: -50,
+    planeZoom: .8,
+    planeYPosition: -35,
     ySpread: 22,
 
     // ── Spheres ──
@@ -90,14 +90,14 @@ function computeScales(data) {
     const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
 
     const sceneWidth = visibleWidth;
-    const zHeight = numZRows * config.sphereRadius * 2;
+    const zHeight = visibleHeight;
 
     const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
     const yScale = d3.scaleLinear().domain(valueExtent).range([config.ySpread, -config.ySpread]);
-
+    const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 1]);
     return {
-        xScale, zScale, yScale,
+        xScale, zScale, yScale, opacityScale,
         xOffset: sceneWidth / 2,
         zOffset: zHeight / 2,
     };
@@ -106,7 +106,7 @@ function computeScales(data) {
 // ── Sphere Creation & Animation ──
 
 function buildSpheres(data) {
-    const { xScale, zScale, yScale, xOffset, zOffset } = computeScales(data);
+    const { xScale, zScale, yScale, opacityScale, xOffset, zOffset } = computeScales(data);
     const { planeZoom, planeYPosition } = config;
 
     const geometry = new THREE.SphereGeometry(config.sphereRadius, config.sphereSegments, config.sphereSegments);
@@ -151,7 +151,7 @@ function buildSpheres(data) {
         const curvePoints = curve.getPoints(points.length * 20);
         const lineGeometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
         const line = new THREE.Line(lineGeometry, lineMaterial);
-        scene.scene.add(line);
+     if (showLines)   scene.scene.add(line);
     });
 
     // Build spheres and track animation state
@@ -166,6 +166,8 @@ function buildSpheres(data) {
                 color: d.rgba,
                 roughness: 0.3,
                 metalness: 0.0,
+                transparent: true,
+                opacity: opacityScale(d.z),
             });
 
             const sphere = new THREE.Mesh(geometry, material);
@@ -181,11 +183,16 @@ function buildSpheres(data) {
             sphere.position.set(px, planeYPosition + yScale(d.viability), pz);
             scene.scene.add(sphere);
 
+                let minSpeed = 0.1;
+                let maxSpeed = 1.8;
+                let randomSpeed = minSpeed + Math.random() * (maxSpeed - minSpeed);
+
+
             animatedSpheres.push({
                 sphere,
                 curve,
                 curveT: colIdx / numInCol,
-                speedMult: 0.5 + Math.random(),
+                speedMult: randomSpeed,
                 floating: false,
                 floatProgress: 0,
                 floatStartY: 0,
@@ -240,8 +247,8 @@ function buildSpheres(data) {
             }
 
             // // Update color based on current y position
-            tempColor.setStyle(yColorScale(s.sphere.position.y));
-            s.sphere.material.color.copy(tempColor);
+            // tempColor.setStyle(yColorScale(s.sphere.position.y));
+            // s.sphere.material.color.copy(tempColor);
         });
     });
 }
