@@ -15,42 +15,39 @@
                     class="assay-panel"
                 >
                     <v-expansion-panel-title>
-                        <v-row class="assay-panel__title" align="center" justify="start">
-                    
-                                    <img :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" class="assay-avatar" />
-                                    <div class="assay-title">
-                                        <div class="assay-name">{{ item.screen_full }} ({{ item.screen }})</div>
-                                        <div class="assay-text-agents">{{ item.test_agents }}</div>
-                                    </div>
-                                    <div class="ml-auto mr-4 assay-time-point">{{ item.time_point }}</div>
-                         
+                        <v-row class="assay-panel__title" align="center" justify="start"    >
+                            <img class="assay-avatar" :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" />
+                            <div class="assay-title">
+                                <div class="assay-name text-h4">{{ item.screen_full }} ({{ item.screen }})</div>
+                                <div class="assay-text-agents text-body-1">{{ item.test_agents }}</div>
+                            </div>
+                            <div class="assay-time-point ml-auto mr-4">{{ item.time_point }}</div>
                         </v-row>
                     </v-expansion-panel-title>
-                    <v-expansion-panel-text class="assay-panel__text py-4">
+                    <v-expansion-panel-text class="assay-panel__text">
                         <v-row class="assay-panel__content pb-0" align="start" justify="space-around">
                             <v-col cols="12" md="10">
-                                <div class="section-title mb-0">{{ item.screen }} Workflow</div>
+                                <div class="text-h5 mb-0">{{ item.screen }} Workflow</div>
                             </v-col>
-                                <div class="media">
-                                    <img :src="imgPath + item.image" class="media__img" />
-                                </div>
+                            <div class="media">
+                                <img :src="imgPath + item.image" class="media__img" />
+                            </div>
                             <v-col cols="12" md="10">
-                                <div class="section-title">Details</div>
-                                <p class="description mb-0" v-html="item.description"></p>
+                                <div class="text-h5">Details</div>
+                                <p class="text-body-2 mb-0" v-html="item.description"></p>
                             </v-col>
                         </v-row>
                         
                         <v-row class="assay-panel__content" align="start" justify="space-around">
-          
                             <v-col cols="12" md="10">
                                 <v-row justify="space-between">
                                     <v-col cols="12" md="5" lg="5" sm="12" xs="12">
-                                        <div class="label">Dose scheme</div>
-                                        <div class="value" v-html="item.dose_scheme"></div>
+                                        <div class="text-body-2"><b>Dose Scheme</b></div>
+                                        <div class="text-body-2" v-html="item.dose_scheme"></div>
                                     </v-col>
                                     <v-col cols="12" md="4" lg="4" sm="12" xs="12">
-                                        <div class="label">Cell lines</div>
-                                        <div class="value">{{ item.num_cell_lines }}</div>
+                                        <div class="text-body-2"><b>Cell lines</b></div>
+                                        <div class="text-body-2 ">{{ item.num_cell_lines }}</div>
                                     </v-col>
                                 </v-row>
                             </v-col>
@@ -210,6 +207,7 @@ export default {
     display: flex;
     align-items: center;
     gap: 10px;
+    
 }
 
 .label {
@@ -243,9 +241,9 @@ export default {
     padding: var(--assay-avatar-pad);
 }
 .assay-name{
-    font-size: 1.1rem;
+    /* font-size: 1.1rem;
     line-height:1.4em;
-    font-weight: 600;
+    font-weight: 600; */
     margin-bottom:0.25em;
 }
 .assay-text-agents{
@@ -301,13 +299,11 @@ export default {
     .assay-panel__title,
     .assay-panel__content {
         padding: 12px;
+        gap: 0px;
     }
 
-    .assay-row{
-        gap: 5px;
-    }
     .assay-title{
-        max-width: 200px;
+        max-width: 220px;
     }
 
 }
