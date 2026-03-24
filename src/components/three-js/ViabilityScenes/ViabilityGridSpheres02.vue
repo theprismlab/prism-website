@@ -178,6 +178,10 @@ function buildSpheres(data) {
                 curve,
                 curveT: colIdx / numInCol,
                 speedMult: 0.5 + Math.random(),
+                baseOpacity: opacityScale(d.z),
+                floating: false,
+                floatProgress: 0,
+                floatStartY: 0,
                 xPositions,
                 xIndex: rowIdx,
                 xProgress: 0,
@@ -191,14 +195,39 @@ function buildSpheres(data) {
         prevElapsed = elapsed;
 
         animatedSpheres.forEach(s => {
-            // Advance along the curve
-            s.curveT += dt * config.animSpeed * 0.1 * s.speedMult;
-            if (s.curveT >= 1) s.curveT -= 1;
+            if (s.floating) {
+                s.floatProgress += dt * config.animSpeed * 0.5 * s.speedMult;
+                s.sphere.position.y = s.floatStartY + s.floatProgress * 15;
+                s.sphere.material.opacity = s.baseOpacity * Math.max(0, 1 - s.floatProgress);
 
-            // Sample y and z from the curve, keep x fixed
-            const pt = s.curve.getPoint(s.curveT);
-            s.sphere.position.y = pt.y;
-            s.sphere.position.z = pt.z;
+                // Reset back to start once fully faded
+                if (s.floatProgress >= 1) {
+                    s.floating = false;
+                    s.curveT = 0;
+                    s.sphere.material.opacity = s.baseOpacity;
+                    const pt = s.curve.getPoint(0);
+                    s.sphere.position.y = pt.y;
+                    s.sphere.position.z = pt.z;
+                }
+            } else {
+                // Advance along the curve
+                s.curveT += dt * config.animSpeed * 0.1 * s.speedMult;
+
+                if (s.curveT >= 1) {
+                    // Clamp to end and start floating
+                    s.curveT = 1;
+                    s.floating = true;
+                    s.floatProgress = 0;
+                    const endPt = s.curve.getPoint(1);
+                    s.sphere.position.y = endPt.y;
+                    s.sphere.position.z = endPt.z;
+                    s.floatStartY = endPt.y;
+                } else {
+                    const pt = s.curve.getPoint(s.curveT);
+                    s.sphere.position.y = pt.y;
+                    s.sphere.position.z = pt.z;
+                }
+            }
         });
     });
 }
