@@ -27,8 +27,8 @@ const sphereConfig = {
     ambientLightIntensity: 1.5,
 
     // ── Layout ──
-    planeZoom: .8,
-    planeYPosition: -35,
+    planeZoom: 1,
+    planeYPosition: 0,
     ySpread: 22,
 
     // ── Spheres ──
