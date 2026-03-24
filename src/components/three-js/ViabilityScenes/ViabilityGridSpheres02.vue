@@ -135,7 +135,9 @@ function buildSpheres(data) {
             return new THREE.Vector3(px, py, pz);
         });
 
-        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        const curve = new THREE.CatmullRomCurve3(points);
+        const curvePoints = curve.getPoints(points.length * 20);
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
         const line = new THREE.Line(lineGeometry, lineMaterial);
         scene.scene.add(line);
     });
