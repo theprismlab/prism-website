@@ -16,13 +16,12 @@
                 >
                     <v-expansion-panel-title>
                         <v-row class="assay-panel__title" align="center" justify="start">
-                    
-                                    <img :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" class="assay-avatar" />
-                                    <div class="assay-title">
-                                        <div class="assay-name text-h5">{{ item.screen_full }} ({{ item.screen }})</div>
-                                        <div class="assay-text-agents">{{ item.test_agents }}</div>
-                                    </div>
-                                    <div class="ml-auto mr-4 assay-time-point">{{ item.time_point }}</div>
+                            <img :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" class="assay-avatar" />
+                            <div class="assay-header">
+                                <div class="assay-name text-h5">{{ item.screen_full }} ({{ item.screen }})</div>
+                                <div class="assay-text-agents">{{ item.test_agents }}</div>
+                            </div>
+                            <div class="assay-time-point">{{ item.time_point }}</div>
                          
                         </v-row>
                     </v-expansion-panel-title>
@@ -36,21 +35,21 @@
                                 </div>
                             <v-col cols="12" md="10">
                                 <div class="section-title">Details</div>
-                                <p class="description mb-0" v-html="item.description"></p>
+                                <p class="text-body-2 mb-0" v-html="item.description"></p>
                             </v-col>
                         </v-row>
                         
                         <v-row class="assay-panel__content" align="start" justify="space-around">
           
                             <v-col cols="12" md="10">
-                                <v-row justify="space-between">
-                                    <v-col cols="12" md="5" lg="5" sm="12" xs="12">
+                                <v-row justify="start">
+                                    <v-col cols="auto" md="6">
                                         <div class="label">Dose scheme</div>
-                                        <div class="value" v-html="item.dose_scheme"></div>
+                                        <div class="text-body-2" v-html="item.dose_scheme"></div>
                                     </v-col>
-                                    <v-col cols="12" md="4" lg="4" sm="12" xs="12">
+                                    <v-col cols="auto">
                                         <div class="label">Cell lines</div>
-                                        <div class="value">{{ item.num_cell_lines }}</div>
+                                        <div class="text-body-2">{{ item.num_cell_lines }}</div>
                                     </v-col>
                                 </v-row>
                             </v-col>
@@ -172,7 +171,7 @@ export default {
     --assay-label-color: var(--v-grey-darken-1);
     --assay-avatar-size: 65px;
     --assay-avatar-pad: 4px;
-    --assay-pad: 16px 12px;
+    --assay-pad: 16px 32px 16px 12px;
     --assay-gap: 0px;
     --assay-border: 1px solid rgba(240, 240, 240, 1);
     --assay-bg: linear-gradient(0deg, rgb(250, 250, 250) 0%, rgb(252, 252, 252) 40%);
@@ -201,28 +200,23 @@ export default {
     margin-top: 8px;
 }
 
-.assay-panel__content {
+.assay-panel__content,
+.assay-panel__title {
     padding: var(--assay-pad);
 }
 
 .assay-panel__title {
-    padding: var(--assay-pad);
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .label {
-    font-weight:bold;
-    font-size: 0.95rem;
-}
-.suptitle{
-     font-size: 0.8rem;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    margin-bottom: 6px;
+    font-weight:400;
     color: var(--assay-label-color);
-    margin-bottom: 6px;
+    font-size: 0.9rem !important;
+    text-transform: uppercase !important;
+
 }
 
 .value {
@@ -230,12 +224,6 @@ export default {
     line-height: 1.4;
 }
 
-
-/* .assay-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-} */
 .assay-avatar {
     width: var(--assay-avatar-size);
     height: var(--assay-avatar-size);
@@ -250,15 +238,12 @@ export default {
 }
 .assay-text-agents{
     font-size: 1rem;
-     line-height:1.4em;
+    line-height:1.4em;
     font-weight: 400;
     color: var(--v-grey-darken-1);
  
 }
 .assay-time-point{
-    /* font-size: var(--assay-time-point-font-size);
-    font-weight: var(--assay-time-point-font-weight); */
-    /* color: var(--assay-time-point-color); */
     color: var(--v-primary-darken-1);
     font-size: 0.75rem;
     font-weight: 600;
@@ -269,7 +254,6 @@ export default {
     font-size: 1.1rem;
     font-weight: 700;
     margin: 0 0 10px;
-
 }
 
 .description {
@@ -285,6 +269,7 @@ export default {
     margin: 0 0 10px;
 }
 .media {
+    
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -297,18 +282,32 @@ export default {
     width: 100%;
     display: block;
 }
+
+/* Fixed size — won't grow or shrink */
+.assay-avatar {
+    flex: 0 0 65px;          /* flex-grow: 0, flex-shrink: 0, flex-basis: 65px */
+}
+
+/* Fills remaining space */
+.assay-header {
+    flex: 1 1 0;             /* grows to fill, shrinks if needed */
+    min-width: 0;            /* allows text truncation */
+}
+
+/* Fixed size, won't shrink */
+.assay-time-point {
+    flex:  0 0 55px;             /* grows to fill, shrinks if needed */
+    min-width: 0; 
+    text-align: right;
+}
 @media (max-width: 960px) {
     .assay-panel__title,
     .assay-panel__content {
-        padding: 12px;
+        /* padding: 12px 24px 12px 6px; */
+        /* padding:12px; */
     }
-
-    .assay-row{
-        gap: 5px;
-    }
-    .assay-title{
-        max-width: 200px;
-    }
+}
+@media (max-width: 600px) {
 
 }
 </style>
