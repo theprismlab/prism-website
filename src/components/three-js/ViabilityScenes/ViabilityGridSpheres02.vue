@@ -30,7 +30,6 @@ const sphereConfig = {
     // ── Spheres ──
     sphereRadius: 0.4,
     sphereSegments: 16,
-    planeOpacityRange: [0.4, 1],
     animSpeed: 0.5,         // fraction of the gap covered per second
 };
 
@@ -84,10 +83,9 @@ function computeScales(data) {
     const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, zHeight]);
     const yScale = d3.scaleLinear().domain(valueExtent).range([config.ySpread, -config.ySpread]);
-    const opacityScale = d3.scaleLinear().domain(zExtent).range(config.planeOpacityRange);
 
     return {
-        xScale, zScale, yScale, opacityScale,
+        xScale, zScale, yScale,
         xOffset: sceneWidth / 2,
         zOffset: zHeight / 2,
     };
@@ -96,7 +94,7 @@ function computeScales(data) {
 // ── Sphere Creation & Animation ──
 
 function buildSpheres(data) {
-    const { xScale, zScale, yScale, opacityScale, xOffset, zOffset } = computeScales(data);
+    const { xScale, zScale, yScale, xOffset, zOffset } = computeScales(data);
     const { planeZoom, planeYPosition } = config;
 
     const geometry = new THREE.SphereGeometry(config.sphereRadius, config.sphereSegments, config.sphereSegments);
@@ -154,8 +152,6 @@ function buildSpheres(data) {
         colData.forEach((d, colIdx) => {
             const material = new THREE.MeshStandardMaterial({
                 color: d.rgba,
-                transparent: true,
-                opacity: opacityScale(d.z),
                 roughness: 0.3,
                 metalness: 0.0,
             });
@@ -178,13 +174,9 @@ function buildSpheres(data) {
                 curve,
                 curveT: colIdx / numInCol,
                 speedMult: 0.5 + Math.random(),
-                baseOpacity: opacityScale(d.z),
                 floating: false,
                 floatProgress: 0,
                 floatStartY: 0,
-                xPositions,
-                xIndex: rowIdx,
-                xProgress: 0,
             });
         });
     });
@@ -198,13 +190,11 @@ function buildSpheres(data) {
             if (s.floating) {
                 s.floatProgress += dt * config.animSpeed * 0.5 * s.speedMult;
                 s.sphere.position.y = s.floatStartY + s.floatProgress * 15;
-                s.sphere.material.opacity = s.baseOpacity * Math.max(0, 1 - s.floatProgress);
 
-                // Reset back to start once fully faded
+                // Reset back to start once floated away
                 if (s.floatProgress >= 1) {
                     s.floating = false;
                     s.curveT = 0;
-                    s.sphere.material.opacity = s.baseOpacity;
                     const pt = s.curve.getPoint(0);
                     s.sphere.position.y = pt.y;
                     s.sphere.position.z = pt.z;
