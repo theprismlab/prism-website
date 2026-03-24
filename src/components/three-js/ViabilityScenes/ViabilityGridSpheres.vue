@@ -174,7 +174,12 @@ function buildSpheres(data) {
             if (s.progress >= 1) {
                 s.progress = 0;
                 s.yIndex = (s.yIndex + 1) % s.yPositions.length;
-                s.xIndex = (s.xIndex + 1) % s.xPositions.length;
+                s.xIndex = s.xIndex + 1;
+
+                // Teleport back to the left edge when past the last position
+                if (s.xIndex >= s.xPositions.length) {
+                    s.xIndex = 0;
+                }
             }
 
             const yFrom = s.yPositions[s.yIndex];
@@ -182,7 +187,14 @@ function buildSpheres(data) {
             s.sphere.position.y = yFrom + (yTo - yFrom) * s.progress;
 
             const xFrom = s.xPositions[s.xIndex];
-            const xTo = s.xPositions[(s.xIndex + 1) % s.xPositions.length];
+            let xTo;
+            if (s.xIndex + 1 < s.xPositions.length) {
+                xTo = s.xPositions[s.xIndex + 1];
+            } else {
+                // At the last position: extrapolate rightward so it keeps moving right
+                const avgGap = (s.xPositions[s.xPositions.length - 1] - s.xPositions[0]) / Math.max(1, s.xPositions.length - 1);
+                xTo = xFrom + avgGap;
+            }
             s.sphere.position.x = xFrom + (xTo - xFrom) * s.progress;
         });
     });
