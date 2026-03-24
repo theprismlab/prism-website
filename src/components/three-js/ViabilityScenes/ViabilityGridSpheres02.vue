@@ -126,6 +126,7 @@ function buildSpheres(data) {
 
     // Draw a red line path for each x-group through its (x, y, z) points
     const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    const curveByCol = new Map();
 
     columnMap.forEach((colData, xKey) => {
         const points = colData.map(d => {
@@ -136,6 +137,7 @@ function buildSpheres(data) {
         });
 
         const curve = new THREE.CatmullRomCurve3(points);
+        curveByCol.set(xKey, curve);
         const curvePoints = curve.getPoints(points.length * 20);
         const lineGeometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
         const line = new THREE.Line(lineGeometry, lineMaterial);
@@ -146,7 +148,8 @@ function buildSpheres(data) {
     const animatedSpheres = [];
 
     columnMap.forEach((colData, xKey) => {
-        const yPositions = yPosByCol.get(xKey);
+        const curve = curveByCol.get(xKey);
+        const numInCol = colData.length;
 
         colData.forEach((d, colIdx) => {
             const material = new THREE.MeshStandardMaterial({
@@ -167,16 +170,16 @@ function buildSpheres(data) {
             const px = (xScale(d.x) - xOffset) * planeZoom;
             const pz = (zScale(d.z) - zOffset) * planeZoom;
 
-            sphere.position.set(px, yPositions[colIdx], pz);
+            sphere.position.set(px, planeYPosition + yScale(d.viability), pz);
             scene.scene.add(sphere);
 
             animatedSpheres.push({
                 sphere,
-                yPositions,
-                yIndex: colIdx,
+                curve,
+                curveT: colIdx / numInCol,
                 xPositions,
                 xIndex: rowIdx,
-                progress: 0,
+                xProgress: 0,
             });
         });
     });
@@ -187,35 +190,14 @@ function buildSpheres(data) {
         prevElapsed = elapsed;
 
         animatedSpheres.forEach(s => {
-            s.progress += dt * config.animSpeed;
+            // Advance along the curve
+            s.curveT += dt * config.animSpeed * 0.1;
+            if (s.curveT >= 1) s.curveT -= 1;
 
-            if (s.progress >= 1) {
-                s.progress = 0;
-                s.yIndex = (s.yIndex + 1) % s.yPositions.length;
-                s.xIndex = s.xIndex + 1;
-
-                // Teleport back to the left edge when past the last position
-                if (s.xIndex >= s.xPositions.length) {
-                    s.xIndex = 0;
-                }
-            }
-
-            const yFrom = s.yPositions[s.yIndex];
-            const yTo = s.yPositions[(s.yIndex + 1) % s.yPositions.length];
-            // Smooth ease-in-out for curved motion between points
-            const t = 0.5 - 0.5 * Math.cos(Math.PI * s.progress);
-            s.sphere.position.y = yFrom + (yTo - yFrom) * t;
-
-            const xFrom = s.xPositions[s.xIndex];
-            let xTo;
-            if (s.xIndex + 1 < s.xPositions.length) {
-                xTo = s.xPositions[s.xIndex + 1];
-            } else {
-                // At the last position: extrapolate rightward so it keeps moving right
-                const avgGap = (s.xPositions[s.xPositions.length - 1] - s.xPositions[0]) / Math.max(1, s.xPositions.length - 1);
-                xTo = xFrom + avgGap;
-            }
-            s.sphere.position.x = xFrom + (xTo - xFrom) * t;
+            // Sample y and z from the curve, keep x fixed
+            const pt = s.curve.getPoint(s.curveT);
+            s.sphere.position.y = pt.y;
+            s.sphere.position.z = pt.z;
         });
     });
 }
