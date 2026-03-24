@@ -15,7 +15,7 @@ import { ref, onMounted } from 'vue';
 import { loadViabilityCSV, parseViabilityData } from './loadViabilityData.js';
 import ViabilityHeatmap from './ViabilityHeatmap.vue';
 import ViabilitySpheres from './ViabilitySpheres.vue';
-import ViabilityGridSpheres from './ViabilityGridSpheres.vue';
+import ViabilityGridSpheres from './ViabilityGridSpheres02.vue';
 
 const data = ref([]);
 
