@@ -78,16 +78,13 @@ function computeScales(data) {
     const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight * 2]);
     const yScale = d3.scaleLog().domain(cExtent).range([ySpread, -ySpread + ySpreadOffset]);
-    const radiusScale = d3.scaleLinear().domain(cExtent).range([0.5, 1.5]);
 
     return markRaw({
-        xScale, zScale, yScale, radiusScale,
+        xScale, zScale, yScale,
         xOffset: sceneWidth / 2,
         zOffset: visibleHeight / 2,
-        xExtent,
-        zExtent,
-        cellWidth, 
-        cellHeight, 
+        xExtent, zExtent,
+        cellWidth, cellHeight,
     });
 }
 
@@ -95,7 +92,7 @@ function computeScales(data) {
 
 function buildSpheres(data) {
     const scales = computeScales(data);
-    const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, radiusScale, zExtent } = scales;
+    const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, zExtent } = scales;
     const {
         sphereXStep, sphereZStep,
         sphereOpacityRange, sphereRadiusScaleRange,
@@ -107,8 +104,8 @@ function buildSpheres(data) {
 
     const opacityDepthScale = d3.scaleLinear().domain(zExtent).range(sphereOpacityRange);
 
-   
-
+    const viabilityExtent = d3.extent(data, d => d.viability);
+    const radiusScale = d3.scaleLinear().domain(viabilityExtent).range(sphereRadiusScaleRange);
 
     const spheres = [];
 
