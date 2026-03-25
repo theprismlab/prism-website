@@ -48,7 +48,7 @@ function computeWorldBounds() {
     const vFov = THREE.MathUtils.degToRad(config.fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * config.cameraDistance;
     const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
-    return { halfW: visibleWidth / 2, halfH: visibleHeight / 2, halfD: visibleHeight / 2 };
+    return { halfW: visibleWidth / 2, halfH: visibleHeight / 2, halfD: visibleHeight * 1 };
 }
 
 function buildBubbles() {
@@ -90,9 +90,9 @@ function buildBubbles() {
         scene.scene.add(mesh);
         meshes.push({
             mesh,
-            vy: 0.01 + Math.random() * 0.04,
-            driftSpeed: 0.1 + Math.random() * 0.3,
-            driftAmp: 0.5 + Math.random() * 2,
+            vy: 0.003 + Math.random() * 0.015,
+            driftSpeed: 0.04 + Math.random() * 0.12,
+            driftAmp: 0.3 + Math.random() * 1.2,
             driftPhase: Math.random() * Math.PI * 2,
             originX: mesh.position.x,
             radius,
