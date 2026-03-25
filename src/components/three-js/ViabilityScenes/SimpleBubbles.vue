@@ -10,20 +10,20 @@ import { useViabilityScene } from './useViabilityScene.js';
 const config = {
     fov: 40,
     cameraPosition: [0, 0],
-    cameraDistance: 80,
+    cameraDistance:40,
     cameraLookAt: [0, 0, 0],
     nearClip: 0.1,
     farClip: 1000,
-    directionalLightIntensity: 1.5,
-    ambientLightIntensity: 1.5,
+    directionalLightIntensity: 0,
+    ambientLightIntensity: 30,
     enableShadows: false,
 };
 
 const BUBBLE_COUNT = 120;
 
 const PALETTE = [
-    '#e05c5c', '#e07d30', '#d4b84a', '#5ab55a',
-    '#4a9de0', '#7c5ce0', '#d45cb5', '#4acec8',
+    '#af0225', '#d31121', '#f36c3e', '#ffc700','#80b642', '#b1c640', '#459497', '#70c4c8', '#00a9d1', '#006db0', '#694888', '#b0388f', '#ea9036', '#daa864',
+    // '#2979ff', '#82b1ff', '#bbdefb'
 ];
 
 const canvasEl = ref(null);
