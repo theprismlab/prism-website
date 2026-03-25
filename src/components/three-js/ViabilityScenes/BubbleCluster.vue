@@ -14,13 +14,13 @@ const clusterConfig = {
     cameraPosition: [0, 0, 0],
     cameraLookAt: [0, 0, 0],
     nearClip: 0.1,
-    farClip: 500,
+    farClip: 100,
 
     directionalLightIntensity: 0.06,
     ambientLightIntensity: 0.5,
 
     // ── Cluster ──
-    sphereCount: 100,
+    sphereCount: 90,
     clusterRadius: 7.75,
     minRadius: 0.5,
     maxRadius: 2.5,
