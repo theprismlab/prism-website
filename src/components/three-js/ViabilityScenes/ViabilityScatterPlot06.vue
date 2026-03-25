@@ -81,13 +81,10 @@ function computeScales(data) {
     const yScale = d3.scaleLinear().domain(cExtent).range([ySpread, -ySpread + ySpreadOffset]);
     const radiusScale = d3.scaleSqrt().domain(config.sphereRadiusScaleDomain).range(config.sphereRadiusScaleRange);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(config.sphereOpacityRange);
-    const xNorm = d3.scaleLinear().domain(xExtent).range([0, 1]);
-    const zNorm = d3.scaleLinear().domain(zExtent).range([0, 1]);
-    const colorScale = (x, value, z) => {
-        const a = new THREE.Color(d3.interpolateYlOrRd(xNorm(x)));
-        const b = new THREE.Color(d3.interpolateYlGnBu(zNorm(z)));
-        return new THREE.Color(a.r * b.r, a.g * b.g, a.b * b.b);
-    };
+    const rScale = d3.scaleLinear().domain(xExtent).range([0.2, 1.0]);
+    const gScale = d3.scaleLinear().domain(cExtent).range([0.2, 1.0]);
+    const bScale = d3.scaleLinear().domain(zExtent).range([0.2, 1.0]);
+    const colorScale = (x, value, z) => new THREE.Color(rScale(x), gScale(value), bScale(z));
 
     // const hScale = d3.scaleLinear().domain(xExtent).range([0.0, 0.75]);
     // const sScale = d3.scaleLinear().domain(cExtent).range([0.5, 1.0]);
