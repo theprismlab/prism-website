@@ -10,12 +10,12 @@ import { useViabilityScene } from './useViabilityScene.js';
 
 const sphereConfig = {
     // ── Camera ──
-    fov: 45,
-    cameraDistance: 45,
+    fov: 40,
+    cameraDistance: 55,
     cameraPosition: [0, 7.5, 25],
     cameraLookAt: [0, 6.5, 0],
-    nearClip: 0.1,
-    farClip: 200,
+    // nearClip: 10,// this is important to prevent z-fighting with the floor plane, which is at y=0
+    // farClip: 200, // 
 
     // ── Lighting ──
     directionalLightIntensity: 0.5,
@@ -25,7 +25,7 @@ const sphereConfig = {
     planeZoom: 10.8,
 
     // ── Spheres ──
-    sphereXStep: 8,
+    sphereXStep: 9,
     sphereZStep: 1,
     sphereOpacityRange: [0.7, 0.7],
     sphereRadiusScaleRange: [0.5, 3.5],
@@ -36,13 +36,14 @@ const sphereConfig = {
     sphereFloatAmplitudeRange: 0.09,
 
     // ── Y-axis spread ──
-    ySpread: 25,
+    ySpread: 20,
     ySpreadOffset: 8,
 };
 
 const props = defineProps({
     data: { type: Array, required: true },
     sceneConfig: { type: Object, default: () => ({}) },
+    darkMode: { type: Boolean, default: false },
 });
 
 const canvasEl = ref(null);
@@ -118,6 +119,12 @@ function buildSpheres(data) {
     } = config;
 
     const sampled = data.filter(d => d.x % sphereXStep === 0 && d.z % sphereZStep === 0);
+
+    if (props.darkMode) {
+        scene.scene.background = new THREE.Color(0x0a0a0f);
+    } else {
+        scene.scene.background = null;
+    }
    
    
 
@@ -127,11 +134,14 @@ function buildSpheres(data) {
         const randomJitter = 0.85 + Math.random() * 0.3;
         const radius = radiusScale(d.radius) * randomJitter;
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
+        const sphereColor = colorScale(d.x, d.value, d.z);
         const material = markRaw(new THREE.MeshStandardMaterial({
-            color: colorScale(d.x, d.value, d.z),
+            color: sphereColor,
+            emissive: props.darkMode ? sphereColor : new THREE.Color(0x000000),
+            emissiveIntensity: props.darkMode ? 0.6 : 0,
             transparent: true,
             opacity: opacityScale(d.z),
-            roughness: 0.0,
+            roughness: props.darkMode ? 0.2 : 0.0,
             metalness: 0.0,
         }));
         const sphere = markRaw(new THREE.Mesh(geometry, material));
