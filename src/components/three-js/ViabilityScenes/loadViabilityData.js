@@ -17,6 +17,7 @@ export async function loadViabilityCSV(configOverrides = {}) {
 
     return d3.csv(`${basePath}${config.fileName}`, d => ({
         ccle_name: d['Cell line'],
+        lineage: d['Lineage'],
         viability: +d['Viability'],
         pert_dose: +d['Dose'],
     }));
@@ -44,7 +45,11 @@ export function parseViabilityData(raw, configOverrides = {}) {
         d.value = +d.viability; // for easier access in mesh generation
         d.radius = +d.viability;
         d._info = d;
+        d.pert_dose = +d.pert_dose;
+        d.cell_line = d.ccle_name;
+        d.viability = +d.viability;
     });
+    raw = raw.sort((a,b)=> d3.ascending(a.pert_dose, b.pert_dose));
 
     return raw.filter(d => d.x > config.minCellLine);
 }
