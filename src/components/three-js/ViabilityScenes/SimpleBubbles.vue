@@ -17,6 +17,8 @@ const config = {
     directionalLightIntensity: 0,
     ambientLightIntensity: 30,
     enableShadows: false,
+    // 'drift' | 'bounce'
+    animationMode: 'bounce',
 };
 
 const BUBBLE_COUNT = 120;
@@ -69,7 +71,7 @@ function buildBubbles() {
             transmission: 0.92,
             thickness: 0.35,
             ior: 1.2,
-            iridescence: 0.4,
+            iridescence: 0.2,
             iridescenceIOR: 1.2,
             iridescenceThicknessRange: [0, 800],
             clearcoat: 1,
@@ -90,7 +92,9 @@ function buildBubbles() {
         scene.scene.add(mesh);
         meshes.push({
             mesh,
+            vx: (Math.random() - 0.5) * 0.02,
             vy: 0.003 + Math.random() * 0.015,
+            vz: (Math.random() - 0.5) * 0.02,
             driftSpeed: 0.04 + Math.random() * 0.12,
             driftAmp: 0.3 + Math.random() * 1.2,
             driftPhase: Math.random() * Math.PI * 2,
@@ -100,18 +104,94 @@ function buildBubbles() {
     }
 
     scene.onAnimate((elapsed) => {
-        const { halfH } = computeWorldBounds();
-        const top = halfH + 4;
-        const bottom = -halfH - 4;
-
-        for (const b of meshes) {
-            b.mesh.position.y += b.vy;
-            b.mesh.position.x = b.originX + Math.sin(elapsed * b.driftSpeed + b.driftPhase) * b.driftAmp;
-
-            if (b.mesh.position.y - b.radius > top) {
-                b.mesh.position.y = bottom - b.radius;
-            }
+        if (config.animationMode === 'drift') {
+            animateDrift(elapsed);
+        } else {
+            animateBounce();
         }
     });
+}
+
+function animateDrift(elapsed) {
+    const { halfH } = computeWorldBounds();
+    const top = halfH + 4;
+    const bottom = -halfH - 4;
+
+    for (const b of meshes) {
+        b.mesh.position.y += b.vy;
+        b.mesh.position.x = b.originX + Math.sin(elapsed * b.driftSpeed + b.driftPhase) * b.driftAmp;
+
+        if (b.mesh.position.y - b.radius > top) {
+            b.mesh.position.y = bottom - b.radius;
+        }
+    }
+}
+
+function animateBounce() {
+    const { halfW, halfH, halfD } = computeWorldBounds();
+
+    // Move and bounce off walls
+    for (const b of meshes) {
+        b.mesh.position.x += b.vx;
+        b.mesh.position.y += b.vy;
+        b.mesh.position.z += b.vz;
+
+        if (b.mesh.position.x + b.radius > halfW)  { b.mesh.position.x = halfW - b.radius;  b.vx *= -1; }
+        if (b.mesh.position.x - b.radius < -halfW) { b.mesh.position.x = -halfW + b.radius; b.vx *= -1; }
+        if (b.mesh.position.y + b.radius > halfH)  { b.mesh.position.y = halfH - b.radius;  b.vy *= -1; }
+        if (b.mesh.position.y - b.radius < -halfH) { b.mesh.position.y = -halfH + b.radius; b.vy *= -1; }
+        if (b.mesh.position.z + b.radius > halfD)  { b.mesh.position.z = halfD - b.radius;  b.vz *= -1; }
+        if (b.mesh.position.z - b.radius < -halfD) { b.mesh.position.z = -halfD + b.radius; b.vz *= -1; }
+    }
+
+    // Sphere-sphere collision detection & response
+    for (let i = 0; i < meshes.length; i++) {
+        const a = meshes[i];
+        for (let j = i + 1; j < meshes.length; j++) {
+            const b = meshes[j];
+            const dx = b.mesh.position.x - a.mesh.position.x;
+            const dy = b.mesh.position.y - a.mesh.position.y;
+            const dz = b.mesh.position.z - a.mesh.position.z;
+            const distSq = dx * dx + dy * dy + dz * dz;
+            const minDist = a.radius + b.radius;
+
+            if (distSq < minDist * minDist && distSq > 0.0001) {
+                const dist = Math.sqrt(distSq);
+                const nx = dx / dist;
+                const ny = dy / dist;
+                const nz = dz / dist;
+
+                // Separate overlapping bubbles
+                const overlap = (minDist - dist) * 0.5;
+                a.mesh.position.x -= nx * overlap;
+                a.mesh.position.y -= ny * overlap;
+                a.mesh.position.z -= nz * overlap;
+                b.mesh.position.x += nx * overlap;
+                b.mesh.position.y += ny * overlap;
+                b.mesh.position.z += nz * overlap;
+
+                // Elastic velocity swap along collision normal
+                const dvx = a.vx - b.vx;
+                const dvy = a.vy - b.vy;
+                const dvz = a.vz - b.vz;
+                const dot = dvx * nx + dvy * ny + dvz * nz;
+
+                if (dot > 0) {
+                    const massA = a.radius * a.radius * a.radius;
+                    const massB = b.radius * b.radius * b.radius;
+                    const totalMass = massA + massB;
+                    const impulseA = (2 * massB / totalMass) * dot;
+                    const impulseB = (2 * massA / totalMass) * dot;
+
+                    a.vx -= impulseA * nx;
+                    a.vy -= impulseA * ny;
+                    a.vz -= impulseA * nz;
+                    b.vx += impulseB * nx;
+                    b.vy += impulseB * ny;
+                    b.vz += impulseB * nz;
+                }
+            }
+        }
+    }
 }
 </script>
