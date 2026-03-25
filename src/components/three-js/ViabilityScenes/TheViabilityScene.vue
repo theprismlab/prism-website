@@ -3,7 +3,8 @@
 
         <ViabilityHeatmap v-if="data.length" :data="data" />
         <!-- <ViabilityScatterPlot v-if="data.length" :data="data" /> -->
-        <ViabilityCircles v-if="data.length" :data="data" /> 
+        <!-- <ViabilityCircles v-if="data.length" :data="data" />  -->
+        <ViabilityCirclesCloud v-if="data.length" :data="data" />
         <!-- <ViabilityCirclesOnPaths v-if="data.length" :data="data" /> -->
         <!-- <ViabilityMesh v-if="data.length" :data="data" />  -->
         <!-- <GeneratedCirclesOnPaths v-if="data.length" :data="data" /> -->
@@ -16,6 +17,7 @@ import ViabilityHeatmap from './ViabilityHeatmap.vue';
 import ViabilityScatterPlot from './ViabilityScatterPlot.vue';
 import ViabilityCirclesOnPaths from './ViabilityCirclesOnPaths.vue';
 import ViabilityCircles from './ViabilityCircles.vue';
+import ViabilityCirclesCloud from './ViabilityCirclesCloud.vue';
 import GeneratedCirclesOnPaths from '../GeneratedCirclesOnPaths/Index.vue';
 import ViabilityMesh from './ViabilityMesh.vue';
 
