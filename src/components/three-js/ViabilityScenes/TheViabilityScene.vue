@@ -1,8 +1,9 @@
 <template>
 
 
-        <ViabilityHeatmap v-if="data.length" :data="data" />
-        <ViabilityScatterPlot v-if="data.length" :data="data" />
+        <!-- <ViabilityHeatmap v-if="data.length" :data="data" />
+        <ViabilityScatterPlot v-if="data.length" :data="data" /> -->
+        <BubbleCluster />
         <!-- <SimpleBubbles /> -->
 
         <!-- <ViabilityCircles v-if="data.length" :data="data" />  -->
@@ -23,6 +24,7 @@ import GeneratedCirclesCloud from './GeneratedCirclesCloud.vue';
 import GeneratedCirclesOnPaths from '../GeneratedCirclesOnPaths/Index.vue';
 import ViabilityMesh from './ViabilityMesh.vue';
 import SimpleBubbles from './SimpleBubbles.vue';
+import BubbleCluster from './BubbleCluster.vue';
 const data = ref([]);
 
 onMounted(async () => {
