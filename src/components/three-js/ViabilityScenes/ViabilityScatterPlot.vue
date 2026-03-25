@@ -27,10 +27,10 @@ const sphereConfig = {
     // ── Spheres ──
     sphereXStep: 8,
     sphereZStep: 1,
-    sphereBaseRadiusMultiplier: 0.018,
-    sphereSizeScaleRange: [1.0, 0.3],
+    sphereBaseRadiusMultiplier: 0.009,
+    sphereSizeScaleRange: [1.0, 0.1],
     sphereOpacityRange: [0.7, 0.7],
-    sphereRadiusScaleRange: [1.5, 0.2],
+    sphereRadiusScaleRange: [2, 0.25],
     sphereFloatSpeedMin: 0.4,
     sphereFloatSpeedRange: 0.9,
     sphereFloatAmplitudeBase: 0.09,
@@ -38,7 +38,7 @@ const sphereConfig = {
 
     // ── Y-axis spread ──
     ySpread: 12,
-    ySpreadOffset: 10,
+    ySpreadOffset: 15,
 };
 
 const props = defineProps({
@@ -67,7 +67,7 @@ function computeScales(data) {
 
     const zExtent = d3.extent(data, d => d.z);
     const xExtent = d3.extent(data, d => d.x);
-
+    const cExtent = d3.extent(data, d => d.value);
     const vFov = THREE.MathUtils.degToRad(fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
     const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
@@ -78,10 +78,7 @@ function computeScales(data) {
 
     const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight * 2]);
-
-    const yScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => d.viability))
-        .range([ySpread, -ySpread + ySpreadOffset]);
+    const yScale = d3.scaleLog().domain(cExtent).range([ySpread, -ySpread + ySpreadOffset]);
 
     return markRaw({
         xScale, zScale, yScale,
@@ -111,7 +108,7 @@ function buildSpheres(data) {
     const opacityDepthScale = d3.scaleLinear().domain(zExtent).range(sphereOpacityRange);
 
     const viabilityExtent = d3.extent(data, d => d.viability);
-    const radiusScale = d3.scalePow().exponent(1).domain(viabilityExtent).range(sphereRadiusScaleRange);
+    const radiusScale = d3.scaleLinear().domain(viabilityExtent).range(sphereRadiusScaleRange);
 
     const spheres = [];
 
