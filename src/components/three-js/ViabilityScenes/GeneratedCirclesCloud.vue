@@ -9,12 +9,12 @@ import { ref, onMounted } from 'vue';
 import { useViabilityScene } from './useViabilityScene.js';
 
 const config = {
-    fov: 50,
+    fov: 40,
     cameraPosition: [0, 0],
     cameraDistance: 100,
     cameraLookAt: [0, 0, 0],
     nearClip: 0.1,
-    farClip: 2000,
+    farClip: 1000,
     directionalLightIntensity: 1.5,
     ambientLightIntensity: 1.5,
     enableShadows: false,
@@ -54,6 +54,7 @@ const bubbleState = {
 let bubblesInstancedMesh = null;
 let animateUnsubscribe = null;
 const tempObject = new THREE.Object3D();
+const tempColor = new THREE.Color();
 
 const canvasEl = ref(null);
 const scene = useViabilityScene(canvasEl, config);
@@ -88,9 +89,9 @@ function computeGeneratedScales() {
         .domain([0, 1])
         .range([bounds.minZ + margin, bounds.maxZ - margin]);
 
-    const radiusScale = d3.scaleSqrt()
+    const radiusScale = d3.scaleLinear()
         .domain([0, 1])
-        .range([0, 3.2]);
+        .range([0, 4]);
 
     return { xScale, yScale, zScale, radiusScale };
 }
@@ -150,6 +151,10 @@ function registerBubbleAnimation() {
 
         const floorY = bubbleState.floorY ?? bubbleState.bounds.minY;
 
+        const { minX, maxX, minZ, maxZ } = bubbleState.bounds;
+        const xRange = maxX - minX || 1;
+        const zRange = maxZ - minZ || 1;
+
         for (let i = 0; i < bubbleState.count; i++) {
             bubbleState.y[i] += bubbleState.vy[i];
 
@@ -172,9 +177,16 @@ function registerBubbleAnimation() {
             tempObject.scale.set(s, s, s);
             tempObject.updateMatrix();
             bubblesInstancedMesh.setMatrixAt(i, tempObject.matrix);
+
+            const normX = (bubbleState.x[i] - minX) / xRange;
+            const normZ = (bubbleState.z[i] - minZ) / zRange;
+            const t = (normX * 0.4 + riseProgress * 0.4 + normZ * 0.2) % 1;
+            tempColor.setStyle(d3.interpolateRainbow(t));
+            bubblesInstancedMesh.setColorAt(i, tempColor);
         }
 
         bubblesInstancedMesh.instanceMatrix.needsUpdate = true;
+        bubblesInstancedMesh.instanceColor.needsUpdate = true;
     });
 }
 
@@ -243,6 +255,10 @@ function buildCircles(count) {
     bubblesInstancedMesh = new THREE.InstancedMesh(geometry, material, count);
     bubblesInstancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
+    const { minX, maxX, minZ, maxZ } = bubbleState.bounds;
+    const xRange = maxX - minX || 1;
+    const zRange = maxZ - minZ || 1;
+
     for (let i = 0; i < count; i++) {
         bubbleState.scale[i] = radiusScale(Math.random());
         respawnBubble(i);
@@ -256,6 +272,12 @@ function buildCircles(count) {
         tempObject.scale.set(s, s, s);
         tempObject.updateMatrix();
         bubblesInstancedMesh.setMatrixAt(i, tempObject.matrix);
+
+        const normX = (bubbleState.x[i] - minX) / xRange;
+        const normZ = (bubbleState.z[i] - minZ) / zRange;
+        const t = (normX * 0.4 + riseProgress * 0.4 + normZ * 0.2) % 1;
+        tempColor.setStyle(d3.interpolateSinebow(t));
+        bubblesInstancedMesh.setColorAt(i, tempColor);
     }
 
     scene.scene.add(bubblesInstancedMesh);
