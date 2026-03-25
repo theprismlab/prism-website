@@ -10,8 +10,8 @@ import { useViabilityScene } from './useViabilityScene.js';
 
 const sphereConfig = {
     // ── Camera ──
-    fov: 40,
-    cameraDistance: 55,
+    fov: 45,
+    cameraDistance: 45,
     cameraPosition: [0, 7.5, 25],
     cameraLookAt: [0, 6.5, 0],
     // nearClip: 10,// this is important to prevent z-fighting with the floor plane, which is at y=0
@@ -19,17 +19,17 @@ const sphereConfig = {
 
     // ── Lighting ──
     directionalLightIntensity: 0.5,
-    ambientLightIntensity: 0.5,
+    ambientLightIntensity: 0.25,
 
-    // ── Planes ──
-    planeZoom: 10.8,
 
     // ── Spheres ──
-    sphereXStep: 9,
+    sphereXStep: 8,
     sphereZStep: 1,
-    sphereOpacityRange: [0.7, 0.7],
+    sphereOpacityRange: [0.25, 0.75],
+    // sphereRadiusScaleRange: [0.5, 3.5],
+    // sphereRadiusScaleDomain: [1, 0],
     sphereRadiusScaleRange: [0.5, 3.5],
-    sphereRadiusScaleDomain: [1, 0],
+    sphereRadiusScaleDomain: [0, 1],
     sphereFloatSpeedMin: 0.4,
     sphereFloatSpeedRange: 0.9,
     sphereFloatAmplitudeBase: 0.09,
@@ -137,8 +137,11 @@ function buildSpheres(data) {
     const spheres = [];
 
     sampled.forEach(d => {
+        const radiusRandom = Math.random();
+        console.log(radiusRandom);
         const randomJitter = 0.85 + Math.random() * 0.3;
-        const radius = radiusScale(d.radius) * randomJitter;
+        // const radius = radiusScale(d.radius) * randomJitter;
+              const radius = radiusScale(radiusRandom) * randomJitter;
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
         const sphereColor = colorScale(d.x, d.value, d.z);
         const material = markRaw(new THREE.MeshStandardMaterial({
