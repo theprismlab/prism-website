@@ -20,6 +20,10 @@ const config = {
     enableShadows: false,
     radius: 0.5,
     segments: 18,
+    floorYOffset: 6,
+    floorOpacity: 0.18,
+    floorColor: '#7fb3ff',
+    floorOutlineColor: '#d7e8ff',
 };
 
 const props = defineProps({
@@ -41,6 +45,7 @@ const bubbleState = {
     scale: [],
     radius: [],
     bounds: null,
+    floorY: null,
 };
 let bubblesInstancedMesh = null;
 const tempObject = new THREE.Object3D();
@@ -104,11 +109,44 @@ function computeWorldBounds() {
     };
 }
 
+function buildFloor() {
+    const bounds = computeWorldBounds();
+    const floorWidth = bounds.maxX - bounds.minX;
+    const floorDepth = bounds.maxZ - bounds.minZ;
+    const floorY = bounds.minY + config.floorYOffset;
+    bubbleState.floorY = floorY;
+
+    const floorGeometry = new THREE.PlaneGeometry(floorWidth, floorDepth);
+    const floorMaterial = new THREE.MeshLambertMaterial({
+        color: config.floorColor,
+        transparent: true,
+        opacity: config.floorOpacity,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+    });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0, floorY, 0);
+    scene.scene.add(floor);
+
+    const outlineGeometry = new THREE.EdgesGeometry(floorGeometry);
+    const outlineMaterial = new THREE.LineBasicMaterial({
+        color: config.floorOutlineColor,
+        transparent: true,
+        opacity: 0.8,
+    });
+    const outline = new THREE.LineSegments(outlineGeometry, outlineMaterial);
+    outline.rotation.x = -Math.PI / 2;
+    outline.position.set(0, floorY + 0.02, 0);
+    scene.scene.add(outline);
+}
+
 function registerBubbleAnimation() {
     scene.onAnimate((elapsed) => {
         if (!bubblesInstancedMesh || !bubbleState.bounds) return;
 
-        const { minX, maxX, minY, maxY, minZ, maxZ } = bubbleState.bounds;
+        const { minX, maxY, maxX, minZ, maxZ } = bubbleState.bounds;
+        const floorY = bubbleState.floorY ?? bubbleState.bounds.minY;
 
         for (let i = 0; i < bubbleState.count; i++) {
             const radius = bubbleState.radius[i];
@@ -118,7 +156,7 @@ function registerBubbleAnimation() {
 
             const minBubbleX = minX + radius;
             const maxBubbleX = maxX - radius;
-            const minBubbleY = minY + radius;
+            const minBubbleY = floorY + radius;
             const maxBubbleY = maxY - radius;
             const minBubbleZ = minZ + radius;
             const maxBubbleZ = maxZ - radius;
@@ -156,6 +194,7 @@ function registerBubbleAnimation() {
 }
 
 function buildCircles(data) {
+    buildFloor();
     const { xScale, yScale, zScale, radiusScale } = computeScales(data);
     bubbleState.bounds = computeWorldBounds();
     bubbleState.count = data.length;
