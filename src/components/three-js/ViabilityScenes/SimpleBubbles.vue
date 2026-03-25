@@ -13,7 +13,7 @@ const config = {
     cameraDistance:30,
     cameraLookAt: [0, 0, 0],
     nearClip: 0.1,
-    farClip: 100,
+    farClip: 60,
     directionalLightIntensity: 0,
     ambientLightIntensity: 30,
     enableShadows: false,
@@ -23,6 +23,7 @@ const config = {
 };
 
 const BUBBLE_COUNT = 100;
+const MAX_DEPTH = 10;
 
 const PALETTE = [
     '#af0225', '#d31121', '#f36c3e', '#ffc700','#80b642', '#b1c640', '#459497', '#70c4c8', '#00a9d1', '#006db0', '#694888', '#b0388f', '#ea9036', '#daa864',
@@ -51,7 +52,7 @@ function computeWorldBounds() {
     const vFov = THREE.MathUtils.degToRad(config.fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * config.cameraDistance;
     const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
-    return { halfW: visibleWidth / 2, halfH: visibleHeight / 2, halfD: visibleHeight * 1 };
+    return { halfW: visibleWidth / 2, halfH: visibleHeight / 2, halfD: MAX_DEPTH / 2 };
 }
 
 function buildBubbles() {
