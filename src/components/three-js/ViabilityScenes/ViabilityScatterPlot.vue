@@ -80,9 +80,10 @@ function computeScales(data) {
     const yScale = d3.scaleLinear().domain(cExtent).range([ySpread, -ySpread + ySpreadOffset]);
     const radiusScale = d3.scaleSqrt().domain(config.sphereRadiusScaleDomain).range(config.sphereRadiusScaleRange);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(config.sphereOpacityRange);
-    const colorScaleA = d3.scaleSequential(d3.interpolateYlGnBu).domain([zExtent[0], zExtent[1]/2]);
-    const colorScaleB = d3.scaleSequential(d3.interpolateYlOrRd).domain([zExtent[1]/2, zExtent[1]]);
-    const colorScale = d => d.z < zExtent[1]/2 ? colorScaleA(d.z) : colorScaleB(d.z);
+    const zMid = zExtent[1] / 2;
+    const colorScaleA = d3.scaleSequential(d3.interpolateYlGnBu).domain([zExtent[0], zMid]);
+    const colorScaleB = d3.scaleSequential(d3.interpolateYlOrRd).domain([zMid, zExtent[1]]);
+    const colorScale = z => z < zMid ? colorScaleA(z) : colorScaleB(z);
 
     return markRaw({
         xScale, zScale, yScale, radiusScale, opacityScale, colorScale,
@@ -107,7 +108,7 @@ function buildSpheres(data) {
     } = config;
 
     const sampled = data.filter(d => d.x % sphereXStep === 0 && d.z % sphereZStep === 0);
-
+   
    
 
     const spheres = [];
