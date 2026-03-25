@@ -52,6 +52,7 @@ const bubbleState = {
     maxRise: 0,
 };
 let bubblesInstancedMesh = null;
+let animateUnsubscribe = null;
 const tempObject = new THREE.Object3D();
 
 const canvasEl = ref(null);
@@ -143,7 +144,8 @@ function buildFloor() {
 }
 
 function registerBubbleAnimation() {
-    scene.onAnimate((elapsed) => {
+    if (animateUnsubscribe) animateUnsubscribe();
+    animateUnsubscribe = scene.onAnimate((elapsed) => {
         if (!bubblesInstancedMesh || !bubbleState.bounds) return;
 
         const floorY = bubbleState.floorY ?? bubbleState.bounds.minY;
@@ -245,8 +247,13 @@ function buildCircles(count) {
         bubbleState.scale[i] = radiusScale(Math.random());
         respawnBubble(i);
 
+        // Stagger initial Y positions across the full rise range for consistent flow
+        bubbleState.y[i] = bubbleState.floorY + Math.random() * (bubbleState.maxRise - bubbleState.floorY);
+
+        const riseProgress = (bubbleState.y[i] - bubbleState.floorY) / Math.max(1, bubbleState.maxRise - bubbleState.floorY);
+        const s = bubbleState.scale[i] * riseProgress * bubbleState.radiusNoise[i];
         tempObject.position.set(bubbleState.x[i], bubbleState.y[i], bubbleState.z[i]);
-        tempObject.scale.set(0, 0, 0);
+        tempObject.scale.set(s, s, s);
         tempObject.updateMatrix();
         bubblesInstancedMesh.setMatrixAt(i, tempObject.matrix);
     }
