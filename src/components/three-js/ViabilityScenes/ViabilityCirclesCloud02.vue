@@ -39,7 +39,6 @@ const bubbleState = {
     bobSpeed: [],
     bobPhase: [],
     scale: [],
-    radius: [],
     bounds: null,
 };
 let bubblesInstancedMesh = null;
@@ -104,6 +103,13 @@ function computeWorldBounds() {
     };
 }
 
+function wrapValue(value, min, max) {
+    const span = max - min;
+    if (value > max) return min + ((value - max) % span);
+    if (value < min) return max - ((min - value) % span);
+    return value;
+}
+
 function registerBubbleAnimation() {
     scene.onAnimate((elapsed) => {
         if (!bubblesInstancedMesh || !bubbleState.bounds) return;
@@ -111,38 +117,13 @@ function registerBubbleAnimation() {
         const { minX, maxX, minY, maxY, minZ, maxZ } = bubbleState.bounds;
 
         for (let i = 0; i < bubbleState.count; i++) {
-            const radius = bubbleState.radius[i];
-            const nextX = bubbleState.x[i] + bubbleState.vx[i];
-            const nextY = bubbleState.y[i] + bubbleState.vy[i] + (Math.sin(elapsed * bubbleState.bobSpeed[i] + bubbleState.bobPhase[i]) * bubbleState.bobAmp[i]);
-            const nextZ = bubbleState.z[i] + bubbleState.vz[i];
-
-            const minBubbleX = minX + radius;
-            const maxBubbleX = maxX - radius;
-            const minBubbleY = minY + radius;
-            const maxBubbleY = maxY - radius;
-            const minBubbleZ = minZ + radius;
-            const maxBubbleZ = maxZ - radius;
-
-            if (nextX <= minBubbleX || nextX >= maxBubbleX) {
-                bubbleState.vx[i] *= -1;
-                bubbleState.x[i] = THREE.MathUtils.clamp(nextX, minBubbleX, maxBubbleX);
-            } else {
-                bubbleState.x[i] = nextX;
-            }
-
-            if (nextY <= minBubbleY || nextY >= maxBubbleY) {
-                bubbleState.vy[i] *= -1;
-                bubbleState.y[i] = THREE.MathUtils.clamp(nextY, minBubbleY, maxBubbleY);
-            } else {
-                bubbleState.y[i] = nextY;
-            }
-
-            if (nextZ <= minBubbleZ || nextZ >= maxBubbleZ) {
-                bubbleState.vz[i] *= -1;
-                bubbleState.z[i] = THREE.MathUtils.clamp(nextZ, minBubbleZ, maxBubbleZ);
-            } else {
-                bubbleState.z[i] = nextZ;
-            }
+            bubbleState.x[i] = wrapValue(bubbleState.x[i] + bubbleState.vx[i], minX, maxX);
+            bubbleState.y[i] = wrapValue(
+                bubbleState.y[i] + bubbleState.vy[i] + (Math.sin(elapsed * bubbleState.bobSpeed[i] + bubbleState.bobPhase[i]) * bubbleState.bobAmp[i]),
+                minY,
+                maxY,
+            );
+            bubbleState.z[i] = wrapValue(bubbleState.z[i] + bubbleState.vz[i], minZ, maxZ);
 
             const s = bubbleState.scale[i];
             tempObject.position.set(bubbleState.x[i], bubbleState.y[i], bubbleState.z[i]);
@@ -169,7 +150,6 @@ function buildCircles(data) {
     bubbleState.bobSpeed = new Array(data.length);
     bubbleState.bobPhase = new Array(data.length);
     bubbleState.scale = new Array(data.length);
-    bubbleState.radius = new Array(data.length);
 
     const geometry = new THREE.SphereGeometry(config.radius, config.segments, config.segments);
     const material = new THREE.MeshPhysicalMaterial({
@@ -198,7 +178,6 @@ function buildCircles(data) {
     data.forEach((d, i) => {
         const scale = radiusScale(d.viability);
         bubbleState.scale[i] = scale;
-        bubbleState.radius[i] = scale * config.radius;
         bubbleState.x[i] = xScale(d.x);
         bubbleState.y[i] = yScale(d.viability);
         bubbleState.z[i] = zScale(d.z);
