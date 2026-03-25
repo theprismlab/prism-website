@@ -28,15 +28,15 @@ const sphereConfig = {
     sphereOpacityRange: [0.25, 0.75],
     // sphereRadiusScaleRange: [0.5, 3.5],
     // sphereRadiusScaleDomain: [1, 0],
-    sphereRadiusScaleRange: [0.5, 3.5],
-    sphereRadiusScaleDomain: [0, 1],
+    sphereRadiusScaleRange: [0.5, 1],
+    sphereRadiusScaleDomain: [0, 50],
     sphereFloatSpeedMin: 0.4,
     sphereFloatSpeedRange: 0.9,
     sphereFloatAmplitudeBase: 0.09,
     sphereFloatAmplitudeRange: 0.09,
 
     // ── Y-axis spread ──
-    ySpread: 20,
+    ySpread: 25,
     ySpreadOffset: 8,
 };
 
@@ -138,8 +138,7 @@ function buildSpheres(data) {
 
     sampled.forEach(d => {
         const radiusRandom = Math.random();
-        console.log(radiusRandom);
-        const randomJitter = 0.85 + Math.random() * 0.3;
+        const randomJitter = 0.85 + Math.random() ;
         // const radius = radiusScale(d.radius) * randomJitter;
               const radius = radiusScale(radiusRandom) * randomJitter;
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
