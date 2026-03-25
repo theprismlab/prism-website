@@ -11,7 +11,7 @@ import { useViabilityScene } from './useViabilityScene.js';
 const config = {
     fov: 40,
     cameraPosition: [0, 0],
-    cameraDistance: 100,
+    cameraDistance: 70,
     cameraLookAt: [0, 0, 0],
     nearClip: 0.1,
     farClip: 1000,
@@ -24,11 +24,24 @@ const config = {
     floorOpacity: 0.18,
     floorColor: '#7fb3ff',
     floorOutlineColor: '#d7e8ff',
+    // 'categorical' | 'rainbow' | 'position'
+    colorScale: 'rainbow',
 };
 
 const props = defineProps({
     data: { type: Array, required: true },
 });
+
+const CATEGORY_COLORS = [
+    '#e05c5c', // red
+    '#e07d30', // orange
+    '#d4b84a', // yellow
+    '#5ab55a', // green
+    '#4a9de0', // blue
+    '#7c5ce0', // violet
+    '#d45cb5', // pink
+    '#4acec8', // teal
+];
 
 const MAX_BUBBLES = 5000;
 const bubbleState = {
@@ -47,6 +60,7 @@ const bubbleState = {
     driftPhaseZ: [],
     scale: [],
     radiusNoise: [],
+    colorIndex: [],
     bounds: null,
     floorY: null,
     maxRise: 0,
@@ -55,6 +69,21 @@ let bubblesInstancedMesh = null;
 let animateUnsubscribe = null;
 const tempObject = new THREE.Object3D();
 const tempColor = new THREE.Color();
+
+function getBubbleColor(index, riseProgress) {
+    if (config.colorScale === 'rainbow') {
+        const t = (riseProgress + bubbleState.colorIndex[index] / CATEGORY_COLORS.length) % 1;
+        return tempColor.setStyle(d3.interpolateRainbow(t));
+    }
+    if (config.colorScale === 'position') {
+        const bounds = bubbleState.bounds;
+        const normX = (bubbleState.x[index] - bounds.minX) / (bounds.maxX - bounds.minX || 1);
+        const normZ = (bubbleState.z[index] - bounds.minZ) / (bounds.maxZ - bounds.minZ || 1);
+        const t = (normX * 0.4 + riseProgress * 0.4 + normZ * 0.2) % 1;
+        return tempColor.setStyle(d3.interpolateYlOrRd(t+-0.1));
+    }
+    return tempColor.setStyle(CATEGORY_COLORS[bubbleState.colorIndex[index]]);
+}
 
 const canvasEl = ref(null);
 const scene = useViabilityScene(canvasEl, config);
@@ -151,10 +180,6 @@ function registerBubbleAnimation() {
 
         const floorY = bubbleState.floorY ?? bubbleState.bounds.minY;
 
-        const { minX, maxX, minZ, maxZ } = bubbleState.bounds;
-        const xRange = maxX - minX || 1;
-        const zRange = maxZ - minZ || 1;
-
         for (let i = 0; i < bubbleState.count; i++) {
             bubbleState.y[i] += bubbleState.vy[i];
 
@@ -178,15 +203,12 @@ function registerBubbleAnimation() {
             tempObject.updateMatrix();
             bubblesInstancedMesh.setMatrixAt(i, tempObject.matrix);
 
-            const normX = (bubbleState.x[i] - minX) / xRange;
-            const normZ = (bubbleState.z[i] - minZ) / zRange;
-            const t = (normX * 0.4 + riseProgress * 0.4 + normZ * 0.2) % 1;
-            tempColor.setStyle(d3.interpolateRainbow(t));
+            getBubbleColor(i, riseProgress);
             bubblesInstancedMesh.setColorAt(i, tempColor);
         }
 
         bubblesInstancedMesh.instanceMatrix.needsUpdate = true;
-        bubblesInstancedMesh.instanceColor.needsUpdate = true;
+        if (bubblesInstancedMesh.instanceColor) bubblesInstancedMesh.instanceColor.needsUpdate = true;
     });
 }
 
@@ -207,6 +229,7 @@ function respawnBubble(index) {
     bubbleState.driftPhaseX[index] = Math.random() * Math.PI * 2;
     bubbleState.driftPhaseZ[index] = Math.random() * Math.PI * 2;
     bubbleState.radiusNoise[index] = 0.7 + Math.random() * 0.7;
+    bubbleState.colorIndex[index] = Math.floor(Math.random() * CATEGORY_COLORS.length);
 }
 
 function buildCircles(count) {
@@ -227,6 +250,7 @@ function buildCircles(count) {
     bubbleState.driftPhaseZ = new Array(count);
     bubbleState.scale = new Array(count);
     bubbleState.radiusNoise = new Array(count);
+    bubbleState.colorIndex = new Array(count);
     bubbleState.maxRise = bubbleState.bounds.maxY - (config.radius * 6);
 
     const { radiusScale } = computeGeneratedScales();
@@ -255,10 +279,6 @@ function buildCircles(count) {
     bubblesInstancedMesh = new THREE.InstancedMesh(geometry, material, count);
     bubblesInstancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
-    const { minX, maxX, minZ, maxZ } = bubbleState.bounds;
-    const xRange = maxX - minX || 1;
-    const zRange = maxZ - minZ || 1;
-
     for (let i = 0; i < count; i++) {
         bubbleState.scale[i] = radiusScale(Math.random());
         respawnBubble(i);
@@ -273,10 +293,7 @@ function buildCircles(count) {
         tempObject.updateMatrix();
         bubblesInstancedMesh.setMatrixAt(i, tempObject.matrix);
 
-        const normX = (bubbleState.x[i] - minX) / xRange;
-        const normZ = (bubbleState.z[i] - minZ) / zRange;
-        const t = (normX * 0.4 + riseProgress * 0.4 + normZ * 0.2) % 1;
-        tempColor.setStyle(d3.interpolateSinebow(t));
+        getBubbleColor(i, riseProgress);
         bubblesInstancedMesh.setColorAt(i, tempColor);
     }
 
