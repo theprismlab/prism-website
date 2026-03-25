@@ -86,7 +86,12 @@ function computeScales(data) {
     const colorScale = (x, value, z) => {
         const a = new THREE.Color(d3.interpolateYlOrRd(xNorm(x)));
         const b = new THREE.Color(d3.interpolateYlGnBu(zNorm(z)));
-        return new THREE.Color(a.r * b.r, a.g * b.g, a.b * b.b);
+        const c = new THREE.Color(a.r * b.r, a.g * b.g, a.b * b.b);
+        const luminance = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b;
+        if (luminance < 0.12) {
+            c.lerp(a, 0.7);
+        }
+        return c;
     };
 
     // const hScale = d3.scaleLinear().domain(xExtent).range([0.0, 0.75]);
