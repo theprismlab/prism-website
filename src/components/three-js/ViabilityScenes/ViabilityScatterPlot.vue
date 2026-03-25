@@ -85,6 +85,16 @@ function computeScales(data) {
     const bScale = d3.scaleLinear().domain(zExtent).range([0.2, 1.0]);
     const colorScale = (x, value, z) => new THREE.Color(rScale(x), gScale(value), bScale(z));
 
+    // const hScale = d3.scaleLinear().domain(xExtent).range([0.0, 0.75]);
+    // const sScale = d3.scaleLinear().domain(cExtent).range([0.5, 1.0]);
+    // const lScale = d3.scaleLinear().domain(zExtent).range([0.35, 0.55]);
+    // const colorScale = (x, value, z) => new THREE.Color().setHSL(hScale(x), sScale(value), lScale(z));
+
+    // const hScale = d3.scaleLinear().domain(xExtent).range([0.2, 1.0]);
+    // const sScale = d3.scaleLinear().domain(cExtent).range([0.4, 1.0]);
+    // const lScale = d3.scaleLinear().domain(zExtent).range([0.35, 0.55]);
+    // const colorScale = (x, value, z) => new THREE.Color().setHSL(hScale(x), sScale(value), lScale(z));
+
     return markRaw({
         xScale, zScale, yScale, radiusScale, opacityScale, colorScale,
         xOffset: sceneWidth / 2,
