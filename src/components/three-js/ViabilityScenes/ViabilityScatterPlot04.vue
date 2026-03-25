@@ -80,12 +80,10 @@ function computeScales(data) {
     const yScale = d3.scaleLinear().domain(cExtent).range([ySpread, -ySpread + ySpreadOffset]);
     const radiusScale = d3.scaleSqrt().domain(config.sphereRadiusScaleDomain).range(config.sphereRadiusScaleRange);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(config.sphereOpacityRange);
-    const colorScaleA = d3.scaleSequential(d3.interpolateYlGnBu).domain([zExtent[0], zExtent[1]/2]);
-    const colorScaleB = d3.scaleSequential(d3.interpolateYlOrRd).domain([zExtent[1]/2, zExtent[1]]);
-    const colorScale = d => d.z < zExtent[1]/2 ? colorScaleA(d.z) : colorScaleB(d.z);
+    const valueColorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain(cExtent);
 
     return markRaw({
-        xScale, zScale, yScale, radiusScale, opacityScale, colorScale,
+        xScale, zScale, yScale, radiusScale, opacityScale, valueColorScale,
         xOffset: sceneWidth / 2,
         zOffset: visibleHeight / 2,
         xExtent,
@@ -99,7 +97,7 @@ function computeScales(data) {
 
 function buildSpheres(data) {
     const scales = computeScales(data);
-    const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, radiusScale, opacityScale, colorScale } = scales;
+    const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, radiusScale, opacityScale, valueColorScale } = scales;
     const {
         sphereXStep, sphereZStep,
         sphereFloatSpeedMin, sphereFloatSpeedRange,
@@ -117,7 +115,7 @@ function buildSpheres(data) {
         const radius = radiusScale(d.radius) * randomJitter;
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
         const material = markRaw(new THREE.MeshStandardMaterial({
-            color: colorScale(d.z),
+            color: valueColorScale(d.value),
             transparent: true,
             opacity: opacityScale(d.z),
             roughness: 0.0,
