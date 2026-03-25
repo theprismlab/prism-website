@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { markRaw, ref, onMounted, onBeforeUnmount } from 'vue';
 
 /**
@@ -24,6 +25,7 @@ export function useViabilityScene(canvasEl, config = {}) {
     const height = ref(0);
 
     let scene, camera, renderer, clock;
+    let environmentTexture = null;
     let canvas = null;
     let lights = [];
     let animationFrameId = null;
@@ -118,6 +120,13 @@ export function useViabilityScene(canvasEl, config = {}) {
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.VSMShadowMap;
 
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        const roomEnvironment = new RoomEnvironment();
+        environmentTexture = pmremGenerator.fromScene(roomEnvironment, 0.04).texture;
+        scene.environment = environmentTexture;
+        roomEnvironment.dispose();
+        pmremGenerator.dispose();
+
         clock = markRaw(new THREE.Clock());
 
         resizeObserver = new ResizeObserver(() => {
@@ -141,6 +150,7 @@ export function useViabilityScene(canvasEl, config = {}) {
 
     onBeforeUnmount(() => {
         stopAnimation();
+        if (environmentTexture) environmentTexture.dispose();
         if (resizeObserver) resizeObserver.disconnect();
         clearTimeout(resizeTimer);
     });

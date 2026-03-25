@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import * as d3 from 'd3';
 import { ref, onMounted } from 'vue';
-import { useDefaultScene } from './useDefaultScene.js';
+import { useViabilityScene } from './useViabilityScene.js';
 
 const config = {
     // ── Camera ──
@@ -14,8 +14,12 @@ const config = {
     cameraPosition: [0, 0],
     cameraDistance: 200,
     cameraLookAt: [0, 0, 0],
-    nearClip: 0.5,
+    nearClip: 0.1,
     farClip: 1000,
+
+    // ── Lighting ──
+    directionalLightIntensity: 1.5,
+    ambientLightIntensity: 1.5,
 
     // ── Circles ──
     radius: 0.5,
@@ -26,24 +30,32 @@ const props = defineProps({
     data: { type: Array, required: true },
 });
 
+const bubbleMeshes = [];
+
 // Canvas element ref — useViabilityScene attaches the Three.js renderer to this
 const canvasEl = ref(null);
-const scene = useDefaultScene(canvasEl, config);
+const scene = useViabilityScene(canvasEl, config);
 
 onMounted(async () => {
     buildCircles(props.data);
+    registerBubbleAnimation();
 
     // Wait one frame for the renderer to be ready, then draw
     await new Promise(r => requestAnimationFrame(r));
     scene.render();
+    scene.startAnimation();
 
     // Re-create circles on window resize (scene clears meshes automatically)
-    scene.onRebuild(() => buildCircles(props.data));
+    scene.onRebuild(() => {
+        buildCircles(props.data);
+        registerBubbleAnimation();
+    });
 });
 
 // Compute d3 scales that map data values to Three.js world coordinates,
 // sized to fill the camera's visible area at the given distance
 function computeScales(data) {
+    data = data.filter((d, i) => i < 1000);
     // Calculate world-space dimensions visible to the camera
     const vFov = THREE.MathUtils.degToRad(config.fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * config.cameraDistance;
@@ -52,10 +64,6 @@ function computeScales(data) {
     const radiusScale = d3.scaleSqrt()
         .domain(d3.extent(data, d => +d.viability))
         .range([0.5, 3]);
-
-    const opacityScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => +d.z))
-        .range([0.1, 1]);
 
     const xScale = d3.scaleLinear()
         .domain(d3.extent(data, d => +d.x))
@@ -69,68 +77,96 @@ function computeScales(data) {
         .domain(d3.extent(data, d => +d.z))
         .range([-visibleHeight / 2, visibleHeight / 2]);
 
-    return { xScale, yScale, zScale, opacityScale, radiusScale };
+    return { xScale, yScale, zScale, radiusScale };
 }
 
-// Add rainbow-colored point lights arranged around the scene
-function addColoredLights() {
+function computeWorldBounds() {
     const vFov = THREE.MathUtils.degToRad(config.fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * config.cameraDistance;
-    const r = visibleHeight * 0.45;
-    const intensity = 8000;
-    const frontZ = config.cameraDistance * 0.5;
-    const backZ = -visibleHeight * 0.5;
+    const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
+    const visibleDepth = visibleHeight;
 
-    // ROYGBIV rainbow colors with x/y positions
-    const rainbow = [
-        { color: 0xff0000, x: r * 0.0,  y: r * 0.8  },   // Red — top center
-        { color: 0xff7700, x: r * 0.2,  y: r * 0.25 },   // Orange — upper right
-        { color: 0xffff00, x: r * 0.9,  y: -r * 0.1 },   // Yellow — right
-        { color: 0x00cc00, x: r * 0.4,  y: -r * 0.8 },   // Green — lower right
-        { color: 0x0066ff, x: -r * 0.4, y: -r * 0.7 },   // Blue — lower left
-        { color: 0x4400cc, x: -r * 0.9, y: -r * 0.1 },   // Indigo — left
-        { color: 0x8800aa, x: -r * 0.7, y: r * 0.5  },   // Violet — upper left
-    ];
+    return {
+        minX: -visibleWidth / 2,
+        maxX: visibleWidth / 2,
+        minY: -visibleHeight / 2,
+        maxY: visibleHeight / 2,
+        minZ: -visibleDepth / 2,
+        maxZ: visibleDepth / 2,
+    };
+}
 
-    // Place each color at front, middle, and back z-depths
-    [frontZ, 0, backZ].forEach(z => {
-        rainbow.forEach(({ color, x, y }) => {
-            const light = new THREE.PointLight(color, intensity, 0);
-            light.position.set(x, y, z);
-            scene.scene.add(light);
+function wrapValue(value, min, max) {
+    const span = max - min;
+    if (value > max) return min + (value - max) % span;
+    if (value < min) return max - (min - value) % span;
+    return value;
+}
+
+function registerBubbleAnimation() {
+    scene.onAnimate((elapsed) => {
+        bubbleMeshes.forEach((mesh, index) => {
+            const {
+                vx, vy, vz, bobAmp, bobSpeed, bobPhase,
+                xMin, xMax, yMin, yMax, zMin, zMax,
+            } = mesh.userData;
+
+            mesh.position.x = wrapValue(mesh.position.x + vx, xMin, xMax);
+            mesh.position.y = wrapValue(mesh.position.y + vy + (Math.sin(elapsed * bobSpeed + bobPhase) * bobAmp), yMin, yMax);
+            mesh.position.z = wrapValue(mesh.position.z + vz, zMin, zMax);
+
+            mesh.rotation.x += 0.001 + (index % 5) * 0.00015;
+            mesh.rotation.y += 0.0012 + (index % 7) * 0.00012;
         });
     });
 }
 
 // Create a sphere for each data point, positioned by the scales
 function buildCircles(data) {
-    addColoredLights();
-    const { xScale, yScale, zScale, opacityScale, radiusScale } = computeScales(data);
+    const { xScale, yScale, zScale, radiusScale } = computeScales(data);
+    const bounds = computeWorldBounds();
+    bubbleMeshes.length = 0;
     // Shared geometry — one allocation reused by all spheres
     const geometry = new THREE.SphereGeometry(config.radius, config.segments, config.segments);
 
     data.forEach(d => {
         const material = new THREE.MeshPhysicalMaterial({
             color: '#ffffff',
-            roughness: 0.1,
+            roughness: 0.0,
             metalness: 0.0,
             transparent: true,
-            opacity: 0.75,
-            transmission: 0.6,
+            opacity: 1,
+            transmission: 1,
             thickness: 0.5,
-            ior: 1.4,
-            iridescence: 0.4,
-            iridescenceIOR: 1.3,
-            iridescenceThicknessRange: [100, 400],
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.05,
-            specularIntensity: 0.8,
+            ior: 1,
+            iridescence: 1,
+            iridescenceIOR: 1,
+            iridescenceThicknessRange: [0, 1200],
+            clearcoat: 1,
+            clearcoatRoughness: 0,
+            envMapIntensity: 1.5,
+            specularIntensity: 1,
             side: THREE.DoubleSide,
+
         });
 
         const mesh = new THREE.Mesh(geometry, material);
+        const scale = radiusScale(d.viability);
         mesh.position.set(xScale(d.x), yScale(d.viability), zScale(d.z));
-        mesh.scale.set(radiusScale(d.viability), radiusScale(d.viability), radiusScale(d.viability));
+        mesh.scale.set(scale, scale, scale);
+        mesh.userData.vx = (Math.random() - 0.5) * 0.05;
+        mesh.userData.vy = 0.01 + Math.random() * 0.04;
+        mesh.userData.vz = (Math.random() - 0.5) * 0.04;
+        mesh.userData.bobAmp = 0.003 + Math.random() * 0.01;
+        mesh.userData.bobSpeed = 0.6 + Math.random() * 1.2;
+        mesh.userData.bobPhase = Math.random() * Math.PI * 2;
+        mesh.userData.xMin = bounds.minX;
+        mesh.userData.xMax = bounds.maxX;
+        mesh.userData.yMin = bounds.minY;
+        mesh.userData.yMax = bounds.maxY;
+        mesh.userData.zMin = bounds.minZ;
+        mesh.userData.zMax = bounds.maxZ;
+        bubbleMeshes.push(mesh);
         scene.scene.add(mesh);
     });
 }
