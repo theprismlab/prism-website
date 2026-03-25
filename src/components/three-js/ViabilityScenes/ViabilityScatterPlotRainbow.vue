@@ -67,7 +67,6 @@ function computeScales(data) {
 
     const zExtent = d3.extent(data, d => d.z);
     const xExtent = d3.extent(data, d => d.x);
-    const xThird = xExtent[0] + (xExtent[1] - xExtent[0]) / 3;
     const cExtent = d3.extent(data, d => d.value);
     const vFov = THREE.MathUtils.degToRad(fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
@@ -82,14 +81,17 @@ function computeScales(data) {
     const yScale = d3.scaleLinear().domain(cExtent).range([ySpread, -ySpread + ySpreadOffset]);
     const radiusScale = d3.scaleSqrt().domain(config.sphereRadiusScaleDomain).range(config.sphereRadiusScaleRange);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(config.sphereOpacityRange);
-    const xNorm = d3.scaleLinear().domain([xThird, xExtent[1]]).range([0.2, 0.85]);
-    const zNorm = d3.scaleLinear().domain(zExtent).range([0.3, 0.85]);
-
+    const xNorm = d3.scaleLinear().domain(xExtent).range([0, 1]);
+    const zNorm = d3.scaleLinear().domain(zExtent).range([0, 1]);
     const colorScale = (x, value, z) => {
-        if (x < xThird) {
-            return new THREE.Color(d3.interpolateYlGnBu(zNorm(z)));
+        const a = new THREE.Color(d3.interpolateYlOrRd(xNorm(x)));
+        const b = new THREE.Color(d3.interpolateYlGnBu(zNorm(z)));
+        const c = new THREE.Color(a.r * b.r, a.g * b.g, a.b * b.b);
+        const luminance = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b;
+        if (luminance < 0.12) {
+            c.lerp(a, 0.7);
         }
-        return new THREE.Color(d3.interpolateYlOrRd(xNorm(x)));
+        return c;
     };
 
     // const hScale = d3.scaleLinear().domain(xExtent).range([0.0, 0.75]);
