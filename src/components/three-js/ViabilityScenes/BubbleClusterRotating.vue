@@ -9,8 +9,8 @@ import { markRaw, ref, onMounted, watch } from 'vue';
 import { useViabilityScene } from './useViabilityScene.js';
 
 const clusterConfig = {
-    fov: 15,
-    cameraDistance: 20,
+    fov: 30,
+    cameraDistance: 30,
     cameraPosition: [0, 0, 40],
     cameraLookAt: [0, 0, 0],
     nearClip: 0.1,
@@ -27,6 +27,7 @@ const clusterConfig = {
     floatSpeedMin: 0.3,
     floatSpeedRange: 0.6,
     floatAmplitude: 0.15,
+    rotationSpeed: 0.1,
 };
 
 const props = defineProps({
@@ -60,7 +61,7 @@ function generateSphereData(count, clusterRadius) {
     return data;
 }
 
-function generateRectangleData(camera, cameraDistance, minR, maxR, depthSpread = 3) {
+function generateRectangleData(camera, cameraDistance, minR, maxR, depthSpread = 50) {
     // Compute visible rectangle at the camera target distance
     const vFov = (camera.fov * Math.PI) / 180;
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
@@ -69,8 +70,8 @@ function generateRectangleData(camera, cameraDistance, minR, maxR, depthSpread =
     // Auto-compute count for dense packing (~85% coverage)
     const avgR = (minR + maxR) / 2;
     const avgArea = Math.PI * avgR * avgR;
-  //  const count = Math.ceil((visibleWidth * visibleHeight * 0.85) / avgArea);
-    const count = 60;
+    const count = Math.ceil((visibleWidth * visibleHeight * 3) / avgArea);
+
     const data = [];
     for (let i = 0; i < count; i++) {
         data.push({
@@ -101,13 +102,18 @@ function buildCluster() {
     const { sphereCount, clusterRadius, minRadius, maxRadius,
             floatSpeedMin, floatSpeedRange, floatAmplitude } = config;
 
-    // Clear existing meshes
-    const toRemove = scene.scene.children.filter(c => c.isMesh);
-    toRemove.forEach(m => {
-        scene.scene.remove(m);
-        m.geometry.dispose();
-        m.material.dispose();
-    });
+    // Clear existing group
+    const oldGroup = scene.scene.getObjectByName('clusterGroup');
+    if (oldGroup) {
+        oldGroup.traverse(c => {
+            if (c.isMesh) { c.geometry.dispose(); c.material.dispose(); }
+        });
+        scene.scene.remove(oldGroup);
+    }
+
+    const group = markRaw(new THREE.Group());
+    group.name = 'clusterGroup';
+    scene.scene.add(group);
 
     const data = props.shape === 'rectangle'
         ? generateRectangleData(scene.camera, config.cameraDistance, minRadius, maxRadius)
@@ -168,13 +174,26 @@ function buildCluster() {
         sphere.userData.offsetY = 0;
         sphere.userData.offsetZ = 0;
 
-        scene.scene.add(sphere);
+        group.add(sphere);
         spheres.push(sphere);
     });
 
     scene.onAnimate((elapsed) => {
+        applyRotation(group, elapsed, spheres);
         applyFloatPosition(spheres, elapsed);
         applySoftCollision(spheres);
+    });
+}
+
+function applyRotation(group, elapsed, spheres) {
+    group.rotation.y = elapsed * config.rotationSpeed;
+
+    // Update opacity based on world-space z (closer to camera = more opaque)
+    const worldPos = new THREE.Vector3();
+    spheres.forEach(s => {
+        s.getWorldPosition(worldPos);
+        const zNorm = (worldPos.z - (-config.clusterRadius)) / (config.clusterRadius * 2);
+        s.material.opacity = 0.15 + Math.max(0, Math.min(1, zNorm)) * 0.7;
     });
 }
 
