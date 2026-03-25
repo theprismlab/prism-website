@@ -1,9 +1,10 @@
 <template>
 
 
-        <!-- <ViabilityHeatmap v-if="data.length" :data="data" /> -->
-        <SimpleBubbles />
-        <!-- <ViabilityScatterPlot v-if="data.length" :data="data" /> -->
+        <ViabilityHeatmap v-if="data.length" :data="data" />
+        <ViabilityScatterPlot v-if="data.length" :data="data" />
+        <!-- <SimpleBubbles /> -->
+
         <!-- <ViabilityCircles v-if="data.length" :data="data" />  -->
         <!-- <GeneratedCirclesCloud v-if="data.length" :data="data" /> -->
         <!-- <ViabilityCirclesOnPaths v-if="data.length" :data="data" /> -->

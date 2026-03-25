@@ -15,7 +15,7 @@ const sphereConfig = {
     cameraPosition: [0, 4.5, 25],
     cameraLookAt: [0, 6.5, 0],
     nearClip: 1.01,
-    farClip: 500,
+    farClip: 200,
 
     // ── Lighting ──
     directionalLightIntensity: 0.5,
@@ -29,12 +29,12 @@ const sphereConfig = {
     sphereZStep: 2,
     sphereBaseRadiusMultiplier: 0.018,
     sphereSizeScaleRange: [1.0, 0.3],
-    sphereOpacityRange: [0.7, 0.7],
+    sphereOpacityRange: [0.7, 0.15],
     sphereRadiusScaleRange: [1.5, 0.2],
     sphereFloatSpeedMin: 0.4,
-    sphereFloatSpeedRange: 0.9,
-    sphereFloatAmplitudeBase: 0.09,
-    sphereFloatAmplitudeRange: 0.09,
+    sphereFloatSpeedRange: 0.4,
+    sphereFloatAmplitudeBase: 0.08,
+    sphereFloatAmplitudeRange: 0.06,
 
     // ── Y-axis spread ──
     ySpread: 12,
@@ -139,74 +139,15 @@ function buildSpheres(data) {
         sphere.userData.floatPhase = Math.random() * Math.PI * 2;
         sphere.userData.floatSpeed = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
         sphere.userData.floatAmplitude = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * t;
-        sphere.userData.radius = radius;
-        sphere.userData.offsetX = 0;
-        sphere.userData.offsetY = 0;
-        sphere.userData.offsetZ = 0;
         scene.scene.add(sphere);
         spheres.push(sphere);
     });
 
     scene.onAnimate((elapsed) => {
-        applyFloatPosition(spheres, elapsed);
-        applySoftCollision(spheres);
-    });
-}
-
-/**
- * Update each sphere's world position from its base position,
- * sinusoidal Y float, and current collision offset.
- */
-function applyFloatPosition(spheres, elapsed) {
-    spheres.forEach(s => {
-        const { basePosition, floatPhase, floatSpeed, floatAmplitude } = s.userData;
-        s.position.x = basePosition.x + s.userData.offsetX;
-        s.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude + s.userData.offsetY;
-        s.position.z = basePosition.z + s.userData.offsetZ;
-    });
-}
-
-/**
- * Soft sphere-sphere collision detection & response.
- * Overlapping pairs accumulate a small push on each sphere's offset,
- * then all offsets are damped toward zero so spheres drift back
- * to their data-driven base positions.
- */
-function applySoftCollision(spheres, pushStrength = 0.05, damping = 0.9) {
-    for (let i = 0; i < spheres.length; i++) {
-        const a = spheres[i];
-        for (let j = i + 1; j < spheres.length; j++) {
-            const b = spheres[j];
-            const dx = b.position.x - a.position.x;
-            const dy = b.position.y - a.position.y;
-            const dz = b.position.z - a.position.z;
-            const distSq = dx * dx + dy * dy + dz * dz;
-            const minDist = a.userData.radius + b.userData.radius;
-
-            if (distSq < minDist * minDist && distSq > 0.0001) {
-                const dist = Math.sqrt(distSq);
-                const overlap = minDist - dist;
-                const nx = dx / dist;
-                const ny = dy / dist;
-                const nz = dz / dist;
-                const push = overlap * pushStrength;
-
-                // Push each sphere away from the other along the collision normal
-                a.userData.offsetX -= nx * push;
-                a.userData.offsetY -= ny * push;
-                a.userData.offsetZ -= nz * push;
-                b.userData.offsetX += nx * push;
-                b.userData.offsetY += ny * push;
-                b.userData.offsetZ += nz * push;
-            }
-        }
-    }
-
-    // Decay offsets so spheres gradually return to base positions
-    spheres.forEach(s => {
-        s.userData.offsetX *= damping;
-        s.userData.offsetY *= damping;
-        s.userData.offsetZ *= damping;
+        spheres.forEach(s => {
+            const { basePosition, floatPhase, floatSpeed, floatAmplitude } = s.userData;
+            s.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
+        });
     });
 }
 </script>
