@@ -39,7 +39,12 @@ const canvasEl = ref(null);
 const config = { ...clusterConfig, ...props.sceneConfig };
 const scene = useViabilityScene(canvasEl, config);
 
-// ── Generate 3D cluster data ──
+// ── Load pre-generated cluster data ──
+
+async function loadClusterData() {
+    const res = await fetch('/data/bubble-cluster.json');
+    return res.json();
+}
 
 function generateSphereData(count, clusterRadius) {
     const data = [];
@@ -84,20 +89,22 @@ function generateRectangleData(camera, cameraDistance, minR, maxR, depthSpread =
 }
 
 onMounted(async () => {
-    buildCluster();
+    const clusterJson = await loadClusterData();
+    buildCluster(clusterJson.spheres);
 
     await new Promise(r => requestAnimationFrame(r));
     scene.render();
     scene.startAnimation();
 
-    scene.onRebuild(() => buildCluster());
+    scene.onRebuild(() => buildCluster(clusterJson.spheres));
 });
 
-watch(() => props.shape, () => {
-    buildCluster();
+watch(() => props.shape, async () => {
+    const clusterJson = await loadClusterData();
+    buildCluster(clusterJson.spheres);
 });
 
-function buildCluster() {
+function buildCluster(precomputedData) {
     const { sphereCount, clusterRadius, minRadius, maxRadius,
             floatSpeedMin, floatSpeedRange, floatAmplitude } = config;
 
@@ -111,7 +118,7 @@ function buildCluster() {
 
     const data = props.shape === 'rectangle'
         ? generateRectangleData(scene.camera, config.cameraDistance, minRadius, maxRadius)
-        : generateSphereData(sphereCount, clusterRadius);
+        : precomputedData;
 
     if (props.darkMode) {
         scene.scene.background = new THREE.Color(0x0a0a0f);
@@ -136,8 +143,7 @@ function buildCluster() {
     const spheres = [];
 
     data.forEach(d => {
-        const jitter = 0.85 + Math.random() * 0.3;
-        const radius = radiusScale(d.size) * jitter;
+        const radius = radiusScale(d.size) * (d.jitter || (0.85 + Math.random() * 0.3));
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
 
         let sphereColor;
