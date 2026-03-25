@@ -11,7 +11,7 @@ import { useViabilityScene } from './useViabilityScene.js';
 const config = {
     fov: 50,
     cameraPosition: [0, 0],
-    cameraDistance: 200,
+    cameraDistance: 100,
     cameraLookAt: [0, 0, 0],
     nearClip: 0.1,
     farClip: 2000,
@@ -36,16 +36,20 @@ const bubbleState = {
     x: [],
     y: [],
     z: [],
-    vx: [],
     vy: [],
-    vz: [],
-    bobAmp: [],
-    bobSpeed: [],
-    bobPhase: [],
+    originX: [],
+    originZ: [],
+    driftAmpX: [],
+    driftAmpZ: [],
+    driftSpeedX: [],
+    driftSpeedZ: [],
+    driftPhaseX: [],
+    driftPhaseZ: [],
     scale: [],
-    radius: [],
+    radiusNoise: [],
     bounds: null,
     floorY: null,
+    maxRise: 0,
 };
 let bubblesInstancedMesh = null;
 const tempObject = new THREE.Object3D();
@@ -54,9 +58,8 @@ const canvasEl = ref(null);
 const scene = useViabilityScene(canvasEl, config);
 
 onMounted(async () => {
-    // const sampledData = props.data.filter((d, i) => i < MAX_BUBBLES);
-    const sampledData = props.data.filter(d => d.x % 2 === 0); // filter every other cell line
-    buildCircles(sampledData);
+    const particleCount = Math.min(props.data.length, MAX_BUBBLES);
+    buildCircles(particleCount);
     registerBubbleAnimation();
 
     await new Promise(r => requestAnimationFrame(r));
@@ -64,31 +67,29 @@ onMounted(async () => {
     scene.startAnimation();
 
     scene.onRebuild(() => {
-        buildCircles(sampledData);
+        buildCircles(particleCount);
         registerBubbleAnimation();
     });
 });
 
-function computeScales(data) {
-    const vFov = THREE.MathUtils.degToRad(config.fov);
-    const visibleHeight = 2 * Math.tan(vFov / 2) * config.cameraDistance;
-    const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
-
-    const radiusScale = d3.scaleSqrt()
-        .domain(d3.extent(data, d => +d.viability))
-        .range([0.5, 3]);
-
+function computeGeneratedScales() {
+    const bounds = computeWorldBounds();
+    const margin = config.radius * 6;
     const xScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => +d.x))
-        .range([-visibleWidth / 2, visibleWidth / 2]);
+        .domain([0, 1])
+        .range([bounds.minX + margin, bounds.maxX - margin]);
 
     const yScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => +d.viability))
-        .range([-visibleHeight / 2, visibleHeight / 2]);
+        .domain([0, 1])
+        .range([bubbleState.floorY ?? bounds.minY, bounds.maxY - margin]);
 
     const zScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => +d.z))
-        .range([-visibleHeight / 2, visibleHeight / 2]);
+        .domain([0, 1])
+        .range([bounds.minZ + margin, bounds.maxZ - margin]);
+
+    const radiusScale = d3.scaleSqrt()
+        .domain([0, 1])
+        .range([0, 3.2]);
 
     return { xScale, yScale, zScale, radiusScale };
 }
@@ -145,44 +146,26 @@ function registerBubbleAnimation() {
     scene.onAnimate((elapsed) => {
         if (!bubblesInstancedMesh || !bubbleState.bounds) return;
 
-        const { minX, maxY, maxX, minZ, maxZ } = bubbleState.bounds;
         const floorY = bubbleState.floorY ?? bubbleState.bounds.minY;
 
         for (let i = 0; i < bubbleState.count; i++) {
-            const radius = bubbleState.radius[i];
-            const nextX = bubbleState.x[i] + bubbleState.vx[i];
-            const nextY = bubbleState.y[i] + bubbleState.vy[i] + (Math.sin(elapsed * bubbleState.bobSpeed[i] + bubbleState.bobPhase[i]) * bubbleState.bobAmp[i]);
-            const nextZ = bubbleState.z[i] + bubbleState.vz[i];
+            bubbleState.y[i] += bubbleState.vy[i];
 
-            const minBubbleX = minX + radius;
-            const maxBubbleX = maxX - radius;
-            const minBubbleY = floorY + radius;
-            const maxBubbleY = maxY - radius;
-            const minBubbleZ = minZ + radius;
-            const maxBubbleZ = maxZ - radius;
-
-            if (nextX <= minBubbleX || nextX >= maxBubbleX) {
-                bubbleState.vx[i] *= -1;
-                bubbleState.x[i] = THREE.MathUtils.clamp(nextX, minBubbleX, maxBubbleX);
-            } else {
-                bubbleState.x[i] = nextX;
+            if (bubbleState.y[i] > bubbleState.maxRise) {
+                respawnBubble(i);
             }
 
-            if (nextY <= minBubbleY || nextY >= maxBubbleY) {
-                bubbleState.vy[i] *= -1;
-                bubbleState.y[i] = THREE.MathUtils.clamp(nextY, minBubbleY, maxBubbleY);
-            } else {
-                bubbleState.y[i] = nextY;
-            }
+            bubbleState.x[i] = bubbleState.originX[i]
+                + Math.sin(elapsed * bubbleState.driftSpeedX[i] + bubbleState.driftPhaseX[i]) * bubbleState.driftAmpX[i];
+            bubbleState.z[i] = bubbleState.originZ[i]
+                + Math.cos(elapsed * bubbleState.driftSpeedZ[i] + bubbleState.driftPhaseZ[i]) * bubbleState.driftAmpZ[i];
 
-            if (nextZ <= minBubbleZ || nextZ >= maxBubbleZ) {
-                bubbleState.vz[i] *= -1;
-                bubbleState.z[i] = THREE.MathUtils.clamp(nextZ, minBubbleZ, maxBubbleZ);
-            } else {
-                bubbleState.z[i] = nextZ;
-            }
-
-            const s = bubbleState.scale[i];
+            const riseProgress = THREE.MathUtils.clamp(
+                (bubbleState.y[i] - floorY) / Math.max(1, bubbleState.maxRise - floorY),
+                0,
+                1,
+            );
+            const s = bubbleState.scale[i] * riseProgress * bubbleState.radiusNoise[i];
             tempObject.position.set(bubbleState.x[i], bubbleState.y[i], bubbleState.z[i]);
             tempObject.scale.set(s, s, s);
             tempObject.updateMatrix();
@@ -193,22 +176,46 @@ function registerBubbleAnimation() {
     });
 }
 
-function buildCircles(data) {
+function respawnBubble(index) {
+    const { xScale, zScale } = computeGeneratedScales();
+    const floorY = bubbleState.floorY ?? bubbleState.bounds.minY;
+
+    bubbleState.originX[index] = xScale(Math.random());
+    bubbleState.originZ[index] = zScale(Math.random());
+    bubbleState.x[index] = bubbleState.originX[index];
+    bubbleState.y[index] = floorY;
+    bubbleState.z[index] = bubbleState.originZ[index];
+    bubbleState.vy[index] = 0.05 + Math.random() * 0.08;
+    bubbleState.driftAmpX[index] = 1 + Math.random() * 6;
+    bubbleState.driftAmpZ[index] = 1 + Math.random() * 6;
+    bubbleState.driftSpeedX[index] = 0.08 + Math.random() * 0.28;
+    bubbleState.driftSpeedZ[index] = 0.08 + Math.random() * 0.28;
+    bubbleState.driftPhaseX[index] = Math.random() * Math.PI * 2;
+    bubbleState.driftPhaseZ[index] = Math.random() * Math.PI * 2;
+    bubbleState.radiusNoise[index] = 0.7 + Math.random() * 0.7;
+}
+
+function buildCircles(count) {
     buildFloor();
-    const { xScale, yScale, zScale, radiusScale } = computeScales(data);
     bubbleState.bounds = computeWorldBounds();
-    bubbleState.count = data.length;
-    bubbleState.x = new Array(data.length);
-    bubbleState.y = new Array(data.length);
-    bubbleState.z = new Array(data.length);
-    bubbleState.vx = new Array(data.length);
-    bubbleState.vy = new Array(data.length);
-    bubbleState.vz = new Array(data.length);
-    bubbleState.bobAmp = new Array(data.length);
-    bubbleState.bobSpeed = new Array(data.length);
-    bubbleState.bobPhase = new Array(data.length);
-    bubbleState.scale = new Array(data.length);
-    bubbleState.radius = new Array(data.length);
+    bubbleState.count = count;
+    bubbleState.x = new Array(count);
+    bubbleState.y = new Array(count);
+    bubbleState.z = new Array(count);
+    bubbleState.vy = new Array(count);
+    bubbleState.originX = new Array(count);
+    bubbleState.originZ = new Array(count);
+    bubbleState.driftAmpX = new Array(count);
+    bubbleState.driftAmpZ = new Array(count);
+    bubbleState.driftSpeedX = new Array(count);
+    bubbleState.driftSpeedZ = new Array(count);
+    bubbleState.driftPhaseX = new Array(count);
+    bubbleState.driftPhaseZ = new Array(count);
+    bubbleState.scale = new Array(count);
+    bubbleState.radiusNoise = new Array(count);
+    bubbleState.maxRise = bubbleState.bounds.maxY - (config.radius * 6);
+
+    const { radiusScale } = computeGeneratedScales();
 
     const geometry = new THREE.SphereGeometry(config.radius, config.segments, config.segments);
     const material = new THREE.MeshPhysicalMaterial({
@@ -231,28 +238,18 @@ function buildCircles(data) {
         depthWrite: false,
     });
 
-    bubblesInstancedMesh = new THREE.InstancedMesh(geometry, material, data.length);
+    bubblesInstancedMesh = new THREE.InstancedMesh(geometry, material, count);
     bubblesInstancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
-    data.forEach((d, i) => {
-        const scale = radiusScale(d.viability);
-        bubbleState.scale[i] = scale;
-        bubbleState.radius[i] = scale * config.radius;
-        bubbleState.x[i] = xScale(d.x);
-        bubbleState.y[i] = yScale(d.viability);
-        bubbleState.z[i] = zScale(d.z);
-        bubbleState.vx[i] = (Math.random() - 0.5) * 0.02;
-        bubbleState.vy[i] = 0.008 + Math.random() * 0.02;
-        bubbleState.vz[i] = (Math.random() - 0.5) * 0.02;
-        bubbleState.bobAmp[i] = 0.002 + Math.random() * 0.006;
-        bubbleState.bobSpeed[i] = 0.5 + Math.random() * 0.8;
-        bubbleState.bobPhase[i] = Math.random() * Math.PI * 2;
+    for (let i = 0; i < count; i++) {
+        bubbleState.scale[i] = radiusScale(Math.random());
+        respawnBubble(i);
 
         tempObject.position.set(bubbleState.x[i], bubbleState.y[i], bubbleState.z[i]);
-        tempObject.scale.set(scale, scale, scale);
+        tempObject.scale.set(0, 0, 0);
         tempObject.updateMatrix();
         bubblesInstancedMesh.setMatrixAt(i, tempObject.matrix);
-    });
+    }
 
     scene.scene.add(bubblesInstancedMesh);
 }
