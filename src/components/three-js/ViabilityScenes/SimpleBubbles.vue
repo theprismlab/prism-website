@@ -8,20 +8,21 @@ import { ref, onMounted } from 'vue';
 import { useViabilityScene } from './useViabilityScene.js';
 
 const config = {
-    fov: 40,
+    fov: 30,
     cameraPosition: [0, 0],
-    cameraDistance:40,
+    cameraDistance:30,
     cameraLookAt: [0, 0, 0],
     nearClip: 0.1,
-    farClip: 1000,
+    farClip: 100,
     directionalLightIntensity: 0,
     ambientLightIntensity: 30,
     enableShadows: false,
     // 'drift' | 'bounce'
     animationMode: 'bounce',
+    baseSpeed: 0.3,
 };
 
-const BUBBLE_COUNT = 120;
+const BUBBLE_COUNT = 100;
 
 const PALETTE = [
     '#af0225', '#d31121', '#f36c3e', '#ffc700','#80b642', '#b1c640', '#459497', '#70c4c8', '#00a9d1', '#006db0', '#694888', '#b0388f', '#ea9036', '#daa864',
@@ -67,16 +68,16 @@ function buildBubbles() {
             roughness: 0.05,
             metalness: 0.0,
             transparent: true,
-            opacity: 1,
+            opacity: 0.6,
             transmission: 0.92,
-            thickness: 0.35,
-            ior: 1.2,
-            iridescence: 0.2,
-            iridescenceIOR: 1.2,
-            iridescenceThicknessRange: [0, 800],
+            thickness: 0.035,
+            ior: 1.0,
+            iridescence: 0.0,
+            iridescenceIOR: 0.2,
+            iridescenceThicknessRange: [0, 100],
             clearcoat: 1,
             clearcoatRoughness: 0.03,
-            envMapIntensity: 1.2,
+            envMapIntensity: 0.0,
             specularIntensity: 0.9,
             side: THREE.FrontSide,
             depthWrite: false,
@@ -92,10 +93,10 @@ function buildBubbles() {
         scene.scene.add(mesh);
         meshes.push({
             mesh,
-            vx: (Math.random() - 0.5) * 0.02,
-            vy: 0.003 + Math.random() * 0.015,
-            vz: (Math.random() - 0.5) * 0.02,
-            driftSpeed: 0.04 + Math.random() * 0.12,
+            vx: (Math.random() - 0.5) * 0.02 * config.baseSpeed,
+            vy: (0.003 + Math.random() * 0.015) * config.baseSpeed,
+            vz: (Math.random() - 0.5) * 0.02 * config.baseSpeed,
+            driftSpeed: (0.04 + Math.random() * 0.12) * config.baseSpeed,
             driftAmp: 0.3 + Math.random() * 1.2,
             driftPhase: Math.random() * Math.PI * 2,
             originX: mesh.position.x,
