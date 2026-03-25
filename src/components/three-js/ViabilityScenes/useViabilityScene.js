@@ -94,19 +94,23 @@ export function useViabilityScene(canvasEl, config = {}) {
         camera.lookAt(...config.cameraLookAt);
         camera.updateProjectionMatrix();
 
+        const enableShadows = config.enableShadows ?? true;
+
         const dirLight = markRaw(new THREE.DirectionalLight(0xffffff, config.directionalLightIntensity));
         dirLight.position.set(5, 10, 5);
-        dirLight.castShadow = true;
-        dirLight.shadow.mapSize.width = 2048;
-        dirLight.shadow.mapSize.height = 2048;
-        dirLight.shadow.camera.left = -30;
-        dirLight.shadow.camera.right = 30;
-        dirLight.shadow.camera.top = 30;
-        dirLight.shadow.camera.bottom = -30;
-        dirLight.shadow.camera.near = 0.1;
-        dirLight.shadow.camera.far = 60;
-        dirLight.shadow.radius = 8;
-        dirLight.shadow.blurSamples = 25;
+        dirLight.castShadow = enableShadows;
+        if (enableShadows) {
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.camera.left = -30;
+            dirLight.shadow.camera.right = 30;
+            dirLight.shadow.camera.top = 30;
+            dirLight.shadow.camera.bottom = -30;
+            dirLight.shadow.camera.near = 0.1;
+            dirLight.shadow.camera.far = 60;
+            dirLight.shadow.radius = 8;
+            dirLight.shadow.blurSamples = 25;
+        }
         scene.add(dirLight);
 
         const ambLight = markRaw(new THREE.AmbientLight(0xffffff, config.ambientLightIntensity));
@@ -116,9 +120,9 @@ export function useViabilityScene(canvasEl, config = {}) {
         renderer = markRaw(new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }));
         renderer.setSize(width.value, height.value, false);
         renderer.setClearColor(0xffffff, 0);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.VSMShadowMap;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        renderer.shadowMap.enabled = enableShadows;
+        if (enableShadows) renderer.shadowMap.type = THREE.VSMShadowMap;
 
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
         const roomEnvironment = new RoomEnvironment();
