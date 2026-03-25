@@ -9,21 +9,21 @@ import { markRaw, ref, onMounted, watch } from 'vue';
 import { useViabilityScene } from './useViabilityScene.js';
 
 const clusterConfig = {
-    fov: 15,
-    cameraDistance: 20,
-    cameraPosition: [0, 0, 40],
+    fov: 25,
+    cameraDistance: 25,
+    cameraPosition: [0, 0, 0],
     cameraLookAt: [0, 0, 0],
     nearClip: 0.1,
-    farClip: 100,
+    farClip: 500,
 
-    directionalLightIntensity: 0.6,
-    ambientLightIntensity: 0.4,
+    directionalLightIntensity: 0.06,
+    ambientLightIntensity: 0.5,
 
     // ── Cluster ──
-    sphereCount: 140,
-    clusterRadius: 6,
-    minRadius: 0.3,
-    maxRadius: 1.4,
+    sphereCount: 100,
+    clusterRadius: 7.75,
+    minRadius: 0.5,
+    maxRadius: 2.5,
     floatSpeedMin: 0.3,
     floatSpeedRange: 0.6,
     floatAmplitude: 0.15,
@@ -32,7 +32,7 @@ const clusterConfig = {
 const props = defineProps({
     sceneConfig: { type: Object, default: () => ({}) },
     darkMode: { type: Boolean, default: false },
-    shape: { type: String, default: 'rectangle', validator: v => ['sphere', 'rectangle'].includes(v) },
+    shape: { type: String, default: 'sphere', validator: v => ['sphere', 'rectangle'].includes(v) },
 });
 
 const canvasEl = ref(null);
@@ -123,9 +123,13 @@ function buildCluster() {
     const xExtent = d3.extent(data, d => d.x);
     const zExtent = d3.extent(data, d => d.z);
     const xThird = xExtent[0] + (xExtent[1] - xExtent[0]) / 3;
-    const xNorm = d3.scaleLinear().domain([xThird, xExtent[1]]).range([0.2, 0.85]);
-    const zNorm = d3.scaleLinear().domain(zExtent).range([0.3, 0.85]);
+    const xNorm = d3.scaleLinear().domain([xThird, xExtent[1]]).range([0.2, 1.1]);
 
+
+    const xTwoThird = xExtent[0] + (xExtent[1] - xExtent[0]) * 2 / 3;
+    //const xNorm2 = d3.scaleLinear().domain([xTwoThird, xExtent[1]]).range([1, 0]);
+    const zNorm = d3.scaleLinear().domain(zExtent).range([ 1, 0.3]);
+    const zNorm2 = d3.scaleLinear().domain(zExtent).range([1, 0.4]);
     const radiusScale = d3.scaleLinear().domain([0, 1]).range([minRadius, maxRadius]);
     const opacityScale = d3.scaleLinear().domain([-clusterRadius, clusterRadius]).range([0.5, 0.85]);
 
@@ -139,14 +143,19 @@ function buildCluster() {
         let sphereColor;
         if (d.x < xThird) {
             sphereColor = new THREE.Color(d3.interpolateYlGnBu(zNorm(d.z)));
-        } else {
+         } 
+         //else if (d.x > xTwoThird) {
+        //     sphereColor = new THREE.Color(d3.interpolatePuRd(zNorm2(d.z)));
+        // }
+        else {
             sphereColor = new THREE.Color(d3.interpolateYlOrRd(xNorm(d.x)));
         }
 
         const material = markRaw(new THREE.MeshPhysicalMaterial({
             color: sphereColor,
             transparent: true,
-            opacity: opacityScale(d.z),
+            // opacity: opacityScale(d.z),
+            opacity: 0.75,
             roughness: 0.25,
             metalness: 0.0,
             transmission: 0,
