@@ -26,7 +26,7 @@ const sphereConfig = {
 
     // ── Spheres ──
     sphereXStep: 8,
-    sphereZStep: 2,
+    sphereZStep: 1,
     sphereBaseRadiusMultiplier: 0.018,
     sphereSizeScaleRange: [1.0, 0.3],
     sphereOpacityRange: [0.7, 0.7],
@@ -77,7 +77,7 @@ function computeScales(data) {
     const cellHeight = visibleHeight / Math.max(zExtent[1], 1);
 
     const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
-    const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
+    const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight * 2]);
 
     const yScale = d3.scaleLinear()
         .domain(d3.extent(data, d => d.viability))
@@ -160,9 +160,9 @@ function buildSpheres(data) {
 function applyFloatPosition(spheres, elapsed) {
     spheres.forEach(s => {
         const { basePosition, floatPhase, floatSpeed, floatAmplitude } = s.userData;
-        s.position.x = basePosition.x + s.userData.offsetX;
+        s.position.x = basePosition.x + Math.sin(elapsed * floatSpeed * 0.7 + floatPhase + 1.3) * floatAmplitude * 0.5 + s.userData.offsetX;
         s.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude + s.userData.offsetY;
-        s.position.z = basePosition.z + s.userData.offsetZ;
+        s.position.z = basePosition.z + Math.cos(elapsed * floatSpeed * 0.5 + floatPhase) * floatAmplitude * 0.3 + s.userData.offsetZ;
     });
 }
 
@@ -172,7 +172,7 @@ function applyFloatPosition(spheres, elapsed) {
  * then all offsets are damped toward zero so spheres drift back
  * to their data-driven base positions.
  */
-function applySoftCollision(spheres, pushStrength = 0.05, damping = 0.9) {
+function applySoftCollision(spheres, pushStrength = 0.15, damping = 0.95) {
     for (let i = 0; i < spheres.length; i++) {
         const a = spheres[i];
         for (let j = i + 1; j < spheres.length; j++) {
