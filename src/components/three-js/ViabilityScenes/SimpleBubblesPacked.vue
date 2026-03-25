@@ -17,8 +17,8 @@ const config = {
     directionalLightIntensity: 0,
     ambientLightIntensity: 30,
     enableShadows: false,
-    // 'drift' | 'bounce' | 'packed'
-    animationMode: 'packed',
+    // 'drift' | 'bounce'
+    animationMode: 'bounce',
     baseSpeed: 0.3,
 };
 
@@ -100,9 +100,6 @@ function buildBubbles() {
             driftSpeed: (0.04 + Math.random() * 0.12) * config.baseSpeed,
             driftAmp: 0.3 + Math.random() * 1.2,
             driftPhase: Math.random() * Math.PI * 2,
-            breathSpeed: 0.3 + Math.random() * 0.4,
-            breathAmp: 0.002 + Math.random() * 0.004,
-            breathPhase: Math.random() * Math.PI * 2,
             originX: mesh.position.x,
             radius,
         });
@@ -111,8 +108,6 @@ function buildBubbles() {
     scene.onAnimate((elapsed) => {
         if (config.animationMode === 'drift') {
             animateDrift(elapsed);
-        } else if (config.animationMode === 'packed') {
-            animatePacked(elapsed);
         } else {
             animateBounce();
         }
@@ -199,67 +194,6 @@ function animateBounce() {
                 }
             }
         }
-    }
-}
-
-function animatePacked(elapsed) {
-    const { halfW, halfH, halfD } = computeWorldBounds();
-    const damping = 0.1;
-    const pushStrength = 0.1;
-
-    // Subtle breathing motion
-    for (const b of meshes) {
-        const breath = Math.sin(elapsed * b.breathSpeed + b.breathPhase) * b.breathAmp;
-        b.vx += breath;
-        b.vy += breath * 0.5;
-    }
-
-    // Soft collision: push apart without velocity exchange
-    for (let i = 0; i < meshes.length; i++) {
-        const a = meshes[i];
-        for (let j = i + 1; j < meshes.length; j++) {
-            const b = meshes[j];
-            const dx = b.mesh.position.x - a.mesh.position.x;
-            const dy = b.mesh.position.y - a.mesh.position.y;
-            const dz = b.mesh.position.z - a.mesh.position.z;
-            const distSq = dx * dx + dy * dy + dz * dz;
-            const minDist = a.radius + b.radius;
-
-            if (distSq < minDist * minDist && distSq > 0.0001) {
-                const dist = Math.sqrt(distSq);
-                const overlap = minDist - dist;
-                const nx = dx / dist;
-                const ny = dy / dist;
-                const nz = dz / dist;
-
-                const push = overlap * pushStrength;
-                a.vx -= nx * push;
-                a.vy -= ny * push;
-                a.vz -= nz * push;
-                b.vx += nx * push;
-                b.vy += ny * push;
-                b.vz += nz * push;
-            }
-        }
-    }
-
-    // Apply velocity with damping + wall clamping
-    for (const b of meshes) {
-        b.vx *= damping;
-        b.vy *= damping;
-        b.vz *= damping;
-
-        b.mesh.position.x += b.vx;
-        b.mesh.position.y += b.vy;
-        b.mesh.position.z += b.vz;
-
-        // Soft wall push (clamp + kill velocity)
-        if (b.mesh.position.x + b.radius > halfW)  { b.mesh.position.x = halfW - b.radius;  b.vx = 0; }
-        if (b.mesh.position.x - b.radius < -halfW) { b.mesh.position.x = -halfW + b.radius; b.vx = 0; }
-        if (b.mesh.position.y + b.radius > halfH)  { b.mesh.position.y = halfH - b.radius;  b.vy = 0; }
-        if (b.mesh.position.y - b.radius < -halfH) { b.mesh.position.y = -halfH + b.radius; b.vy = 0; }
-        if (b.mesh.position.z + b.radius > halfD)  { b.mesh.position.z = halfD - b.radius;  b.vz = 0; }
-        if (b.mesh.position.z - b.radius < -halfD) { b.mesh.position.z = -halfD + b.radius; b.vz = 0; }
     }
 }
 </script>
