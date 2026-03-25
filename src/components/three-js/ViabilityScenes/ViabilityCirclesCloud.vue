@@ -37,7 +37,9 @@ const canvasEl = ref(null);
 const scene = useViabilityScene(canvasEl, config);
 
 onMounted(async () => {
-    buildCircles(props.data);
+  // keep only even indexed data;
+    let data = props.data.filter(d => +d.x % 2 === 0);
+    buildCircles(data);
     registerBubbleAnimation();
 
     // Wait one frame for the renderer to be ready, then draw
@@ -47,7 +49,7 @@ onMounted(async () => {
 
     // Re-create circles on window resize (scene clears meshes automatically)
     scene.onRebuild(() => {
-        buildCircles(props.data);
+        buildCircles(data);
         registerBubbleAnimation();
     });
 });
@@ -55,7 +57,7 @@ onMounted(async () => {
 // Compute d3 scales that map data values to Three.js world coordinates,
 // sized to fill the camera's visible area at the given distance
 function computeScales(data) {
-    data = data.filter((d, i) => i < 1000);
+
     // Calculate world-space dimensions visible to the camera
     const vFov = THREE.MathUtils.degToRad(config.fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * config.cameraDistance;
