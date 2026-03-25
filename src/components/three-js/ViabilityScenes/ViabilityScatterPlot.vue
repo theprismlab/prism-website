@@ -10,12 +10,12 @@ import { useViabilityScene } from './useViabilityScene.js';
 
 const sphereConfig = {
     // ── Camera ──
-    fov: 25,
-    cameraDistance: 25,
-    cameraPosition: [0, 4.5, 25],
+    fov: 45,
+    cameraDistance: 45,
+    cameraPosition: [0, 7.5, 25],
     cameraLookAt: [0, 6.5, 0],
-    nearClip: 1.01,
-    farClip: 500,
+    nearClip: 0.1,
+    farClip: 200,
 
     // ── Lighting ──
     directionalLightIntensity: 0.5,
@@ -28,16 +28,16 @@ const sphereConfig = {
     sphereXStep: 8,
     sphereZStep: 1,
     sphereOpacityRange: [0.7, 0.7],
-    sphereRadiusScaleRange: [0.5, 1.5],
-
+    sphereRadiusScaleRange: [0.5, 3.5],
+    sphereRadiusScaleDomain: [1, 0],
     sphereFloatSpeedMin: 0.4,
     sphereFloatSpeedRange: 0.9,
     sphereFloatAmplitudeBase: 0.09,
     sphereFloatAmplitudeRange: 0.09,
 
     // ── Y-axis spread ──
-    ySpread: 12,
-    ySpreadOffset: 15,
+    ySpread: 25,
+    ySpreadOffset: 8,
 };
 
 const props = defineProps({
@@ -77,11 +77,12 @@ function computeScales(data) {
 
     const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight * 2]);
-    const yScale = d3.scaleLog().domain(cExtent).range([ySpread, -ySpread + ySpreadOffset]);
-    const radiusScale = d3.scaleLinear().domain(cExtent).range([0.5, 1.5]);
+    const yScale = d3.scaleLinear().domain(cExtent).range([ySpread, -ySpread + ySpreadOffset]);
+    const radiusScale = d3.scaleSqrt().domain(config.sphereRadiusScaleDomain).range(config.sphereRadiusScaleRange);
+    const opacityScale = d3.scaleLinear().domain(zExtent).range(config.sphereOpacityRange);
 
     return markRaw({
-        xScale, zScale, yScale, radiusScale,
+        xScale, zScale, yScale, radiusScale, opacityScale,
         xOffset: sceneWidth / 2,
         zOffset: visibleHeight / 2,
         xExtent,
@@ -95,38 +96,34 @@ function computeScales(data) {
 
 function buildSpheres(data) {
     const scales = computeScales(data);
-    const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, radiusScale, zExtent } = scales;
+    const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, radiusScale, opacityScale } = scales;
     const {
         sphereXStep, sphereZStep,
-        sphereOpacityRange, sphereRadiusScaleRange,
         sphereFloatSpeedMin, sphereFloatSpeedRange,
         sphereFloatAmplitudeBase, sphereFloatAmplitudeRange,
     } = config;
 
     const sampled = data.filter(d => d.x % sphereXStep === 0 && d.z % sphereZStep === 0);
 
-    const opacityDepthScale = d3.scaleLinear().domain(zExtent).range(sphereOpacityRange);
-
    
-
 
     const spheres = [];
 
     sampled.forEach(d => {
         const randomJitter = 0.85 + Math.random() * 0.3;
-        const radius = radiusScale(d.viability) * randomJitter;
+        const radius = radiusScale(d.radius) * randomJitter;
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
         const material = markRaw(new THREE.MeshStandardMaterial({
             color: d.rgba,
             transparent: true,
-            opacity: opacityDepthScale(d.z),
+            opacity: opacityScale(d.z),
             roughness: 0.0,
             metalness: 0.0,
         }));
         const sphere = markRaw(new THREE.Mesh(geometry, material));
         const basePosition = markRaw(new THREE.Vector3(
             xScale(d.x) - xOffset,
-            yScale(d.viability) + radius * 0.2,
+            yScale(d.value) + radius * 0.2,
             zScale(d.z) - zOffset,
         ));
         sphere.castShadow = true;

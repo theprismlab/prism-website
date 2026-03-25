@@ -39,9 +39,10 @@ export function parseViabilityData(raw, configOverrides = {}) {
         d.x = cellLineToIndex[d.ccle_name];
         d.z = doseToIndex[d.pert_dose];
         d.y = 0;
-        d.c = colorScale(d.viability);
+        d.c = colorScale(+d.viability);
         d.rgba = new THREE.Color(d.c);
-        d.value = d.viability; // for easier access in mesh generation
+        d.value = +d.viability; // for easier access in mesh generation
+        d.radius = +d.viability;
         d._info = d;
     });
 
