@@ -12,16 +12,20 @@ const heatmapConfig = {
     // ── Camera ──
     fov: 25,
     cameraDistance: 25,
-    cameraPosition: [0, 4.5, 25],
+    cameraPosition: [0, 4.5], // [x, y] only — z is set by cameraDistance
     cameraLookAt: [0, 6.5, 0],
+    nearClip: 0.1,
+    farClip: 200,
 
     // ── Lighting ──
     directionalLightIntensity: 0.5,
     ambientLightIntensity: 2.5,
 
     // ── Planes ──
-    planeZoom: 10.8,
-    planeWidthMultiplier: 1.6,
+    // worldScale uniformly multiplies both plane sizes and positions,
+    // expanding the grid to fill the visible area
+    worldScale: 10.8,
+    planeWidthMultiplier: 1.6, // planes overlap slightly in x to avoid gaps
     planeYPosition: 1,
     planeOpacityRange: [0.5, 1],
 };
@@ -56,18 +60,19 @@ function computeScales(data) {
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
     const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
 
-    const sceneWidth = visibleWidth;
-    const planeWidth = sceneWidth / xExtent[1];
+    // per-cell dimensions before worldScale is applied
+    const planeWidth = visibleWidth / xExtent[1];
     const planeHeight = visibleHeight / Math.max(zExtent[1], 1);
 
-    const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
+    const xScale = d3.scaleLinear().domain(xExtent).range([0, visibleWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(config.planeOpacityRange);
+    // domain is inverted: viability 1 → light (yellow), 0.2 → dark (red)
     const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1, 0.2]);
 
     return {
         xScale, zScale, opacityScale, colorScale,
-        xOffset: sceneWidth / 2,
+        xOffset: visibleWidth / 2,
         zOffset: visibleHeight / 2,
         planeWidth, planeHeight,
     };
@@ -78,12 +83,12 @@ function computeScales(data) {
 function buildPlanes(data) {
     const scales = computeScales(data);
     const { xScale, zScale, opacityScale, colorScale, xOffset, zOffset, planeWidth, planeHeight } = scales;
-    const { planeZoom, planeWidthMultiplier, planeYPosition } = config;
+    const { worldScale, planeWidthMultiplier, planeYPosition } = config;
 
     data.forEach(d => {
         const geometry = new THREE.PlaneGeometry(
-            planeWidth * planeWidthMultiplier * planeZoom,
-            planeHeight * planeZoom,
+            planeWidth * planeWidthMultiplier * worldScale,
+            planeHeight * worldScale,
         );
         const material = new THREE.MeshLambertMaterial({
             color: new THREE.Color(colorScale(d.viability)),
@@ -96,9 +101,9 @@ function buildPlanes(data) {
         plane.receiveShadow = true;
         plane.rotation.x = -Math.PI / 2;
         plane.position.set(
-            (xScale(d.x) - xOffset) * planeZoom,
+            (xScale(d.x) - xOffset) * worldScale,
             planeYPosition,
-            (zScale(d.z) - zOffset) * planeZoom,
+            (zScale(d.z) - zOffset) * worldScale,
         );
         scene.scene.add(plane);
     });
