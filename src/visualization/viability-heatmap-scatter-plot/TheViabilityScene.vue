@@ -45,7 +45,7 @@ const ATMOSPHERE_LIGHT = {
 };
 
 const SHOW_HEATMAP = true;
-const SHOW_SCATTER_PLOT = false;
+const SHOW_SCATTER_PLOT = true;
 
 const props = defineProps({
     dark: { type: Boolean, default: USE_DARK_ATMOSPHERE },

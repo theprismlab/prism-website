@@ -4,9 +4,9 @@ import * as d3 from 'd3';
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const SPHERE_CONFIG = {
-    sphereXStep: 8, // sample every Nth cell line index to reduce sphere count
+    sphereXStep: 4, // sample every Nth cell line index to reduce sphere count
     sphereZStep: 1, // sample every Nth dose index
-    sphereOpacityRange: [0.25, 0.75],
+    sphereOpacityRange: [0.25, 1],
     sphereRadiusScaleRange: [0.5, 1],
     sphereRadiusScaleDomain: [0, 1], // matches Math.random() input
     sphereFloatSpeedMin: 0.4,
@@ -15,8 +15,9 @@ const SPHERE_CONFIG = {
     sphereFloatAmplitudeRange: 0.09,
 
     // Y-axis spread expressed as fractions of visible screen height
-    ySpreadFraction: 1.5,        // total y range = 1.5× visible screen height
-    ySpreadCenterFraction: 0.15, // center sits 15% above screen center
+    ySpreadFraction: 1.1,        // total y range = 1.5× visible screen height
+    ySpreadCenterFraction: 0.25, // center of the range sits 15% above screen center
+    // yScale maps viability [0→1] to world y: high viability → high y position
 };
 
 // ── Scales ────────────────────────────────────────────────────────────────────
@@ -42,7 +43,7 @@ function computeScales(data, scene) {
     const centerOffset = visibleHeight * ySpreadCenterFraction;
 
     const xScale = d3.scaleLinear().domain(xExtent).range([0, visibleWidth]);
-    const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight * 2]);
+    const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
     const yScale = d3.scaleLinear().domain(viabilityExtent).range([centerOffset + halfSpread, centerOffset - halfSpread]);
     const radiusScale = d3.scaleSqrt().domain(SPHERE_CONFIG.sphereRadiusScaleDomain).range(SPHERE_CONFIG.sphereRadiusScaleRange);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(SPHERE_CONFIG.sphereOpacityRange);
@@ -139,11 +140,12 @@ export function buildScatterLayer(scene, data) {
         const material = new THREE.MeshStandardMaterial({
             color: sphereColor,
             emissive: sphereColor,
-            emissiveIntensity: 0.3,
+            emissiveIntensity: 0.008,  // subtle self-glow; raise toward 1 to brighten
             transparent: true,
             opacity: opacityScale(d.z),
-            roughness: 0.2,
+            roughness: 0.35,           // higher = softer highlights, less reflective
             metalness: 0.0,
+            envMapIntensity: 0.4,     // reduce IBL contribution
         });
         const sphere = new THREE.Mesh(geometry, material);
         sphere.castShadow = true;
