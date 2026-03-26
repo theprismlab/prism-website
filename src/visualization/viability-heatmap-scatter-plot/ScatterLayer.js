@@ -4,19 +4,19 @@ import * as d3 from 'd3';
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const SPHERE_CONFIG = {
-    sphereXStep: 4, // sample every Nth cell line index to reduce sphere count
+    sphereXStep: 3, // sample every Nth cell line index to reduce sphere count
     sphereZStep: 1, // sample every Nth dose index
     sphereOpacityRange: [0.25, 1],
-    sphereRadiusScaleRange: [0.5, 1],
+    sphereRadiusScaleRange: [0.1, 0.75],
     sphereRadiusScaleDomain: [0, 1], // matches Math.random() input
     sphereFloatSpeedMin: 0.4,
     sphereFloatSpeedRange: 0.9,
-    sphereFloatAmplitudeBase: 0.09,
-    sphereFloatAmplitudeRange: 0.09,
+    sphereFloatAmplitudeBase: 0.18,
+    sphereFloatAmplitudeRange: 0.18,
 
     // Y-axis spread expressed as fractions of visible screen height
-    ySpreadFraction: 1.1,        // total y range = 1.5× visible screen height
-    ySpreadCenterFraction: 0.25, // center of the range sits 15% above screen center
+    ySpreadFraction: 1,        // total y range = 1.5× visible screen height
+    ySpreadCenterFraction: 0.35, // center of the range sits 15% above screen center
     // yScale maps viability [0→1] to world y: high viability → high y position
 };
 
@@ -45,13 +45,13 @@ function computeScales(data, scene) {
     const xScale = d3.scaleLinear().domain(xExtent).range([0, visibleWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
     const yScale = d3.scaleLinear().domain(viabilityExtent).range([centerOffset + halfSpread, centerOffset - halfSpread]);
-    const radiusScale = d3.scaleSqrt().domain(SPHERE_CONFIG.sphereRadiusScaleDomain).range(SPHERE_CONFIG.sphereRadiusScaleRange);
+    const radiusScale = d3.scaleLinear().domain(SPHERE_CONFIG.sphereRadiusScaleDomain).range(SPHERE_CONFIG.sphereRadiusScaleRange);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(SPHERE_CONFIG.sphereOpacityRange);
-    const xNorm = d3.scaleLinear().domain([colorThreshold, xExtent[1]]).range([0.2, 0.85]);
+    const xNorm = d3.scaleLinear().domain([colorThreshold, xExtent[1]]).range([0.4, 0.85]);
     const zNorm = d3.scaleLinear().domain(zExtent).range([0.3, 0.85]);
 
     const colorScale = (x, z) => {
-        if (x < colorThreshold) return new THREE.Color(d3.interpolateYlGnBu(zNorm(z)));
+        if (x < colorThreshold) return new THREE.Color(d3.interpolateGnBu(zNorm(z)));
         return new THREE.Color(d3.interpolateYlOrRd(xNorm(x)));
     };
 

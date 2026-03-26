@@ -6,9 +6,9 @@ import * as d3 from 'd3';
 const HEATMAP_CONFIG = {
     // worldScale uniformly multiplies both plane sizes and positions,
     // expanding the grid to fill (and overflow) the visible area
-    worldScale: 10.8,
-    planeYPosition: 1, // 1 was default, but lowering it helps with occlusion of spheres by planes at the front edge of the grid
-    planeOpacityRange: [0, 1, 1],
+    worldScale: 12.0,
+    planeYPosition: 0, // 1 was default, but lowering it helps with occlusion of spheres by planes at the front edge of the grid
+    planeOpacityRange: [0, 0.9, 1],
 };
 
 // ── Scales ────────────────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ function computeScales(data, scene) {
     // If planeOpacityRange has 3 values, interpolate a midpoint in the domain
     // so d3 creates a proper piecewise scale (low-z → mid-z → high-z).
     const opacityRange = HEATMAP_CONFIG.planeOpacityRange;
-    const zMid = (zExtent[0] + zExtent[1]) / 1.8;
+    const zMid = (zExtent[0] + zExtent[1]) / 2;
     const opacityDomain = opacityRange.length === 3
         ? [zExtent[0], zMid, zExtent[1]]
         : zExtent;
