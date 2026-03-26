@@ -18,7 +18,7 @@
                         <v-row class="assay-panel__title" align="center" justify="start">
                             <img :src="imgPath + 'Thumbnail_' + item.screen + '.svg'" :alt="item.screen + ' thumbnail'" class="assay-avatar" />
                             <div class="assay-header">
-                                <div class="assay-name text-h5">{{ item.screen_full }} ({{ item.screen }})</div>
+                                <div class="assay-name text-h5">{{ item.screen }} - {{ item.screen_full }}</div>
                                 <div class="assay-text-agents">{{ item.test_agents }}</div>
                             </div>
                             <div class="assay-time-point">{{ item.time_point }}</div>
@@ -80,12 +80,12 @@ export default {
                     {
                         'id': "MTS",
                         'screen': 'MTS',
-                        'screen_full': 'Multiplexed PRISM Screen',
+                        'screen_full': 'Medium Throughput Screen',
                         'test_agents': 'Small molecule single agents',
                         'num_cell_lines': '~900 (full PRISM cell set)',
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
-                        'description': 'We screen standard DMSO compounds at a top dose of your choice, diluted 3-fold over 8 dilutions. Compounds are plated with an Echo using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s).',
+                        'description': 'DMSO-soluble small molecules are plated with an Echo Acoustic Liquid handler using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s).',
                         'image': 'PRISM_Assay_Workflow_MTS.png'
                     },
                     {
@@ -100,7 +100,7 @@ export default {
                             <li>Test agents are screened at dose alone and in combination</li>
                         </ul>`,
                         'time_point': '5-day',
-                        'description': 'Combination screening in PRISM requires careful selection of drug doses which can be especially difficult in a pooled context. Therefore, it is only recommended to use this assay for test agents that have been screened in PRISM before as single agents. When selecting an anchor dose our recommendation is to select a dose that does not broadly affect cell viability but gives a reproducible phenotypic effect in a specific cell line or set of cell lines. <a href="https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism" target="_blank">CPS white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/CPS009/CPS_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal. Compounds are plated by Echo into plates and frozen prior to cell treatment. Cells are then thawed and plated onto the compound assay ready plates (ARP’s).',
+                        'description': `Like the 5-day, single agent assay, DMSO-soluble small molecules in combination are plated with an Echo Acoustic Liquid handler using acoustic transfer and frozen prior to cell plating. Cells are then thawed and plated onto compound assay ready plates (ARP’s). For more information, review the <a href="https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism" target="_blank">CPS white paper</a> and explore our <a href="https://theprismlab.org/portal/projects/CPS009/CPS_WHITEPAPER/compounds" target="_blank">public dataset</a> on the PRISM Portal.`,
                         'image': 'PRISM_Assay_Workflow_CPS.png'
                     },
                     {   'id': "APS",
@@ -110,17 +110,18 @@ export default {
                         'num_cell_lines': '~900 (full PRISM cell set)',
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
-                        'description': `For the aqueous assay, we plate the cells first into 384-well plates and then ECHO transfer the aqueous agents. This method gives us the highest quality data and does not freeze the aqueous reagents. For more information, review the <a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>  and explore our <a href="https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds" target="_blank">public dataset</a>  on the portal.`,
+                        'description': `Cells are plated first into 384-well plates followed by the Echo transfer of aqueous test agents. This method gives us the highest quality data and does not freeze the aqueous reagents. For more information, review the <a href='https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets' target='_blank'>ADC white paper</a> and explore our <a href='https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds' target='_blank'>public dataset</a> on the PRISM Portal.`,
                         'image': 'PRISM_Assay_Workflow_APS.png'
                     },
                     {   'id': "AIR",
                         'screen': 'AIR',
-                        'screen_full': 'Antibody Internalization Screen',
+                        'screen_full': 'Antibody Internalization Reporter',
                         'test_agents': 'Antibodies (IgG isotype, containing human or humanized Fc region)',
                         'num_cell_lines': '~900 (full PRISM cell set)',
                         'dose_scheme': `8-point dose, 3-fold dilution`,
                         'time_point': '5-day',
-                        'description': `For more information, review the <a href="https://assets.clue.io/prism/Overview-of-PRISM-AIR-Assay-for-Collaborators.pdf" target="_blank">AIR overview slides</a>`,
+                        
+                        'description': `Unconjugated antibodies are first mixed with a cytotoxic payload via a secondary drug-conjugate prior to screening. Like the APS assay, cells are then plated into 384-well plates followed by the Echo transfer of test agents. For more information, review the <a href='https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets' target='_blank'>ADC white paper</a> and explore our <a href='https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds' target='_blank'>public dataset</a> on the PRISM Portal.`,
                         'image': 'PRISM_Assay_Workflow_AIR.png'
                     },
                     {
@@ -131,7 +132,7 @@ export default {
                         'num_cell_lines': '+500',
                         'dose_scheme': `5-pt dose, custom dilution `,
                         'time_point': '10-day',
-                        'description': 'For the extended day PRISM screen, small molecules are plated onto 96-well plates and frozen. Cell pools are plated on assay ready plates on day 0 and drug is re-added on day 6. Cell pools are lysed on day 10, gDNA is then PCR’ed and then sequenced.',
+                        'description': `For the extended day assay, DMSO-soluble small molecules are plated into 96-well plates and then frozen. Cell pools are plated on assay ready plates on day 0, and drug is re-added on day 6. Cell pools are lysed on day 10, after which gDNA is PCR'ed and then sequenced.`,
                         'image': 'PRISM_Assay_Workflow_EPS.png'
                     },
                 ],
