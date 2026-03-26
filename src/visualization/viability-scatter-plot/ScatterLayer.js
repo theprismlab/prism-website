@@ -14,6 +14,10 @@ const SPHERE_CONFIG = {
     sphereFloatAmplitudeBase: 0.18,
     sphereFloatAmplitudeRange: 0.18,
 
+    // Only attach a barcode sticker to spheres whose radius exceeds this value.
+    // sphereRadiusScaleRange is [0.1, 0.9] (before jitter), so 0.55 targets the larger ~40%.
+    stickerMinRadius: 0.55,
+
     // Y-axis spread expressed as fractions of visible screen height
     ySpreadFraction: 1.75,        // total y range = 1.5× visible screen height
     ySpreadCenterFraction: .5, // center of the range sits 15% above screen center
@@ -208,7 +212,9 @@ export function buildScatterLayer(scene, data) {
         });
         const sphere = new THREE.Mesh(geometry, material);
         sphere.castShadow = true;
-        createBarcodeSticker(sphere, radius, barcodeTexture);
+        if (radius >= SPHERE_CONFIG.stickerMinRadius) {
+            createBarcodeSticker(sphere, radius, barcodeTexture);
+        }
 
         const basePosition = new THREE.Vector3(
             xScale(d.x) - xOffset,
