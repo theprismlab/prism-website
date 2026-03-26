@@ -19,34 +19,56 @@ const sceneConfig = {
     nearClip: 0.1,
     farClip: 200,
 
-    // ── Base lighting (atmosphere adds HemisphereLight below) ──
+    // ── Base lighting ──
     directionalLightIntensity: 0.2,
     ambientLightIntensity: 0.1,
 };
+
+// ── Lighting presets ──────────────────────────────────────────────────────────
+
+const ATMOSPHERE_DARK = {
+    background: new THREE.Color(0x06040f),
+    fog: new THREE.FogExp2(0x06040f, 0.013),
+    // Cold violet sky + dark crimson ground; spheres shade differently by height
+    hemiLight: { sky: 0x1a1040, ground: 0x1a0010, intensity: 1.2 },
+};
+
+const ATMOSPHERE_LIGHT = {
+    background: null, // transparent — lets the page background show through
+    fog: null,
+    // Warm white sky + cool grey ground for a clean neutral look
+    hemiLight: { sky: 0xffffff, ground: 0x8899aa, intensity: 1.0 },
+};
+
+const SHOW_HEATMAP = true;
+const SHOW_SCATTER_PLOT = true;
+
+const props = defineProps({
+    dark: { type: Boolean, default: false },
+});
 
 const canvasEl = ref(null);
 const scene = useViabilityScene(canvasEl, sceneConfig);
 
 function applyAtmosphere() {
-    // Deep indigo background and matching fog for seamless depth fade
-    scene.scene.background = new THREE.Color(0x06040f);
-    scene.scene.fog = new THREE.FogExp2(0x06040f, 0.013);
+    const preset = props.dark ? ATMOSPHERE_DARK : ATMOSPHERE_LIGHT;
 
-    // Cold violet sky + dark crimson ground — spheres pick up different tints
-    // depending on their vertical position, creating natural depth shading
-    const hemiLight = new THREE.HemisphereLight(0x1a1040, 0x1a0010, 1.2);
-    scene.scene.add(hemiLight);
+    scene.scene.background = preset.background;
+    scene.scene.fog = preset.fog;
+
+    const { sky, ground, intensity } = preset.hemiLight;
+    scene.scene.add(new THREE.HemisphereLight(sky, ground, intensity));
 }
 
 onMounted(async () => {
     applyAtmosphere();
-
+    let heatmapData, scatterData;
     const raw = await loadViabilityCSV();
-    const heatmapData = parseHeatmapData(raw);
-    const scatterData = parseScatterPlotData(raw);
+    if (SHOW_HEATMAP) heatmapData = parseHeatmapData(raw);
+    if (SHOW_SCATTER_PLOT) scatterData = parseScatterPlotData(raw);
 
-    buildHeatmapLayer(scene, heatmapData);
-   // buildScatterLayer(scene, scatterData);
+    if (SHOW_HEATMAP) buildHeatmapLayer(scene, heatmapData);
+    if (SHOW_SCATTER_PLOT) buildScatterLayer(scene, scatterData);
 
     scene.render();
     scene.startAnimation();
@@ -54,8 +76,8 @@ onMounted(async () => {
     // On resize, clearMeshes runs first (preserving lights + fog),
     // then these rebuild callbacks recreate the geometry for the new viewport
     scene.onRebuild(() => {
-        buildHeatmapLayer(scene, heatmapData);
-     //   buildScatterLayer(scene, scatterData);
-    });
+        if (SHOW_HEATMAP)  buildHeatmapLayer(scene, heatmapData);
+        if (SHOW_SCATTER_PLOT) buildScatterLayer(scene, scatterData);
+    }); 
 });
 </script>
