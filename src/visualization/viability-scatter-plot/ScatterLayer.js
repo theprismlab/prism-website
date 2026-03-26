@@ -16,7 +16,10 @@ const SPHERE_CONFIG = {
 
     // Only attach a barcode sticker to spheres whose radius exceeds this value.
     // sphereRadiusScaleRange is [0.1, 0.9] (before jitter), so 0.55 targets the larger ~40%.
-    stickerMinRadius: 0.55,
+    stickerMinRadius: 1,
+    // Sticker side length as a fraction of sphere radius (square aspect ratio maintained).
+    // 0.8 → sticker spans 80% of the radius on each side (≈ halfAngle 0.4 rad, ~23° arc).
+    stickerSizeFraction: 0.8,
 
     // Y-axis spread expressed as fractions of visible screen height
     ySpreadFraction: 1.75,        // total y range = 1.5× visible screen height
@@ -128,9 +131,10 @@ function applySoftCollision(spheres, pushStrength = 0.15, damping = 0.95) {
  * @param {THREE.Mesh} sphere - Parent sphere to attach the sticker to.
  * @param {number} radius - Radius of the parent sphere.
  * @param {THREE.Texture} texture - Pre-loaded barcode texture.
- * @param {number} [halfAngle=Math.PI * 0.3] - Arc half-angle of the cap (radians).
+ * @param {number} halfAngle - Arc half-angle of the cap (radians).
+ * @param {number} opacity - Should match the parent sphere's opacity so they fade together.
  */
-function createBarcodeSticker(sphere, radius, texture, halfAngle = Math.PI * 0.3) {
+function createBarcodeSticker(sphere, radius, texture, halfAngle, opacity) {
     const stickerGeo = new THREE.SphereGeometry(
         radius * 1.005,
         16, 16,
@@ -139,25 +143,12 @@ function createBarcodeSticker(sphere, radius, texture, halfAngle = Math.PI * 0.3
         Math.PI / 2 - halfAngle,   // thetaStart: centre on equator
         halfAngle * 2,             // thetaLength
     );
-
-    // Remap UVs so the full texture fills the cap
-    const uvAttr = stickerGeo.attributes.uv;
-    const phiMin = (Math.PI / 2 - halfAngle) / (2 * Math.PI);
-    const phiMax = (Math.PI / 2 + halfAngle) / (2 * Math.PI);
-    const vMin   = 1 - (Math.PI / 2 + halfAngle) / Math.PI;
-    const vMax   = 1 - (Math.PI / 2 - halfAngle) / Math.PI;
-    for (let i = 0; i < uvAttr.count; i++) {
-        uvAttr.setXY(
-            i,
-            (uvAttr.getX(i) - phiMin) / (phiMax - phiMin),
-            (uvAttr.getY(i) - vMin)   / (vMax   - vMin),
-        );
-    }
+    // THREE.SphereGeometry already outputs normalized [0,1] UVs across the cap — no remap needed.
 
     const mat = new THREE.MeshBasicMaterial({
         map: texture,
         transparent: true,
-        alphaTest: 0.01,
+        opacity,
         depthWrite: false,
     });
     const sticker = new THREE.Mesh(stickerGeo, mat);
@@ -175,6 +166,11 @@ export function buildScatterLayer(scene, data) {
     } = SPHERE_CONFIG;
 
     const { xScale, zScale, yScale, radiusScale, opacityScale, colorScale, xOffset, zOffset, cellHeight } = computeScales(data, scene);
+
+    // halfAngle = stickerSizeFraction / 2 because arc_length = radius × angle
+    // → angle = (radius × fraction / 2) / radius = fraction / 2 (constant, independent of radius)
+    // This ensures all stickers are square and their physical size scales with sphere radius.
+    const stickerHalfAngle = SPHERE_CONFIG.stickerSizeFraction / 2;
 
     // Rasterize the SVG to a canvas so alpha is preserved correctly at a fixed resolution.
     // Setting src on a bare <img> with an SVG gives browsers a tiny default size;
@@ -199,13 +195,14 @@ export function buildScatterLayer(scene, data) {
         const radius = radiusScale(Math.random()) * radiusJitter;
         const sphereColor = colorScale(d.x, d.z);
 
+        const sphereOpacity = opacityScale(d.z);
         const geometry = new THREE.SphereGeometry(radius, 24, 24);
         const material = new THREE.MeshStandardMaterial({
             color: sphereColor,
             emissive: sphereColor,
             emissiveIntensity: 0.008,
             transparent: true,
-            opacity: opacityScale(d.z),
+            opacity: sphereOpacity,
             roughness: 0.35,
             metalness: 0.0,
             envMapIntensity: 0.4,
@@ -213,7 +210,7 @@ export function buildScatterLayer(scene, data) {
         const sphere = new THREE.Mesh(geometry, material);
         sphere.castShadow = true;
         if (radius >= SPHERE_CONFIG.stickerMinRadius) {
-            createBarcodeSticker(sphere, radius, barcodeTexture);
+            createBarcodeSticker(sphere, radius, barcodeTexture, stickerHalfAngle, sphereOpacity);
         }
 
         const basePosition = new THREE.Vector3(
