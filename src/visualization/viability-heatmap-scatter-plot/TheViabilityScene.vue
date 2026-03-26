@@ -20,8 +20,8 @@ const sceneConfig = {
     farClip: 200,
 
     // ── Base lighting ──
-    directionalLightIntensity: 0.2,
-    ambientLightIntensity: 0.1,
+    directionalLightIntensity: 0.85,
+    ambientLightIntensity: 0.0,
 };
 
 // ── Lighting presets ──────────────────────────────────────────────────────────
@@ -37,7 +37,7 @@ const ATMOSPHERE_LIGHT = {
     background: null, // transparent — lets the page background show through
     fog: null,
     // Warm white sky + cool grey ground for a clean neutral look
-    hemiLight: { sky: 0xffffff, ground: 0x8899aa, intensity: 1.0 },
+    hemiLight: { sky: 0xffffff, ground: 0x8899aa, intensity: 2.0 },
 };
 
 const SHOW_HEATMAP = true;
