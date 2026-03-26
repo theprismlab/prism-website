@@ -12,28 +12,28 @@ const sphereConfig = {
     // ── Camera ──
     fov: 35,
     cameraDistance: 45,
-    cameraPosition: [0, 7.5, 25],
+    cameraPosition: [0, 7.5], // [x, y] only — z is set by cameraDistance
     cameraLookAt: [0, 6.5, 0],
-
+    nearClip: 0.1,
+    farClip: 200,
 
     // ── Lighting ──
     directionalLightIntensity: 0.25,
     ambientLightIntensity: 0.25,
 
     // ── Spheres ──
-    sphereXStep: 8, // sample every Nth point in the x dimension to reduce total sphere count
-    sphereZStep: 1, // sample every Nth point in the z dimension (which is smaller than x) to reduce total sphere count
-   
+    sphereXStep: 8, // sample every Nth cell line index to reduce sphere count
+    sphereZStep: 1, // sample every Nth dose index
     sphereOpacityRange: [0.25, 0.75],
     sphereRadiusScaleRange: [0.5, 1],
-    sphereRadiusScaleDomain: [0, 50],
+    sphereRadiusScaleDomain: [0, 1], // matches Math.random() input
     sphereFloatSpeedMin: 0.4,
     sphereFloatSpeedRange: 0.9,
     sphereFloatAmplitudeBase: 0.09,
     sphereFloatAmplitudeRange: 0.09,
 
     // ── Y-axis spread (fractions of visible screen height) ──
-    ySpreadFraction: 1.5,       // total y range = 1.5× visible screen height
+    ySpreadFraction: 1.5,        // total y range = 1.5× visible screen height
     ySpreadCenterFraction: 0.15, // center sits 15% above screen center
 };
 
@@ -64,29 +64,30 @@ function computeScales(data) {
 
     const zExtent = d3.extent(data, d => d.z);
     const xExtent = d3.extent(data, d => d.x);
-    const xThird = xExtent[0] + (xExtent[1] - xExtent[0]) / 3;
-    const cExtent = d3.extent(data, d => d.value);
+    const viabilityExtent = d3.extent(data, d => d.value);
+
+    // colorThreshold splits cell lines into two color schemes:
+    // low-index (sensitive) lines use YlGnBu by dose; high-index use YlOrRd by position
+    const colorThreshold = xExtent[0] + (xExtent[1] - xExtent[0]) / 3;
+
     const vFov = THREE.MathUtils.degToRad(fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
     const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
-
-    const sceneWidth = visibleWidth;
-    const cellWidth = sceneWidth / xExtent[1];
     const cellHeight = visibleHeight / Math.max(zExtent[1], 1);
 
     const halfSpread = visibleHeight * ySpreadFraction / 2;
     const centerOffset = visibleHeight * ySpreadCenterFraction;
 
-    const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
+    const xScale = d3.scaleLinear().domain(xExtent).range([0, visibleWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight * 2]);
-    const yScale = d3.scaleLinear().domain(cExtent).range([centerOffset + halfSpread, centerOffset - halfSpread]);
+    const yScale = d3.scaleLinear().domain(viabilityExtent).range([centerOffset + halfSpread, centerOffset - halfSpread]);
     const radiusScale = d3.scaleSqrt().domain(config.sphereRadiusScaleDomain).range(config.sphereRadiusScaleRange);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(config.sphereOpacityRange);
-    const xNorm = d3.scaleLinear().domain([xThird, xExtent[1]]).range([0.2, 0.85]);
+    const xNorm = d3.scaleLinear().domain([colorThreshold, xExtent[1]]).range([0.2, 0.85]);
     const zNorm = d3.scaleLinear().domain(zExtent).range([0.3, 0.85]);
 
     const colorScale = (x, z) => {
-        if (x < xThird) {
+        if (x < colorThreshold) {
             return new THREE.Color(d3.interpolateYlGnBu(zNorm(z)));
         }
         return new THREE.Color(d3.interpolateYlOrRd(xNorm(x)));
@@ -94,12 +95,11 @@ function computeScales(data) {
 
     return markRaw({
         xScale, zScale, yScale, radiusScale, opacityScale, colorScale,
-        xOffset: sceneWidth / 2,
+        xOffset: visibleWidth / 2,
         zOffset: visibleHeight / 2,
         xExtent,
         zExtent,
-        cellWidth, 
-        cellHeight, 
+        cellHeight,
     });
 }
 
@@ -116,21 +116,13 @@ function buildSpheres(data) {
 
     const sampled = data.filter(d => d.x % sphereXStep === 0 && d.z % sphereZStep === 0);
 
-    if (props.darkMode) {
-        scene.scene.background = new THREE.Color(0x0a0a0f);
-    } else {
-        scene.scene.background = null;
-    }
-   
-   
+    scene.scene.background = props.darkMode ? new THREE.Color(0x0a0a0f) : null;
 
     const spheres = [];
 
     sampled.forEach(d => {
-        const radiusRandom = Math.random();
-        const randomJitter = 0.85 + Math.random() ;
-        // const radius = radiusScale(d.radius) * randomJitter;
-              const radius = radiusScale(radiusRandom) * randomJitter;
+        const radiusJitter = 0.85 + Math.random();
+        const radius = radiusScale(Math.random()) * radiusJitter;
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
         const sphereColor = colorScale(d.x, d.z);
         const material = markRaw(new THREE.MeshStandardMaterial({
