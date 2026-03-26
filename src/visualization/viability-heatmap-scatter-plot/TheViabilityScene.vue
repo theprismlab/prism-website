@@ -13,8 +13,8 @@ const USE_DARK_ATMOSPHERE = false;
 const BASE_VIEW = {
     fov: 35, 
     cameraDistance: 45,
-    cameraPosition: [0, 7.5], // [x, y] only — z is set by cameraDistance
-    cameraLookAt: [0, 6.5, 0],
+    cameraPosition: [0, 8.5], //default 7.5
+    cameraLookAt: [0, 10.5, 0], //default 6.5
     nearClip: 0.1,
     farClip: 200,
 }
@@ -23,8 +23,8 @@ const sceneConfig = {
     ...BASE_VIEW,
 
     // ── Base lighting ──
-    directionalLightIntensity: USE_DARK_ATMOSPHERE ? 0.85 : 0.5,
-    ambientLightIntensity: USE_DARK_ATMOSPHERE ? 2.0 : 0.8,
+    directionalLightIntensity: USE_DARK_ATMOSPHERE ? 0.85 : 0.1,
+    ambientLightIntensity: USE_DARK_ATMOSPHERE ? 2.0 : 0.5,
 };
 
 // ── Lighting presets ──────────────────────────────────────────────────────────
@@ -41,11 +41,11 @@ const ATMOSPHERE_LIGHT = {
     background: null, // transparent — lets the page background show through
     fog: null,
     // Warm white sky + cool grey ground for a clean neutral look
-    hemiLight: { sky: 0xffffff, ground: 0x8899aa, intensity: 2.0 },
+    hemiLight: { sky: 0xffffff, ground: 0xffffff, intensity: 2.0 },
 };
 
 const SHOW_HEATMAP = true;
-const SHOW_SCATTER_PLOT = true;
+const SHOW_SCATTER_PLOT = false;
 
 const props = defineProps({
     dark: { type: Boolean, default: USE_DARK_ATMOSPHERE },

@@ -7,8 +7,8 @@ const HEATMAP_CONFIG = {
     // worldScale uniformly multiplies both plane sizes and positions,
     // expanding the grid to fill (and overflow) the visible area
     worldScale: 10.8,
-    planeYPosition: 0, // 1 was default, but lowering it helps with occlusion of spheres by planes at the front edge of the grid
-    planeOpacityRange: [1, 1],
+    planeYPosition: 1, // 1 was default, but lowering it helps with occlusion of spheres by planes at the front edge of the grid
+    planeOpacityRange: [0, 1, 1],
 };
 
 // ── Scales ────────────────────────────────────────────────────────────────────
@@ -17,7 +17,7 @@ function computeScales(data, scene) {
     const { fov, cameraDistance } = scene.config;
 
     const zExtent = d3.extent(data, d => d.z);
-    const xExtent = d3.extent(data, d => d.x);
+    const xExtent = d3.extent(data, d => d.x); // this is hard coded as numbers, so cant pre-filter data 
 
     const vFov = THREE.MathUtils.degToRad(fov);
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
@@ -25,7 +25,17 @@ function computeScales(data, scene) {
 
     const xScale = d3.scaleLinear().domain(xExtent).range([0, visibleWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
-    const opacityScale = d3.scaleLinear().domain(zExtent).range(HEATMAP_CONFIG.planeOpacityRange);
+
+    // Build a matching domain for the opacity range stops.
+    // If planeOpacityRange has 3 values, interpolate a midpoint in the domain
+    // so d3 creates a proper piecewise scale (low-z → mid-z → high-z).
+    const opacityRange = HEATMAP_CONFIG.planeOpacityRange;
+    const zMid = (zExtent[0] + zExtent[1]) / 1.8;
+    const opacityDomain = opacityRange.length === 3
+        ? [zExtent[0], zMid, zExtent[1]]
+        : zExtent;
+
+    const opacityScale = d3.scaleLinear().domain(opacityDomain).range(opacityRange);
     // domain is inverted: viability 1 → light (yellow), 0.2 → dark (red)
     const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1, 0.2]);
 
@@ -44,6 +54,7 @@ function computeScales(data, scene) {
 // ── Layer Builder ─────────────────────────────────────────────────────────────
 
 export function buildHeatmapLayer(scene, data) {
+  
     const { worldScale, planeYPosition } = HEATMAP_CONFIG;
     const { xScale, zScale, opacityScale, colorScale, xOffset, zOffset, planeWidth, planeHeight } = computeScales(data, scene);
 
