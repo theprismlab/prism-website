@@ -9,19 +9,22 @@ import { useViabilityScene } from './useViabilityScene.js';
 import { loadViabilityCSV, parseHeatmapData, parseScatterPlotData } from './getData.js';
 import { buildHeatmapLayer } from './HeatmapLayer.js';
 import { buildScatterLayer } from './ScatterLayer.js';
-
-const sceneConfig = {
-    // ── Camera ──
-    fov: 35,
+const USE_DARK_ATMOSPHERE = false;
+const BASE_VIEW = {
+    fov: 35, 
     cameraDistance: 45,
     cameraPosition: [0, 7.5], // [x, y] only — z is set by cameraDistance
     cameraLookAt: [0, 6.5, 0],
     nearClip: 0.1,
     farClip: 200,
+}
+const sceneConfig = {
+    // ── Camera ──
+    ...BASE_VIEW,
 
     // ── Base lighting ──
-    directionalLightIntensity: 0.85,
-    ambientLightIntensity: 0.0,
+    directionalLightIntensity: USE_DARK_ATMOSPHERE ? 0.85 : 0.5,
+    ambientLightIntensity: USE_DARK_ATMOSPHERE ? 2.0 : 0.8,
 };
 
 // ── Lighting presets ──────────────────────────────────────────────────────────
@@ -31,6 +34,7 @@ const ATMOSPHERE_DARK = {
     fog: new THREE.FogExp2(0x06040f, 0.013),
     // Cold violet sky + dark crimson ground; spheres shade differently by height
     hemiLight: { sky: 0x1a1040, ground: 0x1a0010, intensity: 1.2 },
+    
 };
 
 const ATMOSPHERE_LIGHT = {
@@ -44,7 +48,7 @@ const SHOW_HEATMAP = true;
 const SHOW_SCATTER_PLOT = true;
 
 const props = defineProps({
-    dark: { type: Boolean, default: false },
+    dark: { type: Boolean, default: USE_DARK_ATMOSPHERE },
 });
 
 const canvasEl = ref(null);

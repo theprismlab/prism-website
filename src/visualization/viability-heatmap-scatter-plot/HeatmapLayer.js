@@ -7,9 +7,8 @@ const HEATMAP_CONFIG = {
     // worldScale uniformly multiplies both plane sizes and positions,
     // expanding the grid to fill (and overflow) the visible area
     worldScale: 10.8,
-    planeWidthMultiplier: 1.6, // planes overlap slightly in x to avoid gaps
-    planeYPosition: 1,
-    planeOpacityRange: [0.5, 1],
+    planeYPosition: 0, // 1 was default, but lowering it helps with occlusion of spheres by planes at the front edge of the grid
+    planeOpacityRange: [1, 1],
 };
 
 // ── Scales ────────────────────────────────────────────────────────────────────
@@ -24,15 +23,15 @@ function computeScales(data, scene) {
     const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
     const visibleWidth = visibleHeight * (scene.width.value / scene.height.value);
 
-    // per-cell dimensions before worldScale is applied
-    const planeWidth = visibleWidth / xExtent[1];
-    const planeHeight = visibleHeight / Math.max(zExtent[1], 1);
-
     const xScale = d3.scaleLinear().domain(xExtent).range([0, visibleWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(HEATMAP_CONFIG.planeOpacityRange);
     // domain is inverted: viability 1 → light (yellow), 0.2 → dark (red)
     const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1, 0.2]);
+
+    // per-cell dimensions derived from the scale: one domain unit → one cell width/height
+    const planeWidth  = xScale(xExtent[0] + 1) - xScale(xExtent[0]);
+    const planeHeight = zScale(zExtent[0] + 1) - zScale(zExtent[0]);
 
     return {
         xScale, zScale, opacityScale, colorScale,
@@ -45,12 +44,12 @@ function computeScales(data, scene) {
 // ── Layer Builder ─────────────────────────────────────────────────────────────
 
 export function buildHeatmapLayer(scene, data) {
-    const { worldScale, planeWidthMultiplier, planeYPosition } = HEATMAP_CONFIG;
+    const { worldScale, planeYPosition } = HEATMAP_CONFIG;
     const { xScale, zScale, opacityScale, colorScale, xOffset, zOffset, planeWidth, planeHeight } = computeScales(data, scene);
 
     data.forEach(d => {
         const geometry = new THREE.PlaneGeometry(
-            planeWidth * planeWidthMultiplier * worldScale,
+            planeWidth * worldScale,
             planeHeight * worldScale,
         );
         const material = new THREE.MeshLambertMaterial({
