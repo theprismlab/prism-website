@@ -117,50 +117,6 @@ function applySoftCollision(spheres, pushStrength = 0.15, damping = 0.95) {
     });
 }
 
-// ── Sticker ───────────────────────────────────────────────────────────────────
-
-/**
- * Creates a spherical-cap barcode sticker and attaches it to the given sphere mesh.
- * @param {THREE.Mesh} sphere - Parent sphere to attach the sticker to.
- * @param {number} radius - Radius of the parent sphere.
- * @param {THREE.Texture} texture - Pre-loaded barcode texture.
- * @param {number} [halfAngle=Math.PI * 0.3] - Arc half-angle of the cap (radians).
- */
-function createBarcodeSticker(sphere, radius, texture, halfAngle = Math.PI * 0.3) {
-    const stickerGeo = new THREE.SphereGeometry(
-        radius * 1.005,
-        16, 16,
-        Math.PI / 2 - halfAngle,   // phiStart:   centre cap on +z face
-        halfAngle * 2,             // phiLength
-        Math.PI / 2 - halfAngle,   // thetaStart: centre on equator
-        halfAngle * 2,             // thetaLength
-    );
-
-    // Remap UVs so the full texture fills the cap
-    const uvAttr = stickerGeo.attributes.uv;
-    const phiMin = (Math.PI / 2 - halfAngle) / (2 * Math.PI);
-    const phiMax = (Math.PI / 2 + halfAngle) / (2 * Math.PI);
-    const vMin   = 1 - (Math.PI / 2 + halfAngle) / Math.PI;
-    const vMax   = 1 - (Math.PI / 2 - halfAngle) / Math.PI;
-    for (let i = 0; i < uvAttr.count; i++) {
-        uvAttr.setXY(
-            i,
-            (uvAttr.getX(i) - phiMin) / (phiMax - phiMin),
-            (uvAttr.getY(i) - vMin)   / (vMax   - vMin),
-        );
-    }
-
-    const mat = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        alphaTest: 0.01,
-        depthWrite: false,
-    });
-    const sticker = new THREE.Mesh(stickerGeo, mat);
-    sticker.renderOrder = 1;
-    sphere.add(sticker);
-}
-
 // ── Layer Builder ─────────────────────────────────────────────────────────────
 
 export function buildScatterLayer(scene, data) {
@@ -171,21 +127,6 @@ export function buildScatterLayer(scene, data) {
     } = SPHERE_CONFIG;
 
     const { xScale, zScale, yScale, radiusScale, opacityScale, colorScale, xOffset, zOffset, cellHeight } = computeScales(data, scene);
-
-    // Rasterize the SVG to a canvas so alpha is preserved correctly at a fixed resolution.
-    // Setting src on a bare <img> with an SVG gives browsers a tiny default size;
-    // drawing to a canvas lets us force 512×512 and correctly capture the alpha channel.
-    const barcodeTexture = new THREE.Texture();
-    const svgImg = new Image();
-    svgImg.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        canvas.getContext('2d').drawImage(svgImg, 0, 0, 512, 512);
-        barcodeTexture.image = canvas;
-        barcodeTexture.needsUpdate = true;
-    };
-    svgImg.src = '/images/barcode.svg';
 
     const sampled = data.filter(d => d.x % sphereXStep === 0 && d.z % sphereZStep === 0);
     const spheres = [];
@@ -199,16 +140,15 @@ export function buildScatterLayer(scene, data) {
         const material = new THREE.MeshStandardMaterial({
             color: sphereColor,
             emissive: sphereColor,
-            emissiveIntensity: 0.008,
+            emissiveIntensity: 0.008,  // subtle self-glow; raise toward 1 to brighten
             transparent: true,
             opacity: opacityScale(d.z),
-            roughness: 0.35,
+            roughness: 0.35,           // higher = softer highlights, less reflective
             metalness: 0.0,
-            envMapIntensity: 0.4,
+            envMapIntensity: 0.4,     // reduce IBL contribution
         });
         const sphere = new THREE.Mesh(geometry, material);
         sphere.castShadow = true;
-        createBarcodeSticker(sphere, radius, barcodeTexture);
 
         const basePosition = new THREE.Vector3(
             xScale(d.x) - xOffset,
