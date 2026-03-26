@@ -32,9 +32,9 @@ const sphereConfig = {
     sphereFloatAmplitudeBase: 0.09,
     sphereFloatAmplitudeRange: 0.09,
 
-    // ── Y-axis spread ──
-    ySpread: 25,
-    ySpreadOffset: 8,
+    // ── Y-axis spread (fractions of visible screen height) ──
+    ySpreadFraction: 1.5,       // total y range = 1.5× visible screen height
+    ySpreadCenterFraction: 0.15, // center sits 15% above screen center
 };
 
 const props = defineProps({
@@ -60,7 +60,7 @@ onMounted(async () => {
 // ── Scale Computation ──
 
 function computeScales(data) {
-    const { fov, cameraDistance, ySpread, ySpreadOffset } = config;
+    const { fov, cameraDistance, ySpreadFraction, ySpreadCenterFraction } = config;
 
     const zExtent = d3.extent(data, d => d.z);
     const xExtent = d3.extent(data, d => d.x);
@@ -74,30 +74,23 @@ function computeScales(data) {
     const cellWidth = sceneWidth / xExtent[1];
     const cellHeight = visibleHeight / Math.max(zExtent[1], 1);
 
+    const halfSpread = visibleHeight * ySpreadFraction / 2;
+    const centerOffset = visibleHeight * ySpreadCenterFraction;
+
     const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
     const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight * 2]);
-    const yScale = d3.scaleLinear().domain(cExtent).range([ySpread, -ySpread + ySpreadOffset]);
+    const yScale = d3.scaleLinear().domain(cExtent).range([centerOffset + halfSpread, centerOffset - halfSpread]);
     const radiusScale = d3.scaleSqrt().domain(config.sphereRadiusScaleDomain).range(config.sphereRadiusScaleRange);
     const opacityScale = d3.scaleLinear().domain(zExtent).range(config.sphereOpacityRange);
     const xNorm = d3.scaleLinear().domain([xThird, xExtent[1]]).range([0.2, 0.85]);
     const zNorm = d3.scaleLinear().domain(zExtent).range([0.3, 0.85]);
 
-    const colorScale = (x, value, z) => {
+    const colorScale = (x, z) => {
         if (x < xThird) {
             return new THREE.Color(d3.interpolateYlGnBu(zNorm(z)));
         }
         return new THREE.Color(d3.interpolateYlOrRd(xNorm(x)));
     };
-
-    // const hScale = d3.scaleLinear().domain(xExtent).range([0.0, 0.75]);
-    // const sScale = d3.scaleLinear().domain(cExtent).range([0.5, 1.0]);
-    // const lScale = d3.scaleLinear().domain(zExtent).range([0.35, 0.55]);
-    // const colorScale = (x, value, z) => new THREE.Color().setHSL(hScale(x), sScale(value), lScale(z));
-
-    // const hScale = d3.scaleLinear().domain(xExtent).range([0.2, 1.0]);
-    // const sScale = d3.scaleLinear().domain(cExtent).range([0.4, 1.0]);
-    // const lScale = d3.scaleLinear().domain(zExtent).range([0.35, 0.55]);
-    // const colorScale = (x, value, z) => new THREE.Color().setHSL(hScale(x), sScale(value), lScale(z));
 
     return markRaw({
         xScale, zScale, yScale, radiusScale, opacityScale, colorScale,
@@ -139,7 +132,7 @@ function buildSpheres(data) {
         // const radius = radiusScale(d.radius) * randomJitter;
               const radius = radiusScale(radiusRandom) * randomJitter;
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
-        const sphereColor = colorScale(d.x, d.value, d.z);
+        const sphereColor = colorScale(d.x, d.z);
         const material = markRaw(new THREE.MeshStandardMaterial({
             color: sphereColor,
             emissive: props.darkMode ? sphereColor : new THREE.Color(0x000000),
