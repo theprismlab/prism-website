@@ -48,7 +48,8 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiHexagonMultiple } from '@mdi/js';
 import { mdiFileMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
-import TheViabilityScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityScene.vue';
+// import TheViabilityScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityScene.vue';
+import TheViabilityScene from '../visualization/viability-scatter-plot/TheViabilityScene.vue';
   export default {
     components: {
       SvgIcon,
