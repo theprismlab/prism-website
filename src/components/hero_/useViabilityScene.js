@@ -27,7 +27,6 @@ export function useViabilityScene(canvasEl, config = {}) {
     let scene, camera, renderer, clock;
     let environmentTexture = null;
     let canvas = null;
-    let lights = [];
     let animationFrameId = null;
     let animationCallbacks = [];
     const rebuildCallbacks = [];
@@ -66,10 +65,9 @@ export function useViabilityScene(canvasEl, config = {}) {
     }
 
     function clearMeshes() {
-        const keep = new Set(lights);
-        keep.add(camera);
+        // Preserve all lights and the camera; dispose and remove everything else
         scene.children
-            .filter(c => !keep.has(c))
+            .filter(c => !(c instanceof THREE.Light) && c !== camera)
             .forEach(c => {
                 scene.remove(c);
                 if (c.geometry) c.geometry.dispose();
@@ -115,7 +113,6 @@ export function useViabilityScene(canvasEl, config = {}) {
 
         const ambLight = markRaw(new THREE.AmbientLight(0xffffff, config.ambientLightIntensity));
         scene.add(ambLight);
-        lights = [dirLight, ambLight];
 
         renderer = markRaw(new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }));
         renderer.setSize(width.value, height.value, false);
