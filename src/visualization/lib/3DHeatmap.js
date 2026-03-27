@@ -31,7 +31,7 @@ const defaultConfig = {
     planeZoom: 10.8,
     planeYPosition: 1,
     planeOpacityRange: [0.5, 1],
-
+    colorScaleDomain: [1.2, 0], 
 };
 
 export default class ThreeDHeatmap {
