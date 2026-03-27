@@ -6,8 +6,8 @@ import * as d3 from 'd3';
 const HEATMAP_CONFIG = {
     // worldScale uniformly multiplies both plane sizes and positions,
     // expanding the grid to fill (and overflow) the visible area
-    worldScale: 12.0,
-    planeYPosition: 0, // 1 was default, but lowering it helps with occlusion of spheres by planes at the front edge of the grid
+    worldScale: 15.0,
+    planeYPosition: 5, // 1 was default, but lowering it helps with occlusion of spheres by planes at the front edge of the grid
     planeOpacityRange: [0, 0.9, 1],
 };
 

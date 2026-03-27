@@ -5,13 +5,14 @@
 <script setup>
 import * as THREE from 'three';
 import { ref, onMounted } from 'vue';
-import { useViabilityScene } from './useViabilityScene.js';
-import { loadViabilityCSV, parseScatterPlotData } from './getData.js';
+import { useViabilityScene } from '../useViabilityScene.js';
+import { loadViabilityCSV, parseHeatmapData, parseScatterPlotData } from './getData.js';
+import { buildHeatmapLayer } from './HeatmapLayer.js';
 import { buildScatterLayer } from './ScatterLayer.js';
 const USE_DARK_ATMOSPHERE = false;
 const BASE_VIEW = {
-    fov: 25, 
-    cameraDistance: 25,
+    fov: 35, 
+    cameraDistance: 45,
     cameraPosition: [0, 7.5], //default 7.5
     cameraLookAt: [0, 9.5, 0], //default 6.5
     nearClip: 0.1,
@@ -43,7 +44,7 @@ const ATMOSPHERE_LIGHT = {
     hemiLight: { sky: 0xffffff, ground: 0xffffff, intensity: 1.0 },
 };
 
-
+const SHOW_HEATMAP = true;
 const SHOW_SCATTER_PLOT = true;
 
 const props = defineProps({
@@ -65,10 +66,12 @@ function applyAtmosphere() {
 
 onMounted(async () => {
     applyAtmosphere();
-    let scatterData;
+    let heatmapData, scatterData;
     const raw = await loadViabilityCSV();
+    if (SHOW_HEATMAP) heatmapData = parseHeatmapData(raw);
     if (SHOW_SCATTER_PLOT) scatterData = parseScatterPlotData(raw);
 
+    if (SHOW_HEATMAP) buildHeatmapLayer(scene, heatmapData);
     if (SHOW_SCATTER_PLOT) buildScatterLayer(scene, scatterData);
 
     scene.render();
@@ -77,6 +80,7 @@ onMounted(async () => {
     // On resize, clearMeshes runs first (preserving lights + fog),
     // then these rebuild callbacks recreate the geometry for the new viewport
     scene.onRebuild(() => {
+        if (SHOW_HEATMAP)  buildHeatmapLayer(scene, heatmapData);
         if (SHOW_SCATTER_PLOT) buildScatterLayer(scene, scatterData);
     }); 
 });
