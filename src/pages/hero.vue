@@ -28,13 +28,13 @@
         </div>
         </section>
         <section class="hero-section">
-        <div class="hero-heatmap">
-            <GeneratedCirclesCloud></GeneratedCirclesCloud>
-        </div>
-        <div class="hero-overlay text-center">
-                <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
-                <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
-        </div>
+          <div class="hero-heatmap">
+              <ThreeJsTemplate></ThreeJsTemplate>
+          </div>
+          <div class="hero-overlay text-center">
+                  <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
+                  <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
+          </div>
         </section>
     </div>
 </template>
@@ -43,7 +43,7 @@
 import TheViabilityScatterPlotScene from '../visualization/viability-scatter-plot/TheViabilityScatterPlotScene.vue';
 import TheViabilityHeatmapScatterPlotScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityHeatmapScatterPlotScene.vue';
 import TheViabilityHeatmapScatterPlotColorScene from '../visualization/viability-heatmap-scatter-plot-color/TheViabilityHeatmapScatterPlotColorScene.vue';
-import BubbleCluster from '../visualization/BubbleCluster.vue';
+import ThreeJsTemplate from '@/visualization/ThreeJsTemplate.vue';
 
 export default {
     name: 'Hero',
@@ -51,7 +51,7 @@ export default {
         TheViabilityScatterPlotScene,
         TheViabilityHeatmapScatterPlotScene,
         TheViabilityHeatmapScatterPlotColorScene,
-        BubbleCluster,
+        ThreeJsTemplate,
     }
 }
 </script>

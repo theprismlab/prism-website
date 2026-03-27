@@ -30,7 +30,8 @@ function computeGridIndices(raw) {
         .map(([key, values]) => ({ key, mean: d3.mean(values, v => v.viability) }))
         .sort((a, b) => d3.descending(a.mean, b.mean))
         .filter((g, i)=> i > MAX_CELL_LINES && i % 2 === 0) // filter out low-ranking cell lines and keep Nth
-
+        // .filter(g => !EXCLUDED_CELL_LINES.has(g.key))
+        // .slice(0, MAX_CELL_LINES);
 
     const cellLineToIndex = Object.fromEntries(cellLineGroups.map((g, i) => [g.key, i]));
 
