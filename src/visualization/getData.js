@@ -46,15 +46,11 @@ export function parseHeatmapData(raw) {
 
     return raw
         .map(d => ({
-            ccle_name: d.ccle_name,
-            viability: d.viability,
-            pert_dose: d.pert_dose,
             x: cellLineToIndex[d.ccle_name],
             z: doseToIndex[d.pert_dose],
             y: 0,
-        }))
-        .filter(d => d.x !== undefined)
-        .sort((a, b) => d3.ascending(a.pert_dose, b.pert_dose));
+            color: +d.viability
+        }));
 }
 
 export function parseScatterPlotData(raw) {

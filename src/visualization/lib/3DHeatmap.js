@@ -8,7 +8,7 @@ import * as d3 from 'd3';
 
     const canvas = document.querySelector('#heatmap-canvas');
     const heatmap = new ThreeDHeatmap(canvas);
-    heatmap.setData(dataArray); // each item needs x, z, rgba
+    heatmap.setData(dataArray); // each item needs x, z, color
 
     later: heatmap.destroy();
  */
@@ -29,9 +29,9 @@ const defaultConfig = {
 
     // Planes
     planeZoom: 10.8,
-    planeWidthMultiplier: 1.6,
     planeYPosition: 1,
     planeOpacityRange: [0.5, 1],
+
 };
 
 export default class ThreeDHeatmap {
@@ -182,15 +182,20 @@ export default class ThreeDHeatmap {
     _buildPlanes(data) {
         const scales = this._computeScales(data);
         const { xScale, zScale, opacityScale, xOffset, zOffset, planeWidth, planeHeight } = scales;
-        const { planeZoom, planeWidthMultiplier, planeYPosition } = this.config;
+        const { planeZoom, planeYPosition, colorScaleDomain } = this.config;
+
+        const colorDomain = colorScaleDomain || d3.extent(data, d => d.color);
+        const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain(colorDomain);
 
         data.forEach(d => {
             const geometry = new THREE.PlaneGeometry(
-                planeWidth * planeWidthMultiplier * planeZoom,
+                planeWidth * planeZoom,
                 planeHeight * planeZoom,
             );
             const material = new THREE.MeshLambertMaterial({
-                color: d.rgba,
+                color: (typeof d.color === 'string')
+                    ? new THREE.Color(d.color)
+                    : new THREE.Color(colorScale(d.color)),
                 side: THREE.DoubleSide,
                 opacity: opacityScale(d.z),
                 transparent: true,

@@ -10,7 +10,7 @@ import * as d3 from 'd3';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import ThreeDHeatmap from './lib/3DHeatmap.js';
 import ThreeDScatterPlot from './lib/3DScatterPlot.js';
-import { loadViabilityCSV, parseHeatmapData, parseScatterPlotData } from './viability-heatmap-scatter-plot-color/getData.js';
+import { loadViabilityCSV, parseHeatmapData, parseScatterPlotData } from './getData.js';
 
 const props = defineProps({
     heatmapConfig: { type: Object, default: () => ({}) },
@@ -32,10 +32,14 @@ function applyColors(data, colorScale) {
 
 async function initPlots() {
     const raw = await loadViabilityCSV();
-    const heatmapData = applyColors(parseHeatmapData(raw), d3.scaleSequential(d3.interpolateTurbo)
-        .domain(d3.extent(raw, d => d.viability)));
-    const scatterData = applyColors(parseScatterPlotData(raw), d3.scaleSequential(d3.interpolateTurbo)
-        .domain(d3.extent(raw, d => d.viability)));
+
+
+    // Heatmap: pass parsed data uncolored so the heatmap class owns color/opacity scaling.
+    const heatmapData = parseHeatmapData(raw);
+
+    // Scatter: still colorize here for sphere materials.
+    const scatterColorScale = d3.scaleSequential(d3.interpolateTurbo).domain(d3.extent(raw, d => d.viability));
+    const scatterData = applyColors(parseScatterPlotData(raw), scatterColorScale);
 
     heatmapInstance = new ThreeDHeatmap(heatmapCanvas.value, props.heatmapConfig);
     scatterInstance = new ThreeDScatterPlot(scatterCanvas.value, props.scatterConfig);
