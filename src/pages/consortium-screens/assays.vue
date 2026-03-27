@@ -246,7 +246,7 @@ export default {
 }
 .assay-time-point{
     color: var(--v-primary-darken-1);
-    font-size: 0.75rem;
+    font-size: 0.95rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -297,7 +297,7 @@ export default {
 
 /* Fixed size, won't shrink */
 .assay-time-point {
-    flex:  0 0 55px;             /* grows to fill, shrinks if needed */
+    flex:  0 0 67px;             /* grows to fill, shrinks if needed */
     min-width: 0; 
     text-align: right;
 }
