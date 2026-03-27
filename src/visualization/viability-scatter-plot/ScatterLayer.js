@@ -7,7 +7,7 @@ const SPHERE_CONFIG = {
     sphereXStep: 4, // sample every Nth cell line index to reduce sphere count
     sphereZStep: 2, // sample every Nth dose index
     sphereOpacityRange: [0.25, 0.95],
-    sphereRadiusScaleRange: [0.1, 0.9],
+    sphereRadiusScaleRange: [0.1, 0.65],
     sphereRadiusScaleDomain: [0, 1], // matches Math.random() input
     sphereFloatSpeedMin: 0.4,
     sphereFloatSpeedRange: 0.9,
@@ -16,7 +16,8 @@ const SPHERE_CONFIG = {
 
     // Only attach a barcode sticker to spheres whose radius exceeds this value.
     // sphereRadiusScaleRange is [0.1, 0.9] (before jitter), so 0.55 targets the larger ~40%.
-    stickerMinRadius: 1,
+    stickerMinRadius: 0.8,
+    stickerMinDepth: -20, // only attach stickers to spheres representing doses above this threshold to avoid cluttering the low-dose region
     // Sticker side length as a fraction of sphere radius (square aspect ratio maintained).
     // 0.8 → sticker spans 80% of the radius on each side (≈ halfAngle 0.4 rad, ~23° arc).
     stickerSizeFraction: 0.8,
@@ -149,6 +150,8 @@ function createBarcodeSticker(sphere, radius, texture, halfAngle, opacity) {
         map: texture,
         transparent: true,
         opacity,
+        // make layer style additive
+        blending: THREE.AdditiveBlending,
         depthWrite: false,
     });
     const sticker = new THREE.Mesh(stickerGeo, mat);
@@ -209,8 +212,8 @@ export function buildScatterLayer(scene, data) {
         });
         const sphere = new THREE.Mesh(geometry, material);
         sphere.castShadow = true;
-        if (radius >= SPHERE_CONFIG.stickerMinRadius) {
-            createBarcodeSticker(sphere, radius, barcodeTexture, stickerHalfAngle, sphereOpacity);
+        if (radius >= SPHERE_CONFIG.stickerMinRadius && d.z > SPHERE_CONFIG.stickerMinDepth) {
+            createBarcodeSticker(sphere, radius, barcodeTexture, stickerHalfAngle, sphereOpacity*2);
         }
 
         const basePosition = new THREE.Vector3(

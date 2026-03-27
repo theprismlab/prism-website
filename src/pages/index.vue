@@ -164,7 +164,7 @@ import TheViabilityScene from '../visualization/viability-scatter-plot/TheViabil
   z-index: 1;
 }
 .text-hero{
-  text-shadow: 0px 0px 20px rgba(255, 255, 255, 1);
+  text-shadow: 0px 0px 10px rgba(255, 255, 255, 1);
 }
 .text-xl{
   font-size: 4.25rem;
