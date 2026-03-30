@@ -7,12 +7,9 @@
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import Heatmap3D from './lib/Heatmap3D.js';
-import ScatterPlot3D, { 
-    generateScatterVanishingPointData
-} from './lib/ScatterPlot3D.js';
-import { loadViabilityCSV, parseHeatmapData } from './getData.js';
-
+import Heatmap3D from './plots/Heatmap3D.js';
+import ScatterPlot3D from './plots/ScatterPlot3D.js';
+import { loadViabilityCSV, parseHeatmapData, parseScatterData } from './getData.js';
 
 const props = defineProps({
     heatmapConfig: { type: Object, default: () => ({}) },
@@ -30,22 +27,22 @@ async function initPlots() {
 
     // for bimodal data
 const scatterConfig = {
-    // cameraAngleY: 0.2,
-    cameraPosition  : [0, 10 , 3],
     scale: {
-      opacity: { range: [.5, 0.95]},
-    }
+        y:       { domain: [-1, 1.5], range:null},
+        z:       { domain: null, range:null },
+        radius:  { domain: null, range: null},
+        opacity: { domain: null, range: null },
+        color:   { domain: null, range: null },
+},
 }
+const heatmapConfig = {}
     // Heatmap: pass parsed data uncolored so the heatmap class owns color/opacity scaling.
     const heatmapData = parseHeatmapData(raw);
-
-    heatmapInstance = new Heatmap3D(heatmapCanvas.value, props.heatmapConfig);
+    const scatterData = parseScatterData(raw);
+    heatmapInstance = new Heatmap3D(heatmapCanvas.value, heatmapConfig);
     scatterInstance = new ScatterPlot3D(scatterCanvas.value, scatterConfig);
     heatmapInstance.setData(heatmapData);
-    scatterInstance.setData(generateScatterVanishingPointData());
-//  scatterInstance.setData(generateScatterFountainData());
-//    scatterInstance.setData(generateScatterBubblesData());
-//    scatterInstance.setData(generateScatterBimodalData());
+    scatterInstance.setData(scatterData);
 }
 
 onMounted(() => {

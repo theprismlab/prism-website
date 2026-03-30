@@ -98,8 +98,11 @@ data() {
     items: [
       {
         title: 'Hero',
-        route: '/hero',
-        id: 'hero'
+        children: [
+          { title: 'Hero 1',   route: '/hero/hero-01',  id: 'hero-01' },
+          { title: 'Hero 2', route: '/hero/hero-02', id: 'hero-02' },
+          { title: 'Hero 3', route: '/hero/hero-03', id: 'hero-03' },
+        ]
       },
       {
         title: 'About us',

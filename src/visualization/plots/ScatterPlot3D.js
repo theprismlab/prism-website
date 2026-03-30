@@ -2,95 +2,68 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import * as d3 from 'd3';
 
-/**
- * Generates scatter plot data with pre-computed radius and color so the plot
- * class needs no complex scaling logic — just linear maps from 0–1 values to
- * world coordinates.
- *
- * Data schema per point:
- *   x      — 0–1  horizontal position
- *   y      — 0–1  vertical position  (increases naturally with z + noise)
- *   z      — 0–1  depth (0 = far from camera, 1 = closest to camera)
- *   radius — 0–1  pre-normalized sphere size (increases with z and y)
- *   color  — 0–1  heat value for color scale  (increases with z and y)
- */
-export function generateScatterBubblesData({
-    count          = 420,
-    colorNoiseScale = 0.8,   // ± noise added to color (which is y-based)
-    seed           = 42,
-} = {}) {
-    // Minimal seeded PRNG for reproducibility (Park-Miller LCG)
-    let s = seed;
-    const rand = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-    // Box-Muller normal distribution (mean=0, stddev=1)
-    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
 
-    const points = [];
-    for (let i = 0; i < count; i++) {
-        const x = rand();
-        // Wave trend + wide normal scatter so outliers (small circles high up) are possible
-        const y = Math.max(0, Math.min(1, x * 0.5 + 0.25 + randn() * 0.22));
-        const z = rand();
-        // Radius: y-based with normal noise — allows small circles at any height
-        const radius = Math.max(0, y * 0.8 + randn() * 0.18);
-        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
-        points.push({ x, y, z, radius, color });
-    }
-    return points;
-}
 
 // ─── Default config ───────────────────────────────────────────────────────────
 
-const defaultConfig = {
-    // Camera
+export const defaultConfig = {
+    // ── Camera ────────────────────────────────────────────────────────────────
     fov:            25,
     cameraDistance: 25,
+    // cameraPosition[1] = camera Y height. X/Z are derived from cameraAngleY.
     cameraPosition: [0, 3, 25],
     cameraLookAt:   [0, 1.5, 0],
+    // Orbit angle around Y axis (radians). Positive swings the right side toward camera.
+    cameraAngleY:   0,
     nearClip:       1.01,
     farClip:        200,
 
-    // Lighting
+    // ── Lighting ──────────────────────────────────────────────────────────────
     directionalLightIntensity: 0.5,
     ambientLightIntensity:     0.5,
     enableShadows:             true,
 
-    // Scene layout — all in world (Three.js) units
-    // x is computed from the camera frustum at runtime so it fills the viewport at any aspect ratio
-    zRange:     [-4, 4],   // world z for data.z [0, 1]  (4 = closer, -4 = farther)
-    yRange:     [-2, 6],   // world y for data.y [0, 1]  (intentional vertical margin)
+    // ── Scales ────────────────────────────────────────────────────────────────
+    // Each entry has { domain, range }. null = auto-compute at runtime (see _computeScales).
+    scale: {},
 
-    // Sphere sizing: data.radius (0–1) × radiusMultiplier = world-unit radius
-    radiusMultiplier: 0.65,
+    // ── Color interpolator ────────────────────────────────────────────────────
+    // Set to any d3 interpolator, e.g. d3.interpolateRainbow for the prism generator.
+    // null falls back to d3.interpolateYlOrRd.
+    colorInterpolator: null,
 
-    // Opacity from depth (data.z 0–1 → opacity)
-    opacityRange: [0.25, 0.95],
-
-    // Float animation
+    // ── Float animation ───────────────────────────────────────────────────────
     floatSpeedMin:   1.8,
     floatSpeedRange: 1.6,
-    floatAmplitude:  [0.02, 0.08],  // [min, max]
+    floatAmplitude:  [0.02, 0.08],  // [min, max] world units
+    rotSpeedRange:   2.0,
 
-    // Rotation speed multiplier (random ± this)
-    rotSpeedRange: 2.0,
-
-    // Collision avoidance
+    // ── Physics / collision ───────────────────────────────────────────────────
     collisionAvoidance: true,
 
-    // Barcode stickers — applied to spheres where radius AND z both exceed thresholds
-    stickerRadiusThreshold: 0.5,  // world-unit radius minimum
-    stickerZThreshold: 0.5,       // data z minimum (0–1)
-    stickerSizeFraction: 0.8,
-    barcodeUrl: '/images/barcode.svg',
+    // ── Barcode stickers ──────────────────────────────────────────────────────
+    // Applied to data points where hasBarcode === true.
+    stickerSizeFraction: 0.8,   // fraction of sphere surface patch covered
+    stickerOpacity:      0.5,
+    barcodeUrl:          '/images/barcode.svg',
 };
 
 // ─── Class ────────────────────────────────────────────────────────────────────
 
-export default class ScatterBubbles3D {
+export default class ScatterPlot3D {
     constructor(canvasEl, sceneConfig = {}) {
+        console.log('ScatterPlot3D config:', sceneConfig);
         if (!canvasEl) throw new Error('canvas element is required');
         this.canvas = canvasEl;
         this.config = { ...defaultConfig, ...sceneConfig };
+        // Deep-merge scale sub-objects so partial overrides don't wipe sibling scales
+        const baseScale = defaultConfig.scale;
+        const userScale = sceneConfig.scale ?? {};
+        this.config.scale = Object.fromEntries(
+            Object.keys({ ...baseScale, ...userScale }).map(k => [
+                k, { ...(baseScale[k] ?? {}), ...(userScale[k] ?? {}) },
+            ])
+        );
         this.data = [];
         this.spheres = [];
         this.environmentTexture = null;
@@ -115,6 +88,7 @@ export default class ScatterBubbles3D {
 
     setData(data = []) {
         this.data = Array.isArray(data) ? data : [];
+        console.log('ScatterPlot3D data set:', this.data);  
         this.rebuild();
     }
 
@@ -173,10 +147,15 @@ export default class ScatterBubbles3D {
 
         this.scene = new THREE.Scene();
 
-        const { fov, cameraDistance, cameraPosition, cameraLookAt, nearClip, farClip } = this.config;
+        // Camera position: orbit around lookAt point at cameraAngleY radians
+        const { fov, cameraDistance, cameraPosition, cameraLookAt, cameraAngleY, nearClip, farClip } = this.config;
         this.camera = new THREE.PerspectiveCamera(fov, this.width / this.height, nearClip, farClip);
-        const [cx, cy] = cameraPosition;
-        this.camera.position.set(cx, cy, cameraDistance);
+        const angle = cameraAngleY ?? 0;
+        this.camera.position.set(
+            cameraLookAt[0] + Math.sin(angle) * cameraDistance,
+            cameraPosition[1],
+            cameraLookAt[2] + Math.cos(angle) * cameraDistance,
+        );
         this.camera.lookAt(...cameraLookAt);
         this.camera.updateProjectionMatrix();
 
@@ -236,76 +215,91 @@ export default class ScatterBubbles3D {
             if (this.canvas.parentElement) this.resizeObserver.observe(this.canvas.parentElement);
         });
     }
+    _computeScales(data) {
+        const sc = this.config.scale ?? {};
 
-    /**
-     * Builds Three.js sphere meshes from data.
-     *
-     * Because radius and color are pre-normalized (0–1) in the data, the only
-     * scales needed here are simple linear maps from the 0–1 data domain to
-     * world coordinates / color values.
-     */
-    _buildSpheres(data) {
-        const {
-            zRange, yRange,
-            radiusMultiplier, opacityRange,
-            floatSpeedMin, floatSpeedRange, floatAmplitude,
-            rotSpeedRange,
-        } = this.config;
-
-        const [floatAmpMin, floatAmpMax] = floatAmplitude;
-
-        // Compute visible x-width from the camera frustum so it adapts to any aspect ratio
+        // ── x: maps to visible frustum width ─────────────────────────────────
         const vFov = THREE.MathUtils.degToRad(this.config.fov);
         const visibleHeight = 2 * Math.tan(vFov / 2) * this.config.cameraDistance;
         const visibleWidth  = visibleHeight * (this.width / this.height);
+        const xScale = d3.scaleLinear()
+            .domain(sc.x?.domain ?? d3.extent(data, d => d.x))
+            .range(sc.x?.range   ?? [-visibleWidth / 2, visibleWidth / 2]);
 
-        // Simple linear scales — no domain clamping needed since data is 0–1
-        const xScale      = d3.scaleLinear().domain([0, 1]).range([-visibleWidth / 2, visibleWidth / 2]);
-        const yScale      = d3.scaleLinear().domain([0, 1]).range(yRange);
-        const zScale      = d3.scaleLinear().domain([0, 1]).range(zRange);
-        const opacityScale = d3.scaleLinear().domain([0, 1]).range(opacityRange);
-        const colorScale  = d3.scaleSequential(d3.interpolateYlOrRd).domain([0, 1.4]);
+        // ── y: world height ───────────────────────────────────────────────────
+        const yScale = d3.scaleLinear()
+            .domain(sc.y?.domain ?? d3.extent(data, d => d.y))
+            .range(sc.y?.range   ?? [-2, 6]);
+
+        // ── z: depth ──────────────────────────────────────────────────────────
+        const zScale = d3.scaleLinear()
+            .domain(sc.z?.domain ?? d3.extent(data, d => d.z))
+            .range(sc.z?.range   ?? [-4, 4]);
+
+        // ── color ─────────────────────────────────────────────────────────────
+        const colorScale = d3.scaleSequential(this.config.colorInterpolator ?? d3.interpolateYlOrRd)
+            .domain(sc.color?.domain ?? d3.extent(data, d => d.color));
+
+        // ── radius ────────────────────────────────────────────────────────────
+        const radiusScale = d3.scaleLinear()
+            .domain(sc.radius?.domain ?? d3.extent(data, d => d.radius))
+            .range(sc.radius?.range   ?? [0, 0.65]);
+
+        // ── opacity: derived from camera distance ─────────────────────────────
+        const camPos = this.camera.position;
+        const worldPositions = data.map(d => new THREE.Vector3(xScale(d.x), yScale(d.y), zScale(d.z)));
+        const distances = worldPositions.map(p => p.distanceTo(camPos));
+        const opDomain = sc.opacity?.domain ?? [Math.min(...distances), Math.max(...distances)];
+        const opRange  = sc.opacity?.range  ?? [0.25, 0.975];
+        const opacityOf = d3.scaleLinear().domain(opDomain).range([opRange[1], opRange[0]]);
+
+        return { xScale, yScale, zScale, colorScale, radiusScale, opacityOf, worldPositions, distances };
+    }
+
+    _buildSpheres(data) {
+        const { floatSpeedMin, floatSpeedRange, floatAmplitude, rotSpeedRange } = this.config;
+        const [floatAmpMin, floatAmpMax] = floatAmplitude;
+
+        const { xScale, yScale, zScale, colorScale, radiusScale, opacityOf, worldPositions, distances } =
+            this._computeScales(data);
 
         const spheres = [];
 
-        data.forEach(d => {
-            const radius = d.radius * radiusMultiplier;
+        data.forEach((d, i) => {
+            const radius = radiusScale(d.radius);
             const color  = new THREE.Color(colorScale(d.color));
 
             const geometry = new THREE.SphereGeometry(radius, 24, 24);
             const material = new THREE.MeshStandardMaterial({
                 color,
                 transparent: true,
-                opacity: opacityScale(d.z),
+                opacity: opacityOf(distances[i]),
                 roughness: 0.0,
                 metalness: 0.0,
             });
 
             const sphere = new THREE.Mesh(geometry, material);
             sphere.castShadow = true;
+            sphere.position.copy(worldPositions[i]);
 
-            const basePosition = new THREE.Vector3(xScale(d.x), yScale(d.y), zScale(d.z));
-            sphere.position.copy(basePosition);
-
-            sphere.userData.basePosition   = basePosition;
-            sphere.userData.radius         = radius;
-            sphere.userData.floatPhase     = Math.random() * Math.PI * 2;
-            sphere.userData.floatPhaseX    = Math.random() * Math.PI * 2;
-            sphere.userData.floatSpeed     = floatSpeedMin + Math.random() * floatSpeedRange;
-            sphere.userData.floatSpeedX    = floatSpeedMin + Math.random() * floatSpeedRange;
-            sphere.userData.floatAmplitude = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
+            sphere.userData.basePosition    = worldPositions[i];
+            sphere.userData.radius          = radius;
+            sphere.userData.floatPhase      = Math.random() * Math.PI * 2;
+            sphere.userData.floatPhaseX     = Math.random() * Math.PI * 2;
+            sphere.userData.floatSpeed      = floatSpeedMin + Math.random() * floatSpeedRange;
+            sphere.userData.floatSpeedX     = floatSpeedMin + Math.random() * floatSpeedRange;
+            sphere.userData.floatAmplitude  = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
             sphere.userData.floatAmplitudeX = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
-            sphere.userData.rotSpeedY = (Math.random() - 0.5) * rotSpeedRange;
+            sphere.userData.rotSpeedY       = (Math.random() - 0.5) * rotSpeedRange;
             sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
-            sphere.userData.dataZ = d.z;
+            sphere.userData.hasBarcode      = d.hasBarcode ?? false;
 
             spheres.push(sphere);
             this.scene.add(sphere);
         });
 
         this._addAnimationCallback((elapsed) => {
-            // Step 1: compute float target positions
             spheres.forEach(s => {
                 const { basePosition, floatPhase, floatPhaseX, floatSpeed, floatSpeedX, floatAmplitude, floatAmplitudeX } = s.userData;
                 s.userData.floatX = basePosition.x + Math.sin(elapsed * floatSpeedX + floatPhaseX) * floatAmplitudeX;
@@ -313,12 +307,9 @@ export default class ScatterBubbles3D {
                 s.userData.floatZ = basePosition.z;
             });
 
-            // Step 2: repulsion between overlapping spheres
             if (this.config.collisionAvoidance) this._resolveCollisions(spheres);
 
-            // Step 3: integrate, spring back, damp, apply
-            const damping = 0.75;
-            const springK = 0.12;
+            const damping = 0.75, springK = 0.12;
             spheres.forEach(s => {
                 const ud = s.userData;
                 ud.ox = (ud.ox + ud.vx) * (1 - springK);
@@ -334,13 +325,9 @@ export default class ScatterBubbles3D {
 
         this.spheres = spheres;
 
-        // Attach barcode stickers to spheres exceeding both the radius and z thresholds
-        const { stickerRadiusThreshold, stickerZThreshold } = this.config;
         spheres
-            .filter(s => s.userData.radius >= stickerRadiusThreshold && s.userData.dataZ >= stickerZThreshold)
-            .forEach(s => {
-                this._createBarcodeSticker(s, s.userData.radius, 1);
-            });
+            .filter(s => s.userData.hasBarcode)
+            .forEach(s => this._createBarcodeSticker(s, s.userData.radius, this.config.stickerOpacity));
     }
 
     _resolveCollisions(spheres) {
@@ -370,15 +357,20 @@ export default class ScatterBubbles3D {
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
-            canvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
+            canvas.width = 512; canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, 512, 512);
+            // White pixels → transparent so bars show on any background
+            const imageData = ctx.getImageData(0, 0, 512, 512);
+            const d = imageData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                if ((d[i] + d[i + 1] + d[i + 2]) / 3 > 180) d[i + 3] = 0;
+            }
+            ctx.putImageData(imageData, 0, 0);
             this.barcodeTexture.image = canvas;
             this.barcodeTexture.needsUpdate = true;
             this._barcodeTextureReady = true;
-            this._pendingStickers.forEach(({ sphere, radius, opacity }) => {
-                this._attachSticker(sphere, radius, opacity);
-            });
+            this._pendingStickers.forEach(({ sphere, radius, opacity }) => this._attachSticker(sphere, radius, opacity));
             this._pendingStickers = [];
         };
         img.src = barcodeUrl;
@@ -404,7 +396,7 @@ export default class ScatterBubbles3D {
             map: this.barcodeTexture,
             transparent: true,
             opacity,
-            blending: THREE.AdditiveBlending,
+            blending: THREE.NormalBlending,
             depthWrite: false,
         });
         const sticker = new THREE.Mesh(geo, mat);
