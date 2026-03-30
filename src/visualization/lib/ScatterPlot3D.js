@@ -366,12 +366,14 @@ export function generateScatterValleyData({
     for (let i = 0; i < count; i++) {
         const x              = rand();
         const distFromCenter = Math.abs(x - 0.5) * 2;   // 0 at x=0.5, 1 at edges
-        const yMean          = Math.pow(distFromCenter, sharpness);  // low at center, high at edges
+        const yMean          = Math.pow(distFromCenter, sharpness);
         const y              = Math.max(0, Math.min(1, yMean + randn() * 0.1));
+        // Fan x outward at the high edges — push left side left, right side right
+        const xFanned        = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * 0.14));
         const z              = rand();
         const radius         = Math.max(0, y * 0.55 + Math.abs(randn()) * 0.12);
         const color          = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
-        points.push({ x, y, z, radius, color, hasBarcode: false });
+        points.push({ x: xFanned, y, z, radius, color, hasBarcode: false });
     }
 
     const close = points.filter(p => p.z >= barcodeZThreshold);
