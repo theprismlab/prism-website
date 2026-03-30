@@ -6,7 +6,6 @@
 </template>
 
 <script setup>
-import * as d3 from 'd3';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import ThreeDHeatmap from './lib/3DHeatmap.js';
 import ThreeDScatterPlot from './lib/3DScatterPlot.js';
@@ -23,13 +22,6 @@ const scatterCanvas = ref(null);
 let heatmapInstance = null;
 let scatterInstance = null;
 
-function applyColors(data, colorScale) {
-    return data.map(d => ({
-        ...d,
-        rgba: d3.color(colorScale(d.viability)).formatHex(),
-    }));
-}
-
 async function initPlots() {
     const raw = await loadViabilityCSV();
 
@@ -37,9 +29,8 @@ async function initPlots() {
     // Heatmap: pass parsed data uncolored so the heatmap class owns color/opacity scaling.
     const heatmapData = parseHeatmapData(raw);
 
-    // Scatter: still colorize here for sphere materials.
-    const scatterColorScale = d3.scaleSequential(d3.interpolateTurbo).domain(d3.extent(raw, d => d.viability));
-    const scatterData = applyColors(parseScatterPlotData(raw), scatterColorScale);
+    // Scatter: pass parsed data uncolored; class handles its own color scale.
+    const scatterData = parseScatterPlotData(raw);
 
     heatmapInstance = new ThreeDHeatmap(heatmapCanvas.value, props.heatmapConfig);
     scatterInstance = new ThreeDScatterPlot(scatterCanvas.value, props.scatterConfig);

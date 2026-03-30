@@ -49,15 +49,10 @@ export function parseScatterPlotData(raw) {
 
     return raw
         .map(d => ({
-            ccle_name: d.ccle_name,
-            lineage: d.lineage,
-            viability: d.viability,
-            pert_dose: d.pert_dose,
             x: cellLineToIndex[d.ccle_name],
             z: doseToIndex[d.pert_dose],
-            value: d.viability,
-            radius: d.viability,
+            y: +d.viability,
+            color: +d.viability,
         }))
-        .filter(d => d.x !== undefined && d.z !== undefined)
-        .sort((a, b) => d3.ascending(a.pert_dose, b.pert_dose));
+        .filter(d => d.x !== undefined && d.z !== undefined);
 }

@@ -196,6 +196,8 @@ export default class ThreeDScatterPlot {
 
         const zExtent = d3.extent(data, d => d.z);
         const xExtent = d3.extent(data, d => d.x);
+        const colorExtent = d3.extent(data, d => d.color);
+        const yExtent = d3.extent(data, d => d.y);
 
         const vFov = THREE.MathUtils.degToRad(fov);
         const visibleHeight = 2 * Math.tan(vFov / 2) * cameraDistance;
@@ -208,9 +210,9 @@ export default class ThreeDScatterPlot {
         const xScale = d3.scaleLinear().domain(xExtent).range([0, sceneWidth]);
         const zScale = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
 
-        const yScale = d3.scaleLinear()
-            .domain(d3.extent(data, d => d.viability))
-            .range([ySpread, -ySpread + ySpreadOffset]);
+        const yScale = yExtent[0] !== undefined && yExtent[1] !== undefined
+            ? d3.scaleLinear().domain(yExtent).range([ySpread, -ySpread + ySpreadOffset])
+            : null;
 
         return {
             xScale, zScale, yScale,
@@ -218,12 +220,14 @@ export default class ThreeDScatterPlot {
             zOffset: visibleHeight / 2,
             zExtent,
             cellWidth, cellHeight,
+            colorExtent,
+            yExtent,
         };
     }
 
     _buildSpheres(data) {
         const scales = this._computeScales(data);
-        const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, zExtent } = scales;
+        const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, zExtent, colorExtent } = scales;
         const {
             sphereXStep, sphereZStep, sphereBaseRadiusMultiplier,
             sphereSizeScaleRange, sphereOpacityRange, sphereRadiusScaleRange,
@@ -237,27 +241,28 @@ export default class ThreeDScatterPlot {
         const sizeScale = d3.scaleLinear().domain(zExtent).range(sphereSizeScaleRange);
         const opacityDepthScale = d3.scaleLinear().domain(zExtent).range(sphereOpacityRange);
 
-        const viabilityExtent = d3.extent(data, d => d.viability);
-        const radiusScale = d3.scalePow().exponent(1).domain(viabilityExtent).range(sphereRadiusScaleRange);
+        const radiusScale = d3.scalePow().exponent(1).domain(colorExtent).range(sphereRadiusScaleRange);
+        const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain(colorExtent);
 
         const spheres = [];
 
         sampled.forEach(d => {
             const t = sizeScale(d.z);
             const randomJitter = 0.8 + Math.random() * 0.4;
-            const radius = baseRadius * t * radiusScale(d.viability) * randomJitter;
+            const radius = baseRadius * t * radiusScale(d.color) * randomJitter;
             const geometry = new THREE.SphereGeometry(radius, 24, 24);
             const material = new THREE.MeshStandardMaterial({
-                color: d.rgba,
+                color: d.color ? new THREE.Color(colorScale(d.color)) : new THREE.Color('#cccccc'),
                 transparent: true,
                 opacity: opacityDepthScale(d.z),
                 roughness: 0.0,
                 metalness: 0.0,
             });
             const sphere = new THREE.Mesh(geometry, material);
+            const baseY = yScale ? yScale(d.y) : d.y;
             const basePosition = new THREE.Vector3(
                 xScale(d.x) - xOffset,
-                yScale(d.viability) + radius * 0.2,
+                baseY + radius * 0.2,
                 zScale(d.z) - zOffset,
             );
             sphere.castShadow = true;
