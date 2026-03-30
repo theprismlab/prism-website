@@ -37,15 +37,15 @@ export function generateScatterBubblesData({
 }
 
 /**
- * Bubbles Wave: BubblesData aesthetic (large radii, heavy color noise) but y follows
- * the WaveBurst cosine shape — high at both edges, dipping in the center.
+ * Bubbles Wave: original Bubbles aesthetic (large radii, heavy color noise, wide scatter)
+ * with y driven purely by a cosine dip — edges sit higher, center dips low.
  */
 export function generateScatterBubblesWaveData({
     count             = 420,
     colorNoiseScale   = 0.8,
     seed              = 42,
     barcodeZThreshold = 0.5,
-    waveAmplitude     = 0.29,   // how far edges rise above center
+    waveAmplitude     = 0.22,   // how far edges rise above the center dip
 } = {}) {
     let s = seed;
     const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
@@ -54,8 +54,7 @@ export function generateScatterBubblesWaveData({
     const points = [];
     for (let i = 0; i < count; i++) {
         const x      = rand();
-        // Cosine: peaks at x=0 and x=1, trough at x=0.5 — same as WaveBurst spine
-        const yMean  = 0.28 + waveAmplitude * Math.cos(x * Math.PI * 2);
+        const yMean  = 0.5 + waveAmplitude * Math.cos(x * Math.PI * 2);  // high edges, dip center
         const y      = Math.max(0, Math.min(1, yMean + randn() * 0.22));
         const z      = rand();
         const radius = Math.max(0, y * 0.8 + randn() * 0.18);
