@@ -131,7 +131,7 @@ export function generateScatterVanishingPointData({
     vpX               = 0.5,    // vanishing point horizontal position
     vpY               = 0.3,   // vanishing point vertical position (horizon)
     maxSpread         = 0.54,   // x σ at furthest foreground depth
-    cloudRise         = 0.34,   // how far y drifts upward from VP to foreground
+    cloudRise         = 0.52,   // how far y drifts upward from VP to foreground
     depthBias         = 2.8,    // power > 1 packs most points near the distant horizon
 } = {}) {
     let s = seed;
@@ -149,8 +149,13 @@ export function generateScatterVanishingPointData({
         const x = Math.max(0, Math.min(1, vpX + randn() * (xSpread + 0.008)));
 
         // y: starts at horizon, clouds drift upward as they approach
-        const yMean = vpY + t * cloudRise;
-        const yNoise = 0.03 + t * 0.18;  // tighter scatter at distance, looser near viewer
+        // const yMean = vpY + t * cloudRise;
+        // const yNoise = 0.03 + t * 0.18;  // tighter scatter at distance, looser near viewer
+        // const y = Math.max(0, Math.min(1, yMean + randn() * yNoise));
+
+        // extra upward pull on large foreground bubbles so big circles cluster near top
+        const yMean = vpY + t * cloudRise + Math.pow(t, 2.5) * 0.18;
+        const yNoise = 0.03 + t * 0.14;  // tighter scatter at distance, looser near viewer
         const y = Math.max(0, Math.min(1, yMean + randn() * yNoise));
 
         const z = rand();
