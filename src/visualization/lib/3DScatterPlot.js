@@ -241,7 +241,7 @@ export default class ThreeDScatterPlot {
         const sizeScale = d3.scaleLinear().domain(zExtent).range(sphereSizeScaleRange);
         const opacityDepthScale = d3.scaleLinear().domain(zExtent).range(sphereOpacityRange);
 
-        const colorRadiusScale = d3.scaleLinear().domain(colorExtent).range(sphereRadiusScaleRange);
+        const colorRadiusScale = d3.scalePow().exponent(1).domain(colorExtent).range(sphereRadiusScaleRange);
         const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1.75, 0]);
 
         const spheres = [];
