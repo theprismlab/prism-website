@@ -69,7 +69,11 @@ export default {
   z-index: 1;
 }
 .text-hero{
-  text-shadow: 0px 0px 10px rgba(255, 255, 255, 1);
+  text-shadow:
+    0px 0px 10px rgba(255, 255, 255, 1),
+    0px 0px 30px rgba(255, 255, 255, 0.85),
+    0px 0px 60px rgba(255, 255, 255, 0.6),
+    0px 0px 100px rgba(255, 255, 255, 0.35);
 }
 .text-xl{
   font-size: 4.25rem;
@@ -82,6 +86,7 @@ export default {
   gap: 8px;
   padding: 16px;
   z-index: 2;
+  margin-bottom:100px;
 }
 .scene-btn {
   background: rgba(0, 0, 0, 0.45);
