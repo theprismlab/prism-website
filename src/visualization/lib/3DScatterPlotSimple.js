@@ -26,7 +26,7 @@ export function generateScatterData({
     const points = [];
     for (let i = 0; i < count; i++) {
         const x = rand();
-        const y = rand() ** 1.2;
+        const y = Math.max(0, Math.min(1, x * 0.7 + rand() * 0.3));  // wave: low left, high right
         const z = rand();
         const radius = Math.max(0, y + (rand() - 0.5) * 0.3);
         const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
