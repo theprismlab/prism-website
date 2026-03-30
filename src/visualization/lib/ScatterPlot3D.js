@@ -124,15 +124,15 @@ export function generateScatterBubblesWaveFilledData({
  * and grow large — hovering like clouds in the foreground.
  */
 export function generateScatterVanishingPointData({
-    count             = 420,
+    count             = 320,
     colorNoiseScale   = 0.7,
-    seed              = 42,
+    seed              = 42, // deterministic random sequence for consistent point generation across scenes
     barcodeZThreshold = 0.5,
     vpX               = 0.5,    // vanishing point horizontal position
-    vpY               = 0.3,   // vanishing point vertical position (horizon)
-    maxSpread         = 0.54,   // x σ at furthest foreground depth
-    cloudRise         = 0.52,   // how far y drifts upward from VP to foreground
-    depthBias         = 2.0,    // power > 1 packs most points near the distant horizon
+    vpY               = 0.2,   // vanishing point vertical position (horizon)
+    maxSpread         = 0.6,   // x σ at furthest foreground depth
+    cloudRise         = 1.1,   // how far y drifts upward from VP to foreground
+    depthBias         = 0.5,    // power > 1 packs most points near the distant horizon
 } = {}) {
     let s = seed;
     const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };

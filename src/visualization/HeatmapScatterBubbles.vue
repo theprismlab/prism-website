@@ -31,9 +31,9 @@ async function initPlots() {
     // for bimodal data
 const scatterConfig = {
     // cameraAngleY: 0.2,
-   //  cameraPosition  : [0, 4 , 3],
+    cameraPosition  : [0, 10 , 3],
     scale: {
-     opacity: { range: [.75, 0.95]},
+      opacity: { range: [.5, 0.95]},
     }
 }
     // Heatmap: pass parsed data uncolored so the heatmap class owns color/opacity scaling.

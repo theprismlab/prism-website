@@ -37,7 +37,7 @@ const sphereConfig = {
     sphereFloatAmplitudeRange: 0.06,
 
     // ── Y-axis spread ──
-    ySpread: 12,
+    ySpread: 14,
     ySpreadOffset: 10,
 
     // ── Radius ──
@@ -233,7 +233,7 @@ function buildSpheres(data) {
         .map(s => ({ sphere: s, radius: s.userData.radius }));
     closeSpheresWithRadius.sort((a, b) => b.radius - a.radius);
     closeSpheresWithRadius
-        .slice(0, Math.ceil(closeSpheresWithRadius.length / 3))
+        .slice(0, Math.ceil(closeSpheresWithRadius.length / 4))
         .forEach(({ sphere, radius }) => createBarcodeSticker(sphere, radius));
 }
 </script>
