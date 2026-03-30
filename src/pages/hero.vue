@@ -2,12 +2,9 @@
     <div>
         <section class="hero-section">
             <div class="hero-heatmap">
-                <TheViabilityScatterPlotScene v-if="activeScene === 0"></TheViabilityScatterPlotScene>
-                <!-- <TheViabilityHeatmapScatterPlotColorScene v-else-if="activeScene === 1"></TheViabilityHeatmapScatterPlotColorScene> -->
-                <TheViabilityHeatmapScatterPlotScene v-else-if="activeScene === 1"></TheViabilityHeatmapScatterPlotScene>
-                <!-- <ThreeJsTemplate v-else-if="activeScene === 1"></ThreeJsTemplate> -->
-                <HeatmapScatterBubbles v-else-if="activeScene === 2"></HeatmapScatterBubbles>
-            
+                <TheViabilityHeatmapScatterPlotScene v-if="activeScene === 0"></TheViabilityHeatmapScatterPlotScene>
+                <HeatmapScatterBubbles v-else-if="activeScene === 1"></HeatmapScatterBubbles>
+                            <ViabilityScatterBubbles v-else-if="activeScene === 2"></ViabilityScatterBubbles>
 
             </div>
             <div class="hero-overlay text-center">
@@ -28,21 +25,21 @@
 </template>
 
 <script>
-import TheViabilityScatterPlotScene from '../visualization/viability-scatter-plot/TheViabilityScatterPlotScene.vue';
 import TheViabilityHeatmapScatterPlotScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityHeatmapScatterPlotScene.vue';
 import HeatmapScatterBubbles from '@/visualization/HeatmapScatterBubbles.vue';
+import ViabilityScatterBubbles from '../visualization/viability-scatter-plot/ViabilityScatterBubbles.vue';
 
 export default {
     name: 'Hero',
     components: {
-        TheViabilityScatterPlotScene,
         TheViabilityHeatmapScatterPlotScene,
         HeatmapScatterBubbles,
+        ViabilityScatterBubbles,  
     },
     data() {
         return {
             activeScene: 0,
-            sceneLabels: ['Bubbles', 'Heatmap Bubbles 1', 'Heatmap Bubbles 2'],
+            sceneLabels: ['Heatmap Bubbles 1', 'Heatmap Bubbles 2', 'Bubbles'],
         };
     },
 }

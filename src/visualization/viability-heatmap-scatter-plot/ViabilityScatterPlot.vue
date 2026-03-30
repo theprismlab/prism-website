@@ -27,7 +27,7 @@ const sphereConfig = {
     // ── Spheres ──
     sphereXStep: 8,
     sphereZStep: 2,
-    sphereBaseRadiusMultiplier: 0.018,
+    sphereBaseRadiusMultiplier: 0.013,
     sphereSizeScaleRange: [0.3, 1.0],   // low-z = far = small, high-z = close = large
     sphereOpacityRange: [0.8, 0.8],
     sphereRadiusScaleRange: [1.5, 0.2],
@@ -39,6 +39,9 @@ const sphereConfig = {
     // ── Y-axis spread ──
     ySpread: 12,
     ySpreadOffset: 10,
+
+    // ── Radius ──
+    yRadiusMultiplier: 1.0,   // extra scale applied proportional to normalized viability (0 = off)
 
     // ── Barcodes ──
     barcodeUrl: '/images/barcode.svg',
@@ -185,7 +188,11 @@ function buildSpheres(data) {
     sampled.forEach(d => {
         const t = sizeScale(d.z);
         const randomJitter = 0.8 + Math.random() * 0.4;
-        const radius = baseRadius * t * radiusScale(d.viability) * randomJitter;
+        const viabilityNorm = viabilityExtent[1] > viabilityExtent[0]
+            ? (d.viability - viabilityExtent[0]) / (viabilityExtent[1] - viabilityExtent[0])
+            : 0.5;
+        const yBoost = 1 + config.yRadiusMultiplier * (1 - viabilityNorm);
+        const radius = baseRadius * t * radiusScale(d.viability) * randomJitter * yBoost;
         const geometry = markRaw(new THREE.SphereGeometry(radius, 24, 24));
         const material = markRaw(new THREE.MeshStandardMaterial({
             color: d.rgba,
