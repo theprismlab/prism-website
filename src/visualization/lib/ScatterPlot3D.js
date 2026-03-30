@@ -369,7 +369,7 @@ export function generateScatterValleyData({
         const yMean          = Math.pow(distFromCenter, sharpness);
         const y              = Math.max(0, Math.min(1, yMean + randn() * 0.1));
         // Fan x outward at the high edges — push left side left, right side right
-        const xFanned        = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * 0.14));
+        const xFanned        = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * -0.15));
         const z              = rand();
         const radius         = Math.max(0, y * 0.55 + Math.abs(randn()) * 0.12);
         const color          = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
