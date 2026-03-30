@@ -15,30 +15,22 @@ import * as d3 from 'd3';
  *   color  — 0–1  heat value for color scale  (increases with z and y)
  */
 export function generateScatterData({
-    xCount        = 35,
-    zCount        = 12,
-    yNoiseScale   = 0.25,    // ± noise added to y
-    radiusYWeight = 0.35,    // how much y contributes to radius
-    radiusZWeight = 0.65,    // how much z contributes to radius
-    colorYWeight  = 0.35,    // how much y contributes to color
-    colorZWeight  = 0.65,    // how much z contributes to color
-    seed          = 42,
+    count          = 420,
+    colorNoiseScale = 0.6,   // ± noise added to color (which is y-based)
+    seed           = 42,
 } = {}) {
     // Minimal seeded PRNG for reproducibility (Park-Miller LCG)
     let s = seed;
     const rand = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
 
     const points = [];
-    for (let xi = 0; xi < xCount; xi++) {
-        for (let zi = 0; zi < zCount; zi++) {
-            const x = xi / Math.max(xCount - 1, 1);
-            const z = zi / Math.max(zCount - 1, 1);
-            // y tilts upward with depth, with some noise
-            const y = Math.max(0, Math.min(1, z * 0.65 + (rand() - 0.5) * yNoiseScale));
-            const radius = radiusZWeight * z + radiusYWeight * y + rand() * 0.05;
-            const color  = Math.max(0, Math.min(1, colorZWeight * z + colorYWeight * y + (rand() - 0.5) * 0.35));
-            points.push({ x, y, z, radius, color });
-        }
+    for (let i = 0; i < count; i++) {
+        const x = rand();
+        const y = rand();
+        const z = rand();
+        const radius = Math.max(0, y + (rand() - 0.5) * 0.3);
+        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
+        points.push({ x, y, z, radius, color });
     }
     return points;
 }
@@ -60,9 +52,9 @@ const defaultConfig = {
     enableShadows:             true,
 
     // Scene layout — all in world (Three.js) units
-    sceneWidth: 22,        // x spans [-sceneWidth/2, sceneWidth/2]
+    sceneWidth: 20,        // x spans [-sceneWidth/2, sceneWidth/2]
     zRange:     [-4, 4],   // world z for data.z [0, 1]  (4 = closer to camera at z=25)
-    yRange:     [-3, 9],   // world y for data.y [0, 1]
+    yRange:     [-2, 6],   // world y for data.y [0, 1]
 
     // Sphere sizing: data.radius (0–1) × radiusMultiplier = world-unit radius
     radiusMultiplier: 0.65,
@@ -252,7 +244,7 @@ export default class ThreeDScatterPlotSimple {
         const yScale      = d3.scaleLinear().domain([0, 1]).range(yRange);
         const zScale      = d3.scaleLinear().domain([0, 1]).range(zRange);
         const opacityScale = d3.scaleLinear().domain([0, 1]).range(opacityRange);
-        const colorScale  = d3.scaleSequential(d3.interpolateYlOrRd).domain([0, 1]);
+        const colorScale  = d3.scaleSequential(d3.interpolateYlOrRd).domain([0.25, 1.3]);
 
         const spheres = [];
 
