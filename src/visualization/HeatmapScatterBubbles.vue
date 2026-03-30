@@ -8,7 +8,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import Heatmap3D from './lib/Heatmap3D.js';
-import ScatterBubbles3D, { generateScatterBubblesData } from './lib/ScatterBubbles3D.js';
+import ScatterPlot3D, { generateScatterBubblesData } from './lib/ScatterPlot3D.js';
 import { loadViabilityCSV, parseHeatmapData } from './getData.js';
 
 const props = defineProps({
@@ -30,7 +30,7 @@ async function initPlots() {
     const heatmapData = parseHeatmapData(raw);
 
     heatmapInstance = new Heatmap3D(heatmapCanvas.value, props.heatmapConfig);
-    scatterInstance = new ScatterBubbles3D(scatterCanvas.value, props.scatterConfig);
+    scatterInstance = new ScatterPlot3D(scatterCanvas.value, props.scatterConfig);
     heatmapInstance.setData(heatmapData);
     scatterInstance.setData(generateScatterBubblesData());
 }
