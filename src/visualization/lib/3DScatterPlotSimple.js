@@ -285,9 +285,7 @@ export default class ThreeDScatterPlotSimple {
             sphere.userData.floatSpeedX    = floatSpeedMin + Math.random() * floatSpeedRange;
             sphere.userData.floatAmplitude = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
             sphere.userData.floatAmplitudeX = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
-            sphere.userData.rotSpeedX = (Math.random() - 0.5) * rotSpeedRange;
             sphere.userData.rotSpeedY = (Math.random() - 0.5) * rotSpeedRange;
-            sphere.userData.rotSpeedZ = (Math.random() - 0.5) * rotSpeedRange;
             sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
             sphere.userData.dataZ = d.z;
@@ -320,9 +318,7 @@ export default class ThreeDScatterPlotSimple {
                 s.position.x = ud.floatX + ud.ox;
                 s.position.y = ud.floatY + ud.oy;
                 s.position.z = ud.floatZ + ud.oz;
-                s.rotation.x = elapsed * ud.rotSpeedX;
                 s.rotation.y = elapsed * ud.rotSpeedY;
-                s.rotation.z = elapsed * ud.rotSpeedZ;
             });
         });
 
