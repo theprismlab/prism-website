@@ -376,7 +376,16 @@ export default class ThreeDScatterPlotSimple {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
-            canvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, 512, 512);
+            // Convert near-white pixels to transparent so the barcode works on any background
+            const imageData = ctx.getImageData(0, 0, 512, 512);
+            const d = imageData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const brightness = (d[i] + d[i + 1] + d[i + 2]) / 3;
+                d[i + 3] = brightness > 180 ? 0 : d[i + 3]; // white → transparent
+            }
+            ctx.putImageData(imageData, 0, 0);
             this.barcodeTexture.image = canvas;
             this.barcodeTexture.needsUpdate = true;
             this._barcodeTextureReady = true;
@@ -408,7 +417,7 @@ export default class ThreeDScatterPlotSimple {
             map: this.barcodeTexture,
             transparent: true,
             opacity,
-            blending: THREE.AdditiveBlending,
+            blending: THREE.NormalBlending,
             depthWrite: false,
         });
         const sticker = new THREE.Mesh(geo, mat);
