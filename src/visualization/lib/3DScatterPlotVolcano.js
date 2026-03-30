@@ -73,13 +73,10 @@ export function generateScatterVolcanoData({
             : rand();
         // Distance from center: 0 at x=0.5, 1 at x=0 or x=1
         const distFromCenter = Math.abs(x - 0.5) * 2;
-        // Steeper exponent keeps more mass near y=0; burst only fans out at true extremes
-        const base = Math.pow(distFromCenter, 1.5) * 0.95;
-        // Burst amplitude: larger floor so center points also get y variation
-        const burst = Math.abs(randn()) * (0.12 + distFromCenter * 1);
-        // Per-point y ceiling varies so arm tips don't all flatten to the same height
-        const yMax = 0.5 + rand() * 0.5;
-        const y = Math.max(0, Math.min(yMax, base + burst));
+        // y is normally distributed around a mean that rises with distance.
+        // Fixed sigma (0.28) gives organic spread at every height — no flat ceiling.
+        const yMean = distFromCenter * 0.72;
+        const y = Math.max(0, Math.min(1, yMean + randn() * 0.28));
         const z = rand();
         // Fan x outward at the extremes so arms spread laterally too
         const xFanned = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * 0.12));
