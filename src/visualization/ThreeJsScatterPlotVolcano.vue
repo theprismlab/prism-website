@@ -30,7 +30,7 @@ async function initPlots() {
     const heatmapData = parseHeatmapData(raw);
 
     heatmapInstance = new ThreeDHeatmap(heatmapCanvas.value, props.heatmapConfig);
-    scatterInstance = new ThreeDScatterPlotSimple(scatterCanvas.value, { cameraAngleY: 0.64, ...props.scatterConfig });
+    scatterInstance = new ThreeDScatterPlotSimple(scatterCanvas.value, { cameraAngleY: 0.2, ...props.scatterConfig });
     heatmapInstance.setData(heatmapData);
     scatterInstance.setData(generateScatterVolcanoData({ count: 800 }));
 }

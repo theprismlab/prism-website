@@ -75,9 +75,11 @@ export function generateScatterVolcanoData({
         const distFromCenter = Math.abs(x - 0.5) * 2;
         // Steeper exponent keeps more mass near y=0; burst only fans out at true extremes
         const base = Math.pow(distFromCenter, 1.5) * 0.95;
-        // Burst amplitude scales strongly with distance — tight at center, wide fan at arms
-        const burst = Math.abs(randn()) * (0.04 + distFromCenter * 1);
-        const y = Math.max(0, Math.min(1, base + burst));
+        // Burst amplitude: larger floor so center points also get y variation
+        const burst = Math.abs(randn()) * (0.12 + distFromCenter * 1);
+        // Per-point y ceiling varies so arm tips don't all flatten to the same height
+        const yMax = 0.5 + rand() * 0.5;
+        const y = Math.max(0, Math.min(yMax, base + burst));
         const z = rand();
         // Fan x outward at the extremes so arms spread laterally too
         const xFanned = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * 0.12));
@@ -101,9 +103,9 @@ export function generateScatterVolcanoData({
 const defaultConfig = {
     // Camera
     fov:            25,
-    cameraDistance: 25,
-    cameraPosition: [0, 3, 25],
-    cameraLookAt:   [0, 1.5, 0],
+    cameraDistance: 28,
+    cameraPosition: [0, 6.5, 25],
+    cameraLookAt:   [0, 2.5, 0],
     nearClip:       1.01,
     farClip:        200,
 
@@ -114,11 +116,11 @@ const defaultConfig = {
 
     // Scene layout — all in world (Three.js) units
     // x is computed from the camera frustum at runtime so it fills the viewport at any aspect ratio
-    zRange:     [-4, 4],   // world z for data.z [0, 1]  (4 = closer, -4 = farther)
-    yRange:     [0, 6],   // world y for data.y [0, 1]  (intentional vertical margin)
+    zRange:     [-8, 4],   // world z for data.z [0, 1]  (4 = closer, -4 = farther)
+    yRange:     [0, 7],   // world y for data.y [0, 1]  (intentional vertical margin)
 
     // Sphere sizing: data.radius (0–1) × radiusMultiplier = world-unit radius
-    radiusMultiplier: 0.65,
+    radiusMultiplier: 0.75,
 
     // Opacity from depth (data.z 0–1 → opacity)
     opacityRange: [0.15, 0.975],
@@ -324,12 +326,25 @@ export default class ThreeDScatterPlotSimple {
         const xScale      = d3.scaleLinear().domain([0, 1]).range([-visibleWidth / 2, visibleWidth / 2]);
         const yScale      = d3.scaleLinear().domain([0, 1]).range(yRange);
         const zScale      = d3.scaleLinear().domain([0, 1]).range(zRange);
-        const opacityScale = d3.scaleLinear().domain([0, 1]).range(opacityRange);
         const colorScale  = d3.scaleSequential(d3.interpolateYlOrRd).domain([0, 1.4]);
+
+        // Pre-compute world positions so we can measure camera distance for opacity
+        const camPos = this.camera.position;
+        const worldPositions = data.map(d => new THREE.Vector3(xScale(d.x), yScale(d.y), zScale(d.z)));
+        const distances = worldPositions.map(p => p.distanceTo(camPos));
+        const minDist = Math.min(...distances);
+        const maxDist = Math.max(...distances);
+        // Normalize distance to 0–1 where 1 = closest to camera
+        const distNorm = d3.scaleLinear().domain([minDist, maxDist]).range([1, 0]);
+        // Combine camera-distance factor (50%) and data z-depth factor (50%), then map to opacityRange
+        const opacityScale = (dist, dataZ) => {
+            const closeness = distNorm(dist) * 0.5 + dataZ * 0.5;
+            return opacityRange[0] + closeness * (opacityRange[1] - opacityRange[0]);
+        };
 
         const spheres = [];
 
-        data.forEach(d => {
+        data.forEach((d, i) => {
             const radius = d.radius * radiusMultiplier;
             const color  = new THREE.Color(colorScale(d.color));
 
@@ -337,7 +352,7 @@ export default class ThreeDScatterPlotSimple {
             const material = new THREE.MeshStandardMaterial({
                 color,
                 transparent: true,
-                opacity: opacityScale(d.z),
+                opacity: opacityScale(distances[i], d.z),
                 roughness: 0.0,
                 metalness: 0.0,
             });
@@ -345,7 +360,7 @@ export default class ThreeDScatterPlotSimple {
             const sphere = new THREE.Mesh(geometry, material);
             sphere.castShadow = true;
 
-            const basePosition = new THREE.Vector3(xScale(d.x), yScale(d.y), zScale(d.z));
+            const basePosition = worldPositions[i];
             sphere.position.copy(basePosition);
 
             sphere.userData.basePosition   = basePosition;

@@ -6,7 +6,7 @@
                 <!-- <TheViabilityHeatmapScatterPlotColorScene v-else-if="activeScene === 1"></TheViabilityHeatmapScatterPlotColorScene> -->
                 <TheViabilityHeatmapScatterPlotScene v-else-if="activeScene === 1"></TheViabilityHeatmapScatterPlotScene>
                 <!-- <ThreeJsTemplate v-else-if="activeScene === 1"></ThreeJsTemplate> -->
-                <ThreeJsScatterPlotSimple v-else-if="activeScene === 2"></ThreeJsScatterPlotSimple>
+                <ThreeJsScatterPlotBubbles v-else-if="activeScene === 2"></ThreeJsScatterPlotBubbles>
                 <ThreeJsScatterPlotVolcano v-else-if="activeScene === 3"></ThreeJsScatterPlotVolcano>
 
             </div>
@@ -31,8 +31,8 @@
 import TheViabilityScatterPlotScene from '../visualization/viability-scatter-plot/TheViabilityScatterPlotScene.vue';
 import TheViabilityHeatmapScatterPlotScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityHeatmapScatterPlotScene.vue';
 import TheViabilityHeatmapScatterPlotColorScene from '../visualization/viability-heatmap-scatter-plot-color/TheViabilityHeatmapScatterPlotColorScene.vue';
-import ThreeJsTemplate from '@/visualization/ThreeJsTemplate.vue';
-import ThreeJsScatterPlotSimple from '@/visualization/ThreeJsScatterPlotSimple.vue';
+
+import ThreeJsScatterPlotBubbles from '@/visualization/ThreeJsScatterPlotBubbles.vue';
 import ThreeJsScatterPlotVolcano from '@/visualization/ThreeJsScatterPlotVolcano.vue';
 
 export default {
@@ -41,8 +41,7 @@ export default {
         TheViabilityScatterPlotScene,
         TheViabilityHeatmapScatterPlotScene,
         TheViabilityHeatmapScatterPlotColorScene,
-        ThreeJsTemplate,
-        ThreeJsScatterPlotSimple,
+        ThreeJsScatterPlotBubbles,
         ThreeJsScatterPlotVolcano,
     },
     data() {
