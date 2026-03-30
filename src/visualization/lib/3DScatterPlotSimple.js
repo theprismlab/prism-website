@@ -47,6 +47,55 @@ export function generateScatterData({
     return points;
 }
 
+/**
+ * Generates scatter plot data shaped like a volcano plot.
+ * Points near the center (x≈0.5) are low on y (not significant), while points
+ * far left or far right rise high on y (significant hits), forming two arms.
+ *
+ * Data schema per point: same as generateScatterData (x, y, z, radius, color, hasBarcode).
+ */
+export function generateScatterVolcanoData({
+    count            = 420,
+    colorNoiseScale  = 0.8,
+    seed             = 42,
+    barcodeZThreshold = 0.5,
+} = {}) {
+    let s = seed;
+    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
+
+    const points = [];
+    for (let i = 0; i < count; i++) {
+        // 65% of points biased toward center x → dense bottom cluster
+        // 35% uniform → populates the arms at the extremes
+        const x = rand() < 0.65
+            ? Math.max(0, Math.min(1, 0.5 + randn() * 0.12))
+            : rand();
+        // Distance from center: 0 at x=0.5, 1 at x=0 or x=1
+        const distFromCenter = Math.abs(x - 0.5) * 2;
+        // Steeper exponent keeps more mass near y=0; burst only fans out at true extremes
+        const base = Math.pow(distFromCenter, 1.5) * 0.95;
+        // Burst amplitude scales strongly with distance — tight at center, wide fan at arms
+        const burst = Math.abs(randn()) * (0.04 + distFromCenter * 1);
+        const y = Math.max(0, Math.min(1, base + burst));
+        const z = rand();
+        // Fan x outward at the extremes so arms spread laterally too
+        const xFanned = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * 0.12));
+        // Larger, more colorful spheres at the top of the arms; center-bottom stays small
+        const radius = Math.max(0, y * 0.85 + Math.abs(randn()) * distFromCenter * 0.3);
+        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
+        points.push({ x: xFanned, y, z, radius, color, hasBarcode: false });
+    }
+
+    // Mark top 1/3 by radius among close-z points as having a barcode
+    const closePoints = points.filter(p => p.z >= barcodeZThreshold);
+    closePoints.sort((a, b) => b.radius - a.radius);
+    const topCount = Math.ceil(closePoints.length / 3);
+    closePoints.slice(0, topCount).forEach(p => { p.hasBarcode = true; });
+
+    return points;
+}
+
 // ─── Default config ───────────────────────────────────────────────────────────
 
 const defaultConfig = {
@@ -66,7 +115,7 @@ const defaultConfig = {
     // Scene layout — all in world (Three.js) units
     // x is computed from the camera frustum at runtime so it fills the viewport at any aspect ratio
     zRange:     [-4, 4],   // world z for data.z [0, 1]  (4 = closer, -4 = farther)
-    yRange:     [-2, 6],   // world y for data.y [0, 1]  (intentional vertical margin)
+    yRange:     [0, 6],   // world y for data.y [0, 1]  (intentional vertical margin)
 
     // Sphere sizing: data.radius (0–1) × radiusMultiplier = world-unit radius
     radiusMultiplier: 0.65,
@@ -344,7 +393,7 @@ export default class ThreeDScatterPlotSimple {
         // Attach barcode stickers to spheres flagged in the data
         spheres
             .filter(s => s.userData.hasBarcode)
-            .forEach(s => this._createBarcodeSticker(s, s.userData.radius, 1));
+            .forEach(s => this._createBarcodeSticker(s, s.userData.radius, 0.5));
     }
 
     _resolveCollisions(spheres) {

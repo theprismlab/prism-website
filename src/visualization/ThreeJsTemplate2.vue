@@ -1,14 +1,14 @@
 <template>
     <div class="three-wrapper">
         <canvas ref="heatmapCanvas" class="three-canvas"></canvas>
-        <canvas ref="scatterCanvas" class="three-canvas"></canvas>
+        <canvas ref="scatterCanvas" class="three-canvas" style="opacity: 0.9;"></canvas>
     </div>
 </template>
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import ThreeDHeatmap from './lib/3DHeatmap.js';
-import ThreeDScatterPlotSimple, { generateScatterData } from './lib/3DScatterPlotSimple.js';
+import ThreeDScatterPlotSimple, { generateScatterData, generateScatterVolcanoData } from './lib/3DScatterPlotSimple.js';
 import { loadViabilityCSV, parseHeatmapData } from './getData.js';
 
 const props = defineProps({
@@ -32,7 +32,7 @@ async function initPlots() {
     heatmapInstance = new ThreeDHeatmap(heatmapCanvas.value, props.heatmapConfig);
     scatterInstance = new ThreeDScatterPlotSimple(scatterCanvas.value, props.scatterConfig);
     heatmapInstance.setData(heatmapData);
-    scatterInstance.setData(generateScatterData());
+    scatterInstance.setData(generateScatterVolcanoData());
 }
 
 onMounted(() => {
