@@ -32,7 +32,7 @@ const defaultConfig = {
     sphereBaseRadiusMultiplier: 0.018,
     sphereSizeScaleRange: [0.3, 1.0],
     sphereOpacityRange: [0.15, 0.8],
-    sphereRadiusScaleRange: [1.5, 0.2],
+    sphereRadiusScaleRange: [1.25, 0.2],
     sphereFloatSpeedMin: 1.8,
     sphereFloatSpeedRange: 1.6,
     sphereFloatAmplitudeBase: 0.08,
@@ -246,11 +246,20 @@ export default class ThreeDScatterPlot {
 
         const spheres = [];
 
-        sampled.forEach(d => {
+        // Pre-compute radii so we can normalize by actual rendered size
+        const sampledWithRadius = sampled.map(d => {
             const depthFactor = sizeScale(d.z);
             const colorFactor = colorRadiusScale(d.color);
             const randomJitter = 0.8 + Math.random() * 0.4;
             const radius = baseRadius * depthFactor * colorFactor * randomJitter;
+            return { ...d, radius };
+        });
+        const radiusExtent = d3.extent(sampledWithRadius, d => d.radius);
+        const sizeNorm = d3.scaleLinear().domain(radiusExtent).range([0, 1]);
+
+        sampledWithRadius.forEach(d => {
+            const { radius } = d;
+            const sizeFactor = sizeNorm(radius); // 0 = smallest, 1 = largest
             const color = d.color ? new THREE.Color(colorScale(d.color)) : new THREE.Color('#cccccc');
             const geometry = new THREE.SphereGeometry(radius, 24, 24);
             const material = new THREE.MeshStandardMaterial({
@@ -261,7 +270,7 @@ export default class ThreeDScatterPlot {
                 metalness: 0.0,
             });
             const sphere = new THREE.Mesh(geometry, material);
-            const baseY = (yScale ? yScale(d.y) : d.y) + radius * 0.2 - (1 - depthFactor) * sphereSmallSphereYDrop;
+            const baseY = (yScale ? yScale(d.y) : d.y) + radius * 0.2 - (1 - sizeFactor) * sphereSmallSphereYDrop;
             const basePosition = new THREE.Vector3(
                 xScale(d.x) - xOffset,
                 baseY,
@@ -274,8 +283,8 @@ export default class ThreeDScatterPlot {
             sphere.userData.floatPhaseX = Math.random() * Math.PI * 2;
             sphere.userData.floatSpeed = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
             sphere.userData.floatSpeedX = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
-            sphere.userData.floatAmplitude = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * depthFactor;
-            sphere.userData.floatAmplitudeX = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * depthFactor;
+            sphere.userData.floatAmplitude = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * sizeFactor;
+            sphere.userData.floatAmplitudeX = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * sizeFactor;
             sphere.userData.rotSpeedX = (Math.random() - 0.5) * 2.0;
             sphere.userData.rotSpeedY = (Math.random() - 0.5) * 2.0;
             sphere.userData.rotSpeedZ = (Math.random() - 0.5) * 2.0;
