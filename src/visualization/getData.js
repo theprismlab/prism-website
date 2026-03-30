@@ -2,8 +2,6 @@ import * as d3 from 'd3';
 
 const DATA_FILE = 'BRD-K05804044-viability-heatmap.csv';
 
-
-
 const basePath = import.meta.env.PROD
     ? import.meta.env.BASE_URL + 'data/'
     : '../../public/data/';
@@ -44,16 +42,16 @@ export function parseHeatmapData(raw) {
 
 
 
-export function parseScatterPlotData(raw) {
-    const { cellLineToIndex, doseToIndex } = computeGridIndices(raw);
+// export function parseScatterPlotData(raw) {
+//     const { cellLineToIndex, doseToIndex } = computeGridIndices(raw);
 
-    return raw
-        .map(d => ({
-            x: cellLineToIndex[d.ccle_name],
-            z: doseToIndex[d.pert_dose],
-            y: +d.viability,
-            color: +d.viability,
-            radius: +d.viability,
-        }))
-        .filter(d => d.x !== undefined && d.z !== undefined);
-}
+//     return raw
+//         .map(d => ({
+//             x: cellLineToIndex[d.ccle_name],
+//             z: doseToIndex[d.pert_dose],
+//             y: +d.viability,
+//             color: +d.viability,
+//             radius: +d.viability,
+//         }))
+//         .filter(d => d.x !== undefined && d.z !== undefined);
+// }
