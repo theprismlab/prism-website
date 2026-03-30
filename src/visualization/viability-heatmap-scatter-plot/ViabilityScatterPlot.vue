@@ -28,7 +28,7 @@ const sphereConfig = {
     sphereXStep: 8,
     sphereZStep: 2,
     sphereBaseRadiusMultiplier: 0.018,
-    sphereSizeScaleRange: [1.0, 0.3],
+    sphereSizeScaleRange: [0.3, 1.0],   // low-z = far = small, high-z = close = large
     sphereOpacityRange: [0.8, 0.8],
     sphereRadiusScaleRange: [1.5, 0.2],
     sphereFloatSpeedMin: 0.4,
@@ -39,6 +39,11 @@ const sphereConfig = {
     // ── Y-axis spread ──
     ySpread: 12,
     ySpreadOffset: 10,
+
+    // ── Barcodes ──
+    barcodeUrl: '/images/barcode.svg',
+    stickerOpacity: 0.5,
+    stickerSizeFraction: 0.8,
 };
 
 const props = defineProps({
@@ -51,6 +56,7 @@ const config = { ...sphereConfig, ...props.sceneConfig };
 const scene = useViabilityScene(canvasEl, config);
 
 onMounted(async () => {
+    loadBarcodeTexture();
     buildSpheres(props.data);
 
     await new Promise(r => requestAnimationFrame(r));
@@ -60,7 +66,68 @@ onMounted(async () => {
     scene.onRebuild(() => buildSpheres(props.data));
 });
 
-// ── Scale Computation ──
+// ── Barcode stickers ──────────────────────────────────────────────────────────
+
+let barcodeTexture = null;
+let barcodeTextureReady = false;
+const pendingStickers = [];
+
+function loadBarcodeTexture() {
+    const { barcodeUrl } = config;
+    if (!barcodeUrl) return;
+    barcodeTexture = new THREE.Texture();
+    const img = new Image();
+    img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, 512, 512);
+        // White pixels → transparent so bars show on any background
+        const imageData = ctx.getImageData(0, 0, 512, 512);
+        const d = imageData.data;
+        for (let i = 0; i < d.length; i += 4) {
+            if ((d[i] + d[i + 1] + d[i + 2]) / 3 > 180) d[i + 3] = 0;
+        }
+        ctx.putImageData(imageData, 0, 0);
+        barcodeTexture.image = canvas;
+        barcodeTexture.needsUpdate = true;
+        barcodeTextureReady = true;
+        pendingStickers.forEach(({ sphere, radius }) => attachSticker(sphere, radius));
+        pendingStickers.length = 0;
+    };
+    img.src = barcodeUrl;
+}
+
+function createBarcodeSticker(sphere, radius) {
+    if (!barcodeTexture) return;
+    if (barcodeTextureReady) {
+        attachSticker(sphere, radius);
+    } else {
+        pendingStickers.push({ sphere, radius });
+    }
+}
+
+function attachSticker(sphere, radius) {
+    const { stickerSizeFraction, stickerOpacity } = config;
+    const halfAngle = stickerSizeFraction / 2;
+    const geo = new THREE.SphereGeometry(
+        radius * 1.005, 16, 16,
+        Math.PI / 2 - halfAngle, halfAngle * 2,
+        Math.PI / 2 - halfAngle, halfAngle * 2,
+    );
+    const mat = new THREE.MeshBasicMaterial({
+        map: barcodeTexture,
+        transparent: true,
+        opacity: stickerOpacity,
+        blending: THREE.NormalBlending,
+        depthWrite: false,
+    });
+    const sticker = new THREE.Mesh(geo, mat);
+    sticker.renderOrder = 1;
+    sphere.add(sticker);
+}
+
+// ── Scale Computation ──────────────────────────────────────────────────────────
 
 function computeScales(data) {
     const { fov, cameraDistance, ySpread, ySpreadOffset } = config;
@@ -136,6 +203,8 @@ function buildSpheres(data) {
         sphere.castShadow = true;
         sphere.position.copy(basePosition);
         sphere.userData.basePosition = basePosition;
+        sphere.userData.radius = radius;
+        sphere.userData.sourceZ = d.z;
         sphere.userData.floatPhase = Math.random() * Math.PI * 2;
         sphere.userData.floatSpeed = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
         sphere.userData.floatAmplitude = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * t;
@@ -149,5 +218,15 @@ function buildSpheres(data) {
             s.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
         });
     });
+
+    // Barcodes: top 1/3 by radius among the close-z (high z-index) half of spheres
+    const zMid = (zExtent[0] + zExtent[1]) / 2;
+    const closeSpheresWithRadius = spheres
+        .filter(s => s.userData.sourceZ >= zMid)
+        .map(s => ({ sphere: s, radius: s.userData.radius }));
+    closeSpheresWithRadius.sort((a, b) => b.radius - a.radius);
+    closeSpheresWithRadius
+        .slice(0, Math.ceil(closeSpheresWithRadius.length / 3))
+        .forEach(({ sphere, radius }) => createBarcodeSticker(sphere, radius));
 }
 </script>

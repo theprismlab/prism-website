@@ -9,10 +9,8 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import Heatmap3D from './lib/Heatmap3D.js';
 import ScatterPlot3D, { 
-    generateScatterFountainData,
     generateScatterVanishingPointData
 } from './lib/ScatterPlot3D.js';
-import * as d3 from 'd3';
 import { loadViabilityCSV, parseHeatmapData } from './getData.js';
 
 
@@ -33,10 +31,10 @@ async function initPlots() {
     // for bimodal data
 const scatterConfig = {
     // cameraAngleY: 0.2,
-     cameraPosition  : [0, 4 , 3],
-    // scale: {
-    //     x: { domain: [0.2, 0.8] },
-    // }
+   //  cameraPosition  : [0, 4 , 3],
+    scale: {
+     opacity: { range: [.75, 0.95]},
+    }
 }
     // Heatmap: pass parsed data uncolored so the heatmap class owns color/opacity scaling.
     const heatmapData = parseHeatmapData(raw);

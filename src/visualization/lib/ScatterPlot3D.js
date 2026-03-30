@@ -132,7 +132,7 @@ export function generateScatterVanishingPointData({
     vpY               = 0.3,   // vanishing point vertical position (horizon)
     maxSpread         = 0.54,   // x σ at furthest foreground depth
     cloudRise         = 0.52,   // how far y drifts upward from VP to foreground
-    depthBias         = 2.8,    // power > 1 packs most points near the distant horizon
+    depthBias         = 2.0,    // power > 1 packs most points near the distant horizon
 } = {}) {
     let s = seed;
     const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
