@@ -38,16 +38,16 @@ const defaultConfig = {
     sphereFloatSpeedRange: 1.6,
     sphereFloatAmplitudeBase: 0.05,
     sphereFloatAmplitudeRange: 0.04,
-    sphereSmallSphereYDrop: 4,
-    sphereHighYDropBoost: 3,
+    sphereSmallSphereYDrop: 6,
+    sphereHighYDropBoost: 2,
     stickerCount: 20,
     stickerSizeFraction: 0.8,
     stickerRadiusBoost: 1.2,
     barcodeUrl: '/images/barcode.svg',
     collisionAvoidance: true,
     // Y-axis spread
-    ySpread: 11.5,
-    ySpreadOffset: 10,
+    ySpread: 12,
+    ySpreadOffset: 8,
 };
 
 export default class ThreeDScatterPlot {
