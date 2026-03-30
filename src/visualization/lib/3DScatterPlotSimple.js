@@ -52,9 +52,9 @@ const defaultConfig = {
     enableShadows:             true,
 
     // Scene layout — all in world (Three.js) units
-    sceneWidth: 20,        // x spans [-sceneWidth/2, sceneWidth/2]
-    zRange:     [-4, 4],   // world z for data.z [0, 1]  (4 = closer to camera at z=25)
-    yRange:     [-2, 6],   // world y for data.y [0, 1]
+    // x is computed from the camera frustum at runtime so it fills the viewport at any aspect ratio
+    zRange:     [-4, 4],   // world z for data.z [0, 1]  (4 = closer, -4 = farther)
+    yRange:     [-2, 6],   // world y for data.y [0, 1]  (intentional vertical margin)
 
     // Sphere sizing: data.radius (0–1) × radiusMultiplier = world-unit radius
     radiusMultiplier: 0.65,
@@ -242,7 +242,7 @@ export default class ThreeDScatterPlotSimple {
      */
     _buildSpheres(data) {
         const {
-            sceneWidth, zRange, yRange,
+            zRange, yRange,
             radiusMultiplier, opacityRange,
             floatSpeedMin, floatSpeedRange, floatAmplitude,
             rotSpeedRange,
@@ -250,8 +250,13 @@ export default class ThreeDScatterPlotSimple {
 
         const [floatAmpMin, floatAmpMax] = floatAmplitude;
 
+        // Compute visible x-width from the camera frustum so it adapts to any aspect ratio
+        const vFov = THREE.MathUtils.degToRad(this.config.fov);
+        const visibleHeight = 2 * Math.tan(vFov / 2) * this.config.cameraDistance;
+        const visibleWidth  = visibleHeight * (this.width / this.height);
+
         // Simple linear scales — no domain clamping needed since data is 0–1
-        const xScale      = d3.scaleLinear().domain([0, 1]).range([-sceneWidth / 2, sceneWidth / 2]);
+        const xScale      = d3.scaleLinear().domain([0, 1]).range([-visibleWidth / 2, visibleWidth / 2]);
         const yScale      = d3.scaleLinear().domain([0, 1]).range(yRange);
         const zScale      = d3.scaleLinear().domain([0, 1]).range(zRange);
         const opacityScale = d3.scaleLinear().domain([0, 1]).range(opacityRange);
