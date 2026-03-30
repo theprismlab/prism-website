@@ -1,14 +1,6 @@
 <template>
   <page class="mt-0 pt-0">
-    <section class="hero-section">
-      <div class="hero-heatmap">
-        <TheViabilityScatterPlotScene></TheViabilityScatterPlotScene>
-      </div>
-      <div class="hero-overlay text-center">
-            <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
-            <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
-      </div>
-    </section>
+        <Hero></Hero>
 
       <container-sm>
            <p class="text-h3 text-center">Our lab partners with researchers to reveal clinically important differences in drug behavior by screening over 900 cancer cell lines and correlating the viability results with baseline and functional genomic features </p>
@@ -49,11 +41,11 @@ import { mdiHexagonMultiple } from '@mdi/js';
 import { mdiFileMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
 // import TheViabilityScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityScene.vue';
-import TheViabilityScatterPlotScene from '../visualization/viability-scatter-plot/ViabilityScatterBubbles.vue';
+import Hero from '../components/sections/Hero.vue';
   export default {
     components: {
       SvgIcon,
-      TheViabilityScatterPlotScene,
+      Hero,
     },
     data() {
       return {
