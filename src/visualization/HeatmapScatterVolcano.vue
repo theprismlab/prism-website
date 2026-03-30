@@ -24,20 +24,13 @@ let scatterInstance = null;
 
 async function initPlots() {
     const raw = await loadViabilityCSV();
-    const scatterConfig = {
-        cameraAngleY: 0.2,
-        pointSize: 0.04,
-        pointSizeAttenuation: true,
-        colorScale: 'viridis',
-        opacity: 1,
-     
-    }
+    
 
     // Heatmap: pass parsed data uncolored so the heatmap class owns color/opacity scaling.
     const heatmapData = parseHeatmapData(raw);
 
     heatmapInstance = new Heatmap3D(heatmapCanvas.value, props.heatmapConfig);
-    scatterInstance = new ScatterPlot3D(scatterCanvas.value, scatterConfig);
+    scatterInstance = new ScatterPlot3D(scatterCanvas.value, { cameraAngleY: 0, ...props.scatterConfig });
     heatmapInstance.setData(heatmapData);
     scatterInstance.setData(generateScatterVolcanoData({ count: 800 }));
 }
