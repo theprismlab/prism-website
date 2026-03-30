@@ -2,7 +2,7 @@
   <page class="mt-0 pt-0">
     <section class="hero-section">
       <div class="hero-heatmap">
-<ViabilityHeatmap />
+        <TheViabilityScatterPlotScene></TheViabilityScatterPlotScene>
       </div>
       <div class="hero-overlay text-center">
             <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -48,11 +48,12 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiHexagonMultiple } from '@mdi/js';
 import { mdiFileMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
-  import ViabilityHeatmap from '@/components/three-js/ViabilityScenes/ViabilityHeatmap.vue';
+// import TheViabilityScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityScene.vue';
+import TheViabilityScatterPlotScene from '../visualization/viability-scatter-plot/ViabilityScatterBubbles.vue';
   export default {
     components: {
       SvgIcon,
-      ViabilityHeatmap
+      TheViabilityScatterPlotScene,
     },
     data() {
       return {
@@ -144,7 +145,8 @@ import { mdiAccountGroup } from '@mdi/js';
 .hero-section {
   display: grid;
   // height: calc(100vh - var(--v-layout-top, 64px) - var(--v-banner-height, 0px));
-    height: calc(100vh - var(--v-layout-top, 64px) - var(--v-banner-height, 0px));
+   // height: calc(100vh - var(--v-layout-top, 64px) - var(--v-banner-height, 0px));
+    height: calc(100dvh - var(--v-layout-top, 64px));
   overflow: hidden;
   > * {
     grid-area: 1 / 1;
@@ -162,7 +164,7 @@ import { mdiAccountGroup } from '@mdi/js';
   z-index: 1;
 }
 .text-hero{
-  text-shadow: 0px 0px 20px rgba(255, 255, 255, 1);
+  text-shadow: 0px 0px 10px rgba(255, 255, 255, 1);
 }
 .text-xl{
   font-size: 4.25rem;

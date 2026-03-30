@@ -97,6 +97,11 @@ data() {
     drawer: false,
     items: [
       {
+        title: 'Hero',
+        route: '/hero',
+        id: 'hero'
+      },
+      {
         title: 'About us',
         children: [
           {
