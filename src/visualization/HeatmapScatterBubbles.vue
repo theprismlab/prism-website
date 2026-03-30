@@ -7,8 +7,8 @@
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import ThreeDHeatmap from './lib/3DHeatmap.js';
-import ThreeDScatterPlotSimple, { generateScatterData } from './lib/3DScatterPlotBubbles.js';
+import Heatmap3D from './lib/Heatmap3D.js';
+import ScatterBubbles3D, { generateScatterBubblesData } from './lib/ScatterBubbles3D.js';
 import { loadViabilityCSV, parseHeatmapData } from './getData.js';
 
 const props = defineProps({
@@ -29,10 +29,10 @@ async function initPlots() {
     // Heatmap: pass parsed data uncolored so the heatmap class owns color/opacity scaling.
     const heatmapData = parseHeatmapData(raw);
 
-    heatmapInstance = new ThreeDHeatmap(heatmapCanvas.value, props.heatmapConfig);
-    scatterInstance = new ThreeDScatterPlotSimple(scatterCanvas.value, props.scatterConfig);
+    heatmapInstance = new Heatmap3D(heatmapCanvas.value, props.heatmapConfig);
+    scatterInstance = new ScatterBubbles3D(scatterCanvas.value, props.scatterConfig);
     heatmapInstance.setData(heatmapData);
-    scatterInstance.setData(generateScatterData());
+    scatterInstance.setData(generateScatterBubblesData());
 }
 
 onMounted(() => {

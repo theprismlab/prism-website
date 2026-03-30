@@ -2,40 +2,53 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import * as d3 from 'd3';
 
+
+
 /**
- * Generates scatter plot data with pre-computed radius and color so the plot
- * class needs no complex scaling logic — just linear maps from 0–1 values to
- * world coordinates.
+ * Generates scatter plot data shaped like a volcano plot.
+ * Points near the center (x≈0.5) are low on y (not significant), while points
+ * far left or far right rise high on y (significant hits), forming two arms.
  *
- * Data schema per point:
- *   x      — 0–1  horizontal position
- *   y      — 0–1  vertical position  (increases naturally with z + noise)
- *   z      — 0–1  depth (0 = far from camera, 1 = closest to camera)
- *   radius — 0–1  pre-normalized sphere size (increases with z and y)
- *   color  — 0–1  heat value for color scale  (increases with z and y)
+ * Data schema per point: same as generateScatterData (x, y, z, radius, color, hasBarcode).
  */
-export function generateScatterData({
-    count          = 420,
-    colorNoiseScale = 0.8,   // ± noise added to color (which is y-based)
-    seed           = 42,
+export function generateScatterVolcanoData({
+    count            = 420,
+    colorNoiseScale  = 0.8,
+    seed             = 42,
+    barcodeZThreshold = 0.5,
 } = {}) {
-    // Minimal seeded PRNG for reproducibility (Park-Miller LCG)
     let s = seed;
-    const rand = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-    // Box-Muller normal distribution (mean=0, stddev=1)
+    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
     const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
 
     const points = [];
     for (let i = 0; i < count; i++) {
-        const x = rand();
-        // Wave trend + wide normal scatter so outliers (small circles high up) are possible
-        const y = Math.max(0, Math.min(1, x * 0.5 + 0.25 + randn() * 0.22));
+        // 65% of points biased toward center x → dense bottom cluster
+        // 35% uniform → populates the arms at the extremes
+        const x = rand() < 0.65
+            ? Math.max(0, Math.min(1, 0.5 + randn() * 0.12))
+            : rand();
+        // Distance from center: 0 at x=0.5, 1 at x=0 or x=1
+        const distFromCenter = Math.abs(x - 0.5) * 2;
+        // y is normally distributed around a mean that rises with distance.
+        // Fixed sigma (0.28) gives organic spread at every height — no flat ceiling.
+        const yMean = distFromCenter * 0.72;
+        const y = Math.max(0, Math.min(1, yMean + randn() * 0.28));
         const z = rand();
-        // Radius: y-based with normal noise — allows small circles at any height
-        const radius = Math.max(0, y * 0.8 + randn() * 0.18);
+        // Fan x outward at the extremes so arms spread laterally too
+        const xFanned = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * 0.12));
+        // Mix of sizes throughout the arms; y contributes less so small circles appear everywhere
+        const radius = Math.max(0, y * 0.4 + Math.abs(randn()) * (0.04 + distFromCenter * 0.35));
         const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
-        points.push({ x, y, z, radius, color });
+        points.push({ x: xFanned, y, z, radius, color, hasBarcode: false });
     }
+
+    // Mark top 1/3 by radius among close-z points as having a barcode
+    const closePoints = points.filter(p => p.z >= barcodeZThreshold);
+    closePoints.sort((a, b) => b.radius - a.radius);
+    const topCount = Math.ceil(closePoints.length / 3);
+    closePoints.slice(0, topCount).forEach(p => { p.hasBarcode = true; });
+
     return points;
 }
 
@@ -44,9 +57,9 @@ export function generateScatterData({
 const defaultConfig = {
     // Camera
     fov:            25,
-    cameraDistance: 25,
-    cameraPosition: [0, 3, 25],
-    cameraLookAt:   [0, 1.5, 0],
+    cameraDistance: 28,
+    cameraPosition: [0, 6.5, 25],
+    cameraLookAt:   [0, 2.5, 0],
     nearClip:       1.01,
     farClip:        200,
 
@@ -57,14 +70,14 @@ const defaultConfig = {
 
     // Scene layout — all in world (Three.js) units
     // x is computed from the camera frustum at runtime so it fills the viewport at any aspect ratio
-    zRange:     [-4, 4],   // world z for data.z [0, 1]  (4 = closer, -4 = farther)
-    yRange:     [-2, 6],   // world y for data.y [0, 1]  (intentional vertical margin)
+    zRange:     [-8, 4],   // world z for data.z [0, 1]  (4 = closer, -4 = farther)
+    yRange:     [0, 7],   // world y for data.y [0, 1]  (intentional vertical margin)
 
     // Sphere sizing: data.radius (0–1) × radiusMultiplier = world-unit radius
-    radiusMultiplier: 0.65,
+    radiusMultiplier: 0.75,
 
     // Opacity from depth (data.z 0–1 → opacity)
-    opacityRange: [0.25, 0.95],
+    opacityRange: [0.15, 0.975],
 
     // Float animation
     floatSpeedMin:   1.8,
@@ -77,16 +90,17 @@ const defaultConfig = {
     // Collision avoidance
     collisionAvoidance: true,
 
-    // Barcode stickers — applied to spheres where radius AND z both exceed thresholds
-    stickerRadiusThreshold: 0.5,  // world-unit radius minimum
-    stickerZThreshold: 0.5,       // data z minimum (0–1)
+    // Camera orbit angle around Y axis (radians) — positive = right arm comes forward
+    cameraAngleY: 0,
+
+    // Barcode stickers — applied to data points with hasBarcode: true
     stickerSizeFraction: 0.8,
     barcodeUrl: '/images/barcode.svg',
 };
 
 // ─── Class ────────────────────────────────────────────────────────────────────
 
-export default class ThreeDScatterPlotSimple {
+export default class ScatterVolcano3D {
     constructor(canvasEl, sceneConfig = {}) {
         if (!canvasEl) throw new Error('canvas element is required');
         this.canvas = canvasEl;
@@ -175,8 +189,11 @@ export default class ThreeDScatterPlotSimple {
 
         const { fov, cameraDistance, cameraPosition, cameraLookAt, nearClip, farClip } = this.config;
         this.camera = new THREE.PerspectiveCamera(fov, this.width / this.height, nearClip, farClip);
-        const [cx, cy] = cameraPosition;
-        this.camera.position.set(cx, cy, cameraDistance);
+        const angle = this.config.cameraAngleY ?? 0;
+        const cy = cameraPosition[1];
+        const cx = cameraLookAt[0] + Math.sin(angle) * cameraDistance;
+        const cz = cameraLookAt[2] + Math.cos(angle) * cameraDistance;
+        this.camera.position.set(cx, cy, cz);
         this.camera.lookAt(...cameraLookAt);
         this.camera.updateProjectionMatrix();
 
@@ -263,12 +280,25 @@ export default class ThreeDScatterPlotSimple {
         const xScale      = d3.scaleLinear().domain([0, 1]).range([-visibleWidth / 2, visibleWidth / 2]);
         const yScale      = d3.scaleLinear().domain([0, 1]).range(yRange);
         const zScale      = d3.scaleLinear().domain([0, 1]).range(zRange);
-        const opacityScale = d3.scaleLinear().domain([0, 1]).range(opacityRange);
         const colorScale  = d3.scaleSequential(d3.interpolateYlOrRd).domain([0, 1.4]);
+
+        // Pre-compute world positions so we can measure camera distance for opacity
+        const camPos = this.camera.position;
+        const worldPositions = data.map(d => new THREE.Vector3(xScale(d.x), yScale(d.y), zScale(d.z)));
+        const distances = worldPositions.map(p => p.distanceTo(camPos));
+        const minDist = Math.min(...distances);
+        const maxDist = Math.max(...distances);
+        // Normalize distance to 0–1 where 1 = closest to camera
+        const distNorm = d3.scaleLinear().domain([minDist, maxDist]).range([1, 0]);
+        // Combine camera-distance factor (50%) and data z-depth factor (50%), then map to opacityRange
+        const opacityScale = (dist, dataZ) => {
+            const closeness = distNorm(dist) * 0.5 + dataZ * 0.5;
+            return opacityRange[0] + closeness * (opacityRange[1] - opacityRange[0]);
+        };
 
         const spheres = [];
 
-        data.forEach(d => {
+        data.forEach((d, i) => {
             const radius = d.radius * radiusMultiplier;
             const color  = new THREE.Color(colorScale(d.color));
 
@@ -276,7 +306,7 @@ export default class ThreeDScatterPlotSimple {
             const material = new THREE.MeshStandardMaterial({
                 color,
                 transparent: true,
-                opacity: opacityScale(d.z),
+                opacity: opacityScale(distances[i], d.z),
                 roughness: 0.0,
                 metalness: 0.0,
             });
@@ -284,7 +314,7 @@ export default class ThreeDScatterPlotSimple {
             const sphere = new THREE.Mesh(geometry, material);
             sphere.castShadow = true;
 
-            const basePosition = new THREE.Vector3(xScale(d.x), yScale(d.y), zScale(d.z));
+            const basePosition = worldPositions[i];
             sphere.position.copy(basePosition);
 
             sphere.userData.basePosition   = basePosition;
@@ -299,6 +329,7 @@ export default class ThreeDScatterPlotSimple {
             sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
             sphere.userData.dataZ = d.z;
+            sphere.userData.hasBarcode = d.hasBarcode ?? false;
 
             spheres.push(sphere);
             this.scene.add(sphere);
@@ -334,13 +365,10 @@ export default class ThreeDScatterPlotSimple {
 
         this.spheres = spheres;
 
-        // Attach barcode stickers to spheres exceeding both the radius and z thresholds
-        const { stickerRadiusThreshold, stickerZThreshold } = this.config;
+        // Attach barcode stickers to spheres flagged in the data
         spheres
-            .filter(s => s.userData.radius >= stickerRadiusThreshold && s.userData.dataZ >= stickerZThreshold)
-            .forEach(s => {
-                this._createBarcodeSticker(s, s.userData.radius, 1);
-            });
+            .filter(s => s.userData.hasBarcode)
+            .forEach(s => this._createBarcodeSticker(s, s.userData.radius, 0.5));
     }
 
     _resolveCollisions(spheres) {
@@ -372,7 +400,16 @@ export default class ThreeDScatterPlotSimple {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
-            canvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, 512, 512);
+            // Convert near-white pixels to transparent so the barcode works on any background
+            const imageData = ctx.getImageData(0, 0, 512, 512);
+            const d = imageData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const brightness = (d[i] + d[i + 1] + d[i + 2]) / 3;
+                d[i + 3] = brightness > 180 ? 0 : d[i + 3]; // white → transparent
+            }
+            ctx.putImageData(imageData, 0, 0);
             this.barcodeTexture.image = canvas;
             this.barcodeTexture.needsUpdate = true;
             this._barcodeTextureReady = true;
@@ -404,7 +441,7 @@ export default class ThreeDScatterPlotSimple {
             map: this.barcodeTexture,
             transparent: true,
             opacity,
-            blending: THREE.AdditiveBlending,
+            blending: THREE.NormalBlending,
             depthWrite: false,
         });
         const sticker = new THREE.Mesh(geo, mat);

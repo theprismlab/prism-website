@@ -34,7 +34,7 @@ const defaultConfig = {
     colorScaleDomain: [1.2, 0], 
 };
 
-export default class ThreeDHeatmap {
+export default class Heatmap3D {
     constructor(canvasEl, sceneConfig = {}) {
         if (!canvasEl) throw new Error('canvas element is required');
         this.canvas = canvasEl;

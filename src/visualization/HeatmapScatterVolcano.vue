@@ -7,8 +7,8 @@
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import ThreeDHeatmap from './lib/3DHeatmap.js';
-import ThreeDScatterPlotSimple, { generateScatterData, generateScatterVolcanoData } from './lib/3DScatterPlotVolcano.js';
+import Heatmap3D from './lib/Heatmap3D.js';
+import ScatterVolcano3D, { generateScaVolcanoData } from './lib/ScatterVolcano3D.js';
 import { loadViabilityCSV, parseHeatmapData } from './getData.js';
 
 const props = defineProps({
@@ -29,8 +29,8 @@ async function initPlots() {
     // Heatmap: pass parsed data uncolored so the heatmap class owns color/opacity scaling.
     const heatmapData = parseHeatmapData(raw);
 
-    heatmapInstance = new ThreeDHeatmap(heatmapCanvas.value, props.heatmapConfig);
-    scatterInstance = new ThreeDScatterPlotSimple(scatterCanvas.value, { cameraAngleY: 0.2, ...props.scatterConfig });
+    heatmapInstance = new Heatmap3D(heatmapCanvas.value, props.heatmapConfig);
+    scatterInstance = new ScatterVolcano3D(scatterCanvas.value, { cameraAngleY: 0.2, ...props.scatterConfig });
     heatmapInstance.setData(heatmapData);
     scatterInstance.setData(generateScatterVolcanoData({ count: 800 }));
 }
