@@ -39,13 +39,14 @@ const defaultConfig = {
     sphereFloatAmplitudeBase: 0.05,
     sphereFloatAmplitudeRange: 0.04,
     sphereSmallSphereYDrop: 3,
+    sphereHighYDropBoost: 2,
     stickerCount: 20,
     stickerSizeFraction: 0.8,
     stickerRadiusBoost: 1.2,
     barcodeUrl: '/images/barcode.svg',
     collisionAvoidance: true,
     // Y-axis spread
-    ySpread: 12,
+    ySpread: 10.5,
     ySpreadOffset: 10,
 };
 
@@ -235,13 +236,13 @@ export default class ThreeDScatterPlot {
 
     _buildSpheres(data) {
         const scales = this._computeScales(data);
-        const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, zExtent, colorExtent } = scales;
+        const { xScale, zScale, xOffset, zOffset, cellHeight, yScale, zExtent, colorExtent, yExtent } = scales;
         const {
             sphereXStep, sphereZStep, sphereBaseRadiusMultiplier,
             sphereSizeScaleRange, sphereOpacityRange, sphereRadiusScaleRange,
             sphereFloatSpeedMin, sphereFloatSpeedRange,
             sphereFloatAmplitudeBase, sphereFloatAmplitudeRange,
-            sphereSmallSphereYDrop,
+            sphereSmallSphereYDrop, sphereHighYDropBoost,
         } = this.config;
 
         const baseRadius = xScale.range()[1] * sphereBaseRadiusMultiplier;
@@ -252,6 +253,9 @@ export default class ThreeDScatterPlot {
 
         const colorRadiusScale = d3.scalePow().exponent(1.5).domain(colorExtent).range(sphereRadiusScaleRange);
         const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1.75, 0]);
+        const yNorm = yExtent[0] !== undefined && yExtent[1] !== undefined && yExtent[0] !== yExtent[1]
+            ? d3.scaleLinear().domain(yExtent).range([0, 1])
+            : () => 0;
 
         const spheres = [];
 
@@ -286,7 +290,7 @@ export default class ThreeDScatterPlot {
                 metalness: 0.0,
             });
             const sphere = new THREE.Mesh(geometry, material);
-            const baseY = (yScale ? yScale(d.y) : d.y) + radius * 0.2 - (1 - sizeFactor) * sphereSmallSphereYDrop;
+            const baseY = (yScale ? yScale(d.y) : d.y) + radius * 0.2 - (1 - sizeFactor) * (sphereSmallSphereYDrop + yNorm(d.y) * sphereHighYDropBoost);
             const basePosition = new THREE.Vector3(
                 xScale(d.x) - xOffset,
                 baseY,
