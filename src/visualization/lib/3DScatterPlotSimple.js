@@ -26,9 +26,9 @@ export function generateScatterData({
     const points = [];
     for (let i = 0; i < count; i++) {
         const x = rand();
-        const y = Math.max(0, Math.min(1, x * 0.7 + rand() * 0.3));  // wave: low left, high right
+        const y = Math.max(0, Math.min(1, x * 0.6 + (rand() - 0.2) * 0.7));  // wave trend with wide scatter
         const z = rand();
-        const radius = Math.max(0, y + (rand() - 0.5) * 0.3);
+        const radius = Math.max(0, y + (rand() - 0.5) * 0.55);
         const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
         points.push({ x, y, z, radius, color });
     }
