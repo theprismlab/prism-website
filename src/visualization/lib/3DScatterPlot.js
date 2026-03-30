@@ -25,21 +25,18 @@ const defaultConfig = {
     ambientLightIntensity: 0.5,
     enableShadows: true,
 
-    // Planes
-    planeZoom: 10.8,
 
     // Spheres
-    sphereXStep: 8,
+    sphereXStep: 10,
     sphereZStep: 2,
     sphereBaseRadiusMultiplier: 0.018,
-    sphereSizeScaleRange: [1.0, 0.3],
-    sphereOpacityRange: [0.7, 0.15],
+    sphereSizeScaleRange: [0.3, 1.0],
+    sphereOpacityRange: [0.15, 1],
     sphereRadiusScaleRange: [1.5, 0.2],
     sphereFloatSpeedMin: 1.8,
     sphereFloatSpeedRange: 1.6,
     sphereFloatAmplitudeBase: 0.08,
-    sphereFloatAmplitudeRange: 0.06,
-
+    sphereFloatAmplitudeRange: 0.06,    collisionAvoidance: true,
     // Y-axis spread
     ySpread: 12,
     ySpreadOffset: 10,
@@ -242,7 +239,7 @@ export default class ThreeDScatterPlot {
         const opacityDepthScale = d3.scaleLinear().domain(zExtent).range(sphereOpacityRange);
 
         const radiusScale = d3.scalePow().exponent(1).domain(colorExtent).range(sphereRadiusScaleRange);
-        const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain(colorExtent);
+        const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1.75, 0]);
 
         const spheres = [];
 
@@ -250,9 +247,10 @@ export default class ThreeDScatterPlot {
             const t = sizeScale(d.z);
             const randomJitter = 0.8 + Math.random() * 0.4;
             const radius = baseRadius * t * radiusScale(d.color) * randomJitter;
+            const color = d.color ? new THREE.Color(colorScale(d.color)) : new THREE.Color('#cccccc');
             const geometry = new THREE.SphereGeometry(radius, 24, 24);
             const material = new THREE.MeshStandardMaterial({
-                color: d.color ? new THREE.Color(colorScale(d.color)) : new THREE.Color('#cccccc'),
+                color: color,
                 transparent: true,
                 opacity: opacityDepthScale(d.z),
                 roughness: 0.0,
@@ -277,22 +275,63 @@ export default class ThreeDScatterPlot {
             sphere.userData.rotSpeedX = (Math.random() - 0.5) * 2.0;
             sphere.userData.rotSpeedY = (Math.random() - 0.5) * 2.0;
             sphere.userData.rotSpeedZ = (Math.random() - 0.5) * 2.0;
+            sphere.userData.radius = radius;
+            sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
+            sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
             spheres.push(sphere);
             this.scene.add(sphere);
         });
 
         this._addAnimationCallback((elapsed) => {
+            // Step 1: compute float target positions
             spheres.forEach(s => {
-                const { basePosition, floatPhase, floatPhaseX, floatSpeed, floatSpeedX, floatAmplitude, floatAmplitudeX, rotSpeedX, rotSpeedY, rotSpeedZ } = s.userData;
-                s.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
-                s.position.x = basePosition.x + Math.sin(elapsed * floatSpeedX + floatPhaseX) * floatAmplitudeX;
-                s.rotation.x = elapsed * rotSpeedX;
-                s.rotation.y = elapsed * rotSpeedY;
-                s.rotation.z = elapsed * rotSpeedZ;
+                const { basePosition, floatPhase, floatPhaseX, floatSpeed, floatSpeedX, floatAmplitude, floatAmplitudeX } = s.userData;
+                s.userData.floatX = basePosition.x + Math.sin(elapsed * floatSpeedX + floatPhaseX) * floatAmplitudeX;
+                s.userData.floatY = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
+                s.userData.floatZ = basePosition.z;
+            });
+
+            // Step 2: repulsion between overlapping spheres
+            if (this.config.collisionAvoidance) this._resolveCollisions(spheres);
+
+            // Step 3: integrate velocity, spring back toward float position, damp, apply
+            const damping = 0.75;
+            const springK = 0.12;
+            spheres.forEach(s => {
+                const ud = s.userData;
+                ud.ox = (ud.ox + ud.vx) * (1 - springK);
+                ud.oy = (ud.oy + ud.vy) * (1 - springK);
+                ud.oz = (ud.oz + ud.vz) * (1 - springK);
+                ud.vx *= damping; ud.vy *= damping; ud.vz *= damping;
+                s.position.x = ud.floatX + ud.ox;
+                s.position.y = ud.floatY + ud.oy;
+                s.position.z = ud.floatZ + ud.oz;
+                s.rotation.x = elapsed * ud.rotSpeedX;
+                s.rotation.y = elapsed * ud.rotSpeedY;
+                s.rotation.z = elapsed * ud.rotSpeedZ;
             });
         });
 
         this.spheres = spheres;
+    }
+
+    _resolveCollisions(spheres) {
+        for (let i = 0; i < spheres.length; i++) {
+            for (let j = i + 1; j < spheres.length; j++) {
+                const si = spheres[i], sj = spheres[j];
+                const dx = (si.userData.floatX + si.userData.ox) - (sj.userData.floatX + sj.userData.ox);
+                const dy = (si.userData.floatY + si.userData.oy) - (sj.userData.floatY + sj.userData.oy);
+                const dz = (si.userData.floatZ + si.userData.oz) - (sj.userData.floatZ + sj.userData.oz);
+                const distSq = dx * dx + dy * dy + dz * dz;
+                const minDist = si.userData.radius + sj.userData.radius;
+                if (distSq < minDist * minDist && distSq > 1e-6) {
+                    const dist = Math.sqrt(distSq);
+                    const push = (minDist - dist) / dist * 0.5;
+                    si.userData.vx += dx * push; si.userData.vy += dy * push; si.userData.vz += dz * push;
+                    sj.userData.vx -= dx * push; sj.userData.vy -= dy * push; sj.userData.vz -= dz * push;
+                }
+            }
+        }
     }
 
     _addAnimationCallback(cb) {
