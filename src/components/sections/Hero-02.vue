@@ -2,7 +2,6 @@
     <div>
         <section class="hero-section">
             <div class="hero-heatmap">
-            <HeatmapScatter></HeatmapScatter>  
             <ScatterBubbles :scatter-config="{ clusterCount: 8, cameraAngleY: 0.3, barcodeUrl: '/images/barcode.svg' }" />
             </div>
             <div class="hero-overlay text-center">
@@ -14,14 +13,12 @@
 </template>
 
 <script>
-import HeatmapScatter from '@/visualization/HeatmapScatter.vue';
 import ScatterBubbles from '@/visualization/ScatterBubbles.vue';
 
 
 export default {
     name: 'Hero',
     components: {
-        HeatmapScatter,
         ScatterBubbles,
     },
     data() {
