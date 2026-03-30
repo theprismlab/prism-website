@@ -18,6 +18,7 @@ export function generateScatterData({
     count          = 420,
     colorNoiseScale = 0.8,   // ± noise added to color (which is y-based)
     seed           = 42,
+    barcodZThreshold = 0.5,  // data z minimum to be considered "close"
 } = {}) {
     // Minimal seeded PRNG for reproducibility (Park-Miller LCG)
     let s = seed;
@@ -29,15 +30,20 @@ export function generateScatterData({
     for (let i = 0; i < count; i++) {
         const x = rand();
         // Wave trend + wide normal scatter so outliers (small circles high up) are possible
-    //    const y = Math.max(0, Math.min(1, x * 0.5 + 0.25 + randn() * 0.22)); // MAYBE USE
-       const y = Math.max(0, Math.min(1, x * 0.5 + 0.2 + randn() * 0.2)); // MAYBE USE
+        const y = Math.max(0, Math.min(1, x * 0.5 + 0.2 + randn() * 0.2));
         const z = rand();
         // Radius: y-based with normal noise — allows small circles at any height
         const radius = Math.max(0, y * 0.8 + randn() * 0.18);
         const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
-
-        points.push({ x, y, z, radius, color });
+        points.push({ x, y, z, radius, color, hasBarcode: false });
     }
+
+    // Mark the top 1/3 by radius among close-z points as having a barcode
+    const closePoints = points.filter(p => p.z >= barcodZThreshold);
+    closePoints.sort((a, b) => b.radius - a.radius);
+    const topCount = Math.ceil(closePoints.length / 3);
+    closePoints.slice(0, topCount).forEach(p => { p.hasBarcode = true; });
+
     return points;
 }
 
@@ -79,8 +85,7 @@ const defaultConfig = {
     // Collision avoidance
     collisionAvoidance: true,
 
-    // Barcode stickers — applied to spheres where radius exceeds threshold
-    stickerRadiusThreshold: 0.25,  // world-unit radius minimum
+    // Barcode stickers — applied to data points with hasBarcode: true
     stickerSizeFraction: 0.8,
     barcodeUrl: '/images/barcode.svg',
 };
@@ -300,6 +305,7 @@ export default class ThreeDScatterPlotSimple {
             sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
             sphere.userData.dataZ = d.z;
+            sphere.userData.hasBarcode = d.hasBarcode ?? false;
 
             spheres.push(sphere);
             this.scene.add(sphere);
@@ -335,10 +341,9 @@ export default class ThreeDScatterPlotSimple {
 
         this.spheres = spheres;
 
-        // Attach barcode stickers to large spheres (radius-only threshold)
-        const { stickerRadiusThreshold } = this.config;
+        // Attach barcode stickers to spheres flagged in the data
         spheres
-            .filter(s => s.userData.radius >= stickerRadiusThreshold)
+            .filter(s => s.userData.hasBarcode)
             .forEach(s => this._createBarcodeSticker(s, s.userData.radius, 1));
     }
 
