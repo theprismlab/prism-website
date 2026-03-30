@@ -16,7 +16,7 @@ import * as d3 from 'd3';
  */
 export function generateScatterData({
     count          = 420,
-    colorNoiseScale = 0.6,   // ± noise added to color (which is y-based)
+    colorNoiseScale = 0.8,   // ± noise added to color (which is y-based)
     seed           = 42,
 } = {}) {
     // Minimal seeded PRNG for reproducibility (Park-Miller LCG)
@@ -254,7 +254,7 @@ export default class ThreeDScatterPlotSimple {
         const yScale      = d3.scaleLinear().domain([0, 1]).range(yRange);
         const zScale      = d3.scaleLinear().domain([0, 1]).range(zRange);
         const opacityScale = d3.scaleLinear().domain([0, 1]).range(opacityRange);
-        const colorScale  = d3.scaleSequential(d3.interpolateYlOrRd).domain([0.25, 1.3]);
+        const colorScale  = d3.scaleSequential(d3.interpolateYlOrRd).domain([0, 1.4]);
 
         const spheres = [];
 
