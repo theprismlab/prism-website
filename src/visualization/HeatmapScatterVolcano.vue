@@ -8,7 +8,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import Heatmap3D from './lib/Heatmap3D.js';
-import ScatterVolcano3D, { generateScaVolcanoData } from './lib/ScatterVolcano3D.js';
+import ScatterVolcano3D, { generateScatterVolcanoData } from './lib/ScatterVolcano3D.js';
 import { loadViabilityCSV, parseHeatmapData } from './getData.js';
 
 const props = defineProps({

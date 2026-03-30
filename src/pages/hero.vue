@@ -6,8 +6,8 @@
                 <!-- <TheViabilityHeatmapScatterPlotColorScene v-else-if="activeScene === 1"></TheViabilityHeatmapScatterPlotColorScene> -->
                 <TheViabilityHeatmapScatterPlotScene v-else-if="activeScene === 1"></TheViabilityHeatmapScatterPlotScene>
                 <!-- <ThreeJsTemplate v-else-if="activeScene === 1"></ThreeJsTemplate> -->
-                <ThreeJsScatterPlotBubbles v-else-if="activeScene === 2"></ThreeJsScatterPlotBubbles>
-                <ThreeJsScatterPlotVolcano v-else-if="activeScene === 3"></ThreeJsScatterPlotVolcano>
+                <HeatmapScatterBubbles v-else-if="activeScene === 2"></HeatmapScatterBubbles>
+                <HeatmapScatterVolcano v-else-if="activeScene === 3"></HeatmapScatterVolcano>
 
             </div>
             <div class="hero-overlay text-center">
@@ -30,19 +30,17 @@
 <script>
 import TheViabilityScatterPlotScene from '../visualization/viability-scatter-plot/TheViabilityScatterPlotScene.vue';
 import TheViabilityHeatmapScatterPlotScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityHeatmapScatterPlotScene.vue';
-import TheViabilityHeatmapScatterPlotColorScene from '../visualization/viability-heatmap-scatter-plot-color/TheViabilityHeatmapScatterPlotColorScene.vue';
 
-import ThreeJsScatterPlotBubbles from '@/visualization/ThreeJsScatterPlotBubbles.vue';
-import ThreeJsScatterPlotVolcano from '@/visualization/ThreeJsScatterPlotVolcano.vue';
+import HeatmapScatterBubbles from '@/visualization/HeatmapScatterBubbles.vue';
+import HeatmapScatterVolcano from '@/visualization/HeatmapScatterVolcano.vue';
 
 export default {
     name: 'Hero',
     components: {
         TheViabilityScatterPlotScene,
         TheViabilityHeatmapScatterPlotScene,
-        TheViabilityHeatmapScatterPlotColorScene,
-        ThreeJsScatterPlotBubbles,
-        ThreeJsScatterPlotVolcano,
+        HeatmapScatterBubbles,
+        HeatmapScatterVolcano,
     },
     data() {
         return {
