@@ -7,11 +7,9 @@
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import Heatmap3D from './lib/Heatmap3D.js';
-import ScatterPlot3D, { 
-    generateScatterVanishingPointData
-} from './lib/ScatterPlot3D.js';
-import { loadViabilityCSV, parseHeatmapData } from './getData.js';
+import Heatmap3D from './plots/Heatmap3D.js';
+import ScatterPlot3D from './plots/ScatterPlot3D.js';
+import { loadViabilityCSV, parseHeatmapData, generateScatterVanishingPointData } from './getData.js';
 
 
 const props = defineProps({
@@ -43,9 +41,6 @@ const scatterConfig = {
     scatterInstance = new ScatterPlot3D(scatterCanvas.value, scatterConfig);
     heatmapInstance.setData(heatmapData);
     scatterInstance.setData(generateScatterVanishingPointData());
-//  scatterInstance.setData(generateScatterFountainData());
-//    scatterInstance.setData(generateScatterBubblesData());
-//    scatterInstance.setData(generateScatterBimodalData());
 }
 
 onMounted(() => {
