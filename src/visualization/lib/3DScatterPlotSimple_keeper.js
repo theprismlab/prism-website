@@ -29,8 +29,7 @@ export function generateScatterData({
     for (let i = 0; i < count; i++) {
         const x = rand();
         // Wave trend + wide normal scatter so outliers (small circles high up) are possible
-    //    const y = Math.max(0, Math.min(1, x * 0.5 + 0.25 + randn() * 0.22)); // MAYBE USE
-       const y = Math.max(0, Math.min(1, x * 0.5 + 0.2 + randn() * 0.2)); // MAYBE USE
+        const y = Math.max(0, Math.min(1, x * 0.5 + 0.25 + randn() * 0.22));
         const z = rand();
         // Radius: y-based with normal noise — allows small circles at any height
         const radius = Math.max(0, y * 0.8 + randn() * 0.18);
