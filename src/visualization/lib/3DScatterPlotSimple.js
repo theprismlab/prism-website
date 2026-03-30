@@ -22,13 +22,17 @@ export function generateScatterData({
     // Minimal seeded PRNG for reproducibility (Park-Miller LCG)
     let s = seed;
     const rand = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    // Box-Muller normal distribution (mean=0, stddev=1)
+    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
 
     const points = [];
     for (let i = 0; i < count; i++) {
         const x = rand();
-        const y = Math.max(0, Math.min(1, x * 0.6 + (rand() - 0.2) * 0.7));  // wave trend with wide scatter
+        // Wave trend + wide normal scatter so outliers (small circles high up) are possible
+        const y = Math.max(0, Math.min(1, x * 0.5 + 0.25 + randn() * 0.22));
         const z = rand();
-        const radius = Math.max(0, y + (rand() - 0.5) * 0.55);
+        // Radius: y-based with normal noise — allows small circles at any height
+        const radius = Math.max(0, y * 0.8 + randn() * 0.18);
         const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
         points.push({ x, y, z, radius, color });
     }
