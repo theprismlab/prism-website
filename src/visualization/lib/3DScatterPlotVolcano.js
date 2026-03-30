@@ -81,8 +81,8 @@ export function generateScatterVolcanoData({
         const z = rand();
         // Fan x outward at the extremes so arms spread laterally too
         const xFanned = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * 0.12));
-        // Larger, more colorful spheres at the top of the arms; center-bottom stays small
-        const radius = Math.max(0, y * 0.85 + Math.abs(randn()) * distFromCenter * 0.3);
+        // Mix of sizes throughout the arms; y contributes less so small circles appear everywhere
+        const radius = Math.max(0, y * 0.4 + Math.abs(randn()) * (0.04 + distFromCenter * 0.35));
         const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
         points.push({ x: xFanned, y, z, radius, color, hasBarcode: false });
     }
@@ -121,7 +121,7 @@ const defaultConfig = {
     radiusMultiplier: 0.65,
 
     // Opacity from depth (data.z 0–1 → opacity)
-    opacityRange: [0.25, 0.975],
+    opacityRange: [0.15, 0.975],
 
     // Float animation
     floatSpeedMin:   1.8,
@@ -133,6 +133,9 @@ const defaultConfig = {
 
     // Collision avoidance
     collisionAvoidance: true,
+
+    // Camera orbit angle around Y axis (radians) — positive = right arm comes forward
+    cameraAngleY: 0,
 
     // Barcode stickers — applied to data points with hasBarcode: true
     stickerSizeFraction: 0.8,
@@ -230,8 +233,11 @@ export default class ThreeDScatterPlotSimple {
 
         const { fov, cameraDistance, cameraPosition, cameraLookAt, nearClip, farClip } = this.config;
         this.camera = new THREE.PerspectiveCamera(fov, this.width / this.height, nearClip, farClip);
-        const [cx, cy] = cameraPosition;
-        this.camera.position.set(cx, cy, cameraDistance);
+        const angle = this.config.cameraAngleY ?? 0;
+        const cy = cameraPosition[1];
+        const cx = cameraLookAt[0] + Math.sin(angle) * cameraDistance;
+        const cz = cameraLookAt[2] + Math.cos(angle) * cameraDistance;
+        this.camera.position.set(cx, cy, cz);
         this.camera.lookAt(...cameraLookAt);
         this.camera.updateProjectionMatrix();
 

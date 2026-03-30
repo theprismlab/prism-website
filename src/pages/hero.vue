@@ -4,9 +4,10 @@
             <div class="hero-heatmap">
                 <TheViabilityScatterPlotScene v-if="activeScene === 0"></TheViabilityScatterPlotScene>
                 <!-- <TheViabilityHeatmapScatterPlotColorScene v-else-if="activeScene === 1"></TheViabilityHeatmapScatterPlotColorScene> -->
-                <TheViabilityHeatmapScatterPlotScene v-else-if="activeScene === 2"></TheViabilityHeatmapScatterPlotScene>
-                <ThreeJsTemplate v-else-if="activeScene === 1"></ThreeJsTemplate>
-                <ThreeJsTemplate2 v-else-if="activeScene === 3"></ThreeJsTemplate2>
+                <TheViabilityHeatmapScatterPlotScene v-else-if="activeScene === 1"></TheViabilityHeatmapScatterPlotScene>
+                <!-- <ThreeJsTemplate v-else-if="activeScene === 1"></ThreeJsTemplate> -->
+                <ThreeJsScatterPlotSimple v-else-if="activeScene === 2"></ThreeJsScatterPlotSimple>
+                <ThreeJsScatterPlotVolcano v-else-if="activeScene === 3"></ThreeJsScatterPlotVolcano>
 
             </div>
             <div class="hero-overlay text-center">
@@ -31,7 +32,8 @@ import TheViabilityScatterPlotScene from '../visualization/viability-scatter-plo
 import TheViabilityHeatmapScatterPlotScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityHeatmapScatterPlotScene.vue';
 import TheViabilityHeatmapScatterPlotColorScene from '../visualization/viability-heatmap-scatter-plot-color/TheViabilityHeatmapScatterPlotColorScene.vue';
 import ThreeJsTemplate from '@/visualization/ThreeJsTemplate.vue';
-import ThreeJsTemplate2 from '@/visualization/ThreeJsTemplate2.vue';
+import ThreeJsScatterPlotSimple from '@/visualization/ThreeJsScatterPlotSimple.vue';
+import ThreeJsScatterPlotVolcano from '@/visualization/ThreeJsScatterPlotVolcano.vue';
 
 export default {
     name: 'Hero',
@@ -40,12 +42,13 @@ export default {
         TheViabilityHeatmapScatterPlotScene,
         TheViabilityHeatmapScatterPlotColorScene,
         ThreeJsTemplate,
-        ThreeJsTemplate2,
+        ThreeJsScatterPlotSimple,
+        ThreeJsScatterPlotVolcano,
     },
     data() {
         return {
             activeScene: 0,
-            sceneLabels: ['Bubbles', 'Heatmap Bubbles 1', 'Heatmap Bubbles 2', 'Heatmap Bubbles 3'],
+            sceneLabels: ['Bubbles', 'Heatmap Bubbles 1', 'Heatmap Bubbles 2', 'Heatmap Volcano'],
         };
     },
 }

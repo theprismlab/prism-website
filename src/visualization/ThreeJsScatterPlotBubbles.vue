@@ -8,7 +8,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import ThreeDHeatmap from './lib/3DHeatmap.js';
-import ThreeDScatterPlotSimple, { generateScatterData, generateScatterVolcanoData } from './lib/3DScatterPlotVolcano.js';
+import ThreeDScatterPlotSimple, { generateScatterData } from './lib/3DScatterPlotBubbles.js';
 import { loadViabilityCSV, parseHeatmapData } from './getData.js';
 
 const props = defineProps({
@@ -30,9 +30,9 @@ async function initPlots() {
     const heatmapData = parseHeatmapData(raw);
 
     heatmapInstance = new ThreeDHeatmap(heatmapCanvas.value, props.heatmapConfig);
-    scatterInstance = new ThreeDScatterPlotSimple(scatterCanvas.value, { cameraAngleY: 1.1, ...props.scatterConfig });
+    scatterInstance = new ThreeDScatterPlotSimple(scatterCanvas.value, props.scatterConfig);
     heatmapInstance.setData(heatmapData);
-    scatterInstance.setData(generateScatterVolcanoData({ count: 800 }));
+    scatterInstance.setData(generateScatterData());
 }
 
 onMounted(() => {
