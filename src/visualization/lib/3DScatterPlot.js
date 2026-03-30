@@ -38,6 +38,9 @@ const defaultConfig = {
     sphereFloatAmplitudeBase: 0.08,
     sphereFloatAmplitudeRange: 0.06,
     sphereSmallSphereYDrop: 3,
+    stickerCount: 5,
+    stickerSizeFraction: 0.8,
+    barcodeUrl: '/images/barcode.svg',
     collisionAvoidance: true,
     // Y-axis spread
     ySpread: 12,
@@ -62,6 +65,7 @@ export default class ThreeDScatterPlot {
         this.clock = new THREE.Clock();
         this.animationCallbacks = [];
         this.animationFrameId = null;
+        this.barcodeTexture = null;
 
         this._setupScene();
     }
@@ -113,6 +117,7 @@ export default class ThreeDScatterPlot {
         this.stopAnimation();
         this._clearSpheres();
         if (this.environmentTexture) this.environmentTexture.dispose();
+        if (this.barcodeTexture) this.barcodeTexture.dispose();
         if (this.renderer) this.renderer.dispose();
     }
 
@@ -168,6 +173,7 @@ export default class ThreeDScatterPlot {
         roomEnvironment.dispose();
         pmremGenerator.dispose();
 
+        this._loadBarcodeTexture();
         this._setupResizeObserver();
     }
 
@@ -325,6 +331,14 @@ export default class ThreeDScatterPlot {
             });
         });
 
+        // Attach barcode stickers to the N largest spheres
+        if (this.config.stickerCount > 0) {
+            const sorted = [...spheres].sort((a, b) => b.userData.radius - a.userData.radius);
+            sorted.slice(0, this.config.stickerCount).forEach(s => {
+                this._createBarcodeSticker(s, s.userData.radius, s.material.opacity);
+            });
+        }
+
         this.spheres = spheres;
     }
 
@@ -355,11 +369,49 @@ export default class ThreeDScatterPlot {
         this.animationCallbacks = [];
     }
 
+    _loadBarcodeTexture() {
+        const { barcodeUrl } = this.config;
+        if (!barcodeUrl) return;
+        this.barcodeTexture = new THREE.Texture();
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            canvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
+            this.barcodeTexture.image = canvas;
+            this.barcodeTexture.needsUpdate = true;
+        };
+        img.src = barcodeUrl;
+    }
+
+    _createBarcodeSticker(sphere, radius, opacity) {
+        if (!this.barcodeTexture) return;
+        const halfAngle = this.config.stickerSizeFraction / 2;
+        const geo = new THREE.SphereGeometry(
+            radius * 1.005, 16, 16,
+            Math.PI / 2 - halfAngle, halfAngle * 2,
+            Math.PI / 2 - halfAngle, halfAngle * 2,
+        );
+        const mat = new THREE.MeshBasicMaterial({
+            map: this.barcodeTexture,
+            transparent: true,
+            opacity,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+        });
+        const sticker = new THREE.Mesh(geo, mat);
+        sticker.renderOrder = 1;
+        sphere.add(sticker);
+    }
+
     _clearSpheres() {
         this.spheres.forEach(sphere => {
             this.scene.remove(sphere);
-            if (sphere.geometry) sphere.geometry.dispose();
-            if (sphere.material) sphere.material.dispose();
+            sphere.traverse(child => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) child.material.dispose();
+            });
         });
         this.spheres = [];
     }
