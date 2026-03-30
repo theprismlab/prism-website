@@ -13,7 +13,7 @@ import ScatterPlot3D, {
     generateScatterGaussianData, 
     generateScatterBimodalData, 
     generateScatterSpiralData, 
-    generateScatterFunnelData, 
+
     generateScatterExponentialData, 
     generateScatterPowerLawData ,
     generateScatterChevronData,

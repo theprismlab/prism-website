@@ -182,40 +182,6 @@ export function generateScatterSpiralData({
 }
 
 /**
- * Funnel (inverted volcano): wide spread at the base (y ≈ 0), converging at the top (y ≈ 1).
- * Opposite of volcano — outliers gather at center-high, dense spread at the bottom.
- */
-export function generateScatterFunnelData({
-    count             = 420,
-    colorNoiseScale   = 0.7,
-    seed              = 42,
-    barcodeZThreshold = 0.5,
-} = {}) {
-    let s = seed;
-    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
-
-    const points = [];
-    for (let i = 0; i < count; i++) {
-        // y biased toward bottom with a Beta-like shape via order statistics
-        const y = Math.max(0, Math.min(1, Math.min(rand(), rand()) + randn() * 0.08));
-        // x spread narrows as y increases: wide at y=0, tight at y=1
-        const halfSpread = (1 - y) * 0.45 + 0.02;
-        const x = Math.max(0, Math.min(1, 0.5 + randn() * halfSpread));
-        const z = rand();
-        const distFromCenter = Math.abs(x - 0.5) * 2;
-        const radius = Math.max(0, (1 - y) * 0.35 + Math.abs(randn()) * (0.04 + distFromCenter * 0.2));
-        const color  = Math.max(0, Math.min(1, (1 - y) + (rand() - 0.5) * colorNoiseScale));
-        points.push({ x, y, z, radius, color, hasBarcode: false });
-    }
-
-    const close = points.filter(p => p.z >= barcodeZThreshold);
-    close.sort((a, b) => b.radius - a.radius);
-    close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
-    return points;
-}
-
-/**
  * Exponential: heavy density near y=0 decaying exponentially toward y=1.
  * Simulates a p-value or significance score distribution.
  */
@@ -362,20 +328,36 @@ export function generateScatterValleyData({
     const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
     const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
 
-    const points = [];
-    for (let i = 0; i < count; i++) {
+    const half = Math.floor(count / 2);
+
+    // Array A: pure U-curve, no x displacement
+    const pointsA = [];
+    for (let i = 0; i < half; i++) {
         const x              = rand();
-        const distFromCenter = Math.abs(x - 0.5) * 2;   // 0 at x=0.5, 1 at edges
+        const distFromCenter = Math.abs(x - 0.5) * 2;
         const yMean          = Math.pow(distFromCenter, sharpness);
         const y              = Math.max(0, Math.min(1, yMean + randn() * 0.1));
-        // Fan x outward at the high edges — push left side left, right side right
-        const xFanned        = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * -0.15));
         const z              = rand();
         const radius         = Math.max(0, y * 0.55 + Math.abs(randn()) * 0.12);
         const color          = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
-        points.push({ x: xFanned, y, z, radius, color, hasBarcode: false });
+        pointsA.push({ x, y, z, radius, color, hasBarcode: false });
     }
 
+    // Array B: same U-curve with outward x fan at the high edges
+    const pointsB = [];
+    for (let i = 0; i < count - half; i++) {
+        const x              = rand();
+        const distFromCenter = Math.abs(x - 0.5) * 1;
+        const yMean          = Math.pow(distFromCenter, sharpness);
+        const y              = Math.max(0, Math.min(1, yMean + randn() * 0.1));
+        const xFanned        = Math.max(0, Math.min(1, x + (x < 0.5 ? -1 : 1) * distFromCenter * Math.abs(randn()) * 0.14));
+        const z              = rand();
+        const radius         = Math.max(0, y * 0.55 + Math.abs(randn()) * 0.12);
+        const color          = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
+        pointsB.push({ x: xFanned, y, z, radius, color, hasBarcode: false });
+    }
+
+    const points = [...pointsA, ...pointsB];
     const close = points.filter(p => p.z >= barcodeZThreshold);
     close.sort((a, b) => b.radius - a.radius);
     close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
