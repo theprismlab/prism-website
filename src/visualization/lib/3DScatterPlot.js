@@ -31,12 +31,14 @@ const defaultConfig = {
     sphereZStep: 2,
     sphereBaseRadiusMultiplier: 0.018,
     sphereSizeScaleRange: [0.3, 1.0],
-    sphereOpacityRange: [0.15, 1],
+    sphereOpacityRange: [0.15, 0.8],
     sphereRadiusScaleRange: [1.5, 0.2],
     sphereFloatSpeedMin: 1.8,
     sphereFloatSpeedRange: 1.6,
     sphereFloatAmplitudeBase: 0.08,
-    sphereFloatAmplitudeRange: 0.06,    collisionAvoidance: true,
+    sphereFloatAmplitudeRange: 0.06,
+    sphereSmallSphereYDrop: 3,
+    collisionAvoidance: true,
     // Y-axis spread
     ySpread: 12,
     ySpreadOffset: 10,
@@ -230,6 +232,7 @@ export default class ThreeDScatterPlot {
             sphereSizeScaleRange, sphereOpacityRange, sphereRadiusScaleRange,
             sphereFloatSpeedMin, sphereFloatSpeedRange,
             sphereFloatAmplitudeBase, sphereFloatAmplitudeRange,
+            sphereSmallSphereYDrop,
         } = this.config;
 
         const baseRadius = xScale.range()[1] * sphereBaseRadiusMultiplier;
@@ -258,10 +261,10 @@ export default class ThreeDScatterPlot {
                 metalness: 0.0,
             });
             const sphere = new THREE.Mesh(geometry, material);
-            const baseY = yScale ? yScale(d.y) : d.y;
+            const baseY = (yScale ? yScale(d.y) : d.y) + radius * 0.2 - (1 - depthFactor) * sphereSmallSphereYDrop;
             const basePosition = new THREE.Vector3(
                 xScale(d.x) - xOffset,
-                baseY + radius * 0.2,
+                baseY,
                 zScale(d.z) - zOffset,
             );
             sphere.castShadow = true;
