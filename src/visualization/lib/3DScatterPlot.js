@@ -36,11 +36,12 @@ const defaultConfig = {
     sphereRadiusScaleRange: [1.25, 0.2],
     sphereFloatSpeedMin: 1.8,
     sphereFloatSpeedRange: 1.6,
-    sphereFloatAmplitudeBase: 0.08,
-    sphereFloatAmplitudeRange: 0.06,
+    sphereFloatAmplitudeBase: 0.05,
+    sphereFloatAmplitudeRange: 0.04,
     sphereSmallSphereYDrop: 3,
     stickerCount: 20,
     stickerSizeFraction: 0.8,
+    stickerRadiusBoost: 1.2,
     barcodeUrl: '/images/barcode.svg',
     collisionAvoidance: true,
     // Y-axis spread
@@ -265,8 +266,15 @@ export default class ThreeDScatterPlot {
         const radiusExtent = d3.extent(sampledWithRadius, d => d.radius);
         const sizeNorm = d3.scaleLinear().domain(radiusExtent).range([0, 1]);
 
+        // Mark the top stickerCount spheres so we can boost their radius
+        const { stickerCount, stickerRadiusBoost } = this.config;
+        const sortedByRadius = [...sampledWithRadius].sort((a, b) => b.radius - a.radius);
+        const stickerSet = new Set(sortedByRadius.slice(0, stickerCount));
+
         sampledWithRadius.forEach(d => {
-            const { radius } = d;
+            const boost = stickerSet.has(d) ? stickerRadiusBoost : 1;
+            const { radius: rawRadius } = d;
+            const radius = rawRadius * boost;
             const sizeFactor = sizeNorm(radius); // 0 = smallest, 1 = largest
             const color = d.color ? new THREE.Color(colorScale(d.color)) : new THREE.Color('#cccccc');
             const geometry = new THREE.SphereGeometry(radius, 24, 24);
