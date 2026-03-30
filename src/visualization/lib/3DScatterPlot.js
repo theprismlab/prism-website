@@ -15,7 +15,7 @@ import * as d3 from 'd3';
 const defaultConfig = {
     // Camera
     fov: 25,
-    cameraDistance: 25,
+    cameraDistance: 35,
     cameraPosition: [0, 4.5, 25],
     cameraLookAt: [0, 6.5, 0],
     nearClip: 1.01,
@@ -38,15 +38,15 @@ const defaultConfig = {
     sphereFloatSpeedRange: 1.6,
     sphereFloatAmplitudeBase: 0.05,
     sphereFloatAmplitudeRange: 0.04,
-    sphereSmallSphereYDrop: 3,
-    sphereHighYDropBoost: 2,
+    sphereSmallSphereYDrop: 4,
+    sphereHighYDropBoost: 3,
     stickerCount: 20,
     stickerSizeFraction: 0.8,
     stickerRadiusBoost: 1.2,
     barcodeUrl: '/images/barcode.svg',
     collisionAvoidance: true,
     // Y-axis spread
-    ySpread: 10.5,
+    ySpread: 11.5,
     ySpreadOffset: 10,
 };
 
