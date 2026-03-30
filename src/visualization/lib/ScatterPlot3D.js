@@ -95,24 +95,20 @@ export const defaultConfig = {
     ambientLightIntensity:     0.5,
     enableShadows:             true,
 
-    // ── Scene layout (world units) ────────────────────────────────────────────
-    // Viewport x-width is computed from the camera frustum at runtime.
-    zRange:  [-4, 4],   // world z mapping: data.z 0 → zRange[0], 1 → zRange[1]
-    yRange:  [-2, 6],   // world y mapping
-
-    // ── Sphere sizing ─────────────────────────────────────────────────────────
-    // world radius = data.radius (0–1) × radiusMultiplier
-    radiusMultiplier: 0.65,
-
-    // ── Opacity ───────────────────────────────────────────────────────────────
-    // Always derived from each sphere's distance to the camera so it adapts
-    // correctly to any camera angle or orbit position.
-    opacityRange: [0.25, 0.975],  // [farthest, closest]
-
-    // ── Color scale ───────────────────────────────────────────────────────────
-    // d3.interpolateYlOrRd mapped over colorDomain. Extend domain upper bound to
-    // shift the palette (e.g. [0, 1.0] = full range, [0, 2.0] = cooler tones).
-    colorDomain: [0, 1.4],
+    // ── Scales ────────────────────────────────────────────────────────────────
+    // Each entry has { domain, range }. Set either to null to auto-compute at runtime.
+    scale: {
+        // x range is derived from the camera frustum — set range to override.
+        x:       { domain: [0, 1],   range: null },
+        y:       { domain: [0, 1],   range: [-2, 6] },
+        z:       { domain: [0, 1],   range: [-4, 4] },
+        // radius range[1] is equivalent to the old radiusMultiplier.
+        radius:  { domain: [0, 1],   range: [0, 0.65] },
+        // opacity domain is derived from per-frame camera distances — set domain to fix it.
+        opacity: { domain: null,     range: [0.25, 0.975] },  // range: [farthest, closest]
+        // color uses d3.interpolateYlOrRd; extend domain[1] to shift toward cooler tones.
+        color:   { domain: [0, 1.4], range: null },
+    },
 
     // ── Float animation ───────────────────────────────────────────────────────
     floatSpeedMin:   1.8,
@@ -137,6 +133,14 @@ export default class ScatterPlot3D {
         if (!canvasEl) throw new Error('canvas element is required');
         this.canvas = canvasEl;
         this.config = { ...defaultConfig, ...sceneConfig };
+        // Deep-merge scale sub-objects so partial overrides don't wipe sibling scales
+        const baseScale = defaultConfig.scale;
+        const userScale = sceneConfig.scale ?? {};
+        this.config.scale = Object.fromEntries(
+            Object.keys({ ...baseScale, ...userScale }).map(k => [
+                k, { ...(baseScale[k] ?? {}), ...(userScale[k] ?? {}) },
+            ])
+        );
         this.data = [];
         this.spheres = [];
         this.environmentTexture = null;
@@ -289,24 +293,32 @@ export default class ScatterPlot3D {
     }
 
     _buildSpheres(data) {
-        const {
-            zRange, yRange,
-            radiusMultiplier, opacityRange, colorDomain,
-            floatSpeedMin, floatSpeedRange, floatAmplitude,
-            rotSpeedRange,
-        } = this.config;
-
+        const { floatSpeedMin, floatSpeedRange, floatAmplitude, rotSpeedRange } = this.config;
+        const sc = this.config.scale;
         const [floatAmpMin, floatAmpMax] = floatAmplitude;
 
-        // x-width derived from frustum so it fills any aspect ratio
+        // x range: auto-computed from frustum unless overridden via scale.x.range
         const vFov = THREE.MathUtils.degToRad(this.config.fov);
         const visibleHeight = 2 * Math.tan(vFov / 2) * this.config.cameraDistance;
         const visibleWidth  = visibleHeight * (this.width / this.height);
+        const xScale = d3.scaleLinear()
+            .domain(sc.x?.domain ?? [0, 1])
+            .range(sc.x?.range   ?? [-visibleWidth / 2, visibleWidth / 2]);
 
-        const xScale     = d3.scaleLinear().domain([0, 1]).range([-visibleWidth / 2, visibleWidth / 2]);
-        const yScale     = d3.scaleLinear().domain([0, 1]).range(yRange);
-        const zScale     = d3.scaleLinear().domain([0, 1]).range(zRange);
-        const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain(colorDomain);
+        const yScale = d3.scaleLinear()
+            .domain(sc.y?.domain ?? [0, 1])
+            .range(sc.y?.range   ?? [-2, 6]);
+
+        const zScale = d3.scaleLinear()
+            .domain(sc.z?.domain ?? [0, 1])
+            .range(sc.z?.range   ?? [-4, 4]);
+
+        const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
+            .domain(sc.color?.domain ?? [0, 1.4]);
+
+        const radiusScale = d3.scaleLinear()
+            .domain(sc.radius?.domain ?? [0, 1])
+            .range(sc.radius?.range   ?? [0, 0.65]);
 
         // Opacity from camera distance — correct for any orbit angle
         const camPos = this.camera.position;
@@ -314,13 +326,15 @@ export default class ScatterPlot3D {
         const distances = worldPositions.map(p => p.distanceTo(camPos));
         const minDist = Math.min(...distances);
         const maxDist = Math.max(...distances);
-        // closest → opacityRange[1], farthest → opacityRange[0]
-        const opacityOf = d3.scaleLinear().domain([minDist, maxDist]).range([opacityRange[1], opacityRange[0]]);
+        // opacity domain auto-computed from distances; range: [0] = farthest, [1] = closest
+        const opDomain = sc.opacity?.domain ?? [minDist, maxDist];
+        const opRange  = sc.opacity?.range  ?? [0.25, 0.975];
+        const opacityOf = d3.scaleLinear().domain(opDomain).range([opRange[1], opRange[0]]);
 
         const spheres = [];
 
         data.forEach((d, i) => {
-            const radius = d.radius * radiusMultiplier;
+            const radius = radiusScale(d.radius);
             const color  = new THREE.Color(colorScale(d.color));
 
             const geometry = new THREE.SphereGeometry(radius, 24, 24);
