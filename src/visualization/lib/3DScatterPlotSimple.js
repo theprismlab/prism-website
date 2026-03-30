@@ -35,6 +35,7 @@ export function generateScatterData({
         // Radius: y-based with normal noise — allows small circles at any height
         const radius = Math.max(0, y * 0.8 + randn() * 0.18);
         const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
+
         points.push({ x, y, z, radius, color });
     }
     return points;
@@ -65,7 +66,7 @@ const defaultConfig = {
     radiusMultiplier: 0.65,
 
     // Opacity from depth (data.z 0–1 → opacity)
-    opacityRange: [0.25, 0.95],
+    opacityRange: [0.25, 0.975],
 
     // Float animation
     floatSpeedMin:   1.8,
@@ -78,9 +79,8 @@ const defaultConfig = {
     // Collision avoidance
     collisionAvoidance: true,
 
-    // Barcode stickers — applied to spheres where radius AND z both exceed thresholds
-    stickerRadiusThreshold: 0.5,  // world-unit radius minimum
-    stickerZThreshold: 0.5,       // data z minimum (0–1)
+    // Barcode stickers — applied to spheres where radius exceeds threshold
+    stickerRadiusThreshold: 0.25,  // world-unit radius minimum
     stickerSizeFraction: 0.8,
     barcodeUrl: '/images/barcode.svg',
 };
@@ -335,13 +335,11 @@ export default class ThreeDScatterPlotSimple {
 
         this.spheres = spheres;
 
-        // Attach barcode stickers to spheres exceeding both the radius and z thresholds
-        const { stickerRadiusThreshold, stickerZThreshold } = this.config;
+        // Attach barcode stickers to large spheres (radius-only threshold)
+        const { stickerRadiusThreshold } = this.config;
         spheres
-            .filter(s => s.userData.radius >= stickerRadiusThreshold && s.userData.dataZ >= stickerZThreshold)
-            .forEach(s => {
-                this._createBarcodeSticker(s, s.userData.radius, 1);
-            });
+            .filter(s => s.userData.radius >= stickerRadiusThreshold)
+            .forEach(s => this._createBarcodeSticker(s, s.userData.radius, 1));
     }
 
     _resolveCollisions(spheres) {
