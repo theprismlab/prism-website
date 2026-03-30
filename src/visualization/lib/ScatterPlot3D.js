@@ -69,6 +69,108 @@ export function generateScatterBubblesWaveData({
 }
 
 /**
+ * Bubbles Wave Filled: same as BubblesWave (high edges, cosine dip at center) but the
+ * top-center gap is filled — a cloud of large bubbles populates the upper-center region
+ * so the top of the visualization has no empty hole.
+ */
+export function generateScatterBubblesWaveFilledData({
+    count             = 420,
+    colorNoiseScale   = 0.8,
+    seed              = 42,
+    barcodeZThreshold = 0.5,
+    waveAmplitude     = 0.22,
+    fillRatio         = 0.30,   // fraction of points used to fill the top-center gap
+} = {}) {
+    let s = seed;
+    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
+
+    const points = [];
+    const waveCount = Math.floor(count * (1 - fillRatio));
+    const fillCount = count - waveCount;
+
+    // Wave layer: same cosine shape as BubblesWave
+    for (let i = 0; i < waveCount; i++) {
+        const x      = rand();
+        const yMean  = 0.5 + waveAmplitude * Math.cos(x * Math.PI * 2);
+        const y      = Math.max(0, Math.min(1, yMean + randn() * 0.22));
+        const z      = rand();
+        const radius = Math.max(0, y * 0.8 + randn() * 0.18);
+        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
+        points.push({ x, y, z, radius, color, hasBarcode: false });
+    }
+
+    // Fill layer: large bubbles clustered at the top-center, filling the gap
+    for (let i = 0; i < fillCount; i++) {
+        const x      = Math.max(0, Math.min(1, 0.5 + randn() * 0.18));  // centered at x=0.5
+        const yMean  = 0.82 + randn() * 0.1;                             // high y, near the top
+        const y      = Math.max(0, Math.min(1, yMean));
+        const z      = rand();
+        const radius = Math.max(0, y * 0.8 + randn() * 0.18);
+        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
+        points.push({ x, y, z, radius, color, hasBarcode: false });
+    }
+
+    const close = points.filter(p => p.z >= barcodeZThreshold);
+    close.sort((a, b) => b.radius - a.radius);
+    close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
+    return points;
+}
+
+/**
+ * Vanishing point: bubbles stream from a distant horizon toward the viewer.
+ * Distant points are tiny and dense, packed near the center vanishing point.
+ * As depth increases toward the viewer, bubbles fan out laterally, drift upward,
+ * and grow large — hovering like clouds in the foreground.
+ */
+export function generateScatterVanishingPointData({
+    count             = 420,
+    colorNoiseScale   = 0.7,
+    seed              = 42,
+    barcodeZThreshold = 0.5,
+    vpX               = 0.5,    // vanishing point horizontal position
+    vpY               = 0.3,   // vanishing point vertical position (horizon)
+    maxSpread         = 0.54,   // x σ at furthest foreground depth
+    cloudRise         = 0.34,   // how far y drifts upward from VP to foreground
+    depthBias         = 2.8,    // power > 1 packs most points near the distant horizon
+} = {}) {
+    let s = seed;
+    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
+
+    const points = [];
+    for (let i = 0; i < count; i++) {
+        // t=0: distant horizon (at VP), t=1: close foreground (cloud layer)
+        // depthBias > 1 concentrates most points near the horizon
+        const t = Math.pow(rand(), depthBias);
+
+        // x: tight column at horizon, fans wide in foreground
+        const xSpread = t * maxSpread;
+        const x = Math.max(0, Math.min(1, vpX + randn() * (xSpread + 0.008)));
+
+        // y: starts at horizon, clouds drift upward as they approach
+        const yMean = vpY + t * cloudRise;
+        const yNoise = 0.03 + t * 0.18;  // tighter scatter at distance, looser near viewer
+        const y = Math.max(0, Math.min(1, yMean + randn() * yNoise));
+
+        const z = rand();
+
+        // Radius: nearly zero at horizon, large buoyant spheres in the foreground
+        const radius = Math.max(0, Math.pow(t, 1.1) * 0.88 + randn() * (0.04 + t * 0.08));
+
+        // Color: distant points are dim/cool, foreground clouds are warm/saturated
+        const color = Math.max(0, Math.min(1, t * 0.75 + (rand() - 0.5) * colorNoiseScale));
+
+        points.push({ x, y, z, radius, color, hasBarcode: false });
+    }
+
+    const close = points.filter(p => p.z >= barcodeZThreshold);
+    close.sort((a, b) => b.radius - a.radius);
+    close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
+    return points;
+}
+
+/**
  * Volcano-shaped scatter: center x is low on y, extremes rise into two arms.
  * Data schema: { x, y, z, radius, color, hasBarcode } — all 0–1.
  */
@@ -105,6 +207,44 @@ export function generateScatterVolcanoData({
     close.sort((a, b) => b.radius - a.radius);
     close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
 
+    return points;
+}
+
+/**
+ * Fountain: dense small bubbles at bottom-center, fanning outward and growing as y rises.
+ * x-spread is proportional to y — bottom points are tightly packed at center,
+ * top points span the full width with large bubbles. y is bottom-heavy so there
+ * are more points near the ground than at the crown.
+ */
+export function generateScatterFountainData({
+    count             = 420,
+    colorNoiseScale   = 0.8,
+    seed              = 42,
+    barcodeZThreshold = 0.5,
+    maxSpread         = 0.45,   // x half-width σ at y=1; narrows to 0 at y=0
+    yBias             = 1.6,    // power > 1 pushes more points toward bottom
+} = {}) {
+    let s = seed;
+    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
+
+    const points = [];
+    for (let i = 0; i < count; i++) {
+        // Bottom-heavy y distribution — more points near y=0
+        const y      = Math.max(0, Math.min(1, Math.pow(rand(), yBias) + randn() * 0.04));
+        // x-spread proportional to y — tight column at bottom, wide fan at top
+        const xSpread = y * maxSpread;
+        const x      = Math.max(0, Math.min(1, 0.5 + randn() * (xSpread + 0.01)));
+        const z      = rand();
+        // Radius grows with y — small pebbles at bottom, large bubbles at top
+        const radius = Math.max(0, y * 0.82 + randn() * 0.12);
+        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
+        points.push({ x, y, z, radius, color, hasBarcode: false });
+    }
+
+    const close = points.filter(p => p.z >= barcodeZThreshold);
+    close.sort((a, b) => b.radius - a.radius);
+    close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
     return points;
 }
 
@@ -204,105 +344,6 @@ export function generateScatterSpiralData({
         const z   = rand();
         const radius = Math.max(0, t * 0.55 + Math.abs(randn()) * 0.1);
         const color  = Math.max(0, Math.min(1, t + (rand() - 0.5) * colorNoiseScale));
-        points.push({ x, y, z, radius, color, hasBarcode: false });
-    }
-
-    const close = points.filter(p => p.z >= barcodeZThreshold);
-    close.sort((a, b) => b.radius - a.radius);
-    close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
-    return points;
-}
-
-/**
- * Exponential: heavy density near y=0 decaying exponentially toward y=1.
- * Simulates a p-value or significance score distribution.
- */
-export function generateScatterExponentialData({
-    count             = 420,
-    colorNoiseScale   = 0.6,
-    seed              = 42,
-    barcodeZThreshold = 0.5,
-    lambda            = 3.5,   // decay rate — higher = more points near y=1
-} = {}) {
-    let s = seed;
-    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
-
-    const points = [];
-    for (let i = 0; i < count; i++) {
-        const x = rand();
-        // Inverse CDF of exponential, clamped to [0, 1]
-        const raw = -Math.log(1 - rand() * (1 - Math.exp(-lambda))) / lambda;
-        const y   = Math.max(0, Math.min(1, (1 - raw) + randn() * 0.04));
-        const z   = rand();
-        const radius = Math.max(0, y * 0.3 + Math.abs(randn()) * 0.18);
-        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
-        points.push({ x, y, z, radius, color, hasBarcode: false });
-    }
-
-    const close = points.filter(p => p.z >= barcodeZThreshold);
-    close.sort((a, b) => b.radius - a.radius);
-    close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
-    return points;
-}
-
-/**
- * Power law: a few very large, prominent spheres amid many tiny ones.
- * Both radius and y follow a power-law distribution — creates a dramatic hero/background effect.
- */
-export function generateScatterPowerLawData({
-    count             = 420,
-    colorNoiseScale   = 0.5,
-    seed              = 42,
-    barcodeZThreshold = 0.5,
-    exponent          = 2.2,   // Pareto exponent — higher = more extreme skew
-} = {}) {
-    let s = seed;
-    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
-
-    // Inverse CDF for power law on [0, 1]: F^{-1}(u) = 1 - (1-u)^(1/α)
-    const powerSample = () => 1 - Math.pow(rand(), 1 / exponent);
-
-    const points = [];
-    for (let i = 0; i < count; i++) {
-        const x      = rand();
-        const y      = Math.max(0, Math.min(1, (1 - powerSample()) + randn() * 0.03));
-        const z      = rand();
-        const radius = Math.max(0, powerSample() * 0.9 + randn() * 0.04);
-        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
-        points.push({ x, y, z, radius, color, hasBarcode: false });
-    }
-
-    const close = points.filter(p => p.z >= barcodeZThreshold);
-    close.sort((a, b) => b.radius - a.radius);
-    close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
-    return points;
-}
-
-/**
- * Log-normal: right-skewed y — dense near the bottom, long sparse tail toward the top.
- * Rare high-y points are large; the common low-y crowd is small.
- */
-export function generateScatterLogNormalData({
-    count             = 420,
-    colorNoiseScale   = 0.6,
-    seed              = 42,
-    barcodeZThreshold = 0.5,
-    mu                = -0.5,   // log-space mean — lower shifts bulk toward y=0
-    sigma             = 0.55,   // log-space spread — higher = longer tail
-} = {}) {
-    let s = seed;
-    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
-
-    const points = [];
-    for (let i = 0; i < count; i++) {
-        const x      = rand();
-        const y      = Math.max(0, Math.min(1, Math.exp(mu + sigma * randn())));
-        const z      = rand();
-        const radius = Math.max(0, y * 0.6 + Math.abs(randn()) * 0.1);
-        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
         points.push({ x, y, z, radius, color, hasBarcode: false });
     }
 
@@ -725,37 +766,6 @@ export function generateScatterWaveBurstData({
     return points;
 }
 
-/**
- * Funnel: wide base at y=0, tapering to a narrow point at y=1.
- * x range collapses linearly as y rises — creates an inverted triangle density.
- */
-export function generateScatterFunnelData({
-    count             = 420,
-    colorNoiseScale   = 0.6,
-    seed              = 42,
-    barcodeZThreshold = 0.5,
-    flare             = 0.48,   // x half-width at y=0; shrinks to 0 at y=1
-} = {}) {
-    let s = seed;
-    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
-
-    const points = [];
-    for (let i = 0; i < count; i++) {
-        const y    = rand();
-        const half = flare * (1 - y);
-        const x    = Math.max(0, Math.min(1, 0.5 + (rand() * 2 - 1) * half + randn() * 0.02));
-        const z    = rand();
-        const radius = Math.max(0, y * 0.5 + Math.abs(randn()) * 0.12);
-        const color  = Math.max(0, Math.min(1, y + (rand() - 0.5) * colorNoiseScale));
-        points.push({ x, y, z, radius, color, hasBarcode: false });
-    }
-
-    const close = points.filter(p => p.z >= barcodeZThreshold);
-    close.sort((a, b) => b.radius - a.radius);
-    close.slice(0, Math.ceil(close.length / 3)).forEach(p => { p.hasBarcode = true; });
-    return points;
-}
 
 /**
  * Ring: points form a circular donut in 2D x-y space.

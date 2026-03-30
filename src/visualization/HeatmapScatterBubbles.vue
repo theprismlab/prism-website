@@ -9,27 +9,12 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import Heatmap3D from './lib/Heatmap3D.js';
 import ScatterPlot3D, { 
-    generateScatterBubblesData,
-    generateScatterBubblesWaveData, 
-    generateScatterGaussianData, 
-    generateScatterBimodalData, 
-    generateScatterChevronData,
-    generateScatterSineWaveData,
-    generateScatterDualSineData,
-    generateScatterGrowingSineData,
-    generateScatterChirpData,
-    generateScatterStandingWaveData,
-    generateScatterWaveBurstData,
-    generateScatterConstellationData,
-    generateScatterLogNormalData,
-    generateScatterValleyData,
-    generateScatterWingsData,
-    generateScatterCascadeData,
-    generateScatterPrismData,
-    generateScatterPrismBentData
+    generateScatterFountainData,
+    generateScatterVanishingPointData
 } from './lib/ScatterPlot3D.js';
 import * as d3 from 'd3';
 import { loadViabilityCSV, parseHeatmapData } from './getData.js';
+
 
 const props = defineProps({
     heatmapConfig: { type: Object, default: () => ({}) },
@@ -45,18 +30,13 @@ let scatterInstance = null;
 async function initPlots() {
     const raw = await loadViabilityCSV();
 
+    // for bimodal data
 const scatterConfig = {
-    //   cameraAngleY: 0.2,
-    //     pointSize: 0.04,
-    //     pointSizeAttenuation: true,
-    //     // opacity: 1,
-   //   cameraDistance: 40,
-      // colorInterpolator: d3.interpolateRainbow,  
-    scale: {
-      //  color: { domain: [0, 1] },
-       //x: { domain: [0.6, 0.8] },
-        // y: { domain: [0, 0.9] },
-    }
+    // cameraAngleY: 0.2,
+     cameraPosition  : [0, 4 , 3],
+    // scale: {
+    //     x: { domain: [0.2, 0.8] },
+    // }
 }
     // Heatmap: pass parsed data uncolored so the heatmap class owns color/opacity scaling.
     const heatmapData = parseHeatmapData(raw);
@@ -64,17 +44,10 @@ const scatterConfig = {
     heatmapInstance = new Heatmap3D(heatmapCanvas.value, props.heatmapConfig);
     scatterInstance = new ScatterPlot3D(scatterCanvas.value, scatterConfig);
     heatmapInstance.setData(heatmapData);
-      //   scatterInstance.setData(generateScatterBubblesData());
-     //scatterInstance.setData(generateScatterGaussianData());
-   // scatterInstance.setData(generateScatterBimodalData());
-    // scatterInstance.setData(generateScatterChirpData());
-    // scatterInstance.setData(generateScatterWaveBurstData());
-    scatterInstance.setData(generateScatterBubblesWaveData());
-   
-    //scatterInstance.setData(generateScatterWingsData());
-
-    // scatterInstance.setData(generateScatterPrismData());
-    //scatterInstance.setData(generateScatterPrismBentData());
+    scatterInstance.setData(generateScatterVanishingPointData());
+//  scatterInstance.setData(generateScatterFountainData());
+//    scatterInstance.setData(generateScatterBubblesData());
+//    scatterInstance.setData(generateScatterBimodalData());
 }
 
 onMounted(() => {
