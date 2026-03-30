@@ -73,8 +73,9 @@ const defaultConfig = {
     // Collision avoidance
     collisionAvoidance: true,
 
-    // Barcode stickers
-    stickerCount: 20,
+    // Barcode stickers — applied to spheres where radius AND z both exceed thresholds
+    stickerRadiusThreshold: 0.5,  // world-unit radius minimum
+    stickerZThreshold: 0.5,       // data z minimum (0–1)
     stickerSizeFraction: 0.8,
     barcodeUrl: '/images/barcode.svg',
 };
@@ -324,15 +325,13 @@ export default class ThreeDScatterPlotSimple {
 
         this.spheres = spheres;
 
-        // Attach barcode stickers to the top N spheres by radius × z-depth
-        if (this.config.stickerCount > 0) {
-            const sorted = [...spheres].sort(
-                (a, b) => (b.userData.radius * b.userData.dataZ) - (a.userData.radius * a.userData.dataZ)
-            );
-            sorted.slice(0, this.config.stickerCount).forEach(s => {
+        // Attach barcode stickers to spheres exceeding both the radius and z thresholds
+        const { stickerRadiusThreshold, stickerZThreshold } = this.config;
+        spheres
+            .filter(s => s.userData.radius >= stickerRadiusThreshold && s.userData.dataZ >= stickerZThreshold)
+            .forEach(s => {
                 this._createBarcodeSticker(s, s.userData.radius, 1);
             });
-        }
     }
 
     _resolveCollisions(spheres) {
