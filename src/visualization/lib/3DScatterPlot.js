@@ -238,15 +238,16 @@ export default class ThreeDScatterPlot {
         const sizeScale = d3.scaleLinear().domain(zExtent).range(sphereSizeScaleRange);
         const opacityDepthScale = d3.scaleLinear().domain(zExtent).range(sphereOpacityRange);
 
-        const radiusScale = d3.scalePow().exponent(1).domain(colorExtent).range(sphereRadiusScaleRange);
+        const colorRadiusScale = d3.scaleLinear().domain(colorExtent).range(sphereRadiusScaleRange);
         const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1.75, 0]);
 
         const spheres = [];
 
         sampled.forEach(d => {
-            const t = sizeScale(d.z);
+            const depthFactor = sizeScale(d.z);
+            const colorFactor = colorRadiusScale(d.color);
             const randomJitter = 0.8 + Math.random() * 0.4;
-            const radius = baseRadius * t * radiusScale(d.color) * randomJitter;
+            const radius = baseRadius * depthFactor * colorFactor * randomJitter;
             const color = d.color ? new THREE.Color(colorScale(d.color)) : new THREE.Color('#cccccc');
             const geometry = new THREE.SphereGeometry(radius, 24, 24);
             const material = new THREE.MeshStandardMaterial({
@@ -270,8 +271,8 @@ export default class ThreeDScatterPlot {
             sphere.userData.floatPhaseX = Math.random() * Math.PI * 2;
             sphere.userData.floatSpeed = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
             sphere.userData.floatSpeedX = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
-            sphere.userData.floatAmplitude = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * t;
-            sphere.userData.floatAmplitudeX = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * t;
+            sphere.userData.floatAmplitude = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * depthFactor;
+            sphere.userData.floatAmplitudeX = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * depthFactor;
             sphere.userData.rotSpeedX = (Math.random() - 0.5) * 2.0;
             sphere.userData.rotSpeedY = (Math.random() - 0.5) * 2.0;
             sphere.userData.rotSpeedZ = (Math.random() - 0.5) * 2.0;
