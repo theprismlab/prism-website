@@ -53,6 +53,7 @@ export function parseScatterPlotData(raw) {
             z: doseToIndex[d.pert_dose],
             y: +d.viability,
             color: +d.viability,
+            radius: +d.viability,
         }))
         .filter(d => d.x !== undefined && d.z !== undefined);
 }

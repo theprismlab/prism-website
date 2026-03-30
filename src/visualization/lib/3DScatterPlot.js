@@ -35,8 +35,8 @@ const defaultConfig = {
     sphereSizeScaleRange: [1.0, 0.3],
     sphereOpacityRange: [0.7, 0.15],
     sphereRadiusScaleRange: [1.5, 0.2],
-    sphereFloatSpeedMin: 0.4,
-    sphereFloatSpeedRange: 0.4,
+    sphereFloatSpeedMin: 1.8,
+    sphereFloatSpeedRange: 1.6,
     sphereFloatAmplitudeBase: 0.08,
     sphereFloatAmplitudeRange: 0.06,
 
@@ -269,16 +269,26 @@ export default class ThreeDScatterPlot {
             sphere.position.copy(basePosition);
             sphere.userData.basePosition = basePosition;
             sphere.userData.floatPhase = Math.random() * Math.PI * 2;
+            sphere.userData.floatPhaseX = Math.random() * Math.PI * 2;
             sphere.userData.floatSpeed = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
+            sphere.userData.floatSpeedX = sphereFloatSpeedMin + Math.random() * sphereFloatSpeedRange;
             sphere.userData.floatAmplitude = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * t;
+            sphere.userData.floatAmplitudeX = cellHeight * (sphereFloatAmplitudeBase + Math.random() * sphereFloatAmplitudeRange) * t;
+            sphere.userData.rotSpeedX = (Math.random() - 0.5) * 2.0;
+            sphere.userData.rotSpeedY = (Math.random() - 0.5) * 2.0;
+            sphere.userData.rotSpeedZ = (Math.random() - 0.5) * 2.0;
             spheres.push(sphere);
             this.scene.add(sphere);
         });
 
         this._addAnimationCallback((elapsed) => {
             spheres.forEach(s => {
-                const { basePosition, floatPhase, floatSpeed, floatAmplitude } = s.userData;
+                const { basePosition, floatPhase, floatPhaseX, floatSpeed, floatSpeedX, floatAmplitude, floatAmplitudeX, rotSpeedX, rotSpeedY, rotSpeedZ } = s.userData;
                 s.position.y = basePosition.y + Math.sin(elapsed * floatSpeed + floatPhase) * floatAmplitude;
+                s.position.x = basePosition.x + Math.sin(elapsed * floatSpeedX + floatPhaseX) * floatAmplitudeX;
+                s.rotation.x = elapsed * rotSpeedX;
+                s.rotation.y = elapsed * rotSpeedY;
+                s.rotation.z = elapsed * rotSpeedZ;
             });
         });
 
