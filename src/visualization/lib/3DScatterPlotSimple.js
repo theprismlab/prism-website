@@ -1,0 +1,361 @@
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import * as d3 from 'd3';
+
+/**
+ * Generates scatter plot data with pre-computed radius and color so the plot
+ * class needs no complex scaling logic — just linear maps from 0–1 values to
+ * world coordinates.
+ *
+ * Data schema per point:
+ *   x      — 0–1  horizontal position
+ *   y      — 0–1  vertical position  (increases naturally with z + noise)
+ *   z      — 0–1  depth (0 = far from camera, 1 = closest to camera)
+ *   radius — 0–1  pre-normalized sphere size (increases with z and y)
+ *   color  — 0–1  heat value for color scale  (increases with z and y)
+ */
+export function generateScatterData({
+    xCount        = 35,
+    zCount        = 12,
+    yNoiseScale   = 0.25,    // ± noise added to y
+    radiusYWeight = 0.35,    // how much y contributes to radius
+    radiusZWeight = 0.65,    // how much z contributes to radius
+    colorYWeight  = 0.35,    // how much y contributes to color
+    colorZWeight  = 0.65,    // how much z contributes to color
+    seed          = 42,
+} = {}) {
+    // Minimal seeded PRNG for reproducibility (Park-Miller LCG)
+    let s = seed;
+    const rand = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+
+    const points = [];
+    for (let xi = 0; xi < xCount; xi++) {
+        for (let zi = 0; zi < zCount; zi++) {
+            const x = xi / Math.max(xCount - 1, 1);
+            const z = zi / Math.max(zCount - 1, 1);
+            // y tilts upward with depth, with some noise
+            const y = Math.max(0, Math.min(1, z * 0.65 + (rand() - 0.5) * yNoiseScale));
+            const radius = radiusZWeight * z + radiusYWeight * y + rand() * 0.05;
+            const color  = Math.max(0, Math.min(1, colorZWeight * z + colorYWeight * y + (rand() - 0.5) * 0.35));
+            points.push({ x, y, z, radius, color });
+        }
+    }
+    return points;
+}
+
+// ─── Default config ───────────────────────────────────────────────────────────
+
+const defaultConfig = {
+    // Camera
+    fov:            25,
+    cameraDistance: 25,
+    cameraPosition: [0, 3, 25],
+    cameraLookAt:   [0, 1.5, 0],
+    nearClip:       1.01,
+    farClip:        200,
+
+    // Lighting
+    directionalLightIntensity: 0.5,
+    ambientLightIntensity:     0.5,
+    enableShadows:             true,
+
+    // Scene layout — all in world (Three.js) units
+    sceneWidth: 22,        // x spans [-sceneWidth/2, sceneWidth/2]
+    zRange:     [-4, 4],   // world z for data.z [0, 1]  (4 = closer to camera at z=25)
+    yRange:     [-3, 9],   // world y for data.y [0, 1]
+
+    // Sphere sizing: data.radius (0–1) × radiusMultiplier = world-unit radius
+    radiusMultiplier: 0.65,
+
+    // Opacity from depth (data.z 0–1 → opacity)
+    opacityRange: [0.15, 0.95],
+
+    // Float animation
+    floatSpeedMin:   1.8,
+    floatSpeedRange: 1.6,
+    floatAmplitude:  [0.02, 0.08],  // [min, max]
+
+    // Rotation speed multiplier (random ± this)
+    rotSpeedRange: 2.0,
+
+    // Collision avoidance
+    collisionAvoidance: true,
+};
+
+// ─── Class ────────────────────────────────────────────────────────────────────
+
+export default class ThreeDScatterPlotSimple {
+    constructor(canvasEl, sceneConfig = {}) {
+        if (!canvasEl) throw new Error('canvas element is required');
+        this.canvas = canvasEl;
+        this.config = { ...defaultConfig, ...sceneConfig };
+        this.data = [];
+        this.spheres = [];
+        this.environmentTexture = null;
+        this.resizeObserver = null;
+        this.resizeTimer = null;
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.width = 0;
+        this.height = 0;
+        this.clock = new THREE.Clock();
+        this.animationCallbacks = [];
+        this.animationFrameId = null;
+
+        this._setupScene();
+    }
+
+    // ── Public API ────────────────────────────────────────────────────────────
+
+    setData(data = []) {
+        this.data = Array.isArray(data) ? data : [];
+        this.rebuild();
+    }
+
+    rebuild() {
+        this._clearSpheres();
+        this._clearAnimationCallbacks();
+        if (!this.data.length) {
+            this.stopAnimation();
+            this.render();
+            return;
+        }
+        this._buildSpheres(this.data);
+        this.render();
+        this.startAnimation();
+    }
+
+    render() {
+        if (!this.renderer || !this.scene || !this.camera) return;
+        this.renderer.render(this.scene, this.camera);
+    }
+
+    startAnimation() {
+        if (this.animationFrameId) return;
+        const loop = () => {
+            const elapsed = this.clock.getElapsedTime();
+            this.animationCallbacks.forEach(cb => cb(elapsed));
+            this.renderer.render(this.scene, this.camera);
+            this.animationFrameId = requestAnimationFrame(loop);
+        };
+        this.animationFrameId = requestAnimationFrame(loop);
+    }
+
+    stopAnimation() {
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+    }
+
+    destroy() {
+        if (this.resizeObserver) this.resizeObserver.disconnect();
+        clearTimeout(this.resizeTimer);
+        this.stopAnimation();
+        this._clearSpheres();
+        if (this.environmentTexture) this.environmentTexture.dispose();
+        if (this.renderer) this.renderer.dispose();
+    }
+
+    // ── Internals ─────────────────────────────────────────────────────────────
+
+    _setupScene() {
+        const parent = this.canvas.parentElement;
+        this.width  = parent?.clientWidth  || this.canvas.width  || 1;
+        this.height = parent?.clientHeight || this.canvas.height || 1;
+
+        this.scene = new THREE.Scene();
+
+        const { fov, cameraDistance, cameraPosition, cameraLookAt, nearClip, farClip } = this.config;
+        this.camera = new THREE.PerspectiveCamera(fov, this.width / this.height, nearClip, farClip);
+        const [cx, cy] = cameraPosition;
+        this.camera.position.set(cx, cy, cameraDistance);
+        this.camera.lookAt(...cameraLookAt);
+        this.camera.updateProjectionMatrix();
+
+        const enableShadows = this.config.enableShadows ?? true;
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, this.config.directionalLightIntensity);
+        dirLight.position.set(5, 10, 5);
+        dirLight.castShadow = enableShadows;
+        if (enableShadows) {
+            dirLight.shadow.mapSize.width  = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.camera.left   = -30;
+            dirLight.shadow.camera.right  =  30;
+            dirLight.shadow.camera.top    =  30;
+            dirLight.shadow.camera.bottom = -30;
+            dirLight.shadow.camera.near   = 0.1;
+            dirLight.shadow.camera.far    = 60;
+            dirLight.shadow.radius        = 8;
+            dirLight.shadow.blurSamples   = 25;
+        }
+        this.scene.add(dirLight);
+        this.scene.add(new THREE.AmbientLight(0xffffff, this.config.ambientLightIntensity));
+
+        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
+        this.renderer.setSize(this.width, this.height, false);
+        this.renderer.setClearColor(0xffffff, 0);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        this.renderer.shadowMap.enabled = enableShadows;
+        if (enableShadows) this.renderer.shadowMap.type = THREE.VSMShadowMap;
+
+        const pmrem = new THREE.PMREMGenerator(this.renderer);
+        const roomEnv = new RoomEnvironment();
+        this.environmentTexture = pmrem.fromScene(roomEnv, 0.04).texture;
+        this.scene.environment = this.environmentTexture;
+        roomEnv.dispose();
+        pmrem.dispose();
+
+        this._setupResizeObserver();
+    }
+
+    _setupResizeObserver() {
+        if (typeof ResizeObserver === 'undefined') return;
+        this.resizeObserver = new ResizeObserver(() => {
+            clearTimeout(this.resizeTimer);
+            this.resizeTimer = setTimeout(() => {
+                const parent = this.canvas.parentElement;
+                this.width  = parent?.clientWidth  || this.canvas.width  || 1;
+                this.height = parent?.clientHeight || this.canvas.height || 1;
+                this.camera.aspect = this.width / this.height;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(this.width, this.height, false);
+                this.rebuild();
+            }, 100);
+        });
+        requestAnimationFrame(() => {
+            if (this.canvas.parentElement) this.resizeObserver.observe(this.canvas.parentElement);
+        });
+    }
+
+    /**
+     * Builds Three.js sphere meshes from data.
+     *
+     * Because radius and color are pre-normalized (0–1) in the data, the only
+     * scales needed here are simple linear maps from the 0–1 data domain to
+     * world coordinates / color values.
+     */
+    _buildSpheres(data) {
+        const {
+            sceneWidth, zRange, yRange,
+            radiusMultiplier, opacityRange,
+            floatSpeedMin, floatSpeedRange, floatAmplitude,
+            rotSpeedRange,
+        } = this.config;
+
+        const [floatAmpMin, floatAmpMax] = floatAmplitude;
+
+        // Simple linear scales — no domain clamping needed since data is 0–1
+        const xScale      = d3.scaleLinear().domain([0, 1]).range([-sceneWidth / 2, sceneWidth / 2]);
+        const yScale      = d3.scaleLinear().domain([0, 1]).range(yRange);
+        const zScale      = d3.scaleLinear().domain([0, 1]).range(zRange);
+        const opacityScale = d3.scaleLinear().domain([0, 1]).range(opacityRange);
+        const colorScale  = d3.scaleSequential(d3.interpolateYlOrRd).domain([0, 1]);
+
+        const spheres = [];
+
+        data.forEach(d => {
+            const radius = d.radius * radiusMultiplier;
+            const color  = new THREE.Color(colorScale(d.color));
+
+            const geometry = new THREE.SphereGeometry(radius, 24, 24);
+            const material = new THREE.MeshStandardMaterial({
+                color,
+                transparent: true,
+                opacity: opacityScale(d.z),
+                roughness: 0.0,
+                metalness: 0.0,
+            });
+
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.castShadow = true;
+
+            const basePosition = new THREE.Vector3(xScale(d.x), yScale(d.y), zScale(d.z));
+            sphere.position.copy(basePosition);
+
+            sphere.userData.basePosition   = basePosition;
+            sphere.userData.radius         = radius;
+            sphere.userData.floatPhase     = Math.random() * Math.PI * 2;
+            sphere.userData.floatPhaseX    = Math.random() * Math.PI * 2;
+            sphere.userData.floatSpeed     = floatSpeedMin + Math.random() * floatSpeedRange;
+            sphere.userData.floatSpeedX    = floatSpeedMin + Math.random() * floatSpeedRange;
+            sphere.userData.floatAmplitude = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
+            sphere.userData.floatAmplitudeX = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
+            sphere.userData.rotSpeedX = (Math.random() - 0.5) * rotSpeedRange;
+            sphere.userData.rotSpeedY = (Math.random() - 0.5) * rotSpeedRange;
+            sphere.userData.rotSpeedZ = (Math.random() - 0.5) * rotSpeedRange;
+            sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
+            sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
+
+            spheres.push(sphere);
+            this.scene.add(sphere);
+        });
+
+        this._addAnimationCallback((elapsed) => {
+            // Step 1: compute float target positions
+            spheres.forEach(s => {
+                const { basePosition, floatPhase, floatPhaseX, floatSpeed, floatSpeedX, floatAmplitude, floatAmplitudeX } = s.userData;
+                s.userData.floatX = basePosition.x + Math.sin(elapsed * floatSpeedX + floatPhaseX) * floatAmplitudeX;
+                s.userData.floatY = basePosition.y + Math.sin(elapsed * floatSpeed  + floatPhase)  * floatAmplitude;
+                s.userData.floatZ = basePosition.z;
+            });
+
+            // Step 2: repulsion between overlapping spheres
+            if (this.config.collisionAvoidance) this._resolveCollisions(spheres);
+
+            // Step 3: integrate, spring back, damp, apply
+            const damping = 0.75;
+            const springK = 0.12;
+            spheres.forEach(s => {
+                const ud = s.userData;
+                ud.ox = (ud.ox + ud.vx) * (1 - springK);
+                ud.oy = (ud.oy + ud.vy) * (1 - springK);
+                ud.oz = (ud.oz + ud.vz) * (1 - springK);
+                ud.vx *= damping; ud.vy *= damping; ud.vz *= damping;
+                s.position.x = ud.floatX + ud.ox;
+                s.position.y = ud.floatY + ud.oy;
+                s.position.z = ud.floatZ + ud.oz;
+                s.rotation.x = elapsed * ud.rotSpeedX;
+                s.rotation.y = elapsed * ud.rotSpeedY;
+                s.rotation.z = elapsed * ud.rotSpeedZ;
+            });
+        });
+
+        this.spheres = spheres;
+    }
+
+    _resolveCollisions(spheres) {
+        for (let i = 0; i < spheres.length; i++) {
+            for (let j = i + 1; j < spheres.length; j++) {
+                const si = spheres[i], sj = spheres[j];
+                const dx = (si.userData.floatX + si.userData.ox) - (sj.userData.floatX + sj.userData.ox);
+                const dy = (si.userData.floatY + si.userData.oy) - (sj.userData.floatY + sj.userData.oy);
+                const dz = (si.userData.floatZ + si.userData.oz) - (sj.userData.floatZ + sj.userData.oz);
+                const distSq  = dx * dx + dy * dy + dz * dz;
+                const minDist = si.userData.radius + sj.userData.radius;
+                if (distSq < minDist * minDist && distSq > 1e-6) {
+                    const dist = Math.sqrt(distSq);
+                    const push = (minDist - dist) / dist * 0.5;
+                    si.userData.vx += dx * push; si.userData.vy += dy * push; si.userData.vz += dz * push;
+                    sj.userData.vx -= dx * push; sj.userData.vy -= dy * push; sj.userData.vz -= dz * push;
+                }
+            }
+        }
+    }
+
+    _addAnimationCallback(cb) { this.animationCallbacks.push(cb); }
+    _clearAnimationCallbacks() { this.animationCallbacks = []; }
+
+    _clearSpheres() {
+        this.spheres.forEach(sphere => {
+            this.scene.remove(sphere);
+            sphere.traverse(child => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) child.material.dispose();
+            });
+        });
+        this.spheres = [];
+    }
+}

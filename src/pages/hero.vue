@@ -1,40 +1,27 @@
 <template>
     <div>
         <section class="hero-section">
-        <div class="hero-heatmap">
-            <TheViabilityScatterPlotScene></TheViabilityScatterPlotScene>
-        </div>
-        <div class="hero-overlay text-center">
+            <div class="hero-heatmap">
+                <TheViabilityScatterPlotScene v-if="activeScene === 0"></TheViabilityScatterPlotScene>
+                <!-- <TheViabilityHeatmapScatterPlotColorScene v-else-if="activeScene === 1"></TheViabilityHeatmapScatterPlotColorScene> -->
+                <TheViabilityHeatmapScatterPlotScene v-else-if="activeScene === 2"></TheViabilityHeatmapScatterPlotScene>
+                <ThreeJsTemplate v-else-if="activeScene === 1"></ThreeJsTemplate>
+                <ThreeJsTemplate2 v-else-if="activeScene === 3"></ThreeJsTemplate2>
+
+            </div>
+            <div class="hero-overlay text-center">
                 <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
                 <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
-        </div>
-        </section>
-        <section class="hero-section">
-        <div class="hero-heatmap">
-            <TheViabilityHeatmapScatterPlotColorScene></TheViabilityHeatmapScatterPlotColorScene>
-        </div>
-        <div class="hero-overlay text-center">
-                <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
-                <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
-        </div>
-        </section>
-        <section class="hero-section">
-        <div class="hero-heatmap">
-            <TheViabilityHeatmapScatterPlotScene></TheViabilityHeatmapScatterPlotScene>
-        </div>
-        <div class="hero-overlay text-center">
-                <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
-                <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
-        </div>
-        </section>
-        <section class="hero-section">
-          <div class="hero-heatmap">
-              <ThreeJsTemplate></ThreeJsTemplate>
-          </div>
-          <div class="hero-overlay text-center">
-                  <h1 class="text-hero text-xl mb-12 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
-                  <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
-          </div>
+            </div>
+            <div class="scene-switcher">
+                <button
+                    v-for="(label, i) in sceneLabels"
+                    :key="i"
+                    class="scene-btn"
+                    :class="{ active: activeScene === i }"
+                    @click="activeScene = i"
+                >{{ label }}</button>
+            </div>
         </section>
     </div>
 </template>
@@ -44,6 +31,7 @@ import TheViabilityScatterPlotScene from '../visualization/viability-scatter-plo
 import TheViabilityHeatmapScatterPlotScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityHeatmapScatterPlotScene.vue';
 import TheViabilityHeatmapScatterPlotColorScene from '../visualization/viability-heatmap-scatter-plot-color/TheViabilityHeatmapScatterPlotColorScene.vue';
 import ThreeJsTemplate from '@/visualization/ThreeJsTemplate.vue';
+import ThreeJsTemplate2 from '@/visualization/ThreeJsTemplate2.vue';
 
 export default {
     name: 'Hero',
@@ -52,7 +40,14 @@ export default {
         TheViabilityHeatmapScatterPlotScene,
         TheViabilityHeatmapScatterPlotColorScene,
         ThreeJsTemplate,
-    }
+        ThreeJsTemplate2,
+    },
+    data() {
+        return {
+            activeScene: 0,
+            sceneLabels: ['Bubbles', 'Heatmap Bubbles 1', 'Heatmap Bubbles 2', 'Heatmap Bubbles 3'],
+        };
+    },
 }
 </script>
 
@@ -62,8 +57,6 @@ export default {
   margin-bottom:100px;
   border-bottom: 15px solid black;
   border-top: 15px solid black;
-  // height: calc(100vh - var(--v-layout-top, 64px) - var(--v-banner-height, 0px));
-   // height: calc(100vh - var(--v-layout-top, 64px) - var(--v-banner-height, 0px));
     height: calc(100dvh - var(--v-layout-top, 64px));
   overflow: hidden;
   > * {
@@ -88,9 +81,35 @@ export default {
   font-size: 4.25rem;
   line-height: 1.1em;
 }
+.scene-switcher {
+  place-self: end end;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  z-index: 2;
+}
+.scene-btn {
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s, border-color 0.2s;
+  &:hover {
+    background: rgba(0, 0, 0, 0.65);
+  }
+  &.active {
+    background: rgba(0, 0, 0, 0.75);
+    border-color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+  }
+}
       /* xs */
       @media (max-width: 600px) {
-     
         .text-xl{
           font-size: 3.5rem;
         }

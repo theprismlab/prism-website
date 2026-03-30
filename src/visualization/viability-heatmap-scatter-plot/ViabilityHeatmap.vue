@@ -25,7 +25,7 @@ const heatmapConfig = {
     planeZoom: 10.8,
     planeWidthMultiplier: 1.6,
     planeYPosition: 1,
-    planeOpacityRange: [0.5, 1],
+    planeOpacityRange: [0.85, 1],
 };
 
 const props = defineProps({

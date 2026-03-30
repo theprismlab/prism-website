@@ -29,7 +29,7 @@ const sphereConfig = {
     sphereZStep: 2,
     sphereBaseRadiusMultiplier: 0.018,
     sphereSizeScaleRange: [1.0, 0.3],
-    sphereOpacityRange: [0.7, 0.15],
+    sphereOpacityRange: [0.8, 0.8],
     sphereRadiusScaleRange: [1.5, 0.2],
     sphereFloatSpeedMin: 0.4,
     sphereFloatSpeedRange: 0.4,
