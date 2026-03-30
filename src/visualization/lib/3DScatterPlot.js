@@ -11,6 +11,7 @@ import * as d3 from 'd3';
     // optional: plot.startAnimation(); // called automatically on setData
     // later: plot.destroy();
  */
+
 const defaultConfig = {
     // Camera
     fov: 25,
@@ -31,14 +32,14 @@ const defaultConfig = {
     sphereZStep: 2,
     sphereBaseRadiusMultiplier: 0.018,
     sphereSizeScaleRange: [0.3, 1.0],
-    sphereOpacityRange: [0.15, 0.8],
+    sphereOpacityRange: [0.15, 0.95],
     sphereRadiusScaleRange: [1.25, 0.2],
     sphereFloatSpeedMin: 1.8,
     sphereFloatSpeedRange: 1.6,
     sphereFloatAmplitudeBase: 0.08,
     sphereFloatAmplitudeRange: 0.06,
     sphereSmallSphereYDrop: 3,
-    stickerCount: 5,
+    stickerCount: 20,
     stickerSizeFraction: 0.8,
     barcodeUrl: '/images/barcode.svg',
     collisionAvoidance: true,
@@ -54,6 +55,7 @@ export default class ThreeDScatterPlot {
         this.config = { ...defaultConfig, ...sceneConfig };
         this.data = [];
         this.spheres = [];
+        this.barcodeSpheres = [];
         this.environmentTexture = null;
         this.resizeObserver = null;
         this.resizeTimer = null;
@@ -247,7 +249,7 @@ export default class ThreeDScatterPlot {
         const sizeScale = d3.scaleLinear().domain(zExtent).range(sphereSizeScaleRange);
         const opacityDepthScale = d3.scaleLinear().domain(zExtent).range(sphereOpacityRange);
 
-        const colorRadiusScale = d3.scalePow().exponent(1).domain(colorExtent).range(sphereRadiusScaleRange);
+        const colorRadiusScale = d3.scalePow().exponent(1.5).domain(colorExtent).range(sphereRadiusScaleRange);
         const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([1.75, 0]);
 
         const spheres = [];
@@ -294,6 +296,7 @@ export default class ThreeDScatterPlot {
             sphere.userData.rotSpeedX = (Math.random() - 0.5) * 2.0;
             sphere.userData.rotSpeedY = (Math.random() - 0.5) * 2.0;
             sphere.userData.rotSpeedZ = (Math.random() - 0.5) * 2.0;
+       //     if (radius >1) radius = 10;
             sphere.userData.radius = radius;
             sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
@@ -330,12 +333,12 @@ export default class ThreeDScatterPlot {
                 s.rotation.z = elapsed * ud.rotSpeedZ;
             });
         });
-
+    
         // Attach barcode stickers to the N largest spheres
         if (this.config.stickerCount > 0) {
             const sorted = [...spheres].sort((a, b) => b.userData.radius - a.userData.radius);
             sorted.slice(0, this.config.stickerCount).forEach(s => {
-                this._createBarcodeSticker(s, s.userData.radius, s.material.opacity);
+                this._createBarcodeSticker(s, s.userData.radius, s.material.opacity+ 0.4);
             });
         }
 
@@ -373,6 +376,7 @@ export default class ThreeDScatterPlot {
         const { barcodeUrl } = this.config;
         if (!barcodeUrl) return;
         this.barcodeTexture = new THREE.Texture();
+        this._barcodeTextureReady = false;
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
@@ -381,12 +385,27 @@ export default class ThreeDScatterPlot {
             canvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
             this.barcodeTexture.image = canvas;
             this.barcodeTexture.needsUpdate = true;
+            this._barcodeTextureReady = true;
+            // Attach stickers to any spheres that were built before the image loaded
+            this._pendingStickers?.forEach(({ sphere, radius, opacity }) => {
+                this._attachSticker(sphere, radius, opacity);
+            });
+            this._pendingStickers = [];
         };
         img.src = barcodeUrl;
     }
 
     _createBarcodeSticker(sphere, radius, opacity) {
         if (!this.barcodeTexture) return;
+        if (this._barcodeTextureReady) {
+            this._attachSticker(sphere, radius, opacity);
+        } else {
+            this._pendingStickers = this._pendingStickers ?? [];
+            this._pendingStickers.push({ sphere, radius, opacity });
+        }
+    }
+
+    _attachSticker(sphere, radius, opacity) {
         const halfAngle = this.config.stickerSizeFraction / 2;
         const geo = new THREE.SphereGeometry(
             radius * 1.005, 16, 16,
@@ -406,7 +425,7 @@ export default class ThreeDScatterPlot {
     }
 
     _clearSpheres() {
-        this.spheres.forEach(sphere => {
+        [...this.spheres, ...this.barcodeSpheres].forEach(sphere => {
             this.scene.remove(sphere);
             sphere.traverse(child => {
                 if (child.geometry) child.geometry.dispose();
@@ -414,5 +433,6 @@ export default class ThreeDScatterPlot {
             });
         });
         this.spheres = [];
+        this.barcodeSpheres = [];
     }
 }
