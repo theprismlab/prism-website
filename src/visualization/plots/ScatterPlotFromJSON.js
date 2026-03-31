@@ -220,7 +220,7 @@ export default class ScatterPlotFromJSON {
             const color   = new THREE.Color(d.color);   // CSS "rgb(r,g,b)" accepted directly
             const opacity = d.opacity ?? 0.8;
 
-            const geometry = new THREE.SphereGeometry(radius, 20, 20);
+            const geometry = new THREE.SphereGeometry(radius, 20, 20); 
             const material = new THREE.MeshStandardMaterial({
                 color,
                 emissive:          color,
@@ -246,10 +246,7 @@ export default class ScatterPlotFromJSON {
             sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
             // Metadata — available if you want tooltips / click interactions
-            sphere.userData.ccle_name  = d.ccle_name;
-            sphere.userData.lineage    = d.lineage;
-            sphere.userData.viability  = d.viability;
-            sphere.userData.pert_dose  = d.pert_dose;
+         
             sphere.userData.hasBarcode = d.hasBarcode ?? false;
 
             spheres.push(sphere);

@@ -93,7 +93,7 @@ const hasBarcode = (d)=>{
     return d.z >= zMin && d.radius >= radiusMin;
 }
 const getRadius = ()=>{
-    const radiusScale  = d3.scaleLinear().domain([0,1]).range([0.1, 0.65]);
+    const radiusScale  = d3.scaleLinear().domain([0, 1]).range([0.1, 0.5]);
     const radiusJitter = 0.85 + Math.random();
     const radius = radiusScale(Math.random()) * radiusJitter;
     return radius;

@@ -9,10 +9,10 @@
 
 export const sceneConfig = {
     fov:             25,
-    cameraDistance:  18,
-    cameraAzimuth:   0,
-    cameraElevation: 0.06,
-    cameraLookAt:    [0, 8, 0],
+    cameraDistance:  25,
+    cameraAzimuth:   0, // horizontal orbit around Y axis (radians)
+    cameraElevation: 0.06, // vertical orbit around X axis (radians)
+    cameraLookAt:    [0, 20.5, 0], // world coords to look at (also the center of the scatter plot)
     nearClip:        0.1,
     farClip:         200,
 
