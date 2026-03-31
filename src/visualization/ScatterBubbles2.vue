@@ -143,13 +143,13 @@ const interpolateGnBuYlOrRd = t =>
 function initPlot() {
     // Domain covers all cluster extents: furthest center is ±5, max 3σ = 4.2 → ±9 with margin.
     const domainData = 9;
-    const domainBase = 22;
+    const domainBase = 20;
     const scatterConfig = {
         colorInterpolator: interpolateGnBuYlOrRd,
         cameraLookAt:    [0, 0, 4],
-        cameraDistance:  42,
+        cameraDistance:  40,
         cameraAzimuth:   0,
-        cameraElevation: 0,
+        cameraElevation: 0.2,
         scale: {
             radius: { range: [0.01, 1], domain: [0, 1] },
             x:      { domain: [-domainData, domainData], range: [-domainBase, domainBase] },
