@@ -43,11 +43,11 @@ let scatterInstance = null;
  *           rainbow colour, making the cloud visually radially symmetric.
  */
 function generateScatterCentralClusterData({
-    count             = 900,
+    count             = 1000,
     cx                = 0.5,   // center x  [0, 1]
     cy                = 0.5,   // center y  [0, 1]
-    sigma             = 0.1,  // std-dev of the Gaussian; controls how wide the cloud spreads
-    seed              = 17, // 5, 14,15, 18
+    sigma             = 2.2,  // std-dev of the Gaussian; controls how wide the cloud spreads
+    seed              =15, // 5, 14,15, 18
     barcodeFraction   = 0.12,
     barcodeZThreshold = 0.5,
 } = {}) {
@@ -113,6 +113,42 @@ function generateScatterCentralClusterData({
     return points;
 }
 
+
+// // Custom interpolator that blends two d3 schemes across the [0, 1] color range.
+// // t ∈ [0, 0.5] → GnBu reversed (dark blue → light green) rescaled so 0→1 and 0.5→0
+// // t ∈ [0.5, 1] → YlOrRd        (light yellow → dark red)  rescaled so 0.5→0 and 1→1
+// //
+// // Reversing GnBu aligns the light end of GnBu (t≈0.5 → green) with the light end
+// // of YlOrRd (t≈0.5 → yellow), so the junction stays in the light/pastel range on
+// // both sides and the dark anchors sit at the extremes (t=0 deep blue, t=1 dark red).
+// // This gives a visually ordered cool→warm progression around the full circle.
+// const minLight  = 0.18;  // clamp lightest values
+// const maxDark   = 0.8;  // clamp darkest values
+// const blendZone = 0.09;  // fraction of range over which blue and red blend into purple at the seam
+
+// // Pre-compute the two extreme colors and their midpoint (purple) so they're
+// // calculated once rather than on every interpolator call.
+// const _blueMax = d3.interpolateYlGnBu(maxDark);
+// const _redMax  = d3.interpolateYlOrRd(maxDark);
+// const _purple  = d3.interpolateRgb(_blueMax, _redMax)(0.5); // purple seam blend
+
+// // color(t): cool-to-warm interpolator with a purple blend at the circular seam.
+// //   t ∈ [0,   0.5] → YlGnBu reversed [maxDark → minLight]  (dark blue → light green)
+// //   t ∈ [0.5, 1  ] → YlOrRd forward  [minLight → maxDark]  (light yellow → dark red)
+// //   near t=0 and t=1: fades through purple so the angle wrap-around is smooth.
+// const interpolateGnBuYlOrRd = t => {
+//     const shade = t < 0.5
+//         ? d3.interpolateYlGnBu(maxDark - t * 2 * (maxDark - minLight))
+//         : d3.interpolateYlOrRd(minLight + (t - 0.5) * 2 * (maxDark - minLight));
+//     if (t < blendZone)         return d3.interpolateRgb(_purple, shade)(t / blendZone);
+//     if (t > 1 - blendZone)     return d3.interpolateRgb(shade, _purple)((t - (1 - blendZone)) / blendZone);
+//     return shade;
+// };
+
+
+
+
+
 // Custom interpolator that blends two d3 schemes across the [0, 1] color range.
 // t ∈ [0, 0.5] → GnBu reversed (dark blue → light green) rescaled so 0→1 and 0.5→0
 // t ∈ [0.5, 1] → YlOrRd        (light yellow → dark red)  rescaled so 0.5→0 and 1→1
@@ -123,31 +159,31 @@ function generateScatterCentralClusterData({
 // This gives a visually ordered cool→warm progression around the full circle.
 const minLight = 0.18; // clamp lightest values: 0 = allow full white/yellow, higher = cut pale tones
 const maxDark = 0.78; // clamp darkest values: 1 = allow full black, lower = cut deep tones
+const maxDarkBlue = 0.7;
 const interpolateGnBuYlOrRd = t =>
     t < 0.5
-        ? d3.interpolateYlGnBu(maxDark - t * 2 * (maxDark - minLight)) // reversed, range [maxDark → minLight]
+        ? d3.interpolateYlGnBu(maxDarkBlue - t * 2 * (maxDarkBlue - minLight)) // reversed, range [maxDark → minLight]
         : d3.interpolateYlOrRd(minLight + (t - 0.5) * 2 * (maxDark - minLight)); // forward, range [minLight → 1]
 
 function initPlot() {
     // These must match the generator parameters so the domain is always
     // symmetric around the cluster center, regardless of random sample outliers.
-    const cx = 0.5, cy = 0.5, sigma = 1.1;
+    const cx = 0.5, cy = 0.5, sigma = 2.2;
     // [cx ± 3σ] covers 99.7% of the Gaussian and is symmetric by construction,
     // so cx maps exactly to world 0 (the frustum center) every time.
     const xDomain = [cx - 3 * sigma, cx + 3 * sigma];
     const yDomain = [cy - 3 * sigma, cy + 3 * sigma];
-
+    const domainBase = 23;
     const scatterConfig = {
         colorInterpolator: interpolateGnBuYlOrRd,
         cameraLookAt:    [0, 0, 4],
-        cameraDistance:  45,
+        cameraDistance:  35,
         cameraAzimuth:   0,
         cameraElevation: 0,
         scale: {
-            radius: { range: [0.04, 0.75] },
-            color: { domain: [0, 1]},
-            x:      { domain: xDomain, range: [-20, 20] },
-            y:      { domain: yDomain, range: [-20, 20] },
+            radius: { range: [0.01, 1], domain: [0, 1] },
+            x:      { domain: xDomain, range: [-domainBase, domainBase] },
+            y:      { domain: yDomain, range: [-domainBase, domainBase] },
         },
         ...props.scatterConfig,
     };
