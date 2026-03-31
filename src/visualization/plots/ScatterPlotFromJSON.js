@@ -30,6 +30,18 @@ const defaultConfig = {
     // Re-runs automatically on resize.
     scaleToScreen: false,
 
+    // ── Cell shape ─────────────────────────────────────────────────────────────
+    // cellMode: when false, renders plain spheres (ignores all settings below).
+    // cellIrregularity: 0 = perfect sphere, 0.3–0.5 = organic blob/cell look.
+    // cellDetail: IcosahedronGeometry subdivision level (3=fast, 4=smooth).
+    // showNucleus: render an inner nucleus sphere as a child mesh.
+    // nucleusSizeFraction: nucleus radius as a fraction of the cell radius.
+    // cellMode:            true,
+    // cellIrregularity:    0.01,
+    // cellDetail:          10,
+    // showNucleus:         false,
+    // nucleusSizeFraction: 0.45,
+
     // ── Barcode stickers ──────────────────────────────────────────────────────
     // Applied to points where `hasBarcode === true` in the JSON (if present).
     stickerSizeFraction: 0.8,
@@ -236,19 +248,43 @@ export default class ScatterPlotFromJSON {
             const color   = new THREE.Color(d.color);   // CSS "rgb(r,g,b)" accepted directly
             const opacity = d.opacity ?? 0.8;
 
-            const geometry = new THREE.SphereGeometry(radius, 20, 20); 
+            const geometry = this.config.cellMode
+                ? this._makeCellGeometry(radius)
+                : new THREE.SphereGeometry(radius, 20, 20);
             const material = new THREE.MeshStandardMaterial({
                 color,
                 emissive:          color,
-                emissiveIntensity: 0.008,
+                emissiveIntensity: 0.6,
                 transparent:       true,
-                opacity,
-                roughness: 0.35,
-                metalness: 0.0,
-                envMapIntensity: 0.4,
+                opacity:           opacity * 0.82,
+                roughness: 0.7,
+                metalness: 0.2,
+                envMapIntensity: 0.1,
             });
 
             const sphere = new THREE.Mesh(geometry, material);
+
+            if (this.config.showNucleus) {
+                const nRadius = radius * this.config.nucleusSizeFraction;
+                const nColor  = color.clone().offsetHSL(0, -0.05, -0.18);
+                const nMat = new THREE.MeshStandardMaterial({
+                    color:             nColor,
+                    emissive:          nColor,
+                    emissiveIntensity: 0.04,
+                    transparent:       true,
+                    opacity:           Math.min(opacity + 0.25, 0.95),
+                    roughness:         0.7,
+                    metalness:         0.0,
+                    envMapIntensity:   0.2,
+                });
+                const nucleus = new THREE.Mesh(new THREE.SphereGeometry(nRadius, 12, 12), nMat);
+                nucleus.position.set(
+                    (Math.random() - 0.5) * radius * 0.25,
+                    (Math.random() - 0.5) * radius * 0.25,
+                    (Math.random() - 0.5) * radius * 0.25,
+                );
+                sphere.add(nucleus);
+            }
             sphere.position.set(d.world.x * xFactor, d.world.y * yFactor, d.world.z);
 
             // Store base position and animation parameters
@@ -298,6 +334,28 @@ export default class ScatterPlotFromJSON {
         spheres
             .filter(s => s.userData.hasBarcode)
             .forEach(s => this._createBarcodeSticker(s, s.userData.radius, this.config.stickerOpacity));
+    }
+
+    _makeCellGeometry(radius) {
+        const { cellIrregularity: irr, cellDetail } = this.config;
+        const geo = new THREE.IcosahedronGeometry(radius, cellDetail);
+        if (irr <= 0) return geo;
+        // Per-sphere random phases so each cell has a unique shape.
+        const p = [0,1,2,3,4,5].map(() => Math.random() * Math.PI * 2);
+        const pos = geo.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+            const len = Math.sqrt(x * x + y * y + z * z) || 1;
+            const nx = x / len, ny = y / len, nz = z / len;
+            // Two overlapping octaves: large blebs + smaller surface texture
+            const disp = irr * radius * (
+                Math.sin(1.7 * nx + p[0]) * Math.sin(1.9 * ny + p[1]) * Math.sin(2.1 * nz + p[2]) * 0.6 +
+                Math.sin(3.8 * ny + p[3]) * Math.sin(4.2 * nz + p[4]) * Math.sin(3.3 * nx + p[5]) * 0.4
+            );
+            pos.setXYZ(i, x + nx * disp, y + ny * disp, z + nz * disp);
+        }
+        geo.computeVertexNormals();
+        return geo;
     }
 
     _resolveCollisions(spheres) {
