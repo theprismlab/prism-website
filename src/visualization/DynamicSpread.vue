@@ -14,7 +14,7 @@ let plot = null;
 onMounted(async () => {
 
 
-    plot = new ScatterPlotFromJSON(scatterCanvas.value);
+    plot = new ScatterPlotFromJSON(scatterCanvas.value, { scaleToScreen: true   });
     await plot.loadJSON('/data/scatter-plot-data.json');
 });
 

@@ -23,6 +23,13 @@ const defaultConfig = {
     // ── Physics / collision ───────────────────────────────────────────────────
     collisionAvoidance: true,
 
+    // ── Screen scaling ────────────────────────────────────────────────────────
+    // When true, re-scales the pre-baked X world positions to match the actual
+    // canvas aspect ratio vs the reference aspect (referenceWidth/referenceHeight).
+    // Y (viability) and Z (depth) are aspect-independent and are never rescaled.
+    // Re-runs automatically on resize.
+    scaleToScreen: false,
+
     // ── Barcode stickers ──────────────────────────────────────────────────────
     // Applied to points where `hasBarcode === true` in the JSON (if present).
     stickerSizeFraction: 0.8,
@@ -211,7 +218,13 @@ export default class ScatterPlotFromJSON {
         const { floatSpeedMin, floatSpeedRange, floatAmplitude } = this.config;
         const [floatAmpMin, floatAmpMax] = floatAmplitude;
 
-
+        // When scaleToScreen is true, rescale the baked X positions to the
+        // actual canvas aspect ratio.  Y and Z are aspect-independent.
+        let xFactor = 1;
+        if (this.config.scaleToScreen) {
+            const { referenceWidth, referenceHeight } = this.config;
+            xFactor = (this.width / this.height) / (referenceWidth / referenceHeight);
+        }
 
         const spheres = [];
 
@@ -232,7 +245,7 @@ export default class ScatterPlotFromJSON {
             });
 
             const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.set(d.world.x, d.world.y, d.world.z);
+            sphere.position.set(d.world.x * xFactor, d.world.y, d.world.z);
 
             // Store base position and animation parameters
             sphere.userData.basePosition    = sphere.position.clone();
