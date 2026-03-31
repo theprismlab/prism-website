@@ -56,10 +56,16 @@ function parseScatterData(raw) {
 
 // ── Scale and compute world positions (mirrors exportScatterPlotJSON) ─────────
 
+// ── Scene constants — MUST match ScatterPlotFromJSON defaultConfig / DynamicSpread overrides ──
+// fov and cameraDistance are used to project world positions into the visible frustum.
+// If you change these here you MUST change the matching values in:
+//   src/visualization/plots/ScatterPlotFromJSON.js  (defaultConfig)
+//   src/visualization/DynamicSpread.vue             (constructor config)
 const referenceWidth   = 1920;
 const referenceHeight  = 1080;
-const fov              = 25;
-const cameraDistance   = 25;
+const fov              = 25;   // degrees — matches ScatterPlotFromJSON defaultConfig.fov
+const cameraDistance   = 18;   // world units — matches DynamicSpread cameraDistance override
+const cameraLookAtY    = 8;    // world units — matches DynamicSpread cameraLookAt[1]
 const sphereXStep      = 4;
 const sphereZStep      = 2;
 
@@ -75,7 +81,7 @@ const zExtent        = d3.extent(data, d => d.z);
 const yExtent        = d3.extent(data, d => d.y);
 const colorThreshold = xExtent[0] + (xExtent[1] - xExtent[0]) / 3;
 const halfSpread     = visibleHeight * 1.75 / 2;
-const centerOffset   = visibleHeight * 0.5;
+const centerOffset   = cameraLookAtY;  // center the cloud on the camera lookAt Y
 
 
 
@@ -89,7 +95,7 @@ const zNorm        = d3.scaleLinear().domain(zExtent).range([0.3, 0.85]);
 const xOffset      = visibleWidth  / 2;
 const zOffset      = visibleHeight / 2;
 const hasBarcode = (d)=>{
-    const zMin = 0.5;
+    const zMin = 5;
     const radiusMin = 0.5;
     // if d.z and d.radius are within the max and min, return true
     return d.z >= zMin && d.radius >= radiusMin;

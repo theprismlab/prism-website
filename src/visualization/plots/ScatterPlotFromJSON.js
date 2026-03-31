@@ -7,7 +7,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const defaultConfig = {
     // ── Camera (spherical coords relative to cameraLookAt) ────────────────────
     fov:             25,
-    cameraDistance:  40,
+    cameraDistance:  25,
     cameraAzimuth:   0,      // horizontal orbit around Y axis (radians)
     cameraElevation: 0.06,   // tilt above horizontal (radians); 0 = eye-level
     cameraLookAt:    [0, 8, 0],
@@ -19,10 +19,6 @@ const defaultConfig = {
     ambientLightIntensity:     1.5,
     enableShadows:             false,  // off by default — large datasets are heavy
 
-    // ── Sphere sizing ─────────────────────────────────────────────────────────
-    // radius is derived from each point's `viability` field (lower → larger).
-    // Adjust these to change the size range of spheres in world units.
-    radiusRange:  [0.08, 0.7],
 
     // ── Float animation ───────────────────────────────────────────────────────
     floatSpeedMin:   1.2,
