@@ -10,8 +10,8 @@ const defaultConfig = {
     ...sceneConfig,
 
     // ── Lighting ──────────────────────────────────────────────────────────────
-    directionalLightIntensity: 0.5,
-    ambientLightIntensity:     1.5,
+    directionalLightIntensity: 1.5,
+    ambientLightIntensity:     2.5,
     enableShadows:             false,  // off by default — large datasets are heavy
 
 
@@ -243,9 +243,9 @@ export default class ScatterPlotFromJSON {
                 emissiveIntensity: 0.008,
                 transparent:       true,
                 opacity,
-            roughness: 0.35,
-            metalness: 0.0,
-            envMapIntensity: 0.4,
+                roughness: 0.35,
+                metalness: 0.0,
+                envMapIntensity: 0.4,
             });
 
             const sphere = new THREE.Mesh(geometry, material);

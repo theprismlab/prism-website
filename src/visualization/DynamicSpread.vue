@@ -21,7 +21,7 @@ onMounted(async () => {
     });
     sizeObserver.observe(wrapper.value);
 
-    plot = new ScatterPlotFromJSON(scatterCanvas.value, { scaleToScreen: false });
+    plot = new ScatterPlotFromJSON(scatterCanvas.value, { scaleToScreen: false  });
     await plot.loadJSON('/data/scatter-plot-data.json');
 });
 
