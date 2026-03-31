@@ -1,18 +1,13 @@
 import * as THREE from 'three';
 import * as d3 from 'd3';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { sceneConfig } from './scatter-scene-config.js';
 
 // ─── Default config ───────────────────────────────────────────────────────────
 
 const defaultConfig = {
-    // ── Camera (spherical coords relative to cameraLookAt) ────────────────────
-    fov:             25,
-    cameraDistance:  25,
-    cameraAzimuth:   0,      // horizontal orbit around Y axis (radians)
-    cameraElevation: 0.06,   // tilt above horizontal (radians); 0 = eye-level
-    cameraLookAt:    [0, 8, 0],
-    nearClip:        0.1,
-    farClip:         200,
+    // ── Camera — values come from scatter-scene-config.js ─────────────────────
+    ...sceneConfig,
 
     // ── Lighting ──────────────────────────────────────────────────────────────
     directionalLightIntensity: 0.5,
