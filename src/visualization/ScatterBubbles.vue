@@ -131,7 +131,6 @@ function initPlot() {
             radius: { range: [0.08, 0.75] },
             x:      { domain: xDomain, range: [-6, 6] },
             y:      { domain: yDomain, range: [-6, 6] },
-            z:      { range: [0, 8] },
         },
         ...props.scatterConfig,
     };
