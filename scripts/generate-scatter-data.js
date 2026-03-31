@@ -95,16 +95,13 @@ const hasBarcode = (d)=>{
     return d.z >= zMin && d.radius >= radiusMin;
 }
 const getRadius = ()=>{
-    const radiusScale  = d3.scaleLinear().domain([0,1]).range([0.08, 0.5]);
+    const radiusScale  = d3.scaleLinear().domain([0,1]).range([0.1, 0.65]);
     const radiusJitter = 0.85 + Math.random();
     const radius = radiusScale(Math.random()) * radiusJitter;
     return radius;
 }
 
 const result = sampled.map(d => ({
-
-
-    
     radius:    getRadius(),
     world: {
         x: xScale(d.x) - xOffset,
