@@ -124,13 +124,13 @@ function initPlot() {
     const scatterConfig = {
         colorInterpolator: d3.interpolateRainbow,
         cameraLookAt:    [0, 0, 4],
-        cameraDistance:  25,
+        cameraDistance:  35,
         cameraAzimuth:   0,
         cameraElevation: 0,
         scale: {
             radius: { range: [0.04, 0.75] },
-            x:      { domain: xDomain, range: [-9, 9] },
-            y:      { domain: yDomain, range: [-9, 9] },
+            x:      { domain: xDomain, range: [-13, 13] },
+            y:      { domain: yDomain, range: [-13, 13] },
         },
         ...props.scatterConfig,
     };
