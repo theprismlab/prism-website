@@ -57,7 +57,7 @@ function parseScatterData(raw) {
 
 // ── Scale and compute world positions (mirrors exportScatterPlotJSON) ─────────
 
-const { fov, cameraDistance, cameraLookAt, referenceWidth, referenceHeight, ySpreadCenterFraction, ySpreadFraction } = sceneConfig;
+const { fov, cameraDistance, referenceWidth, referenceHeight } = sceneConfig;
 const sphereXStep = 4;
 const sphereZStep = 2;
 
@@ -70,23 +70,20 @@ const visibleWidth  = visibleHeight * (referenceWidth / referenceHeight);
 
 const xExtent        = d3.extent(data, d => d.x);
 const zExtent        = d3.extent(data, d => d.z);
-const yExtent        = d3.extent(data, d => d.y);
+// const yExtent        = d3.extent(data, d => d.y).reverse();
+const yExtent = [1.4, 0.1];
 
 const colorThreshold = xExtent[0] + (xExtent[1] - xExtent[0]) / 3;
-const halfSpread     = visibleHeight * ySpreadFraction / 2;
-const centerOffset   = visibleHeight * ySpreadCenterFraction;  // matches ScatterLayer: visibleHeight * ySpreadCenterFraction
 
 
 
 
-const xScale       = d3.scaleLinear().domain(xExtent).range([0, visibleWidth]);
-const zScale       = d3.scaleLinear().domain(zExtent).range([0, visibleHeight]);
-const yScale       = d3.scaleLinear().domain(yExtent).range([centerOffset + halfSpread, centerOffset - halfSpread]);
-const opacityScale = d3.scaleLinear().domain(zExtent).range([0.25, 0.95]);
+const xScale       = d3.scaleLinear().domain(xExtent).range([-visibleWidth / 1.75,  visibleWidth / 1.75]);
+const zScale       = d3.scaleLinear().domain(zExtent).range([-visibleHeight / 2, visibleHeight / 2]);
+const yScale       = d3.scaleLinear().domain(yExtent).range([-visibleHeight / 2, visibleHeight / 2]);
+const opacityScale = d3.scaleLinear().domain(zExtent).range([0.1, 0.9]);
 const xNorm        = d3.scaleLinear().domain([colorThreshold, xExtent[1]]).range([0.4, 0.85]);
 const zNorm        = d3.scaleLinear().domain(zExtent).range([0.3, 0.85]);
-const xOffset      = visibleWidth  / 2;
-const zOffset      = visibleHeight / 2;
 const hasBarcode = (d)=>{
     const zMin = 5;
     const radiusMin = 0.5;
@@ -103,9 +100,9 @@ const getRadius = ()=>{
 const result = sampled.map(d => ({
     radius:    getRadius(),
     world: {
-        x: xScale(d.x) - xOffset,
+        x: xScale(d.x),
         y: yScale(d.y),
-        z: zScale(d.z) - zOffset,
+        z: zScale(d.z),
     },
     color:   d.x < colorThreshold
         ? d3.interpolateGnBu(zNorm(d.z))
