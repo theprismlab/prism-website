@@ -70,9 +70,10 @@ const visibleWidth  = visibleHeight * (referenceWidth / referenceHeight);
 
 const xExtent        = d3.extent(data, d => d.x);
 const zExtent        = d3.extent(data, d => d.z);
-const yExtent        = d3.extent(data, d => d.y);
+// const yExtent        = d3.extent(data, d => d.y);
+const yExtent        = [0, 1.2]; // use fixed Y extent based on viability, to create more vertical movement when animating cameraLookAt Y
 const colorThreshold = xExtent[0] + (xExtent[1] - xExtent[0]) / 3;
-const halfSpread     = visibleHeight * 1.75 / 2;
+const halfSpread     = visibleHeight * 1.75 / 2; // spread points vertically to 175% of the visible height, to reduce overlap and create more vertical movement when animating cameraLookAt Y
 const centerOffset   = cameraLookAt[1];  // center cloud on the camera lookAt Y
 
 

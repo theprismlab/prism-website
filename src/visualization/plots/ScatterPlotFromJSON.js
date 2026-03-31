@@ -221,9 +221,12 @@ export default class ScatterPlotFromJSON {
         // When scaleToScreen is true, rescale the baked X positions to the
         // actual canvas aspect ratio.  Y and Z are aspect-independent.
         let xFactor = 1;
+        let yFactor = 1;
+
         if (this.config.scaleToScreen) {
             const { referenceWidth, referenceHeight } = this.config;
             xFactor = (this.width / this.height) / (referenceWidth / referenceHeight);
+            yFactor = (this.height / this.width) / (referenceHeight / referenceWidth);
         }
 
         const spheres = [];
@@ -245,7 +248,7 @@ export default class ScatterPlotFromJSON {
             });
 
             const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.set(d.world.x * xFactor, d.world.y, d.world.z);
+            sphere.position.set(d.world.x * xFactor, d.world.y * yFactor, d.world.z);
 
             // Store base position and animation parameters
             sphere.userData.basePosition    = sphere.position.clone();

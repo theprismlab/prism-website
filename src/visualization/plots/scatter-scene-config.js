@@ -12,7 +12,8 @@ export const sceneConfig = {
     cameraDistance:  25,
     cameraAzimuth:   0, // horizontal orbit around Y axis (radians)
     cameraElevation: 0.06, // vertical orbit around X axis (radians)
-    cameraLookAt:    [0, 20.5, 0], // world coords to look at (also the center of the scatter plot)
+    cameraLookAt:    [0, 9.5, 0], // world coords to look at (also the center of the scatter plot)
+    cameraYPosition: null, // explicit camera Y override; null = derived from cameraLookAt + elevation
     nearClip:        0.1,
     farClip:         200,
 
