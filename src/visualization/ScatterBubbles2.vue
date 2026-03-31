@@ -33,14 +33,17 @@ function generateScatterAssortmentData({
     // Each entry: position in data space, point count, and σ spread.
     // Scene center is (0, 0); clusters are placed relative to it.
     const clusterDefs = [
-        { cx:  0.0,  cy:  0.0,  count: 280, sigma: 1.4  },  // large central
-        { cx:  3.5,  cy:  2.0,  count: 140, sigma: 0.75 },  // medium top-right
-        { cx: -3.0,  cy:  2.5,  count:  90, sigma: 0.5  },  // small top-left
-        { cx: -2.8,  cy: -2.0,  count: 160, sigma: 0.9  },  // medium bottom-left
-        { cx:  3.0,  cy: -2.5,  count: 100, sigma: 0.6  },  // small bottom-right
-        { cx:  0.0,  cy: -4.5,  count:  70, sigma: 0.4  },  // tiny bottom-center
-        { cx:  5.0,  cy:  0.0,  count:  60, sigma: 0.35 },  // tiny far-right
+        { cx:  0.0,  cy:  0.0,  count: 380, sigma: 2.0  },  // large central
+        { cx:  3.5,  cy:  2.0,  count: 140, sigma: .75 },  // medium top-right
+        { cx: -3.0,  cy:  2.5,  count:  90, sigma: .5  },  // small top-left
+        { cx: -5.8,  cy: -2.0,  count: 160, sigma: 1.6  },  // medium bottom-left
+
+        { cx:  3.0,  cy: -3.0,  count: 150, sigma: 1.75  },  // small bottom-right
+        { cx:  -2.0,  cy: -2.5,  count:  50, sigma: 0.8  },  // tiny bottom-center
+        { cx:  6.0,  cy:  0.0,  count:  90, sigma: 1.2 },  // tiny far-right
     ];
+
+
 
     let s = seed;
     const rand   = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };

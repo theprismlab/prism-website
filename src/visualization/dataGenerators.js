@@ -1,6 +1,18 @@
 
 // ─── Data generators ──────────────────────────────────────────────────────────
 
+    const clusterDefs = [
+        { cx:  0.0,  cy:  0.0,  count: 280, sigma: 1.4  },  // large central
+        { cx:  3.5,  cy:  2.0,  count: 140, sigma: 0.75 },  // medium top-right
+        { cx: -3.0,  cy:  2.5,  count:  90, sigma: 0.5  },  // small top-left
+        { cx: -5.8,  cy: -2.0,  count: 160, sigma: 1.6  },  // medium bottom-left
+        { cx: -4.2,  cy: -1.0,  count: 60, sigma: 1.6  },  // medium bottom-left LP
+        { cx:  3.0,  cy: -2.5,  count: 100, sigma: 0.7  },  // small bottom-right
+        { cx:  0.0,  cy: -3.5,  count:  70, sigma: 0.9  },  // tiny bottom-center
+        { cx:  5.0,  cy:  0.0,  count:  60, sigma: 0.35 },  // tiny far-right
+    ];
+
+
 /**
  * Wave-trend scatter: points rise left-to-right.
  * Data schema: { x, y, z, radius, color, hasBarcode } — all 0–1.
