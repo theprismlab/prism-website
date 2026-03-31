@@ -98,8 +98,9 @@ function generateScatterCentralClusterData({
 
         // Color hue = angle mapped to [0, 1].
         // atan2 returns [-π, π] → dividing by 2π and adding 1 shifts to [0, 1] with no negatives.
-        // The small rand() term nudges adjacent points slightly apart in hue.
-        const color = ((angle / (Math.PI * 2) + 1) % 1 + rand() * 0.06) % 1;
+        // rand() * 0.18 adds ~±18% hue jitter per point so nearby spheres vary in shade
+        // while still preserving the overall cool/warm directional gradient.
+        const color = ((angle / (Math.PI * 2) + 1) % 1 + (rand() - 0.5) * 0.18) % 1;
 
         points.push({ x, y, z, radius, color, hasBarcode: false });
     }
@@ -112,6 +113,19 @@ function generateScatterCentralClusterData({
     return points;
 }
 
+// Custom interpolator that blends two d3 schemes across the [0, 1] color range.
+// t ∈ [0, 0.5] → GnBu reversed (dark blue → light green) rescaled so 0→1 and 0.5→0
+// t ∈ [0.5, 1] → YlOrRd        (light yellow → dark red)  rescaled so 0.5→0 and 1→1
+//
+// Reversing GnBu aligns the light end of GnBu (t≈0.5 → green) with the light end
+// of YlOrRd (t≈0.5 → yellow), so the junction stays in the light/pastel range on
+// both sides and the dark anchors sit at the extremes (t=0 deep blue, t=1 dark red).
+// This gives a visually ordered cool→warm progression around the full circle.
+const interpolateGnBuYlOrRd = t =>
+    t < 0.5
+        ? d3.interpolateYlGnBu(0.75 - t * 2 * 0.75) // reversed, clamped: max 0.75 (cuts darkest blues)
+        : d3.interpolateYlOrRd((t - 0.5) * 2);       // forward:  0→1 as t goes 0.5→1
+
 function initPlot() {
     // These must match the generator parameters so the domain is always
     // symmetric around the cluster center, regardless of random sample outliers.
@@ -122,13 +136,14 @@ function initPlot() {
     const yDomain = [cy - 3 * sigma, cy + 3 * sigma];
 
     const scatterConfig = {
-        colorInterpolator: d3.interpolateRainbow,
+        colorInterpolator: interpolateGnBuYlOrRd,
         cameraLookAt:    [0, 0, 4],
         cameraDistance:  35,
         cameraAzimuth:   0,
         cameraElevation: 0,
         scale: {
             radius: { range: [0.04, 0.75] },
+            color: { domain: [0, 1]},
             x:      { domain: xDomain, range: [-13, 13] },
             y:      { domain: yDomain, range: [-13, 13] },
         },
