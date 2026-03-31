@@ -1067,6 +1067,59 @@ export function generateScatterColorClustersData({
     return points;
 }
 
+function generateScatterCentralClusterData({
+    count             = 120,
+    outerCount        = 280,     // number of small dispersing outer points
+    cx                = 0.5,     // center x
+    cy                = 0.5,     // center y
+    maxRadius         = 0.38,    // maximum distance from center (core cluster)
+    outerMinRadius    = 0.0,    // inner edge of the outer halo
+    outerMaxRadius    = 1.90,    // outer edge of the halo
+    radialBias        = 20,    // > 1 pulls points toward center (denser core)
+    seed              = 42,
+    barcodeFraction   = 0.15,
+    barcodeZThreshold = 0.5,
+} = {}) {
+    let s = seed;
+    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
+
+    const points = [];
+
+    // ── Core cluster ──────────────────────────────────────────────────────────
+    for (let i = 0; i < count; i++) {
+        const angle  = rand() * Math.PI * 2;
+        const dist   = Math.pow(rand(), radialBias) * maxRadius;
+        const x      = Math.max(0, Math.min(1, cx + Math.cos(angle) * dist + randn() * 0.015));
+        const y      = Math.max(0, Math.min(1, cy + Math.sin(angle) * dist + randn() * 0.015));
+        const z      = 1 - dist / maxRadius + randn() * 0.1;
+        const radius = Math.max(0, 0.65 * (1 - dist / maxRadius) + Math.abs(randn()) * 0.06);
+        const color  = (angle / (Math.PI * 2) + rand() * 0.08) % 1;
+        points.push({ x, y, z, radius, color, hasBarcode: false });
+    }
+
+    // ── Outer dispersing halo ─────────────────────────────────────────────────
+    // Points thin out with distance: density ∝ 1/dist² (uniform angle, sqrt-biased radius)
+    for (let i = 0; i < outerCount; i++) {
+        const angle = rand() * Math.PI * 2;
+        // sqrt bias makes density fall off with distance (more points near inner edge)
+        const t     = Math.pow(rand(), 0.5);
+        const dist  = outerMinRadius + t * (outerMaxRadius - outerMinRadius);
+        const x     = cx + Math.cos(angle) * dist + randn() * 0.012;
+        const y     = cy + Math.sin(angle) * dist + randn() * 0.012;
+        // size shrinks steeply with distance; add slight noise
+        const radius = Math.max(0.01, 0.18 * (1 - t) + Math.abs(randn()) * 0.03);
+        const z      = 0.3 * (1 - t) + rand() * 0.25;
+        const color  = (angle / (Math.PI * 2) + rand() * 0.12) % 1;
+        points.push({ x, y, z, radius, color, hasBarcode: false });
+    }
+
+    const close = points.filter(p => p.z >= barcodeZThreshold);
+    close.sort((a, b) => b.radius - a.radius);
+    close.slice(0, Math.ceil(close.length * barcodeFraction)).forEach(p => { p.hasBarcode = true; });
+
+    return points;
+}
 
 
 /**

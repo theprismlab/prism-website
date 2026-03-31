@@ -17,32 +17,49 @@ const scatterCanvas = ref(null);
 
 let scatterInstance = null;
 /**
- * Central Cluster: all points orbit a single center point with random colors per ring layer.
- * Points closer to the center are larger; color varies by angle around the center.
- */ 
+ * Radial normal distribution: x and y offsets are drawn independently from N(0, sigma),
+ * producing an isotropic 2-D Gaussian. Radial distance follows a Rayleigh distribution —
+ * dense at the center, smoothly thinning in every direction with no hard boundary.
+ * Sphere size and z-depth both fall off with distance so outer points appear small and recede.
+ */
 function generateScatterCentralClusterData({
-    count             = 220,
-    cx                = 0.5,     // center x
-    cy                = 0.5,     // center y
-    maxRadius         = 0.38,    // maximum distance from center
-    radialBias        = 1000,     // > 1 pulls points toward center (denser core)
+    count             = 950,
+    cx                = 0.5,   // center x  [0, 1]
+    cy                = 0.5,   // center y  [0, 1]
+    sigma             = 0.90,  // std-dev of the Gaussian; controls how wide the cloud spreads
     seed              = 42,
-    barcodeFraction   = 0.15,
-    barcodeZThreshold = 0.5,
+    barcodeFraction   = 0.12,
+    barcodeZThreshold = 0.6,
 } = {}) {
     let s = seed;
-    const rand  = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-    const randn = () => Math.sqrt(-2 * Math.log(rand() + 1e-9)) * Math.cos(2 * Math.PI * rand());
+    const rand   = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    // Box-Muller: returns two independent standard normals
+    const randn2 = () => {
+        const u = rand() + 1e-9, v = rand() + 1e-9;
+        const mag = Math.sqrt(-2 * Math.log(u));
+        return [mag * Math.cos(2 * Math.PI * v), mag * Math.sin(2 * Math.PI * v)];
+    };
 
     const points = [];
+
     for (let i = 0; i < count; i++) {
-        const angle  = rand() * Math.PI * 2;
-        const dist   = Math.pow(rand(), radialBias) * maxRadius;   // biased toward center
-        const x      = Math.max(0, Math.min(1, cx + Math.cos(angle) * dist + randn() * 0.015));
-        const y      = Math.max(0, Math.min(1, cy + Math.sin(angle) * dist + randn() * 0.015));
-        const z      = 1 - dist / maxRadius + randn() * 0.1; // higher z for points closer to center, with some noise
-        const radius = Math.max(0, 0.65 * (1 - dist / maxRadius) + Math.abs(randn()) * 0.06);
-        const color  = (angle / (Math.PI * 2) + rand() * 0.08) % 1;  // hue by angle
+        const [nx, ny] = randn2();
+        const dx = nx * sigma;
+        const dy = ny * sigma;
+        const dist  = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx);
+
+        // t in [0, 1]: normalised distance (3*sigma covers ~99.7% of the distribution)
+        const t = Math.min(dist / (sigma * 3), 1);
+
+        const x      = cx + dx;
+        const y      = cy + dy;
+        const radius = Math.max(0.01, 0.70 * (1 - t) + Math.abs(randn2()[0]) * 0.04);
+         const z      = Math.max(0,    1 - t           + randn2()[0] * 0.08);
+        //const z = 1;
+        // Hue by angle -> every direction gets a distinct color from the rainbow
+        const color  = ((angle / (Math.PI * 2) + 1) % 1 + rand() * 0.06) % 1;
+
         points.push({ x, y, z, radius, color, hasBarcode: false });
     }
 
@@ -56,15 +73,15 @@ function generateScatterCentralClusterData({
 function initPlot() {
     const scatterConfig = {
         colorInterpolator: d3.interpolateRainbow,
-        cameraLookAt:   [-1.5, -0.25, 4],
-        cameraPosition: [0, 0, 25],
-        scale: {
-            radius: { range: [0.25, 0.75], },
-            x:      { domain: [0, 1], range: [-4, 4] },
-            y:      { domain: [0, 1], range: [-4, 4] },
-            z:      { domain: [0, 1], range: [0, 8] },
-        },
-        ...props.scatterConfig,
+        // cameraLookAt:   [-4, 0, 4],
+        // cameraPosition: [0, 0, 25],
+        // scale: {
+        //     radius: { range: [0.25, 0.75], },
+        //     x:      { domain: [-0.5, 1.5], range: [-6, 6] },
+        //     y:      { domain: [-0.5, 1.5], range: [-6, 6] },
+        //     z:      { domain: [0, 1], range: [0, 8] },
+        // },
+        // ...props.scatterConfig,
     };
     scatterInstance = new ScatterPlot3D(scatterCanvas.value, scatterConfig);
     scatterInstance.setData(generateScatterCentralClusterData());
