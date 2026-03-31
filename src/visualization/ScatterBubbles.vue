@@ -43,11 +43,11 @@ let scatterInstance = null;
  *           rainbow colour, making the cloud visually radially symmetric.
  */
 function generateScatterCentralClusterData({
-    count             = 700,
+    count             = 900,
     cx                = 0.5,   // center x  [0, 1]
     cy                = 0.5,   // center y  [0, 1]
-    sigma             = 0.7,  // std-dev of the Gaussian; controls how wide the cloud spreads
-    seed              = 18, // 5, 14,15
+    sigma             = 0.1,  // std-dev of the Gaussian; controls how wide the cloud spreads
+    seed              = 17, // 5, 14,15, 18
     barcodeFraction   = 0.12,
     barcodeZThreshold = 0.5,
 } = {}) {
@@ -121,10 +121,12 @@ function generateScatterCentralClusterData({
 // of YlOrRd (t≈0.5 → yellow), so the junction stays in the light/pastel range on
 // both sides and the dark anchors sit at the extremes (t=0 deep blue, t=1 dark red).
 // This gives a visually ordered cool→warm progression around the full circle.
+const minLight = 0.18; // clamp lightest values: 0 = allow full white/yellow, higher = cut pale tones
+const maxDark = 0.78; // clamp darkest values: 1 = allow full black, lower = cut deep tones
 const interpolateGnBuYlOrRd = t =>
     t < 0.5
-        ? d3.interpolateYlGnBu(0.75 - t * 2 * 0.75) // reversed, clamped: max 0.75 (cuts darkest blues)
-        : d3.interpolateYlOrRd((t - 0.5) * 2);       // forward:  0→1 as t goes 0.5→1
+        ? d3.interpolateYlGnBu(maxDark - t * 2 * (maxDark - minLight)) // reversed, range [maxDark → minLight]
+        : d3.interpolateYlOrRd(minLight + (t - 0.5) * 2 * (maxDark - minLight)); // forward, range [minLight → 1]
 
 function initPlot() {
     // These must match the generator parameters so the domain is always
@@ -138,14 +140,14 @@ function initPlot() {
     const scatterConfig = {
         colorInterpolator: interpolateGnBuYlOrRd,
         cameraLookAt:    [0, 0, 4],
-        cameraDistance:  35,
+        cameraDistance:  45,
         cameraAzimuth:   0,
         cameraElevation: 0,
         scale: {
             radius: { range: [0.04, 0.75] },
             color: { domain: [0, 1]},
-            x:      { domain: xDomain, range: [-13, 13] },
-            y:      { domain: yDomain, range: [-13, 13] },
+            x:      { domain: xDomain, range: [-20, 20] },
+            y:      { domain: yDomain, range: [-20, 20] },
         },
         ...props.scatterConfig,
     };
