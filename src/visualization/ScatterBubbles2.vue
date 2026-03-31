@@ -26,7 +26,7 @@ let scatterInstance = null;
  * flows coherently across the entire composition rather than repeating per blob.
  */
 function generateScatterAssortmentData({
-    seed              = 42,
+    seed              = 12, // 12, 15
     barcodeFraction   = 0.10,
     barcodeZThreshold = 0.5,
 } = {}) {
@@ -35,10 +35,10 @@ function generateScatterAssortmentData({
     const clusterDefs = [
         { cx:  0.0,  cy:  0.0,  count: 380, sigma: 2.0  },  // large central
         { cx:  3.5,  cy:  2.0,  count: 140, sigma: .75 },  // medium top-right
-        { cx: -3.0,  cy:  2.5,  count:  90, sigma: .5  },  // small top-left
+        { cx: -3.0,  cy:  2.5,  count:  90, sigma: .95  },  // small top-left
         { cx: -5.8,  cy: -2.0,  count: 160, sigma: 1.6  },  // medium bottom-left
 
-        { cx:  3.0,  cy: -3.0,  count: 150, sigma: 1.75  },  // small bottom-right
+        { cx:  3.0,  cy: -3.0,  count: 100, sigma: 1.2  },  // small bottom-right
         { cx:  -2.0,  cy: -2.5,  count:  50, sigma: 0.8  },  // tiny bottom-center
         { cx:  6.0,  cy:  0.0,  count:  90, sigma: 1.2 },  // tiny far-right
     ];
