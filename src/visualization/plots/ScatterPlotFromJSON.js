@@ -217,21 +217,15 @@ export default class ScatterPlotFromJSON {
     }
 
     _buildSpheres(data) {
-        const { floatSpeedMin, floatSpeedRange, floatAmplitude, radiusRange } = this.config;
+        const { floatSpeedMin, floatSpeedRange, floatAmplitude } = this.config;
         const [floatAmpMin, floatAmpMax] = floatAmplitude;
 
-        // Derive radius from viability: low viability (sensitive) → large sphere.
-        // Scale is computed once across the whole dataset.
-        const viabilityExtent = d3.extent(data, d => d.viability);
-        const radiusScale     = d3.scaleLinear()
-            .domain(viabilityExtent)
-            .range([radiusRange[1], radiusRange[0]])  // inverted: low viability → large
-            .clamp(true);
+
 
         const spheres = [];
 
         data.forEach(d => {
-            const radius  = radiusScale(d.viability);
+            const radius  = d.radius;
             const color   = new THREE.Color(d.color);   // CSS "rgb(r,g,b)" accepted directly
             const opacity = d.opacity ?? 0.8;
 

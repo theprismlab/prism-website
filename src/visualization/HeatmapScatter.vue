@@ -9,7 +9,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import Heatmap3D from './plots/Heatmap3D.js';
 import ScatterPlot3D from './plots/ScatterPlot3D.js';
-import { loadViabilityCSV, parseHeatmapData, parseScatterData } from './getData.js';
+import { loadViabilityCSV, parseHeatmapData, parseScatterData } from './data-services.js';
 
 const props = defineProps({
     heatmapConfig: { type: Object, default: () => ({}) },

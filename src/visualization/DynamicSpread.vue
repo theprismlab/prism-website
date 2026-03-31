@@ -12,11 +12,12 @@ const scatterCanvas = ref(null);
 let plot = null;
 
 onMounted(async () => {
+
+
     plot = new ScatterPlotFromJSON(scatterCanvas.value, {
         cameraLookAt:    [0, 8, 0],
-        cameraDistance:  40,
-        cameraElevation: 0.06,
-        radiusRange:     [0.08, 0.7],
+        cameraDistance:  18,
+        cameraElevation: 0.06
     });
     await plot.loadJSON('/data/scatter-plot-data.json');
 });
