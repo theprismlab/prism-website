@@ -17,95 +17,67 @@ const scatterCanvas = ref(null);
 
 let scatterInstance = null;
 /**
- * Generates a 2-D isotropic Gaussian point cloud.
+ * Generates an assortment of independent Gaussian clusters with varied sizes
+ * and positions.
  *
- * Math overview
- * ─────────────
- * Drawing dx ~ N(0,σ) and dy ~ N(0,σ) independently gives a 2-D Gaussian
- * whose joint density is f(x,y) = (1/2πσ²) · exp(-(x²+y²)/2σ²).
- * In polar coordinates the radial distance r = √(dx²+dy²) follows a
- * Rayleigh distribution: f(r) = (r/σ²)·exp(-r²/2σ²).
- *   • Peak density is at r = σ (one std-dev from center).
- *   • ~68% of points fall within r ≤ σ, ~95% within 2σ, ~99.7% within 3σ.
- * This naturally concentrates points near the center with a smooth falloff —
- * no hard radius boundary, no separate inner/outer loops needed.
- *
- * Per-point attributes
- * ─────────────────────
- *   t       normalised radial distance: t = min(r / 3σ, 1)
- *           t≈0 at center, t=1 at the 3σ boundary (99.7% envelope).
- *   radius  linear in (1-t) so core spheres are large and edge spheres
- *           are small, plus a Gaussian noise term for organic variation.
- *   z       depth: high (front) at center, lower (back) at periphery.
- *           This makes the opacity scale push outer spheres slightly
- *           transparent, reinforcing the depth illusion.
- *   color   hue = angle/2π  so every compass direction gets a different
- *           rainbow colour, making the cloud visually radially symmetric.
+ * Size and depth (z) are computed locally within each cluster so each blob
+ * has its own spatial gradient — large dense core, small sparse periphery.
+ * Color uses the global angle from the scene center (0, 0) so the rainbow
+ * flows coherently across the entire composition rather than repeating per blob.
  */
-function generateScatterCentralClusterData({
-    count             = 1000,
-    cx                = 0.5,   // center x  [0, 1]
-    cy                = 0.5,   // center y  [0, 1]
-    sigma             = 2.2,  // std-dev of the Gaussian; controls how wide the cloud spreads
-    seed              =15, // 5, 14,15, 18
-    barcodeFraction   = 0.12,
+function generateScatterAssortmentData({
+    seed              = 42,
+    barcodeFraction   = 0.10,
     barcodeZThreshold = 0.5,
 } = {}) {
-    let s = seed;
-    // Simple LCG (linear congruential generator) for deterministic, seedable pseudo-random numbers.
-    // Same seed → same cloud every render; change seed to get a different layout.
-    const rand   = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    // Each entry: position in data space, point count, and σ spread.
+    // Scene center is (0, 0); clusters are placed relative to it.
+    const clusterDefs = [
+        { cx:  0.0,  cy:  0.0,  count: 280, sigma: 1.4  },  // large central
+        { cx:  3.5,  cy:  2.0,  count: 140, sigma: 0.75 },  // medium top-right
+        { cx: -3.0,  cy:  2.5,  count:  90, sigma: 0.5  },  // small top-left
+        { cx: -2.8,  cy: -2.0,  count: 160, sigma: 0.9  },  // medium bottom-left
+        { cx:  3.0,  cy: -2.5,  count: 100, sigma: 0.6  },  // small bottom-right
+        { cx:  0.0,  cy: -4.5,  count:  70, sigma: 0.4  },  // tiny bottom-center
+        { cx:  5.0,  cy:  0.0,  count:  60, sigma: 0.35 },  // tiny far-right
+    ];
 
-    // Box-Muller transform: converts two uniform U(0,1) samples (u, v) into
-    // two independent standard normals N(0,1).
-    //   magnitude = √(-2 ln u)   ← Rayleigh-distributed
-    //   [cos(2πv), sin(2πv)]     ← uniform direction on unit circle
-    // Multiplying magnitude × direction gives (X, Y) ~ N(0,1) independently.
+    let s = seed;
+    const rand   = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
     const randn2 = () => {
-        const u = rand() + 1e-9, v = rand() + 1e-9; // +1e-9 guards against log(0)
+        const u = rand() + 1e-9, v = rand() + 1e-9;
         const mag = Math.sqrt(-2 * Math.log(u));
         return [mag * Math.cos(2 * Math.PI * v), mag * Math.sin(2 * Math.PI * v)];
     };
 
     const points = [];
 
-    for (let i = 0; i < count; i++) {
-        // Draw two independent N(0,1) samples and scale by σ → N(0, σ)
-        const [nx, ny] = randn2();
-        const dx = nx * sigma;  // x-offset from center in data space
-        const dy = ny * sigma;  // y-offset from center in data space
+    for (const { cx, cy, count, sigma } of clusterDefs) {
+        for (let i = 0; i < count; i++) {
+            const [nx, ny] = randn2();
+            const dx = nx * sigma;   // offset from this cluster's center
+            const dy = ny * sigma;
 
-        const dist  = Math.sqrt(dx * dx + dy * dy); // Euclidean distance from center (Rayleigh distributed)
-        const angle = Math.atan2(dy, dx);            // direction in [-π, π]
+            const x = cx + dx;
+            const y = cy + dy;
 
-        // t ∈ [0, 1]: fraction of the 3σ radius.
-        // t ≈ 0 → very close to center (large, opaque, front)
-        // t = 1 → at or beyond the 3σ envelope (small, semi-transparent, back)
-        const t = Math.min(dist / (sigma * 3), 1);
+            // Local t: normalized distance from this cluster's own center.
+            // Each blob independently grades from large/front (core) to small/back (edge).
+            const localDist = Math.sqrt(dx * dx + dy * dy);
+            const t = Math.min(localDist / (sigma * 3), 1);
 
-        const x = cx + dx;
-        const y = cy + dy;
+            // Global color: angle from scene center (0,0) gives a single coherent
+            // rainbow that spans the whole composition.
+            const angle = Math.atan2(y, x);
+            const color = ((angle / (Math.PI * 2) + 1) % 1 + (rand() - 0.5) * 0.18) % 1;
 
-        // Sphere radius: starts at 0.70 (center) and falls linearly to 0.08 (edge).
-        // The floor of 0.08 ensures outer spheres remain visible.
-        // abs(randn2()[0]) * 0.03 adds a small positive noise for organic variation.
-        const radius = 0.04 + 0.66 * (1 - t) + Math.abs(randn2()[0]) * 0.03;
+            const radius = 0.04 + 0.66 * (1 - t) + Math.abs(randn2()[0]) * 0.03;
+            const z      = 0.35 + (1 - t) * 0.55 + randn2()[0] * 0.05;
 
-        // Depth (z): maps to [0.35, 0.90] in data space, then to [0, 8] world units.
-        // Center points (t≈0) → z≈0.90 (front); edge points (t=1) → z≈0.35 (back).
-        // Small noise keeps the depth layer from looking perfectly uniform.
-        const z = 0.35 + (1 - t) * 0.55 + randn2()[0] * 0.05;
-
-        // Color hue = angle mapped to [0, 1].
-        // atan2 returns [-π, π] → dividing by 2π and adding 1 shifts to [0, 1] with no negatives.
-        // rand() * 0.18 adds ~±18% hue jitter per point so nearby spheres vary in shade
-        // while still preserving the overall cool/warm directional gradient.
-        const color = ((angle / (Math.PI * 2) + 1) % 1 + (rand() - 0.5) * 0.18) % 1;
-
-        points.push({ x, y, z, radius, color, hasBarcode: false });
+            points.push({ x, y, z, radius, color, hasBarcode: false });
+        }
     }
 
-    // Tag the largest, closest points with barcodes (purely cosmetic).
     const close = points.filter(p => p.z >= barcodeZThreshold);
     close.sort((a, b) => b.radius - a.radius);
     close.slice(0, Math.ceil(close.length * barcodeFraction)).forEach(p => { p.hasBarcode = true; });
@@ -166,29 +138,24 @@ const interpolateGnBuYlOrRd = t =>
         : d3.interpolateYlOrRd(minLight + (t - 0.5) * 2 * (maxDark - minLight)); // forward, range [minLight → 1]
 
 function initPlot() {
-    // These must match the generator parameters so the domain is always
-    // symmetric around the cluster center, regardless of random sample outliers.
-    const cx = 0.5, cy = 0.5, sigma = 2.2;
-    // [cx ± 3σ] covers 99.7% of the Gaussian and is symmetric by construction,
-    // so cx maps exactly to world 0 (the frustum center) every time.
-    const xDomain = [cx - 3 * sigma, cx + 3 * sigma];
-    const yDomain = [cy - 3 * sigma, cy + 3 * sigma];
-    const domainBase = 23;
+    // Domain covers all cluster extents: furthest center is ±5, max 3σ = 4.2 → ±9 with margin.
+    const domainData = 9;
+    const domainBase = 22;
     const scatterConfig = {
         colorInterpolator: interpolateGnBuYlOrRd,
         cameraLookAt:    [0, 0, 4],
-        cameraDistance:  35,
+        cameraDistance:  42,
         cameraAzimuth:   0,
         cameraElevation: 0,
         scale: {
             radius: { range: [0.01, 1], domain: [0, 1] },
-            x:      { domain: xDomain, range: [-domainBase, domainBase] },
-            y:      { domain: yDomain, range: [-domainBase, domainBase] },
+            x:      { domain: [-domainData, domainData], range: [-domainBase, domainBase] },
+            y:      { domain: [-domainData, domainData], range: [-domainBase, domainBase] },
         },
         ...props.scatterConfig,
     };
     scatterInstance = new ScatterPlot3D(scatterCanvas.value, scatterConfig);
-    scatterInstance.setData(generateScatterCentralClusterData({ cx, cy, sigma }));
+    scatterInstance.setData(generateScatterAssortmentData());
 }
 
 onMounted(() => {
