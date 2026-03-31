@@ -9,6 +9,9 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import * as d3 from 'd3';
 import ScatterPlot3D from './plots/ScatterPlot3D.js';
 
+
+
+
 const props = defineProps({
     scatterConfig: { type: Object, default: () => ({}) },
 });
@@ -16,16 +19,18 @@ const props = defineProps({
 const scatterCanvas = ref(null);
 
 let scatterInstance = null;
+
+
 /**
  * Central Cluster: all points orbit a single center point with random colors per ring layer.
  * Points closer to the center are larger; color varies by angle around the center.
- */ 
-function generateScatterCentralClusterData({
-    count             = 220,
+ */
+export function generateScatterCentralClusterData({
+    count             = 920,
     cx                = 0.5,     // center x
     cy                = 0.5,     // center y
     maxRadius         = 0.38,    // maximum distance from center
-    radialBias        = 1000,     // > 1 pulls points toward center (denser core)
+    radialBias        = 0.3,     // > 1 pulls points toward center (denser core)
     seed              = 42,
     barcodeFraction   = 0.15,
     barcodeZThreshold = 0.5,
@@ -40,7 +45,7 @@ function generateScatterCentralClusterData({
         const dist   = Math.pow(rand(), radialBias) * maxRadius;   // biased toward center
         const x      = Math.max(0, Math.min(1, cx + Math.cos(angle) * dist + randn() * 0.015));
         const y      = Math.max(0, Math.min(1, cy + Math.sin(angle) * dist + randn() * 0.015));
-        const z      = 1 - dist / maxRadius + randn() * 0.1; // higher z for points closer to center, with some noise
+        const z      = rand();
         const radius = Math.max(0, 0.65 * (1 - dist / maxRadius) + Math.abs(randn()) * 0.06);
         const color  = (angle / (Math.PI * 2) + rand() * 0.08) % 1;  // hue by angle
         points.push({ x, y, z, radius, color, hasBarcode: false });
@@ -56,13 +61,8 @@ function generateScatterCentralClusterData({
 function initPlot() {
     const scatterConfig = {
         colorInterpolator: d3.interpolateRainbow,
-        cameraLookAt:   [-1.5, -0.25, 4],
-        cameraPosition: [0, 0, 25],
         scale: {
-            radius: { range: [0.25, 0.75], },
-            x:      { domain: [0, 1], range: [-4, 4] },
-            y:      { domain: [0, 1], range: [-4, 4] },
-            z:      { domain: [0, 1], range: [0, 8] },
+            radius: { range: [ 0,  0.9] },
         },
         ...props.scatterConfig,
     };

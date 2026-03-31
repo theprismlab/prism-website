@@ -417,4 +417,10 @@ export default class ScatterPlot3D {
         });
         this.spheres = [];
     }
+    // _createCustomColorScale(){
+    //     return colorScale = (x, z) => {
+    //         if (x < 0.5) return new THREE.Color(d3.interpolateGnBu(zNorm(z)));
+    //         return new THREE.Color(d3.interpolateYlOrRd(xNorm(x)));
+    //     };
+    // }
 }
