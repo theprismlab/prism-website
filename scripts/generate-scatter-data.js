@@ -86,6 +86,7 @@ const xNorm        = d3.scaleLinear().domain([colorThreshold, xExtent[1]]).range
 const zNorm        = d3.scaleLinear().domain(zExtent).range([0.3, 0.85]);
 const xOffset      = visibleWidth  / 2;
 const zOffset      = visibleHeight / 2;
+const yOffset      = 10; // no vertical offset, since yScale already centers on cameraLookAt Y
 const hasBarcode = (d)=>{
     const zMin = 5;
     const radiusMin = 0.5;
@@ -93,7 +94,7 @@ const hasBarcode = (d)=>{
     return d.z >= zMin && d.radius >= radiusMin;
 }
 const getRadius = ()=>{
-    const radiusScale  = d3.scaleLinear().domain([0, 1]).range([0.1, 0.5]);
+    const radiusScale  = d3.scaleLinear().domain([0, 1]).range([0.1, 0.65]);
     const radiusJitter = 0.85 + Math.random();
     const radius = radiusScale(Math.random()) * radiusJitter;
     return radius;
