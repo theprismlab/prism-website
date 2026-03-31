@@ -86,10 +86,10 @@ function generateScatterCentralClusterData({
         const x = cx + dx;
         const y = cy + dy;
 
-        // Sphere radius: starts at 0.70 (center) and falls linearly to 0.01 (edge).
+        // Sphere radius: starts at 0.70 (center) and falls linearly to 0.08 (edge).
         // The floor of 0.08 ensures outer spheres remain visible.
         // abs(randn2()[0]) * 0.03 adds a small positive noise for organic variation.
-        const radius = 0.01 + 0.62 * (1 - t) + Math.abs(randn2()[0]) * 0.03;
+        const radius = 0.08 + 0.62 * (1 - t) + Math.abs(randn2()[0]) * 0.03;
 
         // Depth (z): maps to [0.35, 0.90] in data space, then to [0, 8] world units.
         // Center points (t≈0) → z≈0.90 (front); edge points (t=1) → z≈0.35 (back).
@@ -113,20 +113,30 @@ function generateScatterCentralClusterData({
 }
 
 function initPlot() {
+    // These must match the generator parameters so the domain is always
+    // symmetric around the cluster center, regardless of random sample outliers.
+    const cx = 0.5, cy = 0.5, sigma = 0.7;
+    // [cx ± 3σ] covers 99.7% of the Gaussian and is symmetric by construction,
+    // so cx maps exactly to world 0 (the frustum center) every time.
+    const xDomain = [cx - 3 * sigma, cx + 3 * sigma];
+    const yDomain = [cy - 3 * sigma, cy + 3 * sigma];
+
     const scatterConfig = {
         colorInterpolator: d3.interpolateRainbow,
-        cameraLookAt:   [-2, 0, 0],
-        cameraPosition: [100, 0, 0],
+        cameraLookAt:    [0, 0, 4],
+        cameraDistance:  25,
+        cameraAzimuth:   0,
+        cameraElevation: 0,
         scale: {
             radius: { range: [0.08, 0.75] },
-            x:      { domain: [-0.5, 1.5], range: [-6, 6]},
-            y:      { domain: [-0.5, 1.5], range: [-6, 6] },
-            z:      { domain: [0, 1],      range: [0, 8] },
+            x:      { domain: xDomain, range: [-6, 6] },
+            y:      { domain: yDomain, range: [-6, 6] },
+            z:      { range: [0, 8] },
         },
         ...props.scatterConfig,
     };
     scatterInstance = new ScatterPlot3D(scatterCanvas.value, scatterConfig);
-    scatterInstance.setData(generateScatterCentralClusterData());
+    scatterInstance.setData(generateScatterCentralClusterData({ cx, cy, sigma }));
 }
 
 onMounted(() => {

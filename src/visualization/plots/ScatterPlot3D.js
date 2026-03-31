@@ -8,15 +8,20 @@ import * as d3 from 'd3';
 
 export const defaultConfig = {
     // ── Camera ────────────────────────────────────────────────────────────────
-    fov:            25,
-    cameraDistance: 25,
-    // cameraPosition[1] = camera Y height. X/Z are derived from cameraAngleY.
-    cameraPosition: [0, 3, 25],
-    cameraLookAt:   [0, 1.5, 0],
-    // Orbit angle around Y axis (radians). Positive swings the right side toward camera.
-    cameraAngleY:   0,
-    nearClip:       1.01,
-    farClip:        200,
+    // Camera position is computed in spherical coordinates relative to cameraLookAt:
+    //
+    //   x = lookAt.x + distance · cos(elevation) · sin(azimuth)
+    //   y = lookAt.y + distance · sin(elevation)
+    //   z = lookAt.z + distance · cos(elevation) · cos(azimuth)
+    //
+    // Adjust these three values to position the camera:
+    fov:              25,
+    cameraDistance:   25,    // how far the camera sits from cameraLookAt (zoom)
+    cameraAzimuth:    0,     // horizontal orbit around Y axis, radians (alias: cameraAngleY)
+    cameraElevation:  0.06,  // vertical tilt above horizontal, radians (0 = eye-level, π/2 = top-down)
+    cameraLookAt:     [0, 1.5, 0], // world-space point the camera always looks at
+    nearClip:         1.01,
+    farClip:          200,
 
     // ── Lighting ──────────────────────────────────────────────────────────────
     directionalLightIntensity: 0.5,
@@ -147,14 +152,18 @@ export default class ScatterPlot3D {
 
         this.scene = new THREE.Scene();
 
-        // Camera position: orbit around lookAt point at cameraAngleY radians
-        const { fov, cameraDistance, cameraPosition, cameraLookAt, cameraAngleY, nearClip, farClip } = this.config;
+        // Camera position in spherical coordinates relative to cameraLookAt:
+        //   azimuth  — horizontal orbit around Y axis
+        //   elevation — tilt above the horizontal plane (positive = camera above lookAt)
+        const { fov, cameraDistance, cameraLookAt, nearClip, farClip } = this.config;
+        // Support legacy cameraAngleY as an alias for cameraAzimuth
+        const azimuth   = this.config.cameraAzimuth ?? this.config.cameraAngleY ?? 0;
+        const elevation = this.config.cameraElevation ?? 0;
         this.camera = new THREE.PerspectiveCamera(fov, this.width / this.height, nearClip, farClip);
-        const angle = cameraAngleY ?? 0;
         this.camera.position.set(
-            cameraLookAt[0] + Math.sin(angle) * cameraDistance,
-            cameraPosition[1],
-            cameraLookAt[2] + Math.cos(angle) * cameraDistance,
+            cameraLookAt[0] + cameraDistance * Math.cos(elevation) * Math.sin(azimuth),
+            cameraLookAt[1] + cameraDistance * Math.sin(elevation),
+            cameraLookAt[2] + cameraDistance * Math.cos(elevation) * Math.cos(azimuth),
         );
         this.camera.lookAt(...cameraLookAt);
         this.camera.updateProjectionMatrix();
