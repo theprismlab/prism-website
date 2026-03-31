@@ -57,7 +57,7 @@ function parseScatterData(raw) {
 
 // ── Scale and compute world positions (mirrors exportScatterPlotJSON) ─────────
 
-const { fov, cameraDistance, cameraLookAt, referenceWidth, referenceHeight } = sceneConfig;
+const { fov, cameraDistance, cameraLookAt, referenceWidth, referenceHeight, ySpreadCenterFraction, ySpreadFraction } = sceneConfig;
 const sphereXStep = 4;
 const sphereZStep = 2;
 
@@ -70,11 +70,11 @@ const visibleWidth  = visibleHeight * (referenceWidth / referenceHeight);
 
 const xExtent        = d3.extent(data, d => d.x);
 const zExtent        = d3.extent(data, d => d.z);
-// const yExtent        = d3.extent(data, d => d.y);
-const yExtent        = [0, 1.2]; // use fixed Y extent based on viability, to create more vertical movement when animating cameraLookAt Y
+const yExtent        = d3.extent(data, d => d.y);
+
 const colorThreshold = xExtent[0] + (xExtent[1] - xExtent[0]) / 3;
-const halfSpread     = visibleHeight * 1.75 / 2; // spread points vertically to 175% of the visible height, to reduce overlap and create more vertical movement when animating cameraLookAt Y
-const centerOffset   = cameraLookAt[1];  // center cloud on the camera lookAt Y
+const halfSpread     = visibleHeight * ySpreadFraction / 2;
+const centerOffset   = visibleHeight * ySpreadCenterFraction;  // matches ScatterLayer: visibleHeight * ySpreadCenterFraction
 
 
 
@@ -87,7 +87,6 @@ const xNorm        = d3.scaleLinear().domain([colorThreshold, xExtent[1]]).range
 const zNorm        = d3.scaleLinear().domain(zExtent).range([0.3, 0.85]);
 const xOffset      = visibleWidth  / 2;
 const zOffset      = visibleHeight / 2;
-const yOffset      = 10; // no vertical offset, since yScale already centers on cameraLookAt Y
 const hasBarcode = (d)=>{
     const zMin = 5;
     const radiusMin = 0.5;
