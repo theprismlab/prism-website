@@ -43,7 +43,7 @@ let scatterInstance = null;
  *           rainbow colour, making the cloud visually radially symmetric.
  */
 function generateScatterCentralClusterData({
-    count             = 400,
+    count             = 700,
     cx                = 0.5,   // center x  [0, 1]
     cy                = 0.5,   // center y  [0, 1]
     sigma             = 0.7,  // std-dev of the Gaussian; controls how wide the cloud spreads
@@ -89,7 +89,7 @@ function generateScatterCentralClusterData({
         // Sphere radius: starts at 0.70 (center) and falls linearly to 0.08 (edge).
         // The floor of 0.08 ensures outer spheres remain visible.
         // abs(randn2()[0]) * 0.03 adds a small positive noise for organic variation.
-        const radius = 0.08 + 0.62 * (1 - t) + Math.abs(randn2()[0]) * 0.03;
+        const radius = 0.04 + 0.66 * (1 - t) + Math.abs(randn2()[0]) * 0.03;
 
         // Depth (z): maps to [0.35, 0.90] in data space, then to [0, 8] world units.
         // Center points (t≈0) → z≈0.90 (front); edge points (t=1) → z≈0.35 (back).
@@ -115,7 +115,7 @@ function generateScatterCentralClusterData({
 function initPlot() {
     // These must match the generator parameters so the domain is always
     // symmetric around the cluster center, regardless of random sample outliers.
-    const cx = 0.5, cy = 0.5, sigma = 0.7;
+    const cx = 0.5, cy = 0.5, sigma = 1.1;
     // [cx ± 3σ] covers 99.7% of the Gaussian and is symmetric by construction,
     // so cx maps exactly to world 0 (the frustum center) every time.
     const xDomain = [cx - 3 * sigma, cx + 3 * sigma];
@@ -128,9 +128,9 @@ function initPlot() {
         cameraAzimuth:   0,
         cameraElevation: 0,
         scale: {
-            radius: { range: [0.08, 0.75] },
-            x:      { domain: xDomain, range: [-6, 6] },
-            y:      { domain: yDomain, range: [-6, 6] },
+            radius: { range: [0.04, 0.75] },
+            x:      { domain: xDomain, range: [-9, 9] },
+            y:      { domain: yDomain, range: [-9, 9] },
         },
         ...props.scatterConfig,
     };
