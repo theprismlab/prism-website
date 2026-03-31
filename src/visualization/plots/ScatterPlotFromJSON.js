@@ -240,11 +240,12 @@ export default class ScatterPlotFromJSON {
             const material = new THREE.MeshStandardMaterial({
                 color,
                 emissive:          color,
-                emissiveIntensity: 0.05,
+                emissiveIntensity: 0.008,
                 transparent:       true,
                 opacity,
-                roughness:         0.15,
-                metalness:         0.0,
+            roughness: 0.35,
+            metalness: 0.0,
+            envMapIntensity: 0.4,
             });
 
             const sphere = new THREE.Mesh(geometry, material);
