@@ -23,10 +23,10 @@ let scatterInstance = null;
  * Sphere size and z-depth both fall off with distance so outer points appear small and recede.
  */
 function generateScatterCentralClusterData({
-    count             = 600,
+    count             = 400,
     cx                = 0.5,   // center x  [0, 1]
     cy                = 0.5,   // center y  [0, 1]
-    sigma             = 0.28,  // std-dev of the Gaussian; controls how wide the cloud spreads
+    sigma             = 0.68,  // std-dev of the Gaussian; controls how wide the cloud spreads
     seed              = 42,
     barcodeFraction   = 0.12,
     barcodeZThreshold = 0.6,
@@ -54,9 +54,10 @@ function generateScatterCentralClusterData({
 
         const x      = cx + dx;
         const y      = cy + dy;
-        // Quadratic falloff: outer points shrink much faster than linear
-        const radius = Math.max(0.01, 0.72 * (1 - t * t) + Math.abs(randn2()[0]) * 0.03);
-        const z      = Math.max(0, 1 - t + randn2()[0] * 0.06);
+        // Linear falloff with a guaranteed floor so outer points stay visible
+        const radius = 0.08 + 0.62 * (1 - t) + Math.abs(randn2()[0]) * 0.03;
+        // Keep outer points at a moderate z so they don't become too transparent
+        const z      = 0.35 + (1 - t) * 0.55 + randn2()[0] * 0.05;
         // Hue by angle -> every direction gets a distinct color from the rainbow
         const color  = ((angle / (Math.PI * 2) + 1) % 1 + rand() * 0.06) % 1;
 
@@ -76,7 +77,7 @@ function initPlot() {
         cameraLookAt:   [0, 0, 4],
         cameraPosition: [0, 0, 25],
         scale: {
-            radius: { range: [0.04, 0.75] },
+            radius: { range: [0.08, 0.75] },
             x:      { domain: [-0.5, 1.5], range: [-6, 6] },
             y:      { domain: [-0.5, 1.5], range: [-6, 6] },
             z:      { domain: [0, 1],      range: [0, 8] },
