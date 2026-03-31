@@ -2,7 +2,7 @@
     <div>
         <section class="hero-section">
             <div class="hero-heatmap">
-                <ScatterBubbles :scatter-config="{ clusterCount: 8, cameraAngleY: 0.3, barcodeUrl: '/images/barcode.svg' }" />
+                <CentralCluster :scatter-config="{ clusterCount: 8, cameraAngleY: 0.3, barcodeUrl: '/images/barcode.svg' }" />
             </div>
             <div class="hero-overlay text-center">
                 <h1 class="text-hero text-h1 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import ScatterBubbles from '@/visualization/ScatterBubbles.vue';
+import CentralCluster from '@/visualization/CentralCluster.vue';
 
 export default {
     name: 'hero-02',
     components: {
-        ScatterBubbles,
+        CentralCluster,
     },
 }
 </script>

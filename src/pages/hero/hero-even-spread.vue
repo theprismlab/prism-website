@@ -2,7 +2,7 @@
     <div>
         <section class="hero-section">
             <div class="hero-heatmap">
-                <ScatterBubbles2 :scatter-config="{ clusterCount: 8, cameraAngleY: 0.3, barcodeUrl: '/images/barcode.svg' }" />
+                <EvenSpread  />
             </div>
             <div class="hero-overlay text-center">
                 <h1 class="text-hero text-h1 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import ScatterBubbles2 from '@/visualization/ScatterBubbles2.vue';
+import EvenSpread from '@/visualization/EvenSpread.vue';
 
 export default {
     name: 'hero-04',
     components: {
-        ScatterBubbles2,
+        EvenSpread,
     },
 }
 </script>
