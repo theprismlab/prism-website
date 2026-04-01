@@ -272,7 +272,7 @@ export default class ScatterPlot3D {
         const worldPositions = data.map(d => new THREE.Vector3(xScale(d.x), yScale(d.y), zScale(d.z)));
         const distances = worldPositions.map(p => p.distanceTo(camPos));
         const opDomain = sc.opacity?.domain ?? [Math.min(...distances), Math.max(...distances)];
-        const opRange  = sc.opacity?.range  ?? [0.25, 0.975];
+        const opRange  = sc.opacity?.range  ?? [0.1, 0.875];
         const opacityOf = d3.scaleLinear().domain(opDomain).range([opRange[1], opRange[0]]);
 
         return { xScale, yScale, zScale, colorScale, radiusScale, opacityOf, worldPositions, distances };
@@ -296,8 +296,14 @@ export default class ScatterPlot3D {
                 color,
                 transparent: true,
                 opacity: opacityOf(distances[i]),
-                roughness: 0.0,
+                // roughness: 0.0,
+                // metalness: 0.0,
+                emissiveIntensity: 0.15,
+                emissive:          color,
+              //  emissive:          '#000000',
+                roughness: 0.4,
                 metalness: 0.0,
+                envMapIntensity: 10.1,
             });
 
             const sphere = new THREE.Mesh(geometry, material);

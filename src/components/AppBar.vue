@@ -101,7 +101,7 @@ data() {
         children: [
           { title: 'Heatmap Scatter',   route: '/hero/hero-heatmap-scatter',  id: 'hero-heatmap-scatter' },
           { title: 'Central Cluster 3D', route: '/hero/hero-central-cluster-3d', id: 'hero-central-cluster-3d' },
-            // { title: 'Central Cluster 2D', route: '/hero/hero-central-cluster-2d', id: 'hero-central-cluster-2d' },
+            { title: 'Central Cluster 2D', route: '/hero/hero-central-cluster-2d', id: 'hero-central-cluster-2d' },
           { title: 'Multi Cluster', route: '/hero/hero-multi-cluster', id: 'hero-multi-cluster' },
           { title: 'Even Spread', route: '/hero/hero-even-spread', id: 'hero-even-spread' },
           { title: 'Dynamic Spread', route: '/hero/hero-dynamic-spread', id: 'hero-dynamic-spread' },

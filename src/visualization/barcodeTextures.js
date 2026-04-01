@@ -79,7 +79,7 @@ export class BarcodeStickerManager {
         const mat = new THREE.MeshBasicMaterial({
             map:         texture,
             transparent: true,
-            opacity,
+            opacity: opacity*0.75,
             blending:    THREE.NormalBlending,
             depthWrite:  false,
         });
