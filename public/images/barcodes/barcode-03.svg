@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <style>
-      .cls-1 {
-        opacity: .4;
-      }
-    </style>
-  </defs>
-  <g class="cls-1">
-    <rect x="51.83" y="2.44" width="9.51" height="95.11"/>
-    <rect x="18.3" y="2.44" width="15.85" height="95.11"/>
-    <rect x="71.18" y="2.44" width="6.34" height="95.11"/>
-    <rect x="41.25" y="2.45" width="3.17" height="95.11"/>
-    <rect x="10.37" y="2.44" width="3.17" height="95.11"/>
-    <rect x="86.46" y="2.44" width="3.17" height="95.11"/>
-  </g>
+  <rect x="29.68" y="2.44" width="7.51" height="95.11"/>
+  <rect x="71.18" y="2.44" width="6.34" height="95.11"/>
+  <rect x="51.15" y="2.45" width="6.02" height="95.11"/>
+  <rect x="10.37" y="2.44" width="5.36" height="95.11"/>
+  <rect x="86.46" y="2.44" width="3.17" height="95.11"/>
 </svg>

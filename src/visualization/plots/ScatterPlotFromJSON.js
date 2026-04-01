@@ -53,6 +53,11 @@ const defaultConfig = {
         '/images/barcodes/barcode-02.svg',
         '/images/barcodes/barcode-03.svg',
         '/images/barcodes/barcode-04.svg',
+        '/images/barcodes/barcode-05.svg',
+        '/images/barcodes/barcode-06.svg',
+        '/images/barcodes/barcode-07.svg',
+        '/images/barcodes/barcode-08.svg',
+        '/images/barcodes/barcode-09.svg',
     ],
 };
 
