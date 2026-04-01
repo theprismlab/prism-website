@@ -51,8 +51,18 @@ export const defaultConfig = {
     // Applied to data points where hasBarcode === true.
     stickerSizeFraction: 0.8,   // fraction of sphere surface patch covered
     stickerOpacity:      0.5,
-    barcodeUrl:          '/images/barcode.svg',
-    barcodeVariants:     [],
+
+    barcodeVariants:     [
+        '/images/barcodes/barcode-01.svg',
+        '/images/barcodes/barcode-02.svg',
+        '/images/barcodes/barcode-03.svg',
+        '/images/barcodes/barcode-04.svg',
+        '/images/barcodes/barcode-05.svg',
+        '/images/barcodes/barcode-06.svg',
+        '/images/barcodes/barcode-07.svg',
+        '/images/barcodes/barcode-08.svg',
+        '/images/barcodes/barcode-09.svg',
+    ],
 };
 
 // ─── Class ────────────────────────────────────────────────────────────────────
