@@ -48,8 +48,8 @@ function generateScatterCentralClusterData({
     cy                = 0.5,   // center y  [0, 1]
     sigma             = 2.2,  // std-dev of the Gaussian; controls how wide the cloud spreads
     seed              = 15, // 5, 14,15, 18
-    barcodeFraction   = 0.12,
-    barcodeZThreshold = 0.5,
+    barcodeFraction   = 0.3, // fraction of points to tag with barcodes; these will be the ones with largest radius (closest to center)
+    barcodeZThreshold = 0.2, // points with z ≥ this are eligible for barcodes; lower = more barcodes but more likely to overlap
 } = {}) {
     let s = seed;
     // Simple LCG (linear congruential generator) for deterministic, seedable pseudo-random numbers.

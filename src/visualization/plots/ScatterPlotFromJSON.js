@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as d3 from 'd3';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { sceneConfig } from './scatter-scene-config.js';
+import { BarcodeStickerManager } from '../barcodeTextures.js';
 
 // ─── Default config ───────────────────────────────────────────────────────────
 
@@ -31,23 +32,22 @@ const defaultConfig = {
     // Re-runs automatically on resize.
     scaleToScreen: false,
 
-    // ── Cell shape ─────────────────────────────────────────────────────────────
-    // cellMode: when false, renders plain spheres (ignores all settings below).
-    // cellIrregularity: 0 = perfect sphere, 0.3–0.5 = organic blob/cell look.
-    // cellDetail: IcosahedronGeometry subdivision level (3=fast, 4=smooth).
-    // showNucleus: render an inner nucleus sphere as a child mesh.
-    // nucleusSizeFraction: nucleus radius as a fraction of the cell radius.
-    // cellMode:            true,
-    // cellIrregularity:    0.01,
-    // cellDetail:          10,
-    // showNucleus:         false,
-    // nucleusSizeFraction: 0.45,
-
     // ── Barcode stickers ──────────────────────────────────────────────────────
     // Applied to points where `hasBarcode === true` in the JSON (if present).
     stickerSizeFraction: 0.8,
     stickerOpacity:      0.5,
-    barcodeUrl:          '/images/barcode.svg',
+    barcodeUrl:          '/images/barcodes/barcode',
+    barcodeVariants:     [
+        '/images/barcodes/barcode-01.svg',
+        '/images/barcodes/barcode-02.svg',
+        '/images/barcodes/barcode-03.svg',
+        '/images/barcodes/barcode-04.svg',
+        '/images/barcodes/barcode-05.svg',
+        '/images/barcodes/barcode-06.svg',
+        '/images/barcodes/barcode-07.svg',
+        '/images/barcodes/barcode-08.svg',
+        '/images/barcodes/barcode-09.svg',
+    ],
 };
 
 // ─── Class ────────────────────────────────────────────────────────────────────
@@ -94,9 +94,11 @@ export default class ScatterPlotFromJSON {
         this.clock  = new THREE.Clock();
         this.animationCallbacks = [];
         this.animationFrameId  = null;
-        this.barcodeTexture       = null;
-        this._barcodeTextureReady = false;
-        this._pendingStickers     = [];
+        this.barcodeManager = new BarcodeStickerManager({
+            stickerSizeFraction: this.config.stickerSizeFraction,
+            barcodeVariants:     this.config.barcodeVariants,
+            barcodeUrl:          this.config.barcodeUrl,
+        });
 
         this._setupScene();
     }
@@ -161,7 +163,7 @@ export default class ScatterPlotFromJSON {
         this.stopAnimation();
         this._clearSpheres();
         if (this.environmentTexture) this.environmentTexture.dispose();
-        if (this.barcodeTexture) this.barcodeTexture.dispose();
+        if (this.barcodeManager) this.barcodeManager.dispose();
         if (this.renderer) this.renderer.dispose();
     }
 
@@ -204,7 +206,6 @@ export default class ScatterPlotFromJSON {
         roomEnv.dispose();
         pmrem.dispose();
 
-        this._loadBarcodeTexture();
         this._setupResizeObserver();
     }
 
@@ -249,9 +250,7 @@ export default class ScatterPlotFromJSON {
             const color   = new THREE.Color(d.color);   // CSS "rgb(r,g,b)" accepted directly
             const opacity = d.opacity ?? 0.8;
 
-            const geometry = this.config.cellMode
-                ? this._makeCellGeometry(radius)
-                : new THREE.SphereGeometry(radius, 20, 20);
+            const geometry = new THREE.SphereGeometry(radius, 20, 20);
             const material = new THREE.MeshStandardMaterial({
                 color,
                 emissive:          color,
@@ -265,27 +264,6 @@ export default class ScatterPlotFromJSON {
 
             const sphere = new THREE.Mesh(geometry, material);
 
-            if (this.config.showNucleus) {
-                const nRadius = radius * this.config.nucleusSizeFraction;
-                const nColor  = color.clone().offsetHSL(0, -0.05, -0.18);
-                const nMat = new THREE.MeshStandardMaterial({
-                    color:             nColor,
-                    emissive:          nColor,
-                    emissiveIntensity: 0.04,
-                    transparent:       true,
-                    opacity:           Math.min(opacity + 0.25, 0.95),
-                    roughness:         0.7,
-                    metalness:         0.0,
-                    envMapIntensity:   0.2,
-                });
-                const nucleus = new THREE.Mesh(new THREE.SphereGeometry(nRadius, 12, 12), nMat);
-                nucleus.position.set(
-                    (Math.random() - 0.5) * radius * 0.25,
-                    (Math.random() - 0.5) * radius * 0.25,
-                    (Math.random() - 0.5) * radius * 0.25,
-                );
-                sphere.add(nucleus);
-            }
             sphere.position.set(d.world.x * xFactor, d.world.y * yFactor, d.world.z);
 
             // Store base position and animation parameters
@@ -302,7 +280,8 @@ export default class ScatterPlotFromJSON {
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
             // Metadata — available if you want tooltips / click interactions
          
-            sphere.userData.hasBarcode = d.hasBarcode ?? false;
+            sphere.userData.hasBarcode      = d.hasBarcode ?? false;
+            sphere.userData.barcodeVariant  = d.barcodeVariant; // optional per-point override
 
             spheres.push(sphere);
             this.scene.add(sphere);
@@ -336,30 +315,14 @@ export default class ScatterPlotFromJSON {
 
         spheres
             .filter(s => s.userData.hasBarcode)
-            .forEach(s => this._createBarcodeSticker(s, s.userData.radius, this.config.stickerOpacity));
+            .forEach(s => this.barcodeManager.attachSticker(
+                s,
+                s.userData.radius,
+                this.config.stickerOpacity,
+                s.userData.barcodeVariant,
+            ));
     }
 
-    _makeCellGeometry(radius) {
-        const { cellIrregularity: irr, cellDetail } = this.config;
-        const geo = new THREE.IcosahedronGeometry(radius, cellDetail);
-        if (irr <= 0) return geo;
-        // Per-sphere random phases so each cell has a unique shape.
-        const p = [0,1,2,3,4,5].map(() => Math.random() * Math.PI * 2);
-        const pos = geo.attributes.position;
-        for (let i = 0; i < pos.count; i++) {
-            const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-            const len = Math.sqrt(x * x + y * y + z * z) || 1;
-            const nx = x / len, ny = y / len, nz = z / len;
-            // Two overlapping octaves: large blebs + smaller surface texture
-            const disp = irr * radius * (
-                Math.sin(1.7 * nx + p[0]) * Math.sin(1.9 * ny + p[1]) * Math.sin(2.1 * nz + p[2]) * 0.6 +
-                Math.sin(3.8 * ny + p[3]) * Math.sin(4.2 * nz + p[4]) * Math.sin(3.3 * nx + p[5]) * 0.4
-            );
-            pos.setXYZ(i, x + nx * disp, y + ny * disp, z + nz * disp);
-        }
-        geo.computeVertexNormals();
-        return geo;
-    }
 
     _resolveCollisions(spheres) {
         for (let i = 0; i < spheres.length; i++) {
@@ -378,62 +341,6 @@ export default class ScatterPlotFromJSON {
                 }
             }
         }
-    }
-
-    _loadBarcodeTexture() {
-        const { barcodeUrl } = this.config;
-        if (!barcodeUrl) return;
-        this.barcodeTexture       = new THREE.Texture();
-        this._barcodeTextureReady = false;
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width  = 512;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, 512, 512);
-            const imageData = ctx.getImageData(0, 0, 512, 512);
-            const px = imageData.data;
-            for (let i = 0; i < px.length; i += 4) {
-                if ((px[i] + px[i + 1] + px[i + 2]) / 3 > 180) px[i + 3] = 0;
-            }
-            ctx.putImageData(imageData, 0, 0);
-            this.barcodeTexture.image       = canvas;
-            this.barcodeTexture.needsUpdate = true;
-            this._barcodeTextureReady       = true;
-            this._pendingStickers.forEach(({ sphere, radius, opacity }) =>
-                this._attachSticker(sphere, radius, opacity));
-            this._pendingStickers = [];
-        };
-        img.src = barcodeUrl;
-    }
-
-    _createBarcodeSticker(sphere, radius, opacity) {
-        if (!this.barcodeTexture) return;
-        if (this._barcodeTextureReady) {
-            this._attachSticker(sphere, radius, opacity);
-        } else {
-            this._pendingStickers.push({ sphere, radius, opacity });
-        }
-    }
-
-    _attachSticker(sphere, radius, opacity) {
-        const halfAngle = this.config.stickerSizeFraction / 2;
-        const geo = new THREE.SphereGeometry(
-            radius * 1.005, 16, 16,
-            Math.PI / 2 - halfAngle, halfAngle * 2,
-            Math.PI / 2 - halfAngle, halfAngle * 2,
-        );
-        const mat = new THREE.MeshBasicMaterial({
-            map:         this.barcodeTexture,
-            transparent: true,
-            opacity,
-            blending:    THREE.NormalBlending,
-            depthWrite:  false,
-        });
-        const sticker = new THREE.Mesh(geo, mat);
-        sticker.renderOrder = 1;
-        sphere.add(sticker);
     }
 
     _addAnimationCallback(cb)  { this.animationCallbacks.push(cb); }
