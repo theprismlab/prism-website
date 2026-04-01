@@ -2,7 +2,7 @@
     <div>
         <section class="hero-section">
             <div class="hero-heatmap">
-                <DynamicSpread  />
+                <MultiCluster :scatter-config="{ clusterCount: 8, cameraAngleY: 0.3, barcodeUrl: '/images/barcode.svg' }" />
             </div>
             <div class="hero-overlay text-center">
                 <h1 class="text-hero text-h1 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import DynamicSpread from '@/visualization/DynamicSpread.vue';
+import MultiCluster from '@/visualization/MultiCluster.vue';
 
 export default {
     name: 'hero-04',
     components: {
-        DynamicSpread,
+        MultiCluster,
     },
 }
 </script>

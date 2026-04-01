@@ -8,6 +8,7 @@ import { ref, onMounted } from 'vue';
 import { useViabilityScene } from '../useViabilityScene.js';
 import { loadViabilityCSV, parseScatterPlotData } from './getData.js';
 import { buildScatterLayer } from './ScatterLayer.js';
+
 const USE_DARK_ATMOSPHERE = false;
 const BASE_VIEW = {
     fov: 25, 
@@ -79,5 +80,6 @@ onMounted(async () => {
     scene.onRebuild(() => {
         if (SHOW_SCATTER_PLOT) buildScatterLayer(scene, scatterData);
     }); 
+
 });
 </script>

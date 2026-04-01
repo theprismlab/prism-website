@@ -99,9 +99,11 @@ data() {
       {
         title: 'Hero',
         children: [
-          { title: 'Hero 1',   route: '/hero/hero-01',  id: 'hero-01' },
-          { title: 'Hero 2', route: '/hero/hero-02', id: 'hero-02' },
-          { title: 'Hero 3', route: '/hero/hero-03', id: 'hero-03' },
+          { title: 'Heatmap Scatter',   route: '/hero/hero-heatmap-scatter',  id: 'hero-heatmap-scatter' },
+          { title: 'Central Cluster', route: '/hero/hero-central-cluster', id: 'hero-central-cluster' },
+          { title: 'Multi Cluster', route: '/hero/hero-multi-cluster', id: 'hero-multi-cluster' },
+          { title: 'Even Spread', route: '/hero/hero-even-spread', id: 'hero-even-spread' },
+          { title: 'Dynamic Spread', route: '/hero/hero-dynamic-spread', id: 'hero-dynamic-spread' },
         ]
       },
       {

@@ -2,16 +2,6 @@ import * as d3 from 'd3';
 
 const DATA_FILE = 'BRD-K05804044-viability-heatmap.csv';
 
-// Maximum number of cell lines to include, ranked by descending mean viability.
-// Cell lines beyond this rank are excluded (low viability, visually uninteresting).
-const MAX_CELL_LINES = 400;
-
-// Explicit cell line exclusions by ccle_name. Add names here to remove specific
-// lines regardless of their viability ranking.
-const EXCLUDED_CELL_LINES = new Set([
-    // e.g. 'A375_SKIN', 'HELA_CERVIX'
-]);
-
 const basePath = import.meta.env.PROD
     ? import.meta.env.BASE_URL + 'data/'
     : '../../public/data/';
@@ -29,16 +19,14 @@ function computeGridIndices(raw) {
     const cellLineGroups = d3.groups(raw, d => d.ccle_name)
         .map(([key, values]) => ({ key, mean: d3.mean(values, v => v.viability) }))
         .sort((a, b) => d3.descending(a.mean, b.mean))
-        .filter((g, i)=> i > MAX_CELL_LINES && i % 2 === 0) // filter out low-ranking cell lines and keep Nth
-        // .filter(g => !EXCLUDED_CELL_LINES.has(g.key))
-        // .slice(0, MAX_CELL_LINES);
+        .filter(g=> g.mean < 0.8 && g.mean > 0.6); // filter out cell lines with very high or low viability to focus on more interesting patterns. 
 
+    const cellLineToMean = Object.fromEntries(cellLineGroups.map(g => [g.key, g.mean]));
     const cellLineToIndex = Object.fromEntries(cellLineGroups.map((g, i) => [g.key, i]));
-
     const doses = [...new Set(raw.map(d => d.pert_dose))].sort((a, b) => b - a);
     const doseToIndex = Object.fromEntries(doses.map((d, i) => [d, i]));
 
-    return { cellLineToIndex, doseToIndex };
+    return { cellLineToIndex, doseToIndex, cellLineToMean };
 }
 
 export function parseHeatmapData(raw) {
@@ -46,34 +34,34 @@ export function parseHeatmapData(raw) {
 
     return raw
         .map(d => ({
-            ccle_name: d.ccle_name,
-            viability: d.viability,
-            pert_dose: d.pert_dose,
             x: cellLineToIndex[d.ccle_name],
             z: doseToIndex[d.pert_dose],
             y: 0,
+            color: +d.viability,
         }))
-        .filter(d => d.x !== undefined)
-        .sort((a, b) => d3.ascending(a.pert_dose, b.pert_dose));
+        .filter(d => d.x !== undefined && d.z !== undefined);
 }
 
-export function parseScatterPlotData(raw) {
+
+
+export function parseScatterData(raw) {
     const { cellLineToIndex, doseToIndex } = computeGridIndices(raw);
 
-    return raw
+    let scatterData = raw.filter((d,i)=> i % 5 === 0   )
         .map(d => ({
-            ccle_name: d.ccle_name,
-            lineage: d.lineage,
-            viability: d.viability,
-            pert_dose: d.pert_dose,
-            x: cellLineToIndex[d.ccle_name],
-            z: doseToIndex[d.pert_dose],
-            value: d.viability,
-            radius: d.viability,
+            x: cellLineToIndex[d.ccle_name] , // jittered x for better visibility`
+            //x: Math.random(), // jittered x for better visibility
+            z: doseToIndex[d.pert_dose], // jittered z for better visibility
+            y: +d.viability,
+            color: +d.viability,
+            radius: +d.viability,
+            hasBarcode: true,
         }))
-        .filter(d => d.x !== undefined)
-        .sort((a, b) => d3.ascending(a.pert_dose, b.pert_dose));
+     .filter((d, i) => d.x !== undefined && d.z !== undefined  ); // downsample for performance
+    return scatterData;
 }
+
+
 
 /**
  * Loads, transforms, and downloads all deterministic scatter plot data as JSON.
@@ -105,7 +93,7 @@ export async function exportScatterPlotJSON({
     download        = true,
 } = {}) {
     const raw     = await loadViabilityCSV();
-    const data    = parseScatterPlotData(raw);
+    const data    = parseScatterData(raw);
     const sampled = data.filter(d => d.x % sphereXStep === 0 && d.z % sphereZStep === 0);
 
     // Replicate computeScales from ScatterLayer.js at the reference viewport.
@@ -117,7 +105,7 @@ export async function exportScatterPlotJSON({
     // Extents are computed from the full (non-sampled) data, matching ScatterLayer.
     const xExtent         = d3.extent(data, d => d.x);
     const zExtent         = d3.extent(data, d => d.z);
-    const viabilityExtent = d3.extent(data, d => d.value);
+    const viabilityExtent = d3.extent(data, d => d.y);
     const colorThreshold  = xExtent[0] + (xExtent[1] - xExtent[0]) / 3;
 
     const halfSpread   = visibleHeight * 1.75 / 2;
@@ -134,15 +122,9 @@ export async function exportScatterPlotJSON({
     const zOffset      = visibleHeight / 2;
 
     const result = sampled.map(d => ({
-        ccle_name:     d.ccle_name,
-        lineage:       d.lineage,
-        viability:     d.viability,
-        pert_dose:     d.pert_dose,
-        cellLineIndex: d.x,
-        doseIndex:     d.z,
         world: {
             x: xScale(d.x) - xOffset,
-            y: yScale(d.value),        // excludes random radius*0.2 nudge
+            y: yScale(d.y),        // excludes random radius*0.2 nudge
             z: zScale(d.z) - zOffset,
         },
         color:   d.x < colorThreshold

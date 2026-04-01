@@ -1,99 +1,120 @@
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import * as d3 from 'd3';
-
-
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { sceneConfig } from './scatter-scene-config.js';
 
 // ─── Default config ───────────────────────────────────────────────────────────
 
-export const defaultConfig = {
-    // ── Camera ────────────────────────────────────────────────────────────────
-    // Camera position is computed in spherical coordinates relative to cameraLookAt:
-    //
-    //   x = lookAt.x + distance · cos(elevation) · sin(azimuth)
-    //   y = lookAt.y + distance · sin(elevation)
-    //   z = lookAt.z + distance · cos(elevation) · cos(azimuth)
-    //
-    // Adjust these three values to position the camera:
-    fov:              25,
-    cameraDistance:   25,    // how far the camera sits from cameraLookAt (zoom)
-    cameraAzimuth:    0,     // horizontal orbit around Y axis, radians (alias: cameraAngleY)
-    cameraElevation:  0.06,  // vertical tilt above horizontal, radians (0 = eye-level, π/2 = top-down)
-    cameraLookAt:     [0, 1.5, 0], // world-space point the camera always looks at
-    nearClip:         1.01,
-    farClip:          200,
+const defaultConfig = {
+    // ── Camera — values come from scatter-scene-config.js ─────────────────────
+    ...sceneConfig,
 
     // ── Lighting ──────────────────────────────────────────────────────────────
-    directionalLightIntensity: 0.5,
-    ambientLightIntensity:     0.5,
-    enableShadows:             true,
+    directionalLightIntensity: 1.5,
+    ambientLightIntensity:     2.5,
+    enableShadows:             false,  // off by default — large datasets are heavy
 
-    // ── Scales ────────────────────────────────────────────────────────────────
-    // Each entry has { domain, range }. null = auto-compute at runtime (see _computeScales).
-    scale: {},
-
-    // ── Color interpolator ────────────────────────────────────────────────────
-    // Set to any d3 interpolator, e.g. d3.interpolateRainbow for the prism generator.
-    // null falls back to d3.interpolateYlOrRd.
-    colorInterpolator: null,
 
     // ── Float animation ───────────────────────────────────────────────────────
-    floatSpeedMin:   1.8,
-    floatSpeedRange: 1.6,
-    floatAmplitude:  [0.02, 0.08],  // [min, max] world units
-    rotSpeedRange:   2.0,
+    floatSpeedMin:   1.2,
+    floatSpeedRange: 1.0,
+    floatAmplitude:  [0.04, 0.14],  // [min, max] world units
 
     // ── Physics / collision ───────────────────────────────────────────────────
     collisionAvoidance: true,
 
+    // ── Screen scaling ────────────────────────────────────────────────────────
+    // When true, re-scales the pre-baked X world positions to match the actual
+    // canvas aspect ratio vs the reference aspect (referenceWidth/referenceHeight).
+    // Y (viability) and Z (depth) are aspect-independent and are never rescaled.
+    // Re-runs automatically on resize.
+    scaleToScreen: false,
+
+    // ── Cell shape ─────────────────────────────────────────────────────────────
+    // cellMode: when false, renders plain spheres (ignores all settings below).
+    // cellIrregularity: 0 = perfect sphere, 0.3–0.5 = organic blob/cell look.
+    // cellDetail: IcosahedronGeometry subdivision level (3=fast, 4=smooth).
+    // showNucleus: render an inner nucleus sphere as a child mesh.
+    // nucleusSizeFraction: nucleus radius as a fraction of the cell radius.
+    // cellMode:            true,
+    // cellIrregularity:    0.01,
+    // cellDetail:          10,
+    // showNucleus:         false,
+    // nucleusSizeFraction: 0.45,
+
     // ── Barcode stickers ──────────────────────────────────────────────────────
-    // Applied to data points where hasBarcode === true.
-    stickerSizeFraction: 0.8,   // fraction of sphere surface patch covered
+    // Applied to points where `hasBarcode === true` in the JSON (if present).
+    stickerSizeFraction: 0.8,
     stickerOpacity:      0.5,
     barcodeUrl:          '/images/barcode.svg',
 };
 
 // ─── Class ────────────────────────────────────────────────────────────────────
 
-export default class ScatterPlot3D {
+/**
+ * Renders a 3D scatter plot from a pre-computed JSON data file.
+ *
+ * Unlike ScatterPlot3D (which maps raw data through d3 scales), this class
+ * expects world-space positions and CSS color strings already baked into the
+ * JSON, matching the output of `exportScatterPlotJSON()` in getData.js:
+ *
+ *   {
+ *     world:      { x, y, z }  — world-space position, used directly
+ *     color:      "rgb(r,g,b)" — CSS color string, applied as sphere material
+ *     opacity:    0…1          — pre-computed opacity
+ *     viability:  number       — used to derive sphere radius (lower → bigger)
+ *     ccle_name:  string       — metadata, stored in userData for tooltips etc.
+ *     lineage:    string
+ *     pert_dose:  number
+ *     hasBarcode: boolean      — optional; attaches barcode sticker if true
+ *   }
+ *
+ * Usage:
+ *   const plot = new ScatterPlotFromJSON(canvasEl, config);
+ *   await plot.loadJSON('/data/scatter-plot-data.json');
+ *   // — or provide data directly —
+ *   plot.setData(myArray);
+ */
+export default class ScatterPlotFromJSON {
     constructor(canvasEl, sceneConfig = {}) {
-        console.log('ScatterPlot3D config:', sceneConfig);
         if (!canvasEl) throw new Error('canvas element is required');
         this.canvas = canvasEl;
         this.config = { ...defaultConfig, ...sceneConfig };
-        // Deep-merge scale sub-objects so partial overrides don't wipe sibling scales
-        const baseScale = defaultConfig.scale;
-        const userScale = sceneConfig.scale ?? {};
-        this.config.scale = Object.fromEntries(
-            Object.keys({ ...baseScale, ...userScale }).map(k => [
-                k, { ...(baseScale[k] ?? {}), ...(userScale[k] ?? {}) },
-            ])
-        );
-        this.data = [];
+        this.data   = [];
         this.spheres = [];
         this.environmentTexture = null;
         this.resizeObserver = null;
-        this.resizeTimer = null;
-        this.scene = null;
-        this.camera = null;
+        this.resizeTimer    = null;
+        this.scene    = null;
+        this.camera   = null;
         this.renderer = null;
-        this.width = 0;
+        this.width  = 0;
         this.height = 0;
-        this.clock = new THREE.Clock();
+        this.clock  = new THREE.Clock();
         this.animationCallbacks = [];
-        this.animationFrameId = null;
-        this.barcodeTexture = null;
+        this.animationFrameId  = null;
+        this.barcodeTexture       = null;
         this._barcodeTextureReady = false;
-        this._pendingStickers = [];
+        this._pendingStickers     = [];
 
         this._setupScene();
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
 
+    /**
+     * Fetch the JSON from `url`, parse it, and render.
+     * @param {string} url
+     */
+    async loadJSON(url) {
+        const res  = await fetch(url);
+        const data = await res.json();
+        this.setData(data);
+    }
+
+    /** Provide data directly (array matching the JSON schema above). */
     setData(data = []) {
         this.data = Array.isArray(data) ? data : [];
-        console.log('ScatterPlot3D data set:', this.data);  
         this.rebuild();
     }
 
@@ -152,13 +173,10 @@ export default class ScatterPlot3D {
 
         this.scene = new THREE.Scene();
 
-        // Camera position in spherical coordinates relative to cameraLookAt:
-        //   azimuth  — horizontal orbit around Y axis
-        //   elevation — tilt above the horizontal plane (positive = camera above lookAt)
         const { fov, cameraDistance, cameraLookAt, nearClip, farClip } = this.config;
-        // Support legacy cameraAngleY as an alias for cameraAzimuth
-        const azimuth   = this.config.cameraAzimuth ?? this.config.cameraAngleY ?? 0;
+        const azimuth   = this.config.cameraAzimuth   ?? 0;
         const elevation = this.config.cameraElevation ?? 0;
+
         this.camera = new THREE.PerspectiveCamera(fov, this.width / this.height, nearClip, farClip);
         this.camera.position.set(
             cameraLookAt[0] + cameraDistance * Math.cos(elevation) * Math.sin(azimuth),
@@ -168,23 +186,8 @@ export default class ScatterPlot3D {
         this.camera.lookAt(...cameraLookAt);
         this.camera.updateProjectionMatrix();
 
-        const enableShadows = this.config.enableShadows ?? true;
-
         const dirLight = new THREE.DirectionalLight(0xffffff, this.config.directionalLightIntensity);
         dirLight.position.set(5, 10, 5);
-        dirLight.castShadow = enableShadows;
-        if (enableShadows) {
-            dirLight.shadow.mapSize.width  = 2048;
-            dirLight.shadow.mapSize.height = 2048;
-            dirLight.shadow.camera.left   = -30;
-            dirLight.shadow.camera.right  =  30;
-            dirLight.shadow.camera.top    =  30;
-            dirLight.shadow.camera.bottom = -30;
-            dirLight.shadow.camera.near   = 0.1;
-            dirLight.shadow.camera.far    = 60;
-            dirLight.shadow.radius        = 8;
-            dirLight.shadow.blurSamples   = 25;
-        }
         this.scene.add(dirLight);
         this.scene.add(new THREE.AmbientLight(0xffffff, this.config.ambientLightIntensity));
 
@@ -192,13 +195,11 @@ export default class ScatterPlot3D {
         this.renderer.setSize(this.width, this.height, false);
         this.renderer.setClearColor(0xffffff, 0);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-        this.renderer.shadowMap.enabled = enableShadows;
-        if (enableShadows) this.renderer.shadowMap.type = THREE.VSMShadowMap;
 
-        const pmrem = new THREE.PMREMGenerator(this.renderer);
+        const pmrem   = new THREE.PMREMGenerator(this.renderer);
         const roomEnv = new RoomEnvironment();
         this.environmentTexture = pmrem.fromScene(roomEnv, 0.04).texture;
-        this.scene.environment = this.environmentTexture;
+        this.scene.environment  = this.environmentTexture;
         roomEnv.dispose();
         pmrem.dispose();
 
@@ -224,74 +225,70 @@ export default class ScatterPlot3D {
             if (this.canvas.parentElement) this.resizeObserver.observe(this.canvas.parentElement);
         });
     }
-    _computeScales(data) {
-        const sc = this.config.scale ?? {};
-
-        // ── x: maps to visible frustum width ─────────────────────────────────
-        const vFov = THREE.MathUtils.degToRad(this.config.fov);
-        const visibleHeight = 2 * Math.tan(vFov / 2) * this.config.cameraDistance;
-        const visibleWidth  = visibleHeight * (this.width / this.height);
-        const xScale = d3.scaleLinear()
-            .domain(sc.x?.domain ?? d3.extent(data, d => d.x))
-            .range(sc.x?.range   ?? [-visibleWidth / 2, visibleWidth / 2]);
-
-        // ── y: world height ───────────────────────────────────────────────────
-        const yScale = d3.scaleLinear()
-            .domain(sc.y?.domain ?? d3.extent(data, d => d.y))
-            .range(sc.y?.range   ?? [-2, 6]);
-
-        // ── z: depth ──────────────────────────────────────────────────────────
-        const zScale = d3.scaleLinear()
-            .domain(sc.z?.domain ?? d3.extent(data, d => d.z))
-            .range(sc.z?.range   ?? [-4, 4]);
-
-        // ── color ─────────────────────────────────────────────────────────────
-        const colorScale = d3.scaleSequential(this.config.colorInterpolator ?? d3.interpolateYlOrRd)
-            .domain(sc.color?.domain ?? d3.extent(data, d => d.color));
-
-        // ── radius ────────────────────────────────────────────────────────────
-        const radiusScale = d3.scaleLinear()
-            .domain(sc.radius?.domain ?? d3.extent(data, d => d.radius))
-            .range(sc.radius?.range   ?? [0, 0.65]);
-
-        // ── opacity: derived from camera distance ─────────────────────────────
-        const camPos = this.camera.position;
-        const worldPositions = data.map(d => new THREE.Vector3(xScale(d.x), yScale(d.y), zScale(d.z)));
-        const distances = worldPositions.map(p => p.distanceTo(camPos));
-        const opDomain = sc.opacity?.domain ?? [Math.min(...distances), Math.max(...distances)];
-        const opRange  = sc.opacity?.range  ?? [0.25, 0.975];
-        const opacityOf = d3.scaleLinear().domain(opDomain).range([opRange[1], opRange[0]]);
-
-        return { xScale, yScale, zScale, colorScale, radiusScale, opacityOf, worldPositions, distances };
-    }
 
     _buildSpheres(data) {
-        const { floatSpeedMin, floatSpeedRange, floatAmplitude, rotSpeedRange } = this.config;
+        const { floatSpeedMin, floatSpeedRange, floatAmplitude } = this.config;
         const [floatAmpMin, floatAmpMax] = floatAmplitude;
 
-        const { xScale, yScale, zScale, colorScale, radiusScale, opacityOf, worldPositions, distances } =
-            this._computeScales(data);
+        // When scaleToScreen is true, rescale the baked X positions to the
+        // actual canvas aspect ratio.  Y and Z are aspect-independent.
+        let xFactor = 1;
+        let yFactor = 1;
+
+        if (this.config.scaleToScreen) {
+            const { referenceWidth, referenceHeight } = this.config;
+            xFactor = (this.width / this.height) / (referenceWidth / referenceHeight);
+            yFactor = (this.height / this.width) / (referenceHeight / referenceWidth);
+        }
 
         const spheres = [];
 
-        data.forEach((d, i) => {
-            const radius = radiusScale(d.radius);
-            const color  = new THREE.Color(colorScale(d.color));
+        data.forEach(d => {
+            const radius  = d.radius;
+            const color   = new THREE.Color(d.color);   // CSS "rgb(r,g,b)" accepted directly
+            const opacity = d.opacity ?? 0.8;
 
-            const geometry = new THREE.SphereGeometry(radius, 24, 24);
+            const geometry = this.config.cellMode
+                ? this._makeCellGeometry(radius)
+                : new THREE.SphereGeometry(radius, 20, 20);
             const material = new THREE.MeshStandardMaterial({
                 color,
-                transparent: true,
-                opacity: opacityOf(distances[i]),
-                roughness: 0.0,
-                metalness: 0.0,
+                emissive:          color,
+                emissiveIntensity: 0.6,
+                transparent:       true,
+                opacity:           opacity * 0.82,
+                roughness: 0.7,
+                metalness: 0.2,
+                envMapIntensity: 0.1,
             });
 
             const sphere = new THREE.Mesh(geometry, material);
-            sphere.castShadow = true;
-            sphere.position.copy(worldPositions[i]);
 
-            sphere.userData.basePosition    = worldPositions[i];
+            if (this.config.showNucleus) {
+                const nRadius = radius * this.config.nucleusSizeFraction;
+                const nColor  = color.clone().offsetHSL(0, -0.05, -0.18);
+                const nMat = new THREE.MeshStandardMaterial({
+                    color:             nColor,
+                    emissive:          nColor,
+                    emissiveIntensity: 0.04,
+                    transparent:       true,
+                    opacity:           Math.min(opacity + 0.25, 0.95),
+                    roughness:         0.7,
+                    metalness:         0.0,
+                    envMapIntensity:   0.2,
+                });
+                const nucleus = new THREE.Mesh(new THREE.SphereGeometry(nRadius, 12, 12), nMat);
+                nucleus.position.set(
+                    (Math.random() - 0.5) * radius * 0.25,
+                    (Math.random() - 0.5) * radius * 0.25,
+                    (Math.random() - 0.5) * radius * 0.25,
+                );
+                sphere.add(nucleus);
+            }
+            sphere.position.set(d.world.x * xFactor, d.world.y * yFactor, d.world.z);
+
+            // Store base position and animation parameters
+            sphere.userData.basePosition    = sphere.position.clone();
             sphere.userData.radius          = radius;
             sphere.userData.floatPhase      = Math.random() * Math.PI * 2;
             sphere.userData.floatPhaseX     = Math.random() * Math.PI * 2;
@@ -299,10 +296,11 @@ export default class ScatterPlot3D {
             sphere.userData.floatSpeedX     = floatSpeedMin + Math.random() * floatSpeedRange;
             sphere.userData.floatAmplitude  = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
             sphere.userData.floatAmplitudeX = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
-            sphere.userData.rotSpeedY       = (Math.random() - 0.5) * rotSpeedRange;
             sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
-            sphere.userData.hasBarcode      = d.hasBarcode ?? false;
+            // Metadata — available if you want tooltips / click interactions
+         
+            sphere.userData.hasBarcode = d.hasBarcode ?? false;
 
             spheres.push(sphere);
             this.scene.add(sphere);
@@ -328,7 +326,6 @@ export default class ScatterPlot3D {
                 s.position.x = ud.floatX + ud.ox;
                 s.position.y = ud.floatY + ud.oy;
                 s.position.z = ud.floatZ + ud.oz;
-                s.rotation.y = elapsed * ud.rotSpeedY;
             });
         });
 
@@ -337,6 +334,28 @@ export default class ScatterPlot3D {
         spheres
             .filter(s => s.userData.hasBarcode)
             .forEach(s => this._createBarcodeSticker(s, s.userData.radius, this.config.stickerOpacity));
+    }
+
+    _makeCellGeometry(radius) {
+        const { cellIrregularity: irr, cellDetail } = this.config;
+        const geo = new THREE.IcosahedronGeometry(radius, cellDetail);
+        if (irr <= 0) return geo;
+        // Per-sphere random phases so each cell has a unique shape.
+        const p = [0,1,2,3,4,5].map(() => Math.random() * Math.PI * 2);
+        const pos = geo.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+            const len = Math.sqrt(x * x + y * y + z * z) || 1;
+            const nx = x / len, ny = y / len, nz = z / len;
+            // Two overlapping octaves: large blebs + smaller surface texture
+            const disp = irr * radius * (
+                Math.sin(1.7 * nx + p[0]) * Math.sin(1.9 * ny + p[1]) * Math.sin(2.1 * nz + p[2]) * 0.6 +
+                Math.sin(3.8 * ny + p[3]) * Math.sin(4.2 * nz + p[4]) * Math.sin(3.3 * nx + p[5]) * 0.4
+            );
+            pos.setXYZ(i, x + nx * disp, y + ny * disp, z + nz * disp);
+        }
+        geo.computeVertexNormals();
+        return geo;
     }
 
     _resolveCollisions(spheres) {
@@ -361,25 +380,26 @@ export default class ScatterPlot3D {
     _loadBarcodeTexture() {
         const { barcodeUrl } = this.config;
         if (!barcodeUrl) return;
-        this.barcodeTexture = new THREE.Texture();
+        this.barcodeTexture       = new THREE.Texture();
         this._barcodeTextureReady = false;
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 512;
+            canvas.width  = 512;
+            canvas.height = 512;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, 512, 512);
-            // White pixels → transparent so bars show on any background
             const imageData = ctx.getImageData(0, 0, 512, 512);
-            const d = imageData.data;
-            for (let i = 0; i < d.length; i += 4) {
-                if ((d[i] + d[i + 1] + d[i + 2]) / 3 > 180) d[i + 3] = 0;
+            const px = imageData.data;
+            for (let i = 0; i < px.length; i += 4) {
+                if ((px[i] + px[i + 1] + px[i + 2]) / 3 > 180) px[i + 3] = 0;
             }
             ctx.putImageData(imageData, 0, 0);
-            this.barcodeTexture.image = canvas;
+            this.barcodeTexture.image       = canvas;
             this.barcodeTexture.needsUpdate = true;
-            this._barcodeTextureReady = true;
-            this._pendingStickers.forEach(({ sphere, radius, opacity }) => this._attachSticker(sphere, radius, opacity));
+            this._barcodeTextureReady       = true;
+            this._pendingStickers.forEach(({ sphere, radius, opacity }) =>
+                this._attachSticker(sphere, radius, opacity));
             this._pendingStickers = [];
         };
         img.src = barcodeUrl;
@@ -402,18 +422,18 @@ export default class ScatterPlot3D {
             Math.PI / 2 - halfAngle, halfAngle * 2,
         );
         const mat = new THREE.MeshBasicMaterial({
-            map: this.barcodeTexture,
+            map:         this.barcodeTexture,
             transparent: true,
             opacity,
-            blending: THREE.NormalBlending,
-            depthWrite: false,
+            blending:    THREE.NormalBlending,
+            depthWrite:  false,
         });
         const sticker = new THREE.Mesh(geo, mat);
         sticker.renderOrder = 1;
         sphere.add(sticker);
     }
 
-    _addAnimationCallback(cb) { this.animationCallbacks.push(cb); }
+    _addAnimationCallback(cb)  { this.animationCallbacks.push(cb); }
     _clearAnimationCallbacks() { this.animationCallbacks = []; }
 
     _clearSpheres() {
@@ -426,10 +446,4 @@ export default class ScatterPlot3D {
         });
         this.spheres = [];
     }
-    // _createCustomColorScale(){
-    //     return colorScale = (x, z) => {
-    //         if (x < 0.5) return new THREE.Color(d3.interpolateGnBu(zNorm(z)));
-    //         return new THREE.Color(d3.interpolateYlOrRd(xNorm(x)));
-    //     };
-    // }
 }
