@@ -16,7 +16,7 @@
 import CentralCluster from '@/visualization/CentralCluster.vue';
 
 export default {
-    name: 'hero-02',
+    name: 'hero-central-cluster',
     components: {
         CentralCluster,
     },
@@ -27,8 +27,6 @@ export default {
 .hero-section {
   display: grid;
   margin-bottom: 100px;
-  border-bottom: 15px solid black;
-  border-top: 15px solid black;
   height: calc(100dvh - var(--v-layout-top, 64px));
   overflow: hidden;
   > * {

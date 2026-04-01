@@ -19,6 +19,7 @@ const defaultConfig = {
     floatSpeedMin:   1.2,
     floatSpeedRange: 1.0,
     floatAmplitude:  [0.04, 0.14],  // [min, max] world units
+    rotSpeedRange:   2.0,
 
     // ── Physics / collision ───────────────────────────────────────────────────
     collisionAvoidance: true,
@@ -296,6 +297,7 @@ export default class ScatterPlotFromJSON {
             sphere.userData.floatSpeedX     = floatSpeedMin + Math.random() * floatSpeedRange;
             sphere.userData.floatAmplitude  = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
             sphere.userData.floatAmplitudeX = floatAmpMin + Math.random() * (floatAmpMax - floatAmpMin);
+            sphere.userData.rotSpeedY       = (Math.random() - 0.5) * this.config.rotSpeedRange;
             sphere.userData.ox = 0; sphere.userData.oy = 0; sphere.userData.oz = 0;
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
             // Metadata — available if you want tooltips / click interactions
@@ -326,6 +328,7 @@ export default class ScatterPlotFromJSON {
                 s.position.x = ud.floatX + ud.ox;
                 s.position.y = ud.floatY + ud.oy;
                 s.position.z = ud.floatZ + ud.oz;
+                s.rotation.y = elapsed * ud.rotSpeedY;
             });
         });
 
