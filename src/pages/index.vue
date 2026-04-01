@@ -52,7 +52,7 @@ import Hero from '../components/sections/Hero.vue';
         resizeCounter: 0,
         ourImpactCards: [
             {
-              title: "150+",
+              title: "200+",
               subtitle: "Academic and industry partners",
               icon: {
                 path: mdiAccountGroup,
@@ -74,7 +74,7 @@ import Hero from '../components/sections/Hero.vue';
               },
             },
             {
-              title: "40+",
+              title: "50+",
               subtitle: "Publications in high-impact journals",
               icon: {
                 path: mdiFileMultipleOutline,
