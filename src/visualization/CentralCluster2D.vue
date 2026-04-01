@@ -43,72 +43,56 @@ let scatterInstance = null;
  *           rainbow colour, making the cloud visually radially symmetric.
  */
 function generateScatterCentralClusterData({
-    count             = 800,
+    count             = 300,
     cx                = 0.5,   // center x  [0, 1]
     cy                = 0.5,   // center y  [0, 1]
-    sigma             = 2.2,  // std-dev of the Gaussian; controls how wide the cloud spreads
-    seed              = 15, // 5, 14,15, 18
-    barcodeFraction   = 0.12,
-    barcodeZThreshold = 0.5,
+    sigma             = 2.2,   // std-dev of the Gaussian; controls how wide the cloud spreads
+    seed              = 15,    // deterministic seed for reproducible clouds
+    barcodeFraction   = 0.3, // fraction of points to tag with barcodes; these will be the ones with largest radius (closest to center)
 } = {}) {
     let s = seed;
-    // Simple LCG (linear congruential generator) for deterministic, seedable pseudo-random numbers.
-    // Same seed → same cloud every render; change seed to get a different layout.
     const rand   = () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-
-    // Box-Muller transform: converts two uniform U(0,1) samples (u, v) into
-    // two independent standard normals N(0,1).
-    //   magnitude = √(-2 ln u)   ← Rayleigh-distributed
-    //   [cos(2πv), sin(2πv)]     ← uniform direction on unit circle
-    // Multiplying magnitude × direction gives (X, Y) ~ N(0,1) independently.
     const randn2 = () => {
-        const u = rand() + 1e-9, v = rand() + 1e-9; // +1e-9 guards against log(0)
+        const u = rand() + 1e-9, v = rand() + 1e-9;
         const mag = Math.sqrt(-2 * Math.log(u));
         return [mag * Math.cos(2 * Math.PI * v), mag * Math.sin(2 * Math.PI * v)];
     };
 
     const points = [];
-
-    for (let i = 0; i < count; i++) {
-        // Draw two independent N(0,1) samples and scale by σ → N(0, σ)
+    // Acceptance thinning makes density drop off toward the edge so the cluster dissipates.
+    while (points.length < count) {
         const [nx, ny] = randn2();
-        const dx = nx * sigma;  // x-offset from center in data space
-        const dy = ny * sigma;  // y-offset from center in data space
+        const dx = nx * sigma;
+        const dy = ny * sigma;
 
-        const dist  = Math.sqrt(dx * dx + dy * dy); // Euclidean distance from center (Rayleigh distributed)
-        const angle = Math.atan2(dy, dx);            // direction in [-π, π]
+        const dist  = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx);
+        const t = Math.min(dist / (sigma * 3), 1);
 
-        // t ∈ [0, 1]: fraction of the 3σ radius.
-        // t ≈ 0 → very close to center (large, opaque, front)
-        // t = 1 → at or beyond the 3σ envelope (small, semi-transparent, back)
-        const t = Math.min(dist / (sigma * 1.75), 1);
+        // Thin out outer points: keep probability falls quadratically with t.
+        // lower values, thin more gradially; higher values, thin more aggressively.
+        if (rand() > (1 - t) ** 0.05) continue;
 
         const x = cx + dx;
         const y = cy + dy;
 
-        // Sphere radius: starts at 0.70 (center) and falls linearly to 0.08 (edge).
-        // The floor of 0.08 ensures outer spheres remain visible.
-        // abs(randn2()[0]) * 0.03 adds a small positive noise for organic variation.
+        // Radius falls off with distance; small noise keeps shapes organic.
         const radius = 0.04 + 0.66 * (1 - t) + Math.abs(randn2()[0]) * 0.03;
 
-        // Depth (z): maps to [0.35, 0.90] in data space, then to [0, 8] world units.
-        // Center points (t≈0) → z≈0.90 (front); edge points (t=1) → z≈0.35 (back).
-        // Small noise keeps the depth layer from looking perfectly uniform.
-        const z = 0.35 + (1 - t) * 0.55 + randn2()[0] * 0.05;
+        // Flatten to 2D: keep z constant (slight jitter to avoid z-fighting if needed).
+        const z = 0;
 
-        // Color hue = angle mapped to [0, 1].
-        // atan2 returns [-π, π] → dividing by 2π and adding 1 shifts to [0, 1] with no negatives.
-        // rand() * 0.18 adds ~±18% hue jitter per point so nearby spheres vary in shade
-        // while still preserving the overall cool/warm directional gradient.
         const color = ((angle / (Math.PI * 2) + 1) % 1 + (rand() - 0.5) * 0.18) % 1;
 
         points.push({ x, y, z, radius, color, hasBarcode: false });
     }
 
-    // Tag the largest, closest points with barcodes (purely cosmetic).
-    const close = points.filter(p => p.z >= barcodeZThreshold);
-    close.sort((a, b) => b.radius - a.radius);
-    close.slice(0, Math.ceil(close.length * barcodeFraction)).forEach(p => { p.hasBarcode = true; });
+    // Tag a few central points (largest radii) for barcodes.
+    points
+        .slice()
+        .sort((a, b) => b.radius - a.radius)
+        .slice(0, Math.ceil(points.length * barcodeFraction))
+        .forEach(p => { p.hasBarcode = true; });
 
     return points;
 }
@@ -181,7 +165,7 @@ function initPlot() {
         cameraAzimuth:   0,
         cameraElevation: 0,
         scale: {
-            radius: { range: [0.01, 1], domain: [0, 1] },
+            radius: { range: [0, 1.2], domain: [0, 1] },
             x:      { domain: xDomain, range: [-domainBase, domainBase] },
             y:      { domain: yDomain, range: [-domainBase, domainBase] },
         },

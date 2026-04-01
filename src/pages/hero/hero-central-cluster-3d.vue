@@ -2,7 +2,7 @@
     <div>
         <section class="hero-section">
             <div class="hero-heatmap">
-                <CentralCluster :scatter-config="{ clusterCount: 8, cameraAngleY: 0.3, barcodeUrl: '/images/barcode.svg' }" />
+                <CentralCluster3D :scatter-config="{ clusterCount: 8, cameraAngleY: 0.3, barcodeUrl: '/images/barcode.svg' }" />
             </div>
             <div class="hero-overlay text-center">
                 <h1 class="text-hero text-h1 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import CentralCluster from '@/visualization/CentralCluster.vue';
+import CentralCluster3D from '@/visualization/CentralCluster3D.vue';
 
 export default {
-    name: 'hero-central-cluster',
+    name: 'hero-central-cluster-3d',
     components: {
-        CentralCluster,
+        CentralCluster3D,
     },
 }
 </script>
