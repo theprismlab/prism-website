@@ -47,7 +47,13 @@ const defaultConfig = {
     // Applied to points where `hasBarcode === true` in the JSON (if present).
     stickerSizeFraction: 0.8,
     stickerOpacity:      0.5,
-    barcodeUrl:          '/images/barcode.svg',
+    barcodeUrl:          '/images/barcodes/barcode',
+    barcodeVariants:     [
+        '/images/barcodes/barcode-01.svg',
+        '/images/barcodes/barcode-02.svg',
+        '/images/barcodes/barcode-03.svg',
+        '/images/barcodes/barcode-04.svg',
+    ],
 };
 
 // ─── Class ────────────────────────────────────────────────────────────────────
@@ -94,9 +100,7 @@ export default class ScatterPlotFromJSON {
         this.clock  = new THREE.Clock();
         this.animationCallbacks = [];
         this.animationFrameId  = null;
-        this.barcodeTexture       = null;
-        this._barcodeTextureReady = false;
-        this._pendingStickers     = [];
+        this.barcodeTextures      = new Map();
 
         this._setupScene();
     }
@@ -161,7 +165,10 @@ export default class ScatterPlotFromJSON {
         this.stopAnimation();
         this._clearSpheres();
         if (this.environmentTexture) this.environmentTexture.dispose();
-        if (this.barcodeTexture) this.barcodeTexture.dispose();
+        this.barcodeTextures.forEach(entry => {
+            if (entry?.texture) entry.texture.dispose();
+        });
+        this.barcodeTextures.clear();
         if (this.renderer) this.renderer.dispose();
     }
 
@@ -204,7 +211,6 @@ export default class ScatterPlotFromJSON {
         roomEnv.dispose();
         pmrem.dispose();
 
-        this._loadBarcodeTexture();
         this._setupResizeObserver();
     }
 
@@ -302,7 +308,8 @@ export default class ScatterPlotFromJSON {
             sphere.userData.vx = 0; sphere.userData.vy = 0; sphere.userData.vz = 0;
             // Metadata — available if you want tooltips / click interactions
          
-            sphere.userData.hasBarcode = d.hasBarcode ?? false;
+            sphere.userData.hasBarcode      = d.hasBarcode ?? false;
+            sphere.userData.barcodeVariant  = d.barcodeVariant; // optional per-point override
 
             spheres.push(sphere);
             this.scene.add(sphere);
@@ -380,11 +387,14 @@ export default class ScatterPlotFromJSON {
         }
     }
 
-    _loadBarcodeTexture() {
-        const { barcodeUrl } = this.config;
-        if (!barcodeUrl) return;
-        this.barcodeTexture       = new THREE.Texture();
-        this._barcodeTextureReady = false;
+    _ensureBarcodeTexture(url) {
+        if (!url) return null;
+        if (this.barcodeTextures.has(url)) return this.barcodeTextures.get(url);
+
+        const texture = new THREE.Texture();
+        const entry = { texture, ready: false, pending: [] };
+        this.barcodeTextures.set(url, entry);
+
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
@@ -398,26 +408,40 @@ export default class ScatterPlotFromJSON {
                 if ((px[i] + px[i + 1] + px[i + 2]) / 3 > 180) px[i + 3] = 0;
             }
             ctx.putImageData(imageData, 0, 0);
-            this.barcodeTexture.image       = canvas;
-            this.barcodeTexture.needsUpdate = true;
-            this._barcodeTextureReady       = true;
-            this._pendingStickers.forEach(({ sphere, radius, opacity }) =>
-                this._attachSticker(sphere, radius, opacity));
-            this._pendingStickers = [];
+            texture.image       = canvas;
+            texture.needsUpdate = true;
+            entry.ready = true;
+            entry.pending.forEach(({ sphere, radius, opacity }) =>
+                this._attachSticker(sphere, radius, opacity, texture));
+            entry.pending = [];
         };
-        img.src = barcodeUrl;
+        img.src = url;
+
+        return entry;
+    }
+
+    _chooseBarcodeUrl(sphere) {
+        const variants = this.config.barcodeVariants?.length
+            ? this.config.barcodeVariants
+            : [this.config.barcodeUrl].filter(Boolean);
+        const chosen = sphere.userData.barcodeVariant ?? variants[Math.floor(Math.random() * variants.length)];
+        return chosen || null;
     }
 
     _createBarcodeSticker(sphere, radius, opacity) {
-        if (!this.barcodeTexture) return;
-        if (this._barcodeTextureReady) {
-            this._attachSticker(sphere, radius, opacity);
+        const url = this._chooseBarcodeUrl(sphere);
+        if (!url) return;
+        const entry = this._ensureBarcodeTexture(url);
+        if (!entry) return;
+        if (entry.ready) {
+            this._attachSticker(sphere, radius, opacity, entry.texture);
         } else {
-            this._pendingStickers.push({ sphere, radius, opacity });
+            entry.pending.push({ sphere, radius, opacity });
         }
     }
 
-    _attachSticker(sphere, radius, opacity) {
+    _attachSticker(sphere, radius, opacity, texture) {
+        if (!texture) return;
         const halfAngle = this.config.stickerSizeFraction / 2;
         const geo = new THREE.SphereGeometry(
             radius * 1.005, 16, 16,
@@ -425,7 +449,7 @@ export default class ScatterPlotFromJSON {
             Math.PI / 2 - halfAngle, halfAngle * 2,
         );
         const mat = new THREE.MeshBasicMaterial({
-            map:         this.barcodeTexture,
+            map:         texture,
             transparent: true,
             opacity,
             blending:    THREE.NormalBlending,
