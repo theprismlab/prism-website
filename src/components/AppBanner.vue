@@ -1,117 +1,183 @@
 <template>
- <v-banner
-   v-if="showBanner"
-    :sticky="true"
-    closable
-    class="banner px-10 py-1"
-    color="grey lighten-4"
-    >
-    <!-- <v-expansion-panels>
-        <v-expansion-panel>
-        <v-expansion-panel-title>
-          Item
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</v-expansion-panel-text>
-        <v-expansion-panel-title>
-          Item
-          <template v-slot:actions>
-            <v-icon color="error" icon="mdi-alert-circle">
-            </v-icon>
-          </template>
-        </v-expansion-panel-title>
-      
-        </v-expansion-panel>
-    </v-expansion-panels> -->
-    <!-- <v-banner-text>
-     
-        <h4 class="text-h5">PRISM Submission Window Now Open!</h4>
-        <p class="text-body-2">    PRISM is accepting DMSO-soluble single agents and combinations, and aqueous single agents, for our standard 5-day assay from Monday, August 25 - Friday, September 12. 
-        </p>
-    </v-banner-text> -->
- <!-- <v-row justify="space-between" align="top" class="mx-0 py-2">
-    <v-col cols="11">
-        <h4 class="text-body-1 font-weight-bold text-primary-base">PRISM Submission Window Now Open!</h4>
-        <p class="text-body-2 inline-block mb-0 mt-1 banner-text-body">PRISM is accepting DMSO-soluble single agents and combinations, and aqueous single agents, for our standard 5-day assay from <b>Monday, August 25 - Friday, September 12</b>. 
-        <a class="v-btn v-btn--size-default pa-0 px-4" href="https://theprismlab.org/portal/submissions" target="_blank">Learn More <v-icon right size="small" class="pl-1">mdi-open-in-new</v-icon></a>
-        </p>
-    </v-col>
-    <v-col cols="1">
-        <v-btn style="background: none;" size="x-small" icon @click="showBanner = false" flat>
-            <v-icon right>mdi-close</v-icon>
-        </v-btn>
-    </v-col>
- </v-row> -->
 
+        <v-banner v-if="isOpen" :sticky="true" class="banner banner-gradient">
+            <v-btn
+                class="banner-close"
+                icon
+                flat
+                size="x-small"
+                @click="dismissBanner"
+                aria-label="Dismiss banner"
+            >
+                <v-icon size="small">mdi-close</v-icon>
+            </v-btn>
+            <v-row align="end" class="banner-wrapper">
+                <v-col cols="12" md="auto">
+                    <p class="banner-overline mb-1">PRISM AACR 2026</p>
+                    <p class="banner-caption mb-0">Visit the PRISM Team at AACR 2026 at booth 3017!
+                    </p>
+                </v-col>
 
-    <v-row justify="center" align="center" class="mx-0 banner-wrapper">
-        <v-col cols="12" xs="12" sm="12" md="9" style="text-align: center;">
-            <h4 class="text-body-1 font-weight-bold text-primary-base">PRISM Submission Window Now Open!</h4>
-            <p class="text-body-2 mb-0 mt-1 banner-text-body" style="max-width:none;">PRISM is accepting DMSO-soluble single agents and combinations, and aqueous single agents, for our standard 5-day assay from <b>Monday, August 25 - Friday, September 12</b>. 
-            <a class="v-btn v-btn--size-default pa-0 px-4" href="https://theprismlab.org/portal/submissions" target="_blank">Learn More <v-icon right size="small" class="pl-1">mdi-open-in-new</v-icon></a>
-            </p>
-        </v-col>
-    </v-row>
+                <v-col cols="12" md="auto" class="banner-action-col" v-if="showBtn">
+                    <BaseButton
+                        text="Details on LinkedIn"
+                        href="https://www.linkedin.com/company/prism-cancer-cell-line-screening"
+                        icon="mdi-open-in-new"
+                    ></BaseButton>
+                </v-col>
+            </v-row>
+        </v-banner>
 
-    <v-btn style="background: none; float: right;" size="x-small" icon @click="showBanner = false" flat>
-        <v-icon right>mdi-close</v-icon>
-    </v-btn>  
-</v-banner>
+        <v-badge
+            v-else
+            class="banner-reopen-badge"
+            color="error"
+            dot
+            overlap
+            offset-x="4"
+            offset-y="4"
+        >
+            <v-btn
+                icon="mdi-bell-outline"
+                size="40"
+                color="primary-base"
+                variant="elevated"
+                aria-label="Reopen announcement banner"
+                @click="reopenBanner"
+            >
+            </v-btn>
+        </v-badge>
+
 </template>
-<script>
-export default {
-    name: 'AppBanner',
-    data () {
-        return {
-            showBanner: true,
-            panel: [0],
-        }
-    },
-    methods: {},
-    computed: {},
-    // watch: {
-    //     // Watch for route changes
-    //     $route(to) {
-    //         if (to.path === '/contact-us') {
-    //             this.showBanner = false;
-    //         } else {
-    //             this.showBanner = true;
-    //         }
-    //     },
-    // },
-    // mounted() {
-    //     // Check the route when the component is mounted
-    //     if (this.$route.path === '/contact-us') {
-    //         this.showBanner = false;
-    //     }
-    // },
+<script setup>
+import { ref } from 'vue';
+
+const isOpen = ref(true);
+const showBtn = true;
+
+function dismissBanner() {
+    isOpen.value = false;
+}
+
+function reopenBanner() {
+    isOpen.value = true;
 }
 </script>
 <style scoped>
 .v-banner{
-    padding-inline: 0px 0px;
-    /* padding-top: 0px !important;
-    padding-bottom: 0px !important; */
-    /* background-color: var(--v-primary-lighten-6) !important; */
-    border-bottom: 1px solid var(--v-divider-base) !important;
-    /* background: linear-gradient(120deg, var(--v-primary-lighten-6), var(--v-primary-accent-1));  */
-    /* background: linear-gradient(120deg, var(--v-primary-accent-1-lighten-1), var(--v-primary-accent-1-lighten-2) ); */
-    background: linear-gradient(120deg, var(--v-primary-lighten-6), var(--v-primary-base-lighten-5) );
-}
-.banner-text-body{
-    color: var(--v-grey-darken-3);
-    /* font-size: 0.85rem !important; */
-}
-.banner{
+    padding: 0;
+    border-bottom: 1px solid var(--v-primary-lighten-4) !important;
     top: var(--v-toolbar-height);
+    z-index: 999;
 }
-.banner-wrapper{
+
+.banner-gradient {
+    background-image:
+        radial-gradient(ellipse 70% 140% at 4%  30%, rgba(167, 220, 255, 0.35) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 120% at 90% 10%, rgba(130, 210, 240, 0.28) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 110% at 55% 95%, rgba(160, 230, 235, 0.28) 0%, transparent 58%),
+        linear-gradient(148deg, #ffffff 0%, #f0f9fd 50%, #edf8f9 100%);
+    border-bottom: 1px solid rgba(99, 182, 255, 0.15) !important;
+}
+/* 
+.blue-light-banner{
+    background: linear-gradient(120deg, var(--v-primary-lighten-6), var(--v-primary-lighten-5));
+}
+.frosted-banner {
+    background: linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(235,240,255,0.9) 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(99, 120, 255, 0.15) !important;
+}
+.frosted-teal-banner {
+    background: linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(235, 249, 255, 0.879) 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(99, 182, 255, 0.15) !important;
+} 
+.teal-banner {
+    background: linear-gradient(135deg, rgba(224, 247, 250, 0.9) 0%, rgba(178, 235, 242, 0.9) 100%);
+    border-bottom: 1px solid rgba(178, 235, 242, 0.5) !important;
+}
+.sunrise-banner{
+    background: linear-gradient(120deg, #fff8e1 0%, #fce4ec 100%);
+}
+.blue-teal-accent-banner{
+    background: linear-gradient(135deg, rgba(178, 235, 242, 0.9) 0%, rgba(128, 222, 234, 0.9) 100%);
+    border-bottom: 1px solid rgba(128, 222, 234, 0.5) !important;
+}
+.blue-teal-light-banner{
+    background: linear-gradient(135deg, #e3f2fd 0%, #e0f7fa 100%);
+} */
+
+.banner-wrapper {
+    min-height: var(--v-banner-height);
+    padding: 16px 24px 16px 60px;
+}
+
+.banner-overline {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--v-primary-darken-1);
+}
+
+.banner-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--v-grey-darken-4);
+}
+
+.banner-subtitle {
+    font-size: 0.98rem;
+    line-height: 1.4;
+    color: var(--v-grey-darken-3);
+}
+
+.banner-caption {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: var(--v-grey-darken-3);
+}
+
+.banner-action-col {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
+    justify-content: flex-start;
 }
-.v-banner__content{
-    width:100%;
+
+
+.banner-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none !important;
+    box-shadow: none !important;
+    color: var(--v-grey-darken-2);
+    z-index: 1;
 }
+
+.banner-reopen-badge {
+    position: fixed;
+    top: calc(var(--v-toolbar-height) + 8px);
+    right: 16px;
+    z-index: 1001;
+}
+
+@media (max-width: 959px) {
+    .banner-wrapper {
+        padding: 12px 16px 12px 48px;
+    }
+
+    .banner-action-col {
+        margin-top: 0px;
+        padding-top: 0px;
+    }
+
+    .banner-reopen-badge {
+        top: calc(var(--v-toolbar-height) + 8px);
+        right: 12px;
+    }
+}
+
 </style>
   

@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-xs>
+    <container-sm>
         <page-title>White papers</page-title>
        
         <section class="section-margin-default">
@@ -19,7 +19,7 @@
             </div>
 
         </section>
-    </container-xs>
+    </container-sm>
   </page>
 </template>
   

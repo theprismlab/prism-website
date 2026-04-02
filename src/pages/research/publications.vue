@@ -1,8 +1,8 @@
 <template>
   <page>
-    <container-xs>
+    <container-sm>
       <page-title>Publications</page-title>
-      </container-xs>
+      </container-sm>
       <container-md>
             
       <section>
@@ -101,8 +101,6 @@
       
         const cfManager = new CrossfilterManager(this.data, this.filters);
         const filteredData =cfManager.filteredData;
-        console.log("filteredData", filteredData);
-        console.log("crossfilter", cfManager);
         this.filteredData = filteredData;
         this.cfManager = cfManager;
       },
@@ -152,7 +150,6 @@
         },
         onFilterChange(field, values) {
           this.cfManager.setActive(field, values);
-          console.log("filteredData", this.cfManager.filteredData);
           this.filteredData = this.cfManager.filteredData;
 
           // Now this.filters[field].options is updated for all fields

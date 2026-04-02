@@ -1,11 +1,11 @@
 <template>
 <page>
-  <container-xs>
+  <container-sm>
     <page-title>Cell line collection</page-title>
       <p class=text-body-1>
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and wide genomic diversity. Among them, our collection includes a significant number of pediatric cancer cell lines, as well as over 100 hematopoietic cell lines. Our cell lines are our most important asset, and we therefore take great pride in the quality of our cell lines.
       </p>
-  </container-xs>
+  </container-sm>
 <div class="background-01 py-6">
   <container-md>  
     <v-row>
@@ -28,7 +28,7 @@
   </container-sm>
   
     <!-- <v-card variant="tonal" color="teal-cyan-lighten-4"> -->
-  <container-xs class="mt-12 mb-12">
+  <container-sm class="mt-12 mb-12">
 
  <h2 class="text-h3 text-black">All of our cell lines are:</h2>
       <v-list class="mt-6" style="background-color: transparent;">
@@ -40,11 +40,11 @@
         </v-list-item>
       </v-list>
 
-  </container-xs>
+  </container-sm>
 
     <!-- </v-card> -->
 
-  <container-xs class="mt-12 mb-12">
+  <container-sm class="mt-12 mb-12">
     <v-row>
       <v-col>
         <h2 class="text-h3">Cell sets in PRISM screens</h2>
@@ -73,7 +73,7 @@
         </p>
       </v-col>
     </v-row>
-  </container-xs>
+  </container-sm>
 </page>
 </template>
 

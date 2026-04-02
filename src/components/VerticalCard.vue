@@ -55,9 +55,6 @@ export default {
         },
     },
     computed: {
-    },
-    mounted(){
-        console.log(this.elevation)
     }
 }
 </script>

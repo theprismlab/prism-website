@@ -10,7 +10,6 @@ import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes' // Automatically generated routes from Pages folder
 
 
-console.log('routes', routes)
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
