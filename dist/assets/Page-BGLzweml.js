@@ -1,1 +1,0 @@
-import{_ as o,o as s,c as t,a4 as a}from"./index-CN8n6OfQ.js";const n={name:"Page",props:{},data(){return{}},methods:{},watch:{}},c={class:"page"};function r(e,_,p,d,f,i){return s(),t("div",c,[a(e.$slots,"default",{},void 0)])}const u=o(n,[["render",r],["__scopeId","data-v-1c79f1a1"]]);export{u as _};
