@@ -123,24 +123,9 @@ data() {
         ]
       },
       {
-        title: 'Research',
-        children: [
-          {
-            title: 'Publications',
-            route: '/research/publications',
-            id: 'publications'
-          },
-          {
-            title: 'White papers',
-            route: '/research/white-papers',
-            id: 'white-papers'
-          },
-          {
-            title: 'Conference abstracts',
-            route: '/research/conference-abstracts',
-            id: 'conference-abstracts'
-          }
-        ]
+        title: 'Publications',
+        route: '/publications',
+        id: 'publications'
       },
       {
         title: 'Consortium Screens',
