@@ -9,62 +9,44 @@
       </section>
       <section>
         <section-overline> Explore Publications</section-overline>
-        <v-row class="mt-1" id="filter-bar">
-          <v-col v-for="(key, index) in Object.keys(filters)" :key="index">
-      
-            <v-autocomplete v-if="key === 'type'"
-            v-model="filters.type.active"
-            :items="filters.type.options"
-            item-title="text"
-            item-value="value"
-            :label="`Filter Type`"
-            multiple
-          
-            clearable
-            hide-details
-             @update:modelValue="val => onFilterChange('type', val)"
-          >
-            <template v-slot:item="{ item, props }">
-              <v-list-item
-                v-bind="props"
-                :prepend-icon="filters.type.active.includes(item.value) ? 'mdi-check' : ''"
-              >
-                <template v-slot:prepend>
-                  <v-icon :color="typeStyles[item.value].bg">{{ typeStyles[item.value].icon }}</v-icon>
-                </template>
-              </v-list-item>
-            </template>
-            <template v-slot:selection="{ item }">
-              <v-chip
-                :color="typeStyles[item.value].bg"
-                :text-color="typeStyles[item.value].fg"
-                variant="tonal"
-                size="small"
-                closable
-                @click:close="removeSelection('type', item.value)"
-              >
-                <v-icon left size="small">{{ typeStyles[item.value].icon }}</v-icon>
-                {{ item.title }}
-              </v-chip>
-            </template>
-          </v-autocomplete>
-
-            <v-autocomplete v-else
-              v-model="filters[key].active"
-              :items="filters[key].options"
-              item-title="text"
-              item-value="value"
-              :label="`Filter ${key}`"
-              multiple
-              chips
-              clearable
-              closable-chips
-              hide-details
-               @update:modelValue="val => onFilterChange(key, val)"
+        <div class="mt-3 mb-3" id="filter-bar">
+          <div class="filter-label">Filter Type</div>
+          <div class="type-filter-chips">
+            <v-chip
+              v-for="option in filters.type.options"
+              :key="option.value"
+              :color="typeStyles[option.value].bg"
+              :text-color="filters.type.active.includes(option.value) ? typeStyles[option.value].fg : '#999'"
+              :variant="filters.type.active.includes(option.value) ? 'tonal' : 'outlined'"
+              size="small"
+              @click="toggleTypeSelection(option.value)"
+              class="type-chip"
             >
-            </v-autocomplete>
-          </v-col>
-        </v-row>
+              <v-icon left size="small">{{ typeStyles[option.value].icon }}</v-icon>
+              {{ option.text.split(' (')[0] }}
+            </v-chip>
+          </div>
+          <v-row class="mt-2">
+            <v-col  v-for="key in Object.keys(filters).filter(k => k !== 'type')">
+              <v-autocomplete
+                :key="key"
+                v-model="filters[key].active"
+                :items="filters[key].options"
+                item-title="text"
+                item-value="value"
+                :label="`Filter ${key}`"
+                multiple
+                chips
+                clearable
+                closable-chips
+                hide-details
+                 @update:modelValue="val => onFilterChange(key, val)"
+              >
+              </v-autocomplete>
+            </v-col>
+          
+          </v-row>
+        </div>
         <v-row>
           <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
             <div v-for="each in filteredData"
@@ -257,6 +239,16 @@ const conferenceAbstractColor = "#009688";
             this.filters[field].active = active;
             this.onFilterChange(field, active);
           }
+        },
+        toggleTypeSelection(typeValue) {
+          const isSelected = this.filters.type.active.includes(typeValue);
+          if (isSelected) {
+            this.removeSelection('type', typeValue);
+          } else {
+            const active = [...this.filters.type.active, typeValue];
+            this.filters.type.active = active;
+            this.onFilterChange('type', active);
+          }
         }
       },
       watch: {
@@ -266,6 +258,22 @@ const conferenceAbstractColor = "#009688";
   </script>
 
   <style scoped>
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(97, 97, 97);
+  margin-bottom: 0.75rem;
+  text-transform: capitalize;
+}
+.type-filter-chips {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.type-chip {
+  cursor: pointer;
+}
 .publication-title {
   margin: 0;
   font-size: 1.25rem;
@@ -323,8 +331,10 @@ const conferenceAbstractColor = "#009688";
       top: var(--v-toolbar-height);
   z-index: 10;
   background: white;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding: 1rem 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-bottom: 0.2px solid rgba(0, 0, 0, 0.08);
 }
 .publication-links{
   margin-top: 0.75rem;
