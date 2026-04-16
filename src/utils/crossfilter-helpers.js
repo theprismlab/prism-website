@@ -78,7 +78,7 @@ export default class CrossfilterManager {
     });
 
     // Get all possible values for this field
-    const allValues = [...new Set(this.data.map(d => d[field]))];
+    const allValues = [...new Set(this.data.map(d => d[field]))].filter(v => v !== undefined && v !== null);
     // For each value, count how many records would match if this value were selected (with other filters applied)
     const options = allValues.map(value => {
       // Apply all other filters, but not this one

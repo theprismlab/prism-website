@@ -1,17 +1,15 @@
 <template>
-  <page>
-    <container-sm>
-      <page-title>Publications</page-title>
-      </container-sm>
+  <page id="publication-page">
       <container-md>
-            
+
+      <page-title>Publications</page-title>            
       <section>
         <section-overline> Featured</section-overline>
       
       </section>
       <section>
         <section-overline> Explore Publications</section-overline>
-        <v-row class="mt-1">
+        <v-row class="mt-1" id="filter-bar">
           <v-col v-for="(key, index) in Object.keys(filters)" :key="index">
             <v-autocomplete
               v-model="filters[key].active"
@@ -94,9 +92,9 @@ import svgIconVue from '@jamescoyle/vue-icon';
         return {
           data: [],
           filters: {
+            type: { options: [], active: [] },
               year: { options: [], active: [] },
               publisher: { options: [], active: [] },
-            //   title: { options: [], active: [] },
               author: { options: [], active: [] }
             },
             filteredData: [],
@@ -107,6 +105,7 @@ import svgIconVue from '@jamescoyle/vue-icon';
         this.data = await this.getData();
       
         const cfManager = new CrossfilterManager(this.data, this.filters);
+        console.log("Filters after initialization:", cfManager);
         const filteredData =cfManager.filteredData;
         this.filteredData = filteredData;
         this.cfManager = cfManager;
@@ -119,8 +118,13 @@ import svgIconVue from '@jamescoyle/vue-icon';
           return {
             "publication": { icon: 'mdi-file-document-outline', color: 'indigo-accent-3' }, // blue
             // "white paper": { icon: 'mdi-note-outline', color: 'teal' },
-                      "white paper": { icon: 'mdi-book-open-blank-variant-outline', color: 'teal' },
-            "conference abstract": { icon: 'mdi-presentation', color: 'purple' }, // deep-purple
+            // "white paper": { icon: 'mdi-book-open-blank-variant-outline', color: 'purple' },
+          //       "white paper": { icon: 'mdi-file-chart-outline', color: 'purple' },
+          // "white paper": { icon: 'mdi-comment-bookmark-outline', color: 'purple' },
+          "white paper": { icon: 'mdi-book-outline', color: 'purple' },
+                    "white paper": { icon: 'mdi-bookmark-outline', color: 'purple' },
+
+            "conference abstract": { icon: 'mdi-presentation', color: 'teal' }, // deep-purple
             //mdi-file-chart-outline
             // mdi-chart-box-outline
             //mdi-chart-box-multiple-outline
@@ -146,7 +150,7 @@ import svgIconVue from '@jamescoyle/vue-icon';
                     id: `publication-${i}`,
                     year: d.Year,
                     link: d.Link,
-                    publisher: d.Publication,
+                    publisher: d.Publisher,
                     author: d.Author
                 }
             }),
@@ -159,7 +163,7 @@ import svgIconVue from '@jamescoyle/vue-icon';
                     portalLink: d["Portal Link"],
                     date: d.Date,
                     year: d.Date.split(" ")[2],
-                    conference: d.Conference
+                    // publisher: d.Publisher,
                 }
             }),
             d3.csv(`${dataPath}${conferenceAbstractsFile}`, function(d, i){
@@ -169,6 +173,7 @@ import svgIconVue from '@jamescoyle/vue-icon';
                     id: `conference-abstract-${i}`,
                     year: d.Year,
                     link: d.Link,
+                    publisher: d.Publisher,
                 }
             })
           ]
@@ -209,6 +214,16 @@ import svgIconVue from '@jamescoyle/vue-icon';
 .v-alert--variant-outlined {
     border: 0.1px solid currentColor;
 }
-
+#publication-page {
+  position: relative;
+}
+#filter-bar {
+  position: sticky;
+      top: var(--v-toolbar-height);
+  z-index: 10;
+  background: white;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
 </style>
   
