@@ -38,7 +38,7 @@
   <script>
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiHexagonMultiple } from '@mdi/js';
-import { mdiFileMultipleOutline } from '@mdi/js';
+import { mdiFileDocumentMultipleOutline } from '@mdi/js';
 import { mdiAccountGroup } from '@mdi/js';
 // import TheViabilityScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityScene.vue';
 import Hero from '../components/sections/Hero.vue';
@@ -77,9 +77,10 @@ import Hero from '../components/sections/Hero.vue';
               title: "50+",
               subtitle: "Publications in high-impact journals",
               icon: {
-                path: mdiFileMultipleOutline,
+                path: mdiFileDocumentMultipleOutline,
                 color: "white",
-                backgroundColor: "var(--v-teal-accent-4)",
+                // backgroundColor: "var(--v-teal-accent-4)",
+                backgroundColor: "var(--v-indigo-accent-2)",
                 size: 54,
                 borderRadius: "50%"
               }
