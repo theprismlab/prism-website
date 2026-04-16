@@ -70,15 +70,6 @@ export default class CrossfilterManager {
     this.updateAllOptions();
   }
 
-  // Get the filtered data (after all filters applied)
-//   getFilteredData() {
-//     try {
-//       return this.cf.allFiltered();
-//     } catch {
-//       return this.data;
-//     }
-//   }
-
   // Update options for all filters, sorted and labeled by counts
   updateAllOptions() {
     Object.keys(this.filters).forEach(field => {
@@ -86,68 +77,36 @@ export default class CrossfilterManager {
     });
   }
 
-  // Build menu options for a single filter, with counts and labels
+  // Build menu options for a single filter, with counts and labels.
+  // Counts reflect how many items have each value given all OTHER active filters.
   _buildOptions(field) {
     if (!this.dimensions[field]) return [];
 
+    // Temporarily remove THIS field's filter so we count against all other filters only
+    this.dimensions[field].filterAll();
+
+    // Get data filtered by all other dimensions (+ search)
+    const crossFiltered = this.cf.allFiltered();
+
     // Get all possible values for this field
     const allValues = [...new Set(this.data.map(d => d[field]))];
-    
-    // For each value, count how many records would match if this value were selected
-    // (considering all OTHER filters are active)
+
     const options = allValues.map(value => {
-      // Save current active selections for all fields
-      const savedActive = {};
-      Object.keys(this.filters).forEach(f => {
-        savedActive[f] = [...this.filters[f].active];
-      });
-      const savedSearch = this.searchQuery;
-
-      // Clear the filter for THIS field only, keep all others
-      this.dimensions[field].filterAll();
-      
-      // Apply all OTHER filters
-      Object.keys(this.filters).forEach(f => {
-        if (f !== field) {
-          const selected = this.filters[f].active;
-          if (selected && selected.length > 0) {
-            this.dimensions[f].filter(v => selected.includes(v));
-          }
-        }
-      });
-      
-      // Apply search filter if exists
-      if (this.searchQuery) {
-        this.dimensions['search'].filter(title =>
-          title.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
-      }
-
-      // Apply this field's specific value to count
-      this.dimensions[field].filterExact(value);
-      
-      // Count filtered results
-      let count = 0;
-      try {
-        count = this.cf.allFiltered().length;
-      } catch {
-        count = 0;
-      }
-
-      // Calculate total (unfiltered) count for this value
+      const count = crossFiltered.filter(item => item[field] === value).length;
       const total = this.data.filter(d => d[field] === value).length;
-
-      // Restore all filters to original state
-      this._applyFilters();
-
-      const text = `${count}/${total}`;
       return {
-        value: value,
-        count: count,
-        total: total,
-        text: `${value} (${text})`
+        value,
+        count,
+        total,
+        text: `${value} (${count}/${total})`
       };
     });
+
+    // Restore this field's filter
+    const selected = this.filters[field].active;
+    if (selected && selected.length > 0) {
+      this.dimensions[field].filter(v => selected.includes(v));
+    }
 
     // Sort: available (count > 0) first, then alphabetically or numerically
     options.sort((a, b) => {
