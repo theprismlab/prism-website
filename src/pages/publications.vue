@@ -10,6 +10,16 @@
       <section>
         <section-overline> Explore Publications</section-overline>
         <div class="mt-3 mb-3" id="filter-bar">
+          <v-text-field
+            v-model="searchQuery"
+            placeholder="Search publications..."
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+            density="compact"
+            clearable
+            @update:modelValue="onFilterChange('search', searchQuery)"
+            class="mb-3"
+          />
           <div class="filter-label">Filter Type</div>
           <div class="type-filter-chips">
             <v-chip
@@ -123,6 +133,7 @@ const conferenceAbstractColor = "#009688";
       data() {
         return {
           data: [],
+          searchQuery: '',
           filters: {
             type: { options: [], active: [] },
               year: { options: [], active: [] },
@@ -226,7 +237,10 @@ const conferenceAbstractColor = "#009688";
         },
         onFilterChange(field, values) {
           this.cfManager.setActive(field, values || []);
-          this.filteredData = this.cfManager.filteredData;
+          this.filteredData = this.cfManager.filteredData.filter(item => {
+            if (!this.searchQuery) return true;
+            return item.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+          });
         },
         removeSelection(field, value) {
           const active = this.filters[field].active.filter(v => v !== value);
