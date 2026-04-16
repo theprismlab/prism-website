@@ -24,6 +24,16 @@
             hide-details
              @update:modelValue="val => onFilterChange('type', val)"
           >
+            <template v-slot:item="{ item, props }">
+              <v-list-item
+                v-bind="props"
+                :prepend-icon="filters.type.active.includes(item.value) ? 'mdi-check' : ''"
+              >
+                <template v-slot:prepend>
+                  <v-icon :color="typeStyles[item.value].bg">{{ typeStyles[item.value].icon }}</v-icon>
+                </template>
+              </v-list-item>
+            </template>
             <template v-slot:selection="{ item }">
               <v-chip
                 :color="typeStyles[item.value].bg"
@@ -233,17 +243,20 @@ const conferenceAbstractColor = "#009688";
           });
         },
         onFilterChange(field, values) {
-          if (field === 'type' && (!values || !values.length)) {
-            values = this.filters.type.options.map(option => option.value);
-            this.filters.type.active = values;
-          }
-
-          this.cfManager.setActive(field, values);
+          this.cfManager.setActive(field, values || []);
           this.filteredData = this.cfManager.filteredData;
         },
         removeSelection(field, value) {
           const active = this.filters[field].active.filter(v => v !== value);
-          this.onFilterChange(field, active);
+          // For type filter, if all are removed, show all types
+          if (field === 'type' && active.length === 0) {
+            const allTypes = this.filters.type.options.map(option => option.value);
+            this.filters.type.active = allTypes;
+            this.onFilterChange(field, allTypes);
+          } else {
+            this.filters[field].active = active;
+            this.onFilterChange(field, active);
+          }
         }
       },
       watch: {
