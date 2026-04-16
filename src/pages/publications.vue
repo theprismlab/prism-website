@@ -1,118 +1,109 @@
 <template>
   <page id="publication-page">
-      <container-md>
+
 
       <page-title>Publications</page-title>            
+
       <section>
-        <section-overline> Featured</section-overline>
-      
-      </section>
-      <section>
-        <section-overline> Explore Publications</section-overline>
+        
         <div class="mt-3 mb-3" id="filter-bar">
-
-
-          <div class="type-filter-chips">
-           <span class="filter-label">Select types: </span>
-            <v-chip
-              v-for="option in filters.type.options"
-              :key="option.value"
-              :color="filters.type.active.includes(option.value) ? typeStyles[option.value].bg : 'lightgray'"
-              :text-color="filters.type.active.includes(option.value) ? typeStyles[option.value].fg : '#999'"
-              :variant="filters.type.active.includes(option.value) ? 'flat' : 'tonal'"
-              size="large"
-              @click="toggleTypeSelection(option.value)"
-              class="type-chip"
-            >
-              <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
-             <span class="pr-1">{{ option.text.split(' (')[0] }}</span> 
-            </v-chip>
-          </div>
-          <v-row class="mt-2">
-            <v-col  v-for="key in Object.keys(filters).filter(k => k !== 'type')">
-              <v-autocomplete
-                :key="key"
-                v-model="filters[key].active"
-                :items="filters[key].options"
-                item-title="text"
-                item-value="value"
-                :label="`Filter ${key}`"
-                multiple
-                chips
-                clearable
-                closable-chips
-                hide-details
-                 @update:modelValue="val => onFilterChange(key, val)"
+          <container-md>
+            <div class="type-filter-chips">
+            <span class="filter-label">Select types: </span>
+              <v-chip
+                v-for="option in filters.type.options"
+                :key="option.value"
+                :color="filters.type.active.includes(option.value) ? typeStyles[option.value].bg : 'lightgray'"
+                :text-color="filters.type.active.includes(option.value) ? typeStyles[option.value].fg : '#999'"
+                :variant="filters.type.active.includes(option.value) ? 'flat' : 'tonal'"
+                size="large"
+                @click="toggleTypeSelection(option.value)"
+                class="type-chip"
               >
-              </v-autocomplete>
-            </v-col>
-          
-          </v-row>
-          <v-row>   
-            <v-col cols="12">
-            <v-text-field
-            v-model="searchQuery"
-            placeholder="Search titles..."
-            prepend-inner-icon="mdi-magnify"
-            clearable
-            class="mb-3"
-          />
-            </v-col>
-          </v-row>
-
-          
-                 
-        </div>
-        <v-row>
-          <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
-            <div v-for="each in filteredData"
-              :key="each.id">
-    
-            <!-- <v-card
-              class="publication-card mb-3"
-              variant="outlined"
-              :style="{ border: `0.5px solid ${typeStyles[each.type].border}` }"
-            > -->
-            <v-card
-              class="publication-card mb-3"
-              variant="flat"
-            >
-              <div class="publication-card__content">
-                <div
-                  class="publication-card__icon"
-                  :style="{ backgroundColor: typeStyles[each.type].bg }"
-                >
-                  <v-icon size="28" :color="typeStyles[each.type].fg">
-                    {{ typeStyles[each.type].icon }}
-                  </v-icon>
-                </div>
-                <div class="publication-card__details">
-                  <span  class="publication-card__title">{{  each.title }}</span>
-                  <div class="publication-meta">
-                    <span v-if="each.author">{{ each.author }}, et al. </span>
-                    <span v-if="each.publisher"><i>{{ each.publisher || each.conference }}</i>, </span>
-                    <span>{{ each.date || each.year }}</span>.
-                  </div>
-                  <!-- <v-chip v-if="each.tag" variant="outlined" size="x-small" color="grey">{{ each.tag }}</v-chip> -->
-                   <div class="publication-links">
-                    <a class="publication-link" :href="each.link" target="_blank">
-                    Read more <v-icon right size="x-small" class="publication-card__external-icon">mdi-arrow-right</v-icon>
-                    </a>
-                    <a class="publication-link" v-if="each.portalLink" :href="each.portalLink" target="_blank">
-                     <v-icon left>mdi-chart-box-outline</v-icon> Explore data <v-icon right size="x-small" class="publication-card__external-icon">mdi-arrow-right</v-icon>
-                    </a>
-
-                   </div>
-                </div>
-              </div>
-  
-            </v-card>
-           <!-- <v-divider></v-divider> -->
+                <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
+              <span class="pr-1">{{ option.text.split(' (')[0] }}</span> 
+              </v-chip>
             </div>
-          </v-col>
-        </v-row>
+            <v-row class="mt-2">
+              <v-col  v-for="key in Object.keys(filters).filter(k => k !== 'type')">
+                <v-autocomplete
+                  :key="key"
+                  v-model="filters[key].active"
+                  :items="filters[key].options"
+                  item-title="text"
+                  item-value="value"
+                  :label="`Filter ${key}`"
+                  multiple
+                  chips
+                  clearable
+                  closable-chips
+                  hide-details
+                  @update:modelValue="val => onFilterChange(key, val)"
+                >
+                </v-autocomplete>
+              </v-col>
+            
+            </v-row>
+            <v-row>   
+              <v-col cols="12">
+              <v-text-field
+              v-model="searchQuery"
+              placeholder="Search titles..."
+              prepend-inner-icon="mdi-magnify"
+              clearable
+              class="mb-3"
+            />
+              </v-col>
+            </v-row>
+
+          
+          </container-md>
+        </div>
+        <div class="filter-results">
+          <container-md>
+            <v-row>
+            <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
+              <div v-for="each in filteredData"
+                :key="each.id">
+                <v-card
+                  class="publication-card mb-3"
+                  variant="flat"
+                >
+                  <div class="publication-card__content">
+                    <div
+                      class="publication-card__icon"
+                      :style="{ backgroundColor: typeStyles[each.type].bg }"
+                    >
+                      <v-icon size="28" :color="typeStyles[each.type].fg">
+                        {{ typeStyles[each.type].icon }}
+                      </v-icon>
+                    </div>
+                    <div class="publication-card__details">
+                      <span  class="publication-card__title">{{  each.title }}</span>
+                      <div class="publication-meta">
+                        <span v-if="each.author">{{ each.author }}, et al. </span>
+                        <span v-if="each.publisher"><i>{{ each.publisher || each.conference }}</i>, </span>
+                        <span>{{ each.date || each.year }}</span>.
+                      </div>
+                      <div class="publication-links">
+                        <a class="publication-link" :href="each.link" target="_blank">
+                        Read more <v-icon right size="x-small" class="publication-card__external-icon">mdi-arrow-right</v-icon>
+                        </a>
+                        <a class="publication-link" v-if="each.portalLink" :href="each.portalLink" target="_blank">
+                        <v-icon left>mdi-chart-box-outline</v-icon> Explore data <v-icon right size="x-small" class="publication-card__external-icon">mdi-arrow-right</v-icon>
+                        </a>
+
+                      </div>
+                    </div>
+                  </div>
+                </v-card>
+              </div>
+            </v-col>
+          </v-row>
+        </container-md>
+        </div>
       </section>
-      </container-md>
+
     </page>
   </template>
   
@@ -179,9 +170,9 @@ const conferenceAbstractColor = "#009688";
         },
         typeStyles() {
           return {
-            "publication": { icon: 'mdi-file-document-outline', bg: paperColor, fg: '#ffffff', border: paperColor },
-            "white paper": { icon: 'mdi-book-outline', bg: whitePaperColor, fg: '#ffffff', border: whitePaperColor },
-            "conference abstract": { icon: 'mdi-presentation', bg: conferenceAbstractColor, fg: '#ffffff', border: conferenceAbstractColor },
+            "Publication": { icon: 'mdi-file-document-outline', bg: paperColor, fg: '#ffffff', border: paperColor },
+            "White Paper": { icon: 'mdi-book-outline', bg: whitePaperColor, fg: '#ffffff', border: whitePaperColor },
+            "Conference Abstract": { icon: 'mdi-presentation', bg: conferenceAbstractColor, fg: '#ffffff', border: conferenceAbstractColor },
           }
         },
       },
@@ -193,7 +184,7 @@ const conferenceAbstractColor = "#009688";
             d3.csv(`${dataPath}${publicationsFile}`, function(d, i){
                 return {
                     title: d.Title,
-                    type: "publication",
+                    type: "Publication",
                     id: `publication-${i}`,
                     year: d.Year,
                     link: d.Link,
@@ -204,7 +195,7 @@ const conferenceAbstractColor = "#009688";
             d3.csv(`${dataPath}${whitepaperFile}`, function(d, i){
                 return {
                     title: d.Title,
-                    type: "white paper",
+                    type: "White Paper",
                     id: `white-paper-${i}`,
                     link: d.Link,
                     portalLink: d["Portal Link"],
@@ -219,7 +210,7 @@ const conferenceAbstractColor = "#009688";
             d3.csv(`${dataPath}${conferenceAbstractsFile}`, function(d, i){
                 return {
                     title: d.Title,
-                    type: "conference abstract",
+                    type: "Conference Abstract",
                     id: `conference-abstract-${i}`,
                     year: d.Year,
                     link: d.Link,
@@ -293,7 +284,6 @@ const conferenceAbstractColor = "#009688";
   font-weight: 600;
   color: rgb(135, 135, 135);
 
-  text-transform: capitalize;
 }
 .type-filter-chips {
   display: flex;
