@@ -27,12 +27,17 @@
         </v-row>
         <v-row>
           <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
-            <v-card
-              v-for="each in filteredData"
-              :key="each.id"
+            <div v-for="each in filteredData"
+              :key="each.id">
+    
+            <!-- <v-card
               class="publication-card mb-3"
               variant="outlined"
               :style="{ border: `0.5px solid ${typeStyles[each.type].border}` }"
+            > -->
+            <v-card
+              class="publication-card mb-3"
+              variant="flat"
             >
               <div class="publication-card__content">
                 <div
@@ -45,10 +50,6 @@
                 </div>
                 <div class="publication-card__details">
                   <span  class="publication-card__title">{{  each.title }}</span>
-                  <!-- <a :href="each.link" target="_blank" class="publication-card__title">
-                    {{ each.title }}
-                    <v-icon right size="x-small" class="publication-card__external-icon">mdi-open-in-new</v-icon>
-                  </a> -->
                   <div class="publication-meta">
                     <span v-if="each.author">{{ each.author }}, et al. </span>
                     <span v-if="each.publisher"><i>{{ each.publisher || each.conference }}</i>, </span>
@@ -66,7 +67,10 @@
                    </div>
                 </div>
               </div>
+  
             </v-card>
+           <!-- <v-divider></v-divider> -->
+            </div>
           </v-col>
         </v-row>
       </section>
