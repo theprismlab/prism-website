@@ -148,7 +148,7 @@ const conferenceAbstractColor = "#009688";
               publisher: { options: [], active: [] },
               author: { options: [], active: [] }
             },
-            filteredData: [],
+            filteredData: null,
             cfManager: null
         }
       },
@@ -158,7 +158,12 @@ const conferenceAbstractColor = "#009688";
         const cfManager = new CrossfilterManager(this.data, this.filters);
         console.log("Filters after initialization:", cfManager);
         this.cfManager = cfManager;
-
+// Set default selection FIRST
+if (!this.filters.type.active.length) {
+  const allTypes = this.filters.type.options.map(option => option.value);
+  this.filters.type.active = allTypes;
+  this.cfManager.setActive('type', allTypes);
+}
         // Enhance type options with icon and color
         this.filters.type.options = this.filters.type.options.map(option => {
           const style = this.typeStyles[option.value];

@@ -89,30 +89,43 @@ export default class CrossfilterManager {
   // Build menu options for a single filter, with counts and labels
   _buildOptions(field) {
     if (!this.dimensions[field]) return [];
-    // Save current filters
-    const prevFilters = {};
-    Object.keys(this.filters).forEach(f => {
-      prevFilters[f] = this.dimensions[f].filter();
-    });
 
     // Get all possible values for this field
     const allValues = [...new Set(this.data.map(d => d[field]))];
-    // For each value, count how many records would match if this value were selected (with other filters applied)
+    
+    // For each value, count how many records would match if this value were selected
+    // (considering all OTHER filters are active)
     const options = allValues.map(value => {
-      // Apply all other filters, but not this one
+      // Save current active selections for all fields
+      const savedActive = {};
+      Object.keys(this.filters).forEach(f => {
+        savedActive[f] = [...this.filters[f].active];
+      });
+      const savedSearch = this.searchQuery;
+
+      // Clear the filter for THIS field only, keep all others
+      this.dimensions[field].filterAll();
+      
+      // Apply all OTHER filters
       Object.keys(this.filters).forEach(f => {
         if (f !== field) {
           const selected = this.filters[f].active;
           if (selected && selected.length > 0) {
             this.dimensions[f].filter(v => selected.includes(v));
-          } else {
-            this.dimensions[f].filterAll();
           }
         }
       });
-      // Apply this value as the only filter for this field
-      this.dimensions[field].filterExact(value);
+      
+      // Apply search filter if exists
+      if (this.searchQuery) {
+        this.dimensions['search'].filter(title =>
+          title.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      }
 
+      // Apply this field's specific value to count
+      this.dimensions[field].filterExact(value);
+      
       // Count filtered results
       let count = 0;
       try {
@@ -121,12 +134,12 @@ export default class CrossfilterManager {
         count = 0;
       }
 
-      // Restore previous filter for this field
-      this.dimensions[field].filter(prevFilters[field]);
-
       // Calculate total (unfiltered) count for this value
       const total = this.data.filter(d => d[field] === value).length;
-      //const text = count == total ?  `${total}` : `${count}/${total}`;
+
+      // Restore all filters to original state
+      this._applyFilters();
+
       const text = `${count}/${total}`;
       return {
         value: value,
@@ -134,11 +147,6 @@ export default class CrossfilterManager {
         total: total,
         text: `${value} (${text})`
       };
-    });
-
-    // Restore all previous filters
-    Object.keys(this.filters).forEach(f => {
-      this.dimensions[f].filter(prevFilters[f]);
     });
 
     // Sort: available (count > 0) first, then alphabetically or numerically
