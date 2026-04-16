@@ -32,6 +32,7 @@
               :key="each.id"
               class="publication-card mb-3"
               variant="outlined"
+              :style="{ border: `0.5px solid ${typeStyles[each.type].border}` }"
             >
               <div class="publication-card__content">
                 <div
@@ -43,15 +44,26 @@
                   </v-icon>
                 </div>
                 <div class="publication-card__details">
-                  <a :href="each.link" target="_blank" class="publication-card__title">
+                  <span  class="publication-card__title">{{  each.title }}</span>
+                  <!-- <a :href="each.link" target="_blank" class="publication-card__title">
                     {{ each.title }}
                     <v-icon right size="x-small" class="publication-card__external-icon">mdi-open-in-new</v-icon>
-                  </a>
+                  </a> -->
                   <div class="publication-meta">
                     <span v-if="each.author">{{ each.author }}, et al. </span>
-                    <span v-if="each.publisher">{{ each.publisher || each.conference }}, </span>
+                    <span v-if="each.publisher"><i>{{ each.publisher || each.conference }}</i>, </span>
                     <span>{{ each.date || each.year }}</span>.
                   </div>
+                  <!-- <v-chip v-if="each.tag" variant="outlined" size="x-small" color="grey">{{ each.tag }}</v-chip> -->
+                   <div class="publication-links">
+                    <a class="publication-link" :href="each.link" target="_blank">
+                    Read more <v-icon right size="x-small" class="publication-card__external-icon">mdi-arrow-right</v-icon>
+                    </a>
+                    <a class="publication-link" v-if="each.portalLink" :href="each.portalLink" target="_blank">
+                     <v-icon left>mdi-chart-box-outline</v-icon> Explore data <v-icon right size="x-small" class="publication-card__external-icon">mdi-arrow-right</v-icon>
+                    </a>
+
+                   </div>
                 </div>
               </div>
             </v-card>
@@ -63,26 +75,25 @@
   </template>
   
   <script>
-  import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiBookMultipleOutline } from '@mdi/js';
-  import { mdiBookOpenBlankVariantOutline } from '@mdi/js';
-import { mdiFileCertificateOutline } from '@mdi/js';
-import { mdiFileChartOutline } from '@mdi/js';
-import { mdiFileDocumentMultipleOutline } from '@mdi/js';
-import { mdiFileMultipleOutline } from '@mdi/js';
-import { mdiFilePresentationBox } from '@mdi/js';
-import { mdiPresentation } from '@mdi/js';
+
+
+const paperColor = "#3f51b5";
+const whitePaperColor = "#8e24aa";
+const conferenceAbstractColor = "#009688";
 
 
   import * as d3 from 'd3';
   import CrossfilterManager from '@/utils/crossfilter-helpers.js';
-import svgIconVue from '@jamescoyle/vue-icon';
+  import BaseButton from '@/components/BaseButton.vue';
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL+"data/" : "../public/data/";
   const publicationsFile = "Website Content - 2025  - Publications.csv";
   const whitepaperFile = "Website Content - 2025  - White Papers.csv";
   const conferenceAbstractsFile = "Website Content - 2025  - Conference Abstracts.csv";
 
     export default {
+      components: {
+        BaseButton
+      },
       data() {
         return {
           data: [],
@@ -111,19 +122,9 @@ import svgIconVue from '@jamescoyle/vue-icon';
         },
         typeStyles() {
           return {
-                publication: { icon: 'mdi-file-document-outline', bg: '#3f51b5', fg: '#ffffff' },
-            'white paper': { icon: 'mdi-book-outline', bg: '#8e24aa', fg: '#ffffff' },
-            'conference abstract': { icon: 'mdi-presentation', bg: '#009688', fg: '#ffffff' },
-            //mdi-file-chart-outline
-            // mdi-chart-box-outline
-            //mdi-chart-box-multiple-outline
-            //mdi-note-multiple-outline
-            //mdi-newspaper-variant-outline
-            //mdi-note-text-outline
-            // mdi-format-quote-open
-            //mdi-file-delimited-outline
-            //mdi-file-certificate-outline
-            //mdi-file-star-outline
+            "publication": { icon: 'mdi-file-document-outline', bg: paperColor, fg: '#ffffff', border: paperColor },
+            "white paper": { icon: 'mdi-book-outline', bg: whitePaperColor, fg: '#ffffff', border: whitePaperColor },
+            "conference abstract": { icon: 'mdi-presentation', bg: conferenceAbstractColor, fg: '#ffffff', border: conferenceAbstractColor },
           }
         },
       },
@@ -151,6 +152,7 @@ import svgIconVue from '@jamescoyle/vue-icon';
                     link: d.Link,
                     portalLink: d["Portal Link"],
                     date: d.Date,
+                    tag: d.Tag,
                     year: d.Date.split(" ")[2],
                     // publisher: d.Publisher,
                 }
@@ -203,6 +205,7 @@ import svgIconVue from '@jamescoyle/vue-icon';
 .publication-card {
   padding: 1rem;
   border-radius: 12px;
+  border: 0.2px solid rgba(0, 0, 0, 0.16);
 }
 .publication-card__content {
   display: flex;
@@ -247,6 +250,17 @@ import svgIconVue from '@jamescoyle/vue-icon';
   background: white;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+}
+.publication-links{
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 2.5rem;
+}
+.publication-link{
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--v-primary-base);
+  text-decoration: none;
 }
 </style>
   
