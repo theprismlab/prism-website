@@ -78,7 +78,7 @@ export default class CrossfilterManager {
     });
 
     // Get all possible values for this field
-    const allValues = [...new Set(this.data.map(d => d[field]))].filter(v => v !== undefined && v !== null);
+    const allValues = [...new Set(this.data.map(d => d[field]))];
     // For each value, count how many records would match if this value were selected (with other filters applied)
     const options = allValues.map(value => {
       // Apply all other filters, but not this one
@@ -108,12 +108,13 @@ export default class CrossfilterManager {
 
       // Calculate total (unfiltered) count for this value
       const total = this.data.filter(d => d[field] === value).length;
-
+      //const text = count == total ?  `${total}` : `${count}/${total}`;
+      const text = `${count}/${total}`;
       return {
         value: value,
         count: count,
         total: total,
-        text: `${value} (${count}/${total})`
+        text: `${value} (${text})`
       };
     });
 

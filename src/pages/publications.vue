@@ -11,7 +11,35 @@
         <section-overline> Explore Publications</section-overline>
         <v-row class="mt-1" id="filter-bar">
           <v-col v-for="(key, index) in Object.keys(filters)" :key="index">
-            <v-autocomplete
+      
+            <v-autocomplete v-if="key === 'type'"
+            v-model="filters.type.active"
+            :items="filters.type.options"
+            item-title="text"
+            item-value="value"
+            :label="`Filter Type`"
+            multiple
+          
+            clearable
+            hide-details
+             @update:modelValue="val => onFilterChange('type', val)"
+          >
+            <template v-slot:selection="{ item }">
+              <v-chip
+                :color="typeStyles[item.value].bg"
+                :text-color="typeStyles[item.value].fg"
+                variant="tonal"
+                size="small"
+                closable
+                @click:close="removeSelection('type', item.value)"
+              >
+                <v-icon left size="small">{{ typeStyles[item.value].icon }}</v-icon>
+                {{ item.title }}
+              </v-chip>
+            </template>
+          </v-autocomplete>
+
+            <v-autocomplete v-else
               v-model="filters[key].active"
               :items="filters[key].options"
               item-title="text"
@@ -20,9 +48,11 @@
               multiple
               chips
               clearable
+              closable-chips
               hide-details
                @update:modelValue="val => onFilterChange(key, val)"
-            ></v-autocomplete>
+            >
+            </v-autocomplete>
           </v-col>
         </v-row>
         <v-row>
@@ -119,6 +149,24 @@ const conferenceAbstractColor = "#009688";
         const filteredData =cfManager.filteredData;
         this.filteredData = filteredData;
         this.cfManager = cfManager;
+
+        // Enhance type options with icon and color
+        this.filters.type.options = this.filters.type.options.map(option => {
+          const style = this.typeStyles[option.value];
+          return {
+            ...option,
+            icon: style ? style.icon : '',
+            color: style ? style.bg : ''
+          };
+        });
+
+        // When no type is selected, default to all types
+        if (!this.filters.type.active.length) {
+          const allTypes = this.filters.type.options.map(option => option.value);
+          this.filters.type.active = allTypes;
+          this.cfManager.setActive('type', allTypes);
+          this.filteredData = this.cfManager.filteredData;
+        }
       },
       computed: {
         imgPath() {
@@ -158,6 +206,8 @@ const conferenceAbstractColor = "#009688";
                     date: d.Date,
                     tag: d.Tag,
                     year: d.Date.split(" ")[2],
+                    publisher: "PRISM",
+                    author: d.Author
                     // publisher: d.Publisher,
                 }
             }),
@@ -169,6 +219,7 @@ const conferenceAbstractColor = "#009688";
                     year: d.Year,
                     link: d.Link,
                     publisher: d.Publisher,
+                    author: "N/A",
                 }
             })
           ]
@@ -182,10 +233,17 @@ const conferenceAbstractColor = "#009688";
           });
         },
         onFilterChange(field, values) {
+          if (field === 'type' && (!values || !values.length)) {
+            values = this.filters.type.options.map(option => option.value);
+            this.filters.type.active = values;
+          }
+
           this.cfManager.setActive(field, values);
           this.filteredData = this.cfManager.filteredData;
-
-          // Now this.filters[field].options is updated for all fields
+        },
+        removeSelection(field, value) {
+          const active = this.filters[field].active.filter(v => v !== value);
+          this.onFilterChange(field, active);
         }
       },
       watch: {
