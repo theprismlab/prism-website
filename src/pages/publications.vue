@@ -10,18 +10,10 @@
       <section>
         <section-overline> Explore Publications</section-overline>
         <div class="mt-3 mb-3" id="filter-bar">
-          <v-text-field
-            v-model="searchQuery"
-            placeholder="Search publications..."
-            prepend-inner-icon="mdi-magnify"
-            variant="outlined"
-            density="compact"
-            clearable
-            @update:modelValue="onFilterChange('search', searchQuery)"
-            class="mb-3"
-          />
-          <div class="filter-label">Filter Type</div>
+
+
           <div class="type-filter-chips">
+           <span class="filter-label">Select types: </span>
             <v-chip
               v-for="option in filters.type.options"
               :key="option.value"
@@ -56,6 +48,22 @@
             </v-col>
           
           </v-row>
+          <v-row>   
+            <v-col cols="12">
+            <v-text-field
+            v-model="searchQuery"
+            placeholder="Search titles..."
+            prepend-inner-icon="mdi-magnify"
+
+            clearable
+            @update:modelValue="onFilterChange('search', searchQuery)"
+            class="mb-3"
+          />
+            </v-col>
+          </v-row>
+
+          
+                 
         </div>
         <v-row>
           <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
@@ -153,6 +161,10 @@ const conferenceAbstractColor = "#009688";
         this.filteredData = filteredData;
         this.cfManager = cfManager;
 
+        // Initialize search dimension
+        const cfInstance = cfManager.cf;
+        cfManager.dimensions['search'] = cfInstance.dimension(d => d.title);
+
         // Enhance type options with icon and color
         this.filters.type.options = this.filters.type.options.map(option => {
           const style = this.typeStyles[option.value];
@@ -236,10 +248,43 @@ const conferenceAbstractColor = "#009688";
           });
         },
         onFilterChange(field, values) {
-          this.cfManager.setActive(field, values || []);
-          this.filteredData = this.cfManager.filteredData.filter(item => {
-            if (!this.searchQuery) return true;
-            return item.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+          if (field === 'search') {
+            // Trigger update when search changes
+            this.updateFilteredData();
+          } else {
+            this.cfManager.setActive(field, values || []);
+            this.updateFilteredData();
+          }
+        },
+        updateFilteredData() {
+          // Get crossfilter results
+          let results = this.cfManager.filteredData;
+          
+          // Apply search filter locally
+          if (this.searchQuery) {
+            results = results.filter(item =>
+              item.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+            );
+          }
+          
+          this.filteredData = results;
+          
+          // Recompute filter option counts based on search-filtered data
+          this.updateFilterCounts(results);
+        },
+        updateFilterCounts(searchResults) {
+          // Update counts for non-type filters based on current search results
+          ['year', 'publisher', 'author'].forEach(field => {
+            this.filters[field].options = this.filters[field].options.map(option => {
+              const count = searchResults.filter(item => 
+                String(item[field]) === String(option.value)
+              ).length;
+              return {
+                ...option,
+                count: count,
+                text: `${option.value} (${count}/${option.total})`
+              };
+            });
           });
         },
         removeSelection(field, value) {
@@ -272,7 +317,9 @@ const conferenceAbstractColor = "#009688";
         }
       },
       watch: {
-
+        searchQuery() {
+          this.updateFilteredData();
+        }
       }
     }
   </script>
@@ -281,8 +328,8 @@ const conferenceAbstractColor = "#009688";
 .filter-label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: rgb(97, 97, 97);
-  margin-bottom: 0.75rem;
+  color: rgb(135, 135, 135);
+
   text-transform: capitalize;
 }
 .type-filter-chips {
@@ -290,6 +337,7 @@ const conferenceAbstractColor = "#009688";
   gap: 0.75rem;
   flex-wrap: wrap;
   margin-bottom: 1rem;
+  align-items: center;
 }
 .type-chip {
   cursor: pointer;
@@ -302,7 +350,7 @@ const conferenceAbstractColor = "#009688";
 }
 .publication-meta {
   font-size: 0.875rem;
-  color: rgb(97, 97, 97);
+  color: rgb(135, 135, 135);
   margin-top: 4px;
 }
 .publication-card {
