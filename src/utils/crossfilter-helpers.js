@@ -11,6 +11,7 @@ export default class CrossfilterManager {
     this.filters = filters; // { field: { options: [], active: [] } }
     this.cf = crossfilter(this.data);
     this.dimensions = {};
+    this.searchQuery = '';
     this._initDimensions();
     this.updateAllOptions();
   }
@@ -20,6 +21,8 @@ export default class CrossfilterManager {
     Object.keys(this.filters).forEach(field => {
       this.dimensions[field] = this.cf.dimension(d => d[field]);
     });
+    // Create search dimension for title searching
+    this.dimensions['search'] = this.cf.dimension(d => d.title);
   }
 
   // Set the active values for a filter and update all options
@@ -49,7 +52,22 @@ export default class CrossfilterManager {
         this.dimensions[field].filterAll();
       }
     });
+    
+    // Apply search filter to title
+    if (this.searchQuery) {
+      this.dimensions['search'].filter(title =>
+        title.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    } else {
+      this.dimensions['search'].filterAll();
+    }
+  }
 
+  // Set search query and update filters
+  setSearchQuery(query) {
+    this.searchQuery = query;
+    this._applyFilters();
+    this.updateAllOptions();
   }
 
   // Get the filtered data (after all filters applied)
@@ -151,14 +169,12 @@ export default class CrossfilterManager {
     this._applyFilters();
     this.updateAllOptions();
   }
-    get filteredData() {
-    const self = this;
-    return self.data.filter(item => {
-      return Object.keys(self.filters).every(field => {
-        const selected = self.filters[field].active;
-        // Compare as string for robustness
-        return !selected.length || selected.map(String).includes(String(item[field]));
-      });
-    });
+  // Get filtered data using crossfilter
+  get filteredData() {
+    try {
+      return this.cf.allFiltered();
+    } catch {
+      return this.data;
+    }
   }
 }

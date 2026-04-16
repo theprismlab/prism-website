@@ -157,13 +157,7 @@ const conferenceAbstractColor = "#009688";
       
         const cfManager = new CrossfilterManager(this.data, this.filters);
         console.log("Filters after initialization:", cfManager);
-        const filteredData =cfManager.filteredData;
-        this.filteredData = filteredData;
         this.cfManager = cfManager;
-
-        // Initialize search dimension
-        const cfInstance = cfManager.cf;
-        cfManager.dimensions['search'] = cfInstance.dimension(d => d.title);
 
         // Enhance type options with icon and color
         this.filters.type.options = this.filters.type.options.map(option => {
@@ -180,8 +174,9 @@ const conferenceAbstractColor = "#009688";
           const allTypes = this.filters.type.options.map(option => option.value);
           this.filters.type.active = allTypes;
           this.cfManager.setActive('type', allTypes);
-          this.filteredData = this.cfManager.filteredData;
         }
+        
+        this.updateFilteredData();
       },
       computed: {
         imgPath() {
@@ -249,43 +244,15 @@ const conferenceAbstractColor = "#009688";
         },
         onFilterChange(field, values) {
           if (field === 'search') {
-            // Trigger update when search changes
-            this.updateFilteredData();
+            this.cfManager.setSearchQuery(values);
           } else {
             this.cfManager.setActive(field, values || []);
-            this.updateFilteredData();
           }
+          this.updateFilteredData();
         },
         updateFilteredData() {
-          // Get crossfilter results
-          let results = this.cfManager.filteredData;
-          
-          // Apply search filter locally
-          if (this.searchQuery) {
-            results = results.filter(item =>
-              item.title.toLowerCase().includes(this.searchQuery.toLowerCase())
-            );
-          }
-          
-          this.filteredData = results;
-          
-          // Recompute filter option counts based on search-filtered data
-          this.updateFilterCounts(results);
-        },
-        updateFilterCounts(searchResults) {
-          // Update counts for non-type filters based on current search results
-          ['year', 'publisher', 'author'].forEach(field => {
-            this.filters[field].options = this.filters[field].options.map(option => {
-              const count = searchResults.filter(item => 
-                String(item[field]) === String(option.value)
-              ).length;
-              return {
-                ...option,
-                count: count,
-                text: `${option.value} (${count}/${option.total})`
-              };
-            });
-          });
+          // Crossfilter handles all filtering (type, year, publisher, author, search)
+          this.filteredData = this.cfManager.filteredData;
         },
         removeSelection(field, value) {
           const active = this.filters[field].active.filter(v => v !== value);
@@ -317,7 +284,8 @@ const conferenceAbstractColor = "#009688";
         }
       },
       watch: {
-        searchQuery() {
+        searchQuery(newVal) {
+          this.cfManager.setSearchQuery(newVal);
           this.updateFilteredData();
         }
       }
