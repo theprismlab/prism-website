@@ -27,34 +27,28 @@
         </v-row>
         <v-row>
           <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
-            <v-card
+            <v-alert
               v-for="each in filteredData"
               :key="each.id"
-              class="publication-card mb-3"
+              :icon="typeStyles[each.type].icon"
+              :color="typeStyles[each.type].color"
+              border="start"
+              colored-border
               variant="outlined"
+              class="mb-3"
             >
-              <div class="publication-card__content">
-                <div
-                  class="publication-card__icon"
-                  :style="{ backgroundColor: typeStyles[each.type].bg }"
-                >
-                  <v-icon size="28" :color="typeStyles[each.type].fg">
-                    {{ typeStyles[each.type].icon }}
-                  </v-icon>
-                </div>
-                <div class="publication-card__details">
-                  <a :href="each.link" target="_blank" class="publication-card__title">
-                    {{ each.title }}
-                    <v-icon right size="x-small" class="publication-card__external-icon">mdi-open-in-new</v-icon>
-                  </a>
-                  <div class="publication-meta">
-                    <span v-if="each.author">{{ each.author }}, et al. </span>
-                    <span v-if="each.publisher">{{ each.publisher || each.conference }}, </span>
-                    <span>{{ each.date || each.year }}</span>.
-                  </div>
-                </div>
-              </div>
-            </v-card>
+            <v-alert-title class="publication-title">
+              <a :href="each.link" target="_blank" style="color: inherit; text-decoration: none;">
+                {{ each.title }} <v-icon right size="x-small" class="pl-1">mdi-open-in-new</v-icon>
+              </a>
+            </v-alert-title>
+            <div class="publication-meta">
+              <span v-if="each.author">{{ each.author }}, et al. </span>
+              <span v-if="each.publisher">{{ each.publisher || each.conference }}, </span>
+              <span>{{ each.date || each.year }}</span>.
+            </div>
+            </v-alert>
+            
           </v-col>
         </v-row>
       </section>
@@ -111,9 +105,15 @@ import svgIconVue from '@jamescoyle/vue-icon';
         },
         typeStyles() {
           return {
-                publication: { icon: 'mdi-file-document-outline', bg: '#3f51b5', fg: '#ffffff' },
-            'white paper': { icon: 'mdi-book-outline', bg: '#8e24aa', fg: '#ffffff' },
-            'conference abstract': { icon: 'mdi-presentation', bg: '#009688', fg: '#ffffff' },
+            "publication": { icon: 'mdi-file-document-outline', color: 'indigo-accent-3' }, // blue
+            // "white paper": { icon: 'mdi-note-outline', color: 'teal' },
+            // "white paper": { icon: 'mdi-book-open-blank-variant-outline', color: 'purple' },
+          //       "white paper": { icon: 'mdi-file-chart-outline', color: 'purple' },
+          // "white paper": { icon: 'mdi-comment-bookmark-outline', color: 'purple' },
+          "white paper": { icon: 'mdi-book-outline', color: 'purple' },
+                    "white paper": { icon: 'mdi-bookmark-outline', color: 'purple' },
+
+            "conference abstract": { icon: 'mdi-presentation', color: 'teal' }, // deep-purple
             //mdi-file-chart-outline
             // mdi-chart-box-outline
             //mdi-chart-box-multiple-outline
@@ -199,40 +199,6 @@ import svgIconVue from '@jamescoyle/vue-icon';
   font-size: 0.875rem;
   color: rgb(97, 97, 97);
   margin-top: 4px;
-}
-.publication-card {
-  padding: 1rem;
-  border-radius: 12px;
-}
-.publication-card__content {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-.publication-card__icon {
-  min-width: 56px;
-  min-height: 56px;
-  display: grid;
-  place-items: center;
-  border-radius: 16px;
-}
-.publication-card__details {
-  flex: 1;
-}
-.publication-card__title {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: rgb(23, 23, 23);
-  text-decoration: none;
-}
-.publication-card__title:hover {
-  opacity: 0.88;
-}
-.publication-card__external-icon {
-  margin-left: 0.25rem;
 }
 .v-alert--variant-outlined {
     border: 0.1px solid currentColor;
