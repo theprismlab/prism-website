@@ -15,15 +15,15 @@
             <v-chip
               v-for="option in filters.type.options"
               :key="option.value"
-              :color="typeStyles[option.value].bg"
+              :color="filters.type.active.includes(option.value) ? typeStyles[option.value].bg : 'lightgray'"
               :text-color="filters.type.active.includes(option.value) ? typeStyles[option.value].fg : '#999'"
-              :variant="filters.type.active.includes(option.value) ? 'tonal' : 'outlined'"
-              size="small"
+              :variant="filters.type.active.includes(option.value) ? 'flat' : 'tonal'"
+              size="large"
               @click="toggleTypeSelection(option.value)"
               class="type-chip"
             >
-              <v-icon left size="small">{{ typeStyles[option.value].icon }}</v-icon>
-              {{ option.text.split(' (')[0] }}
+              <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
+             <span class="pr-1">{{ option.text.split(' (')[0] }}</span> 
             </v-chip>
           </div>
           <v-row class="mt-2">
@@ -241,6 +241,12 @@ const conferenceAbstractColor = "#009688";
           }
         },
         toggleTypeSelection(typeValue) {
+          // if all types are currently selected, start by deselecting all except the clicked one
+          if (this.filters.type.active.length === this.filters.type.options.length) {
+            this.filters.type.active = [typeValue];
+            this.onFilterChange('type', [typeValue]);
+            return;
+          }
           const isSelected = this.filters.type.active.includes(typeValue);
           if (isSelected) {
             this.removeSelection('type', typeValue);
