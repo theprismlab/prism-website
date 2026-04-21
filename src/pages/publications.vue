@@ -272,6 +272,39 @@
   const publicationsFile = 'Website Content - 2025  - Publications.csv';
   const whitepaperFile = 'Website Content - 2025  - White Papers.csv';
   const conferenceAbstractsFile = 'Website Content - 2025  - Conference Abstracts.csv';
+  const whitepaperDateFormatter = new Intl.DateTimeFormat(undefined, {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+  function parseDateValue(dateValue) {
+    if (!dateValue) return null;
+
+    const raw = String(dateValue).trim();
+    const direct = new Date(raw);
+    if (!Number.isNaN(direct.getTime())) return direct;
+
+    const mdyMatch = raw.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/);
+    if (!mdyMatch) return null;
+
+    const month = Number(mdyMatch[1]) - 1;
+    const day = Number(mdyMatch[2]);
+    const yearPart = Number(mdyMatch[3]);
+    const year = yearPart < 100 ? 2000 + yearPart : yearPart;
+    const parsed = new Date(year, month, day);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  function formatWhitepaperDate(dateValue) {
+    const parsed = parseDateValue(dateValue);
+    return parsed ? whitepaperDateFormatter.format(parsed) : dateValue;
+  }
+
+  function getYearFromDate(dateValue) {
+    const parsed = parseDateValue(dateValue);
+    return parsed ? String(parsed.getFullYear()) : '';
+  }
 
   export default {
     components: {
@@ -482,9 +515,9 @@
               id: `white-paper-${i}`,
               link: d.Link,
               portalLink: d['Portal Link'],
-              date: d.Date,
+              date: formatWhitepaperDate(d.Date),
               tag: d.Tag,
-              year: d.Date.split(' ')[2],
+              year: getYearFromDate(d.Date),
               publisher: 'PRISM',
               author: d.Author,
               featured: d.Featured,
