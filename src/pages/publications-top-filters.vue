@@ -3,25 +3,10 @@
     <page-title>Publications</page-title>
 
     <section>
-      <v-row>
-        <v-col cols="12" md="4" lg="3" class="mx-auto" id="filter-bar">
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                v-model="searchQuery"
-                placeholder="Search titles..."
-                prepend-inner-icon="mdi-magnify"
-                clearable
-                rounded
-                variant="outlined"
-                class="mb-3"
-              />
-            </v-col>
-          </v-row>
-          <span class="v-label v-field-label ml-4" style="margin-top: -1rem; font-size: 12px"
-            >Filter type
-          </span>
+      <div class="mt-3 mb-3" id="filter-bar">
+        <container-md>
           <div class="type-filter-chips">
+            <span class="filter-label">Select types: </span>
             <v-chip
               v-for="option in filters.type.options"
               :key="option.value"
@@ -42,9 +27,8 @@
               <span class="pr-1">{{ option.text.split(' (')[0] }}</span>
             </v-chip>
           </div>
-
           <v-row class="mt-2">
-            <v-col cols="12" v-for="key in Object.keys(filters).filter((k) => k !== 'type')">
+            <v-col v-for="key in Object.keys(filters).filter((k) => k !== 'type')">
               <v-autocomplete
                 :key="key"
                 v-model="filters[key].active"
@@ -57,72 +41,84 @@
                 clearable
                 closable-chips
                 hide-details
-                chip-size="large"
                 @update:modelValue="(val) => onFilterChange(key, val)"
               >
               </v-autocomplete>
             </v-col>
           </v-row>
-        </v-col>
-
-        <v-col class="filter-results">
-          <div v-if="noResultsMessage" class="mt-5">
-            <v-alert variant="outlined" color="info" class="text-center">
-              {{ noResultsMessage }}
-            </v-alert>
-          </div>
-          <div v-else>
-            <v-card
-              v-for="each in filteredData"
-              :key="each.id"
-              class="publication-card mb-3"
-              variant="flat"
-            >
-              <div class="publication-card__content">
-                <div
-                  class="publication-card__icon"
-                  :style="{ backgroundColor: typeStyles[each.type].bg }"
-                >
-                  <v-icon size="28" :color="typeStyles[each.type].fg">
-                    {{ typeStyles[each.type].icon }}
-                  </v-icon>
-                </div>
-                <div class="publication-card__details">
-                  <span class="publication-card__title">{{ each.title }}</span>
-                  <div class="publication-meta">
-                    <span v-if="each.author">{{ each.author }}, et al. </span>
-                    <span v-if="each.publisher"
-                      ><i>{{ each.publisher || each.conference }}</i
-                      >,
-                    </span>
-                    <span>{{ each.date || each.year }}</span
-                    >.
-                  </div>
-                  <div class="publication-links">
-                    <a class="publication-link" :href="each.link" target="_blank">
-                      Read more
-                      <v-icon right size="x-small" class="publication-card__external-icon"
-                        >mdi-arrow-right</v-icon
-                      >
-                    </a>
-                    <a
-                      class="publication-link"
-                      v-if="each.portalLink"
-                      :href="each.portalLink"
-                      target="_blank"
+          <v-row>
+            <v-col cols="12">
+              <v-text-field
+                v-model="searchQuery"
+                placeholder="Search titles..."
+                prepend-inner-icon="mdi-magnify"
+                clearable
+                class="mb-3"
+              />
+            </v-col>
+          </v-row>
+        </container-md>
+      </div>
+      <div class="filter-results">
+        <container-md>
+          <v-row>
+            <v-col v-if="noResultsMessage" class="mt-5">
+              <v-col cols="12">
+                <v-alert variant="outlined" color="info" class="text-center">
+                  {{ noResultsMessage }}
+                </v-alert>
+              </v-col>
+            </v-col>
+            <v-col v-else cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
+              <div v-for="each in filteredData" :key="each.id">
+                <v-card class="publication-card mb-3" variant="flat">
+                  <div class="publication-card__content">
+                    <div
+                      class="publication-card__icon"
+                      :style="{ backgroundColor: typeStyles[each.type].bg }"
                     >
-                      <v-icon left>mdi-chart-box-outline</v-icon> Explore data
-                      <v-icon right size="x-small" class="publication-card__external-icon"
-                        >mdi-arrow-right</v-icon
-                      >
-                    </a>
+                      <v-icon size="28" :color="typeStyles[each.type].fg">
+                        {{ typeStyles[each.type].icon }}
+                      </v-icon>
+                    </div>
+                    <div class="publication-card__details">
+                      <span class="publication-card__title">{{ each.title }}</span>
+                      <div class="publication-meta">
+                        <span v-if="each.author">{{ each.author }}, et al. </span>
+                        <span v-if="each.publisher"
+                          ><i>{{ each.publisher || each.conference }}</i
+                          >,
+                        </span>
+                        <span>{{ each.date || each.year }}</span
+                        >.
+                      </div>
+                      <div class="publication-links">
+                        <a class="publication-link" :href="each.link" target="_blank">
+                          Read more
+                          <v-icon right size="x-small" class="publication-card__external-icon"
+                            >mdi-arrow-right</v-icon
+                          >
+                        </a>
+                        <a
+                          class="publication-link"
+                          v-if="each.portalLink"
+                          :href="each.portalLink"
+                          target="_blank"
+                        >
+                          <v-icon left>mdi-chart-box-outline</v-icon> Explore data
+                          <v-icon right size="x-small" class="publication-card__external-icon"
+                            >mdi-arrow-right</v-icon
+                          >
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </v-card>
               </div>
-            </v-card>
-          </div>
-        </v-col>
-      </v-row>
+            </v-col>
+          </v-row>
+        </container-md>
+      </div>
     </section>
   </page>
 </template>
@@ -164,11 +160,10 @@
       const cfManager = new CrossfilterManager(this.data, this.filters);
       this.cfManager = cfManager;
 
-      // Default to a single type selected
-      const firstType = this.filters.type.options[0]?.value;
-      const defaultTypeSelection = firstType ? [firstType] : [];
-      this.filters.type.active = defaultTypeSelection;
-      this.cfManager.setActive('type', defaultTypeSelection);
+      // Default to all types selected
+      const allTypes = this.filters.type.options.map((option) => option.value);
+      this.filters.type.active = allTypes;
+      this.cfManager.setActive('type', allTypes);
 
       // Enhance type options with icon and color (after setActive rebuilds options)
       this.filters.type.options = this.filters.type.options.map((option) => {
@@ -282,28 +277,33 @@
         // Crossfilter handles all filtering (type, year, publisher, author, search)
         this.filteredData = this.cfManager.filteredData;
       },
-      toggleTypeSelection(typeValue) {
-        const allTypes = this.filters.type.options.map((option) => option.value);
-        const activeTypes = this.filters.type.active;
-        const isAllSelected = activeTypes.length === allTypes.length;
-        const isSelected = activeTypes.includes(typeValue);
-
-        if (isAllSelected) {
-          const next = [typeValue];
-          this.filters.type.active = next;
-          this.onFilterChange('type', next);
-          return;
-        }
-
-        if (isSelected) {
+      removeSelection(field, value) {
+        const active = this.filters[field].active.filter((v) => v !== value);
+        // For type filter, if all are removed, show all types
+        if (field === 'type' && active.length === 0) {
+          const allTypes = this.filters.type.options.map((option) => option.value);
           this.filters.type.active = allTypes;
-          this.onFilterChange('type', allTypes);
+          this.onFilterChange(field, allTypes);
+        } else {
+          this.filters[field].active = active;
+          this.onFilterChange(field, active);
+        }
+      },
+      toggleTypeSelection(typeValue) {
+        // if all types are currently selected, start by deselecting all except the clicked one
+        if (this.filters.type.active.length === this.filters.type.options.length) {
+          this.filters.type.active = [typeValue];
+          this.onFilterChange('type', [typeValue]);
           return;
         }
-
-        const next = [typeValue];
-        this.filters.type.active = next;
-        this.onFilterChange('type', next);
+        const isSelected = this.filters.type.active.includes(typeValue);
+        if (isSelected) {
+          this.removeSelection('type', typeValue);
+        } else {
+          const active = [...this.filters.type.active, typeValue];
+          this.filters.type.active = active;
+          this.onFilterChange('type', active);
+        }
       },
     },
     watch: {
@@ -320,14 +320,12 @@
     font-size: 0.875rem;
     font-weight: 600;
     color: rgb(135, 135, 135);
-    margin-bottom: 2.5rem !important;
   }
   .type-filter-chips {
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
     margin-bottom: 1rem;
-    margin-top: 0.5rem;
     align-items: center;
   }
   .type-chip {
@@ -386,23 +384,14 @@
     position: relative;
   }
   #filter-bar {
-    position: -webkit-sticky;
     position: sticky;
-    top: calc(var(--v-layout-top, 0px) + 1rem);
-    align-self: flex-start;
-    height: fit-content;
+    top: var(--v-toolbar-height);
     z-index: 10;
     background: white;
     padding: 1rem 0;
     padding-left: 1rem;
     padding-right: 1rem;
     border-bottom: 0.2px solid rgba(0, 0, 0, 0.08);
-  }
-  @media (max-width: 959px) {
-    #filter-bar {
-      position: static;
-      top: auto;
-    }
   }
   .publication-links {
     margin-top: 0.75rem;
