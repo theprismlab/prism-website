@@ -7,16 +7,21 @@
       </h2>
     </section> -->
     <section>
-      <v-row class="blue-banner py-4 my-4">
-        <v-col>
-          <h2 class="text-h2 text-center text-white">
+      <div ref="toolbarTrack" class="explorer-toolbar-track">
+        <v-toolbar
+          class="explorer-toolbar"
+          :class="{ 'explorer-toolbar--compact': isExplorerToolbarCompact }"
+          :style="explorerToolbarStyle"
+          flat
+        >
+          <v-toolbar-title class="text-h5 text-center text-white">
             <span class="mdi mdi-magnify"></span>Explore all publications
-          </h2>
-        </v-col>
-      </v-row>
+          </v-toolbar-title>
+        </v-toolbar>
+      </div>
 
-      <v-row class="publications-layout-row px-2" align="start">
-        <v-col cols="12" md="4" lg="3" class="mx-auto" id="filter-bar">
+      <v-row ref="explorerSection" class="publications-layout-row px-2" align="start">
+        <v-col ref="filterBar" cols="12" md="4" lg="3" class="mx-auto" id="filter-bar">
           <v-row>
             <v-col cols="12">
               <v-text-field
@@ -180,46 +185,25 @@
         filteredData: [],
         cfManager: null,
         showScrollToResultsBtn: false,
+        isExplorerToolbarCompact: false,
+        explorerToolbarWidth: 0,
+        explorerToolbarOffsetLeft: 0,
       };
     },
-    mounted() {
-      this.updateScrollToResultsButtonVisibility();
-      window.addEventListener('scroll', this.updateScrollToResultsButtonVisibility, {
-        passive: true,
-      });
-      window.addEventListener('resize', this.updateScrollToResultsButtonVisibility);
-    },
-    beforeUnmount() {
-      window.removeEventListener('scroll', this.updateScrollToResultsButtonVisibility);
-      window.removeEventListener('resize', this.updateScrollToResultsButtonVisibility);
-    },
-    async created() {
-      this.data = await this.getData();
-
-      const cfManager = new CrossfilterManager(this.data, this.filters);
-      this.cfManager = cfManager;
-
-      // // Default to a single type selected
-      // const firstType = this.filters.type.options[0]?.value;
-      // const defaultTypeSelection = firstType ? [firstType] : [];
-      // Default to all types selected
-      const defaultTypeSelection = this.filters.type.options.map((option) => option.value); // Default to all types selected
-      this.filters.type.active = defaultTypeSelection;
-      this.cfManager.setActive('type', defaultTypeSelection);
-
-      // Enhance type options with icon and color (after setActive rebuilds options)
-      this.filters.type.options = this.filters.type.options.map((option) => {
-        const style = this.typeStyles[option.value];
-        return {
-          ...option,
-          icon: style ? style.icon : '',
-          color: style ? style.bg : '',
-        };
-      });
-
-      this.updateFilteredData();
-    },
     computed: {
+      explorerToolbarStyle() {
+        if (!this.isExplorerToolbarCompact) {
+          return {
+            width: '100%',
+            marginLeft: '0px',
+          };
+        }
+
+        return {
+          width: `${this.explorerToolbarWidth}px`,
+          marginLeft: `${this.explorerToolbarOffsetLeft}px`,
+        };
+      },
       noResultsMessage() {
         if (this.data.length === 0) {
           return 'Loading publications...';
@@ -257,7 +241,67 @@
         };
       },
     },
+    mounted() {
+      this.syncExplorerToolbarGeometry();
+      this.updateExplorerToolbarState();
+      this.updateScrollToResultsButtonVisibility();
+      window.addEventListener('scroll', this.handleWindowScroll, {
+        passive: true,
+      });
+      window.addEventListener('resize', this.handleWindowResize);
+    },
+    beforeUnmount() {
+      window.removeEventListener('scroll', this.handleWindowScroll);
+      window.removeEventListener('resize', this.handleWindowResize);
+    },
+    async created() {
+      this.data = await this.getData();
+
+      const cfManager = new CrossfilterManager(this.data, this.filters);
+      this.cfManager = cfManager;
+
+      // // Default to a single type selected
+      // const firstType = this.filters.type.options[0]?.value;
+      // const defaultTypeSelection = firstType ? [firstType] : [];
+      // Default to all types selected
+      const defaultTypeSelection = this.filters.type.options.map((option) => option.value); // Default to all types selected
+      this.filters.type.active = defaultTypeSelection;
+      this.cfManager.setActive('type', defaultTypeSelection);
+
+      // Enhance type options with icon and color (after setActive rebuilds options)
+      this.filters.type.options = this.filters.type.options.map((option) => {
+        const style = this.typeStyles[option.value];
+        return {
+          ...option,
+          icon: style ? style.icon : '',
+          color: style ? style.bg : '',
+        };
+      });
+
+      this.updateFilteredData();
+      this.$nextTick(() => {
+        this.syncExplorerToolbarGeometry();
+        this.updateExplorerToolbarState();
+        this.updateScrollToResultsButtonVisibility();
+      });
+    },
     methods: {
+      handleWindowScroll() {
+        this.updateScrollToResultsButtonVisibility();
+        this.updateExplorerToolbarState();
+      },
+      handleWindowResize() {
+        this.syncExplorerToolbarGeometry();
+        this.updateExplorerToolbarState();
+        this.updateScrollToResultsButtonVisibility();
+      },
+      getLayoutTopOffset() {
+        return (
+          parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue('--v-layout-top'),
+          ) || 0
+        );
+      },
       async getData() {
         const self = this;
         return Promise.all([
@@ -342,14 +386,34 @@
         this.filters.type.active = next;
         this.onFilterChange('type', next);
       },
+      getExplorerTopScrollPosition() {
+        const section = this.$refs.explorerSection?.$el || this.$refs.explorerSection;
+        if (!section) return 0;
+
+        return section.getBoundingClientRect().top + window.scrollY - this.getLayoutTopOffset();
+      },
+      syncExplorerToolbarGeometry() {
+        const filterBar = this.$refs.filterBar?.$el || this.$refs.filterBar;
+        const toolbarTrack = this.$refs.toolbarTrack;
+        if (!filterBar || !toolbarTrack) return;
+
+        const filterRect = filterBar.getBoundingClientRect();
+        const trackRect = toolbarTrack.getBoundingClientRect();
+        this.explorerToolbarWidth = Math.round(filterRect.width);
+        this.explorerToolbarOffsetLeft = Math.round(filterRect.left - trackRect.left);
+      },
+      updateExplorerToolbarState() {
+        const shouldCompact = window.scrollY >= this.getExplorerTopScrollPosition();
+        this.isExplorerToolbarCompact = shouldCompact;
+        if (shouldCompact) {
+          this.syncExplorerToolbarGeometry();
+        }
+      },
       getResultsTopScrollPosition() {
         const target = this.$refs.filterResults?.$el || this.$refs.filterResults;
         if (!target) return 0;
 
-        const layoutTop =
-          parseFloat(
-            getComputedStyle(document.documentElement).getPropertyValue('--v-layout-top'),
-          ) || 0;
+        const layoutTop = this.getLayoutTopOffset();
         const extraSpacing = 8;
 
         return target.getBoundingClientRect().top + window.scrollY - layoutTop - extraSpacing;
@@ -387,13 +451,31 @@
     --publications-layout-padding-top: calc(3rem + var(--publications-content-offset));
     --publications-layout-padding-bottom: 3rem;
   }
-  .blue-banner {
-    background: linear-gradient(45deg, #3f51b5, #8e24aa, #009688);
+  .explorer-toolbar-track {
     position: -webkit-sticky;
     position: sticky;
     top: var(--publications-layout-top);
     z-index: 20;
+    margin: 1rem 0;
+  }
+  .explorer-toolbar {
+    background: linear-gradient(45deg, #3f51b5, #8e24aa, #009688);
     min-height: var(--publications-banner-height);
+    transition:
+      width 220ms ease,
+      margin-left 220ms ease,
+      border-radius 220ms ease;
+    border-radius: 0;
+  }
+  .explorer-toolbar--compact {
+    border-radius: 12px;
+  }
+  :deep(.explorer-toolbar .v-toolbar__content) {
+    min-height: var(--publications-banner-height) !important;
+  }
+  :deep(.explorer-toolbar .v-toolbar-title) {
+    text-align: center;
+    width: 100%;
   }
   .filter-label {
     font-size: 0.875rem;
@@ -483,9 +565,14 @@
       --publications-banner-height: 0px;
       --publications-content-gap: 0px;
     }
-    .blue-banner {
+    .explorer-toolbar-track {
       position: static;
       top: auto;
+    }
+    .explorer-toolbar {
+      border-radius: 0;
+      width: 100% !important;
+      margin-left: 0 !important;
       min-height: auto;
     }
     #filter-bar {
