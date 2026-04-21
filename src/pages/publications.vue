@@ -7,9 +7,16 @@
       </h2>
     </section> -->
     <section>
-      <v-row class="blue-banner mt-3 mb-3 pa-6"> </v-row>
-      <v-row>
-        <v-col cols="12" md="4" lg="3" class="mx-auto my-6" id="filter-bar">
+      <v-row class="blue-banner py-4 my-4">
+        <v-col>
+          <h2 class="text-h2 text-center text-white">
+            <span class="mdi mdi-magnify"></span>Explore all publications
+          </h2>
+        </v-col>
+      </v-row>
+
+      <v-row class="publications-layout-row px-2" align="start">
+        <v-col cols="12" md="4" lg="3" class="mx-auto" id="filter-bar">
           <v-row>
             <v-col cols="12">
               <v-text-field
@@ -70,7 +77,7 @@
           </v-row>
         </v-col>
 
-        <v-col ref="filterResults" class="filter-results my-6 py-6">
+        <v-col ref="filterResults" class="filter-results">
           <div v-if="noResultsMessage" class="mt-5">
             <v-alert variant="outlined" color="info" class="text-center">
               {{ noResultsMessage }}
@@ -339,22 +346,13 @@
         const target = this.$refs.filterResults?.$el || this.$refs.filterResults;
         if (!target) return 0;
 
-        const pageStyles = getComputedStyle(document.getElementById('publication-page'));
         const layoutTop =
           parseFloat(
             getComputedStyle(document.documentElement).getPropertyValue('--v-layout-top'),
           ) || 0;
-        const bannerHeight =
-          parseFloat(pageStyles.getPropertyValue('--publications-banner-height')) || 0;
-        const extraSpacing = 16;
+        const extraSpacing = 8;
 
-        return (
-          target.getBoundingClientRect().top +
-          window.scrollY -
-          layoutTop -
-          bannerHeight -
-          extraSpacing
-        );
+        return target.getBoundingClientRect().top + window.scrollY - layoutTop - extraSpacing;
       },
       updateScrollToResultsButtonVisibility() {
         const targetTop = this.getResultsTopScrollPosition();
@@ -377,6 +375,7 @@
 <style scoped>
   #publication-page {
     --publications-banner-height: 72px;
+    --publications-content-offset: calc(var(--publications-banner-height) + 1rem);
   }
   .blue-banner {
     background: linear-gradient(45deg, #3f51b5, #8e24aa, #009688);
@@ -458,7 +457,7 @@
   #filter-bar {
     position: -webkit-sticky;
     position: sticky;
-    top: calc(var(--v-layout-top, 0px) + var(--publications-banner-height) + 1rem);
+    top: calc(var(--v-layout-top, 0px) + var(--publications-content-offset));
     align-self: flex-start;
     height: fit-content;
     z-index: 10;
@@ -467,6 +466,10 @@
     padding-left: 1rem;
     padding-right: 1rem;
     border-bottom: 0.2px solid rgba(0, 0, 0, 0.08);
+  }
+  .publications-layout-row {
+    padding-top: calc(3rem + var(--publications-content-offset));
+    padding-bottom: 3rem;
   }
   @media (max-width: 959px) {
     .blue-banner {
