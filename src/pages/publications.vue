@@ -14,14 +14,105 @@
           :style="explorerToolbarStyle"
           flat
         >
+          <v-btn
+            v-if="isMobileView"
+            icon="mdi-filter-variant"
+            variant="text"
+            color="white"
+            class="mobile-filter-toggle"
+            @click="mobileFilterDrawer = true"
+            aria-label="Show filters"
+          />
           <v-toolbar-title class="text-h5 text-center text-white">
             <span class="mdi mdi-magnify"></span>Explore all publications
           </v-toolbar-title>
         </v-toolbar>
       </div>
 
+      <v-navigation-drawer
+        v-model="mobileFilterDrawer"
+        location="left"
+        temporary
+        width="340"
+        class="mobile-filter-drawer"
+      >
+        <div class="pa-4">
+          <div class="d-flex align-center justify-space-between mb-4">
+            <span class="text-subtitle-1 font-weight-semibold">Filters</span>
+            <v-btn
+              icon="mdi-close"
+              variant="text"
+              @click="mobileFilterDrawer = false"
+              aria-label="Hide filters"
+            />
+          </div>
+
+          <v-text-field
+            v-model="searchQuery"
+            placeholder="Search titles..."
+            prepend-inner-icon="mdi-magnify"
+            clearable
+            rounded
+            variant="outlined"
+            class="mb-3"
+          />
+
+          <span class="v-label v-field-label ml-1" style="font-size: 12px">Filter type</span>
+          <div class="type-filter-chips mt-2">
+            <v-chip
+              v-for="option in filters.type.options"
+              :key="`mobile-${option.value}`"
+              :color="
+                filters.type.active.includes(option.value)
+                  ? typeStyles[option.value].bg
+                  : 'lightgray'
+              "
+              :text-color="
+                filters.type.active.includes(option.value) ? typeStyles[option.value].fg : '#999'
+              "
+              :variant="filters.type.active.includes(option.value) ? 'flat' : 'tonal'"
+              size="large"
+              @click="toggleTypeSelection(option.value)"
+              class="type-chip"
+            >
+              <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
+              <span class="pr-1">{{ option.text.split(' (')[0] }}</span>
+            </v-chip>
+          </div>
+
+          <v-row class="mt-2">
+            <v-col cols="12" v-for="key in Object.keys(filters).filter((k) => k !== 'type')">
+              <v-autocomplete
+                :key="`mobile-${key}`"
+                v-model="filters[key].active"
+                :items="filters[key].options"
+                item-title="text"
+                item-value="value"
+                :label="`Filter ${key}`"
+                multiple
+                chips
+                clearable
+                closable-chips
+                hide-details
+                chip-size="large"
+                @update:modelValue="(val) => onFilterChange(key, val)"
+              >
+              </v-autocomplete>
+            </v-col>
+          </v-row>
+        </div>
+      </v-navigation-drawer>
+
       <v-row ref="explorerSection" class="publications-layout-row px-2" align="start">
-        <v-col ref="filterBar" cols="12" md="4" lg="3" class="mx-auto" id="filter-bar">
+        <v-col
+          v-if="!isMobileView"
+          ref="filterBar"
+          cols="12"
+          md="4"
+          lg="3"
+          class="mx-auto"
+          id="filter-bar"
+        >
           <v-row>
             <v-col cols="12">
               <v-text-field
@@ -188,9 +279,13 @@
         isExplorerToolbarCompact: false,
         explorerToolbarWidth: 0,
         explorerToolbarOffsetLeft: 0,
+        mobileFilterDrawer: false,
       };
     },
     computed: {
+      isMobileView() {
+        return this.$vuetify?.display?.smAndDown ?? window.innerWidth < 960;
+      },
       explorerToolbarStyle() {
         if (!this.isExplorerToolbarCompact) {
           return {
@@ -291,6 +386,9 @@
         this.updateExplorerToolbarState();
       },
       handleWindowResize() {
+        if (!this.isMobileView) {
+          this.mobileFilterDrawer = false;
+        }
         this.syncExplorerToolbarGeometry();
         this.updateExplorerToolbarState();
         this.updateScrollToResultsButtonVisibility();
@@ -403,6 +501,10 @@
         this.explorerToolbarOffsetLeft = Math.round(filterRect.left - trackRect.left);
       },
       updateExplorerToolbarState() {
+        if (this.isMobileView) {
+          this.isExplorerToolbarCompact = false;
+          return;
+        }
         const shouldCompact = window.scrollY >= this.getExplorerTopScrollPosition();
         this.isExplorerToolbarCompact = shouldCompact;
         if (shouldCompact) {
@@ -466,6 +568,9 @@
       margin-left 220ms ease,
       border-radius 220ms ease;
     border-radius: 0;
+  }
+  .mobile-filter-toggle {
+    margin-left: 0.25rem;
   }
   .explorer-toolbar--compact {
     border-radius: 12px;
@@ -562,22 +667,30 @@
   }
   @media (max-width: 959px) {
     #publication-page {
-      --publications-banner-height: 0px;
+      --publications-banner-height: 64px;
       --publications-content-gap: 0px;
+      --publications-layout-padding-top: 1rem;
+      --publications-layout-padding-bottom: 1.25rem;
     }
     .explorer-toolbar-track {
-      position: static;
-      top: auto;
+      margin: 0;
     }
     .explorer-toolbar {
       border-radius: 0;
       width: 100% !important;
       margin-left: 0 !important;
-      min-height: auto;
+    }
+    :deep(.explorer-toolbar .v-toolbar-title) {
+      font-size: 1.125rem !important;
+      text-align: left;
+      padding-left: 0.5rem;
     }
     #filter-bar {
       position: static;
       top: auto;
+    }
+    .mobile-filter-drawer {
+      z-index: 30;
     }
     .scroll-to-results-btn {
       right: 1rem;
