@@ -1,11 +1,62 @@
 <template>
   <page id="publication-page">
-    <page-title>Publications</page-title>
-    <!-- <section class="blue-banner mt-3 mb-3 pa-6">
-      <h2 class="text-h2 text-center text-white">
-        <span class="mdi mdi-magnify"></span>Explore all publications
-      </h2>
-    </section> -->
+    <container-md>
+      <page-title>Publications</page-title>
+    </container-md>
+
+    <container-md>
+      <v-row justify="center" class="mb-12">
+        <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
+          <v-card class="featured-card h-100" variant="flat">
+            <div class="featured-card__content">
+              <div
+                class="featured-card__icon"
+                :style="{ backgroundColor: typeStyles[card.type].bg }"
+              >
+                <v-icon size="22" :color="typeStyles[card.type].fg">
+                  {{ typeStyles[card.type].icon }}
+                </v-icon>
+              </div>
+
+              <div class="featured-card__body">
+                <p class="featured-card__type">{{ card.type }}</p>
+                <h3 class="featured-card__title">{{ card.title }}</h3>
+                <div class="featured-card__meta">
+                  <span v-if="card.author">{{ card.author }}, et al. </span>
+                  <span v-if="card.publisher"
+                    ><i>{{ card.publisher }}</i
+                    >,
+                  </span>
+                  <span>{{ card.date || card.year }}</span
+                  >.
+                </div>
+
+                <div class="featured-card__links">
+                  <a class="featured-card-link" :href="card.link" target="_blank">
+                    Read more
+                    <v-icon right size="x-small" class="featured-card-link-icon"
+                      >mdi-arrow-right</v-icon
+                    >
+                  </a>
+                  <a
+                    v-if="card.portalLink"
+                    class="featured-card-link"
+                    :href="card.portalLink"
+                    target="_blank"
+                  >
+                    <v-icon left size="small">mdi-chart-box-outline</v-icon>
+                    Explore data
+                    <v-icon right size="x-small" class="featured-card-link-icon"
+                      >mdi-arrow-right</v-icon
+                    >
+                  </a>
+                </div>
+              </div>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </container-md>
     <section>
       <div class="explorer-toolbar-track">
         <v-toolbar class="explorer-toolbar" flat>
@@ -111,83 +162,84 @@
           </div>
         </div>
       </v-navigation-drawer>
-
-      <v-row class="publications-layout-row px-2" align="start">
-        <v-col ref="filterResults" class="filter-results" cols="12">
-          <div class="results-header mb-4">
-            <span class="text-body-2 text-medium-emphasis"
-              >Showing {{ filteredData.length }} results</span
-            >
-            <div class="active-filters mt-2" v-if="appliedFilterChips.length > 0">
-              <v-chip
-                v-for="chip in appliedFilterChips"
-                :key="`${chip.key}-${chip.value}`"
-                size="small"
-                closable
-                @click:close="removeAppliedFilter(chip)"
+      <container-md>
+        <v-row class="publications-layout-row px-2" align="start">
+          <v-col ref="filterResults" class="filter-results" cols="12">
+            <div class="results-header mb-4">
+              <span class="text-body-2 text-medium-emphasis"
+                >Showing {{ filteredData.length }} results</span
               >
-                {{ chip.label }}
-              </v-chip>
-            </div>
-          </div>
-
-          <div v-if="noResultsMessage" class="mt-5">
-            <v-alert variant="outlined" color="info" class="text-center">
-              {{ noResultsMessage }}
-            </v-alert>
-          </div>
-          <div v-else>
-            <v-card
-              v-for="each in filteredData"
-              :key="each.id"
-              class="publication-card mb-3"
-              variant="flat"
-            >
-              <div class="publication-card__content">
-                <div
-                  class="publication-card__icon"
-                  :style="{ backgroundColor: typeStyles[each.type].bg }"
+              <div class="active-filters mt-2" v-if="appliedFilterChips.length > 0">
+                <v-chip
+                  v-for="chip in appliedFilterChips"
+                  :key="`${chip.key}-${chip.value}`"
+                  size="small"
+                  closable
+                  @click:close="removeAppliedFilter(chip)"
                 >
-                  <v-icon size="28" :color="typeStyles[each.type].fg">
-                    {{ typeStyles[each.type].icon }}
-                  </v-icon>
-                </div>
-                <div class="publication-card__details">
-                  <span class="publication-card__title">{{ each.title }}</span>
-                  <div class="publication-meta">
-                    <span v-if="each.author">{{ each.author }}, et al. </span>
-                    <span v-if="each.publisher"
-                      ><i>{{ each.publisher || each.conference }}</i
-                      >,
-                    </span>
-                    <span>{{ each.date || each.year }}</span
-                    >.
-                  </div>
-                  <div class="publication-links">
-                    <a class="publication-link" :href="each.link" target="_blank">
-                      Read more
-                      <v-icon right size="x-small" class="publication-card__external-icon"
-                        >mdi-arrow-right</v-icon
-                      >
-                    </a>
-                    <a
-                      class="publication-link"
-                      v-if="each.portalLink"
-                      :href="each.portalLink"
-                      target="_blank"
-                    >
-                      <v-icon left>mdi-chart-box-outline</v-icon> Explore data
-                      <v-icon right size="x-small" class="publication-card__external-icon"
-                        >mdi-arrow-right</v-icon
-                      >
-                    </a>
-                  </div>
-                </div>
+                  {{ chip.label }}
+                </v-chip>
               </div>
-            </v-card>
-          </div>
-        </v-col>
-      </v-row>
+            </div>
+
+            <div v-if="noResultsMessage" class="mt-5">
+              <v-alert variant="outlined" color="info" class="text-center">
+                {{ noResultsMessage }}
+              </v-alert>
+            </div>
+            <div v-else>
+              <v-card
+                v-for="each in filteredData"
+                :key="each.id"
+                class="publication-card mb-3"
+                variant="flat"
+              >
+                <div class="publication-card__content">
+                  <div
+                    class="publication-card__icon"
+                    :style="{ backgroundColor: typeStyles[each.type].bg }"
+                  >
+                    <v-icon size="28" :color="typeStyles[each.type].fg">
+                      {{ typeStyles[each.type].icon }}
+                    </v-icon>
+                  </div>
+                  <div class="publication-card__details">
+                    <span class="publication-card__title">{{ each.title }}</span>
+                    <div class="publication-meta">
+                      <span v-if="each.author">{{ each.author }}, et al. </span>
+                      <span v-if="each.publisher"
+                        ><i>{{ each.publisher || each.conference }}</i
+                        >,
+                      </span>
+                      <span>{{ each.date || each.year }}</span
+                      >.
+                    </div>
+                    <div class="publication-links">
+                      <a class="publication-link" :href="each.link" target="_blank">
+                        Read more
+                        <v-icon right size="x-small" class="publication-card__external-icon"
+                          >mdi-arrow-right</v-icon
+                        >
+                      </a>
+                      <a
+                        class="publication-link"
+                        v-if="each.portalLink"
+                        :href="each.portalLink"
+                        target="_blank"
+                      >
+                        <v-icon left>mdi-chart-box-outline</v-icon> Explore data
+                        <v-icon right size="x-small" class="publication-card__external-icon"
+                          >mdi-arrow-right</v-icon
+                        >
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </v-card>
+            </div>
+          </v-col>
+        </v-row>
+      </container-md>
 
       <v-btn
         v-show="showScrollToResultsBtn"
@@ -211,6 +263,7 @@
   import * as d3 from 'd3';
   import CrossfilterManager from '@/utils/crossfilter-helpers.js';
   import BaseButton from '@/components/BaseButton.vue';
+  import ContainerMd from '@/components/ContainerMd.vue';
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL + 'data/' : '../public/data/';
   const publicationsFile = 'Website Content - 2025  - Publications.csv';
   const whitepaperFile = 'Website Content - 2025  - White Papers.csv';
@@ -243,6 +296,9 @@
       };
     },
     computed: {
+      featuredCards() {
+        return this.data.filter((d, i) => i < 3);
+      },
       activeFilterCount() {
         const nonTypeCount = ['year', 'publisher', 'author'].reduce(
           (acc, key) => acc + this.filters[key].active.length,
@@ -379,6 +435,15 @@
           publisher: [],
           author: [],
         };
+
+        const keys = ['type', 'year', 'publisher', 'author'];
+        keys.forEach((key) => {
+          this.filters[key].active = [...this.draftFilters[key]];
+          this.cfManager.setActive(key, this.filters[key].active);
+        });
+        this.updateFilteredData();
+        this.filterPanelOpen = false;
+        this.scrollToResultsTop();
       },
       applyDraftFilters() {
         const keys = ['type', 'year', 'publisher', 'author'];
@@ -388,6 +453,7 @@
         });
         this.updateFilteredData();
         this.filterPanelOpen = false;
+        this.scrollToResultsTop();
       },
       async getData() {
         const self = this;
@@ -575,6 +641,75 @@
   .toolbar-search {
     max-width: 420px;
     min-width: 180px;
+  }
+  .featured-card {
+    border: 1px solid rgba(63, 81, 181, 0.14);
+    border-radius: 14px;
+    box-shadow: 0 8px 22px rgba(20, 30, 60, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(249, 251, 255, 0.96));
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+  .featured-card:hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(20, 30, 60, 0.14);
+  }
+  .featured-card__content {
+    display: flex;
+    gap: 0.9rem;
+    padding: 1rem;
+  }
+  .featured-card__icon {
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+  .featured-card__body {
+    flex: 1;
+    min-width: 0;
+  }
+  .featured-card__type {
+    margin: 0 0 0.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.7rem;
+    color: rgba(55, 65, 81, 0.78);
+    font-weight: 700;
+  }
+  .featured-card__title {
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.35;
+    color: rgb(20, 24, 34);
+    font-weight: 700;
+  }
+  .featured-card__meta {
+    margin-top: 0.4rem;
+    font-size: 0.84rem;
+    color: rgb(99, 107, 123);
+  }
+  .featured-card__links {
+    margin-top: 0.7rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .featured-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #3f51b5;
+    text-decoration: none;
+  }
+  .featured-card-link:hover {
+    opacity: 0.85;
   }
   .filter-label {
     font-size: 0.875rem;
