@@ -1,8 +1,13 @@
 <template>
   <page id="publication-page">
     <page-title>Publications</page-title>
-
+    <!-- <section class="blue-banner mt-3 mb-3 pa-6">
+      <h2 class="text-h2 text-center text-white">
+        <span class="mdi mdi-magnify"></span>Explore all publications
+      </h2>
+    </section> -->
     <section>
+      <v-row class="blue-banner mt-3 mb-3 pa-6"> </v-row>
       <v-row>
         <v-col cols="12" md="4" lg="3" class="mx-auto" id="filter-bar">
           <v-row>
@@ -65,7 +70,7 @@
           </v-row>
         </v-col>
 
-        <v-col class="filter-results">
+        <v-col class="filter-results my-12 py-12">
           <div v-if="noResultsMessage" class="mt-5">
             <v-alert variant="outlined" color="info" class="text-center">
               {{ noResultsMessage }}
@@ -318,6 +323,17 @@
 </script>
 
 <style scoped>
+  #publication-page {
+    --publications-banner-height: 72px;
+  }
+  .blue-banner {
+    background: linear-gradient(45deg, #3f51b5, #8e24aa, #009688);
+    position: -webkit-sticky;
+    position: sticky;
+    top: var(--v-layout-top, 0px);
+    z-index: 20;
+    min-height: var(--publications-banner-height);
+  }
   .filter-label {
     font-size: 0.875rem;
     font-weight: 600;
@@ -390,7 +406,7 @@
   #filter-bar {
     position: -webkit-sticky;
     position: sticky;
-    top: calc(var(--v-layout-top, 0px) + 1rem);
+    top: calc(var(--v-layout-top, 0px) + var(--publications-banner-height) + 1rem);
     align-self: flex-start;
     height: fit-content;
     z-index: 10;
@@ -401,6 +417,11 @@
     border-bottom: 0.2px solid rgba(0, 0, 0, 0.08);
   }
   @media (max-width: 959px) {
+    .blue-banner {
+      position: static;
+      top: auto;
+      min-height: auto;
+    }
     #filter-bar {
       position: static;
       top: auto;
