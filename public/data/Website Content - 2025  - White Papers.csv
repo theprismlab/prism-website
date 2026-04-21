@@ -1,3 +1,3 @@
-Author,Tag,Title,Date,Link,Portal Link,Featured
-Eskra J,Antibody-drug conjugates,PRISM high throughput screening of antibody-drug conjugates uncovers clinically relevant targets,July 27 2023,https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets,https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds,true
-Reese M,Combinations,Multiplexed cancer cell line combination screening using PRISM,April 05 2024,https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism,https://theprismlab.org/portal/projects/CPS009/CPS_WHITEPAPER/compounds,
+Title,Author,Date,Paper Link,Portal Link,Featured,Chip
+PRISM high throughput screening of antibody-drug conjugates uncovers clinically relevant targets,Eskra J,07.27.2023,https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets,https://theprismlab.org/portal/projects/MRSN001/ADC_WHITEPAPER/compounds,1,Antibody-drug conjugates
+Multiplexed cancer cell line combination screening using PRISM,Rees M,04.05.2024,https://theprismlab.org/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism,https://theprismlab.org/portal/projects/CPS009/CPS_WHITEPAPER/compounds,,Combinations

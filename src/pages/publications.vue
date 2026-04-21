@@ -151,6 +151,7 @@
                 closable-chips
                 hide-details
                 chip-size="large"
+                @update:modelValue="(val) => onDraftFilterChange(key, val)"
               >
               </v-autocomplete>
             </v-col>
@@ -301,9 +302,7 @@
     computed: {
       featuredCards() {
         console.log('All data:', this.data);
-        return this.data.filter(
-          (d) => d.featured == 'true' || d.link == 'https://doi.org/10.1038/nbt.3460,2',
-        );
+        return this.data.filter((d) => d.featured == 1);
       },
       activeFilterCount() {
         const nonTypeCount = ['year', 'publisher', 'author'].reduce(
@@ -442,24 +441,24 @@
           author: [],
         };
 
-        const keys = ['type', 'year', 'publisher', 'author'];
-        keys.forEach((key) => {
-          this.filters[key].active = [...this.draftFilters[key]];
-          this.cfManager.setActive(key, this.filters[key].active);
-        });
-        this.updateFilteredData();
-        this.filterPanelOpen = false;
-        this.scrollToResultsTop();
+        this.applyDraftFilters({ closePanel: true, scrollToTop: true });
       },
-      applyDraftFilters() {
-        const keys = ['type', 'year', 'publisher', 'author'];
-        keys.forEach((key) => {
-          this.filters[key].active = [...this.draftFilters[key]];
-          this.cfManager.setActive(key, this.filters[key].active);
-        });
+      applyDraftFilters({ closePanel = true, scrollToTop = true } = {}) {
+        const activeObj = {
+          type: [...this.draftFilters.type],
+          year: [...this.draftFilters.year],
+          publisher: [...this.draftFilters.publisher],
+          author: [...this.draftFilters.author],
+        };
+
+        this.cfManager.setAllActive(activeObj);
         this.updateFilteredData();
-        this.filterPanelOpen = false;
-        this.scrollToResultsTop();
+        if (closePanel) {
+          this.filterPanelOpen = false;
+        }
+        if (scrollToTop) {
+          this.scrollToResultsTop();
+        }
       },
       async getData() {
         const self = this;
@@ -489,7 +488,6 @@
               publisher: 'PRISM',
               author: d.Author,
               featured: d.Featured,
-              // publisher: d.Publisher,
             };
           }),
           d3.csv(`${dataPath}${conferenceAbstractsFile}`, function (d, i) {
@@ -499,8 +497,8 @@
               id: `conference-abstract-${i}`,
               year: d.Year,
               link: d.Link,
-              publisher: d.Publisher,
-              author: 'N/A',
+              publisher: d.Conference,
+              author: 'PRISM',
               featured: d.Featured,
             };
           }),
@@ -533,15 +531,22 @@
 
         if (isAllSelected) {
           this.draftFilters.type = [typeValue];
+          this.applyDraftFilters({ closePanel: false, scrollToTop: false });
           return;
         }
 
         if (isSelected) {
           this.draftFilters.type = allTypes;
+          this.applyDraftFilters({ closePanel: false, scrollToTop: false });
           return;
         }
 
         this.draftFilters.type = [typeValue];
+        this.applyDraftFilters({ closePanel: false, scrollToTop: false });
+      },
+      onDraftFilterChange(field, values) {
+        this.draftFilters[field] = values || [];
+        this.applyDraftFilters({ closePanel: false, scrollToTop: false });
       },
       toggleTypeSelection(typeValue) {
         const allTypes = this.filters.type.options.map((option) => option.value);
