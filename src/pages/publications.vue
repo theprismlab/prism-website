@@ -102,10 +102,12 @@
             </v-col>
           </v-row>
 
-          <div class="filter-panel__actions mt-4">
+          <div class="filter-panel__actions mt-8">
             <v-btn variant="text" @click="resetDraftFilters">Reset</v-btn>
             <v-spacer />
-            <v-btn color="primary" @click="applyDraftFilters">Apply filters</v-btn>
+            <v-btn variant="text" rounded color="primary-base" @click="applyDraftFilters"
+              >Apply filters</v-btn
+            >
           </div>
         </div>
       </v-navigation-drawer>
@@ -657,13 +659,12 @@
   .filter-panel {
     display: flex;
     flex-direction: column;
-    height: 100%;
   }
   .filter-panel__actions {
     display: flex;
     align-items: center;
-    margin-top: auto;
-    padding-top: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 1.5rem;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
   }
   @media (max-width: 959px) {
