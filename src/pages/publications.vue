@@ -70,7 +70,7 @@
           </v-row>
         </v-col>
 
-        <v-col class="filter-results my-12 py-12">
+        <v-col ref="filterResults" class="filter-results my-12 py-12">
           <div v-if="noResultsMessage" class="mt-5">
             <v-alert variant="outlined" color="info" class="text-center">
               {{ noResultsMessage }}
@@ -128,6 +128,16 @@
           </div>
         </v-col>
       </v-row>
+
+      <v-btn
+        class="scroll-to-results-btn"
+        color="primary"
+        size="large"
+        icon="mdi-arrow-up"
+        elevation="8"
+        @click="scrollToResultsTop"
+        aria-label="Scroll to top of results"
+      />
     </section>
   </page>
 </template>
@@ -312,6 +322,27 @@
         this.filters.type.active = next;
         this.onFilterChange('type', next);
       },
+      scrollToResultsTop() {
+        const target = this.$refs.filterResults?.$el || this.$refs.filterResults;
+        if (!target) return;
+
+        const pageStyles = getComputedStyle(document.getElementById('publication-page'));
+        const layoutTop =
+          parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue('--v-layout-top'),
+          ) || 0;
+        const bannerHeight =
+          parseFloat(pageStyles.getPropertyValue('--publications-banner-height')) || 0;
+        const extraSpacing = 16;
+
+        const top =
+          target.getBoundingClientRect().top +
+          window.scrollY -
+          layoutTop -
+          bannerHeight -
+          extraSpacing;
+        window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+      },
     },
     watch: {
       searchQuery(newVal) {
@@ -437,5 +468,18 @@
     font-weight: 500;
     color: var(--v-primary-base);
     text-decoration: none;
+  }
+  .scroll-to-results-btn {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 40;
+  }
+
+  @media (max-width: 959px) {
+    .scroll-to-results-btn {
+      right: 1rem;
+      bottom: 1rem;
+    }
   }
 </style>
