@@ -7,143 +7,74 @@
       </h2>
     </section> -->
     <section>
-      <div ref="toolbarTrack" class="explorer-toolbar-track">
-        <v-toolbar
-          class="explorer-toolbar"
-          :class="{ 'explorer-toolbar--compact': isExplorerToolbarCompact }"
-          :style="explorerToolbarStyle"
-          flat
-        >
-          <v-btn
-            v-if="isMobileView"
-            icon="mdi-filter-variant"
-            variant="text"
-            color="white"
-            class="mobile-filter-toggle"
-            @click="mobileFilterDrawer = true"
-            aria-label="Show filters"
-          />
-          <v-toolbar-title class="text-h5 text-center text-white">
-            <span class="mdi mdi-magnify"></span>Explore all publications
-          </v-toolbar-title>
-        </v-toolbar>
-      </div>
-
-      <v-navigation-drawer
-        v-model="mobileFilterDrawer"
-        location="left"
-        temporary
-        width="340"
-        class="mobile-filter-drawer"
-      >
-        <div class="pa-4">
-          <div class="d-flex align-center justify-space-between mb-4">
-            <span class="text-subtitle-1 font-weight-semibold">Filters</span>
-            <v-btn
-              icon="mdi-close"
-              variant="text"
-              @click="mobileFilterDrawer = false"
-              aria-label="Hide filters"
-            />
-          </div>
+      <div class="explorer-toolbar-track">
+        <v-toolbar class="explorer-toolbar" flat>
+          <v-toolbar-title class="toolbar-title text-white">Explore publications</v-toolbar-title>
+          <v-spacer />
 
           <v-text-field
             v-model="searchQuery"
             placeholder="Search titles..."
             prepend-inner-icon="mdi-magnify"
             clearable
-            rounded
-            variant="outlined"
-            class="mb-3"
+            hide-details
+            density="compact"
+            variant="solo-filled"
+            flat
+            class="toolbar-search"
           />
 
-          <span class="v-label v-field-label ml-1" style="font-size: 12px">Filter type</span>
-          <div class="type-filter-chips mt-2">
-            <v-chip
-              v-for="option in filters.type.options"
-              :key="`mobile-${option.value}`"
-              :color="
-                filters.type.active.includes(option.value)
-                  ? typeStyles[option.value].bg
-                  : 'lightgray'
-              "
-              :text-color="
-                filters.type.active.includes(option.value) ? typeStyles[option.value].fg : '#999'
-              "
-              :variant="filters.type.active.includes(option.value) ? 'flat' : 'tonal'"
-              size="large"
-              @click="toggleTypeSelection(option.value)"
-              class="type-chip"
-            >
-              <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
-              <span class="pr-1">{{ option.text.split(' (')[0] }}</span>
-            </v-chip>
+          <v-badge
+            :model-value="activeFilterCount > 0"
+            :content="activeFilterCount"
+            color="error"
+            offset-x="5"
+            offset-y="5"
+            class="ml-2"
+          >
+            <v-btn
+              icon="mdi-filter-variant"
+              variant="text"
+              color="white"
+              @click="openFilterPanel"
+              aria-label="Show filters"
+            />
+          </v-badge>
+        </v-toolbar>
+      </div>
+
+      <v-navigation-drawer
+        v-model="filterPanelOpen"
+        location="left"
+        temporary
+        width="360"
+        class="mobile-filter-drawer"
+      >
+        <div class="filter-panel pa-4">
+          <div class="d-flex align-center justify-space-between mb-4">
+            <span class="text-subtitle-1 font-weight-semibold">Filters</span>
+            <v-btn
+              icon="mdi-close"
+              variant="text"
+              @click="filterPanelOpen = false"
+              aria-label="Hide filters"
+            />
           </div>
 
-          <v-row class="mt-2">
-            <v-col cols="12" v-for="key in Object.keys(filters).filter((k) => k !== 'type')">
-              <v-autocomplete
-                :key="`mobile-${key}`"
-                v-model="filters[key].active"
-                :items="filters[key].options"
-                item-title="text"
-                item-value="value"
-                :label="`Filter ${key}`"
-                multiple
-                chips
-                clearable
-                closable-chips
-                hide-details
-                chip-size="large"
-                @update:modelValue="(val) => onFilterChange(key, val)"
-              >
-              </v-autocomplete>
-            </v-col>
-          </v-row>
-        </div>
-      </v-navigation-drawer>
-
-      <v-row ref="explorerSection" class="publications-layout-row px-2" align="start">
-        <v-col
-          v-if="!isMobileView"
-          ref="filterBar"
-          cols="12"
-          md="4"
-          lg="3"
-          class="mx-auto"
-          id="filter-bar"
-        >
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                v-model="searchQuery"
-                placeholder="Search titles..."
-                prepend-inner-icon="mdi-magnify"
-                clearable
-                rounded
-                variant="outlined"
-                class="mb-3"
-              />
-            </v-col>
-          </v-row>
-          <span class="v-label v-field-label ml-4" style="margin-top: -1rem; font-size: 12px"
-            >Filter type
-          </span>
+          <span class="v-label ml-1" style="font-size: 12px">Type</span>
           <div class="type-filter-chips">
             <v-chip
               v-for="option in filters.type.options"
-              :key="option.value"
+              :key="`draft-${option.value}`"
               :color="
-                filters.type.active.includes(option.value)
-                  ? typeStyles[option.value].bg
-                  : 'lightgray'
+                draftFilters.type.includes(option.value) ? typeStyles[option.value].bg : 'lightgray'
               "
               :text-color="
-                filters.type.active.includes(option.value) ? typeStyles[option.value].fg : '#999'
+                draftFilters.type.includes(option.value) ? typeStyles[option.value].fg : '#999'
               "
-              :variant="filters.type.active.includes(option.value) ? 'flat' : 'tonal'"
+              :variant="draftFilters.type.includes(option.value) ? 'flat' : 'tonal'"
               size="large"
-              @click="toggleTypeSelection(option.value)"
+              @click="toggleDraftTypeSelection(option.value)"
               class="type-chip"
             >
               <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
@@ -154,8 +85,8 @@
           <v-row class="mt-2">
             <v-col cols="12" v-for="key in Object.keys(filters).filter((k) => k !== 'type')">
               <v-autocomplete
-                :key="key"
-                v-model="filters[key].active"
+                :key="`draft-${key}`"
+                v-model="draftFilters[key]"
                 :items="filters[key].options"
                 item-title="text"
                 item-value="value"
@@ -166,14 +97,38 @@
                 closable-chips
                 hide-details
                 chip-size="large"
-                @update:modelValue="(val) => onFilterChange(key, val)"
               >
               </v-autocomplete>
             </v-col>
           </v-row>
-        </v-col>
 
-        <v-col ref="filterResults" class="filter-results">
+          <div class="filter-panel__actions mt-4">
+            <v-btn variant="text" @click="resetDraftFilters">Reset</v-btn>
+            <v-spacer />
+            <v-btn color="primary" @click="applyDraftFilters">Apply filters</v-btn>
+          </div>
+        </div>
+      </v-navigation-drawer>
+
+      <v-row class="publications-layout-row px-2" align="start">
+        <v-col ref="filterResults" class="filter-results" cols="12">
+          <div class="results-header mb-4">
+            <span class="text-body-2 text-medium-emphasis"
+              >Showing {{ filteredData.length }} results</span
+            >
+            <div class="active-filters mt-2" v-if="appliedFilterChips.length > 0">
+              <v-chip
+                v-for="chip in appliedFilterChips"
+                :key="`${chip.key}-${chip.value}`"
+                size="small"
+                closable
+                @click:close="removeAppliedFilter(chip)"
+              >
+                {{ chip.label }}
+              </v-chip>
+            </div>
+          </div>
+
           <div v-if="noResultsMessage" class="mt-5">
             <v-alert variant="outlined" color="info" class="text-center">
               {{ noResultsMessage }}
@@ -276,28 +231,48 @@
         filteredData: [],
         cfManager: null,
         showScrollToResultsBtn: false,
-        isExplorerToolbarCompact: false,
-        explorerToolbarWidth: 0,
-        explorerToolbarOffsetLeft: 0,
-        mobileFilterDrawer: false,
+        filterPanelOpen: false,
+        draftFilters: {
+          type: [],
+          year: [],
+          publisher: [],
+          author: [],
+        },
       };
     },
     computed: {
-      isMobileView() {
-        return this.$vuetify?.display?.smAndDown ?? window.innerWidth < 960;
+      activeFilterCount() {
+        const nonTypeCount = ['year', 'publisher', 'author'].reduce(
+          (acc, key) => acc + this.filters[key].active.length,
+          0,
+        );
+        const typeCount = this.isAllTypesSelected ? 0 : this.filters.type.active.length;
+        return nonTypeCount + typeCount;
       },
-      explorerToolbarStyle() {
-        if (!this.isExplorerToolbarCompact) {
-          return {
-            width: '100%',
-            marginLeft: '0px',
-          };
+      isAllTypesSelected() {
+        return this.filters.type.active.length === this.filters.type.options.length;
+      },
+      appliedFilterChips() {
+        const chips = [];
+        if (!this.isAllTypesSelected && this.filters.type.active.length > 0) {
+          chips.push({
+            key: 'type',
+            value: this.filters.type.active[0],
+            label: `Type: ${this.filters.type.active[0]}`,
+          });
         }
 
-        return {
-          width: `${this.explorerToolbarWidth}px`,
-          marginLeft: `${this.explorerToolbarOffsetLeft}px`,
-        };
+        ['year', 'publisher', 'author'].forEach((key) => {
+          this.filters[key].active.forEach((value) => {
+            chips.push({
+              key,
+              value,
+              label: `${key}: ${value}`,
+            });
+          });
+        });
+
+        return chips;
       },
       noResultsMessage() {
         if (this.data.length === 0) {
@@ -337,17 +312,15 @@
       },
     },
     mounted() {
-      this.syncExplorerToolbarGeometry();
-      this.updateExplorerToolbarState();
       this.updateScrollToResultsButtonVisibility();
-      window.addEventListener('scroll', this.handleWindowScroll, {
+      window.addEventListener('scroll', this.updateScrollToResultsButtonVisibility, {
         passive: true,
       });
-      window.addEventListener('resize', this.handleWindowResize);
+      window.addEventListener('resize', this.updateScrollToResultsButtonVisibility);
     },
     beforeUnmount() {
-      window.removeEventListener('scroll', this.handleWindowScroll);
-      window.removeEventListener('resize', this.handleWindowResize);
+      window.removeEventListener('scroll', this.updateScrollToResultsButtonVisibility);
+      window.removeEventListener('resize', this.updateScrollToResultsButtonVisibility);
     },
     async created() {
       this.data = await this.getData();
@@ -374,31 +347,45 @@
       });
 
       this.updateFilteredData();
-      this.$nextTick(() => {
-        this.syncExplorerToolbarGeometry();
-        this.updateExplorerToolbarState();
-        this.updateScrollToResultsButtonVisibility();
-      });
+      this.syncDraftFromApplied();
+      this.$nextTick(() => this.updateScrollToResultsButtonVisibility());
     },
     methods: {
-      handleWindowScroll() {
-        this.updateScrollToResultsButtonVisibility();
-        this.updateExplorerToolbarState();
-      },
-      handleWindowResize() {
-        if (!this.isMobileView) {
-          this.mobileFilterDrawer = false;
-        }
-        this.syncExplorerToolbarGeometry();
-        this.updateExplorerToolbarState();
-        this.updateScrollToResultsButtonVisibility();
-      },
       getLayoutTopOffset() {
         return (
           parseFloat(
             getComputedStyle(document.documentElement).getPropertyValue('--v-layout-top'),
           ) || 0
         );
+      },
+      openFilterPanel() {
+        this.syncDraftFromApplied();
+        this.filterPanelOpen = true;
+      },
+      syncDraftFromApplied() {
+        this.draftFilters = {
+          type: [...this.filters.type.active],
+          year: [...this.filters.year.active],
+          publisher: [...this.filters.publisher.active],
+          author: [...this.filters.author.active],
+        };
+      },
+      resetDraftFilters() {
+        this.draftFilters = {
+          type: [...this.filters.type.options.map((option) => option.value)],
+          year: [],
+          publisher: [],
+          author: [],
+        };
+      },
+      applyDraftFilters() {
+        const keys = ['type', 'year', 'publisher', 'author'];
+        keys.forEach((key) => {
+          this.filters[key].active = [...this.draftFilters[key]];
+          this.cfManager.setActive(key, this.filters[key].active);
+        });
+        this.updateFilteredData();
+        this.filterPanelOpen = false;
       },
       async getData() {
         const self = this;
@@ -461,6 +448,24 @@
         // Crossfilter handles all filtering (type, year, publisher, author, search)
         this.filteredData = this.cfManager.filteredData;
       },
+      toggleDraftTypeSelection(typeValue) {
+        const allTypes = this.filters.type.options.map((option) => option.value);
+        const activeTypes = this.draftFilters.type;
+        const isAllSelected = activeTypes.length === allTypes.length;
+        const isSelected = activeTypes.includes(typeValue);
+
+        if (isAllSelected) {
+          this.draftFilters.type = [typeValue];
+          return;
+        }
+
+        if (isSelected) {
+          this.draftFilters.type = allTypes;
+          return;
+        }
+
+        this.draftFilters.type = [typeValue];
+      },
       toggleTypeSelection(typeValue) {
         const allTypes = this.filters.type.options.map((option) => option.value);
         const activeTypes = this.filters.type.active;
@@ -484,41 +489,39 @@
         this.filters.type.active = next;
         this.onFilterChange('type', next);
       },
-      getExplorerTopScrollPosition() {
-        const section = this.$refs.explorerSection?.$el || this.$refs.explorerSection;
-        if (!section) return 0;
-
-        return section.getBoundingClientRect().top + window.scrollY - this.getLayoutTopOffset();
-      },
-      syncExplorerToolbarGeometry() {
-        const filterBar = this.$refs.filterBar?.$el || this.$refs.filterBar;
-        const toolbarTrack = this.$refs.toolbarTrack;
-        if (!filterBar || !toolbarTrack) return;
-
-        const filterRect = filterBar.getBoundingClientRect();
-        const trackRect = toolbarTrack.getBoundingClientRect();
-        this.explorerToolbarWidth = Math.round(filterRect.width);
-        this.explorerToolbarOffsetLeft = Math.round(filterRect.left - trackRect.left);
-      },
-      updateExplorerToolbarState() {
-        if (this.isMobileView) {
-          this.isExplorerToolbarCompact = false;
+      removeAppliedFilter(chip) {
+        if (chip.key === 'type') {
+          const allTypes = this.filters.type.options.map((option) => option.value);
+          this.filters.type.active = allTypes;
+          this.cfManager.setActive('type', allTypes);
+          this.updateFilteredData();
+          this.syncDraftFromApplied();
           return;
         }
-        const shouldCompact = window.scrollY >= this.getExplorerTopScrollPosition();
-        this.isExplorerToolbarCompact = shouldCompact;
-        if (shouldCompact) {
-          this.syncExplorerToolbarGeometry();
-        }
+
+        const active = this.filters[chip.key].active.filter((value) => value !== chip.value);
+        this.filters[chip.key].active = active;
+        this.cfManager.setActive(chip.key, active);
+        this.updateFilteredData();
+        this.syncDraftFromApplied();
       },
       getResultsTopScrollPosition() {
         const target = this.$refs.filterResults?.$el || this.$refs.filterResults;
         if (!target) return 0;
 
         const layoutTop = this.getLayoutTopOffset();
+        const pageStyles = getComputedStyle(document.getElementById('publication-page'));
+        const toolbarHeight =
+          parseFloat(pageStyles.getPropertyValue('--publications-banner-height')) || 0;
         const extraSpacing = 8;
 
-        return target.getBoundingClientRect().top + window.scrollY - layoutTop - extraSpacing;
+        return (
+          target.getBoundingClientRect().top +
+          window.scrollY -
+          layoutTop -
+          toolbarHeight -
+          extraSpacing
+        );
       },
       updateScrollToResultsButtonVisibility() {
         const targetTop = this.getResultsTopScrollPosition();
@@ -542,15 +545,8 @@
   #publication-page {
     position: relative;
     --publications-layout-top: var(--v-layout-top, 0px);
-    --publications-banner-height: 72px;
-    --publications-content-gap: 1rem;
-    --publications-content-offset: calc(
-      var(--publications-banner-height) + var(--publications-content-gap)
-    );
-    --publications-filter-top: calc(
-      var(--publications-layout-top) + var(--publications-content-offset)
-    );
-    --publications-layout-padding-top: calc(3rem + var(--publications-content-offset));
+    --publications-banner-height: 70px;
+    --publications-layout-padding-top: 1.5rem;
     --publications-layout-padding-bottom: 3rem;
   }
   .explorer-toolbar-track {
@@ -563,24 +559,20 @@
   .explorer-toolbar {
     background: linear-gradient(45deg, #3f51b5, #8e24aa, #009688);
     min-height: var(--publications-banner-height);
-    transition:
-      width 220ms ease,
-      margin-left 220ms ease,
-      border-radius 220ms ease;
     border-radius: 0;
-  }
-  .mobile-filter-toggle {
-    margin-left: 0.25rem;
-  }
-  .explorer-toolbar--compact {
-    border-radius: 12px;
   }
   :deep(.explorer-toolbar .v-toolbar__content) {
     min-height: var(--publications-banner-height) !important;
+    padding-inline: 0.75rem;
   }
-  :deep(.explorer-toolbar .v-toolbar-title) {
-    text-align: center;
-    width: 100%;
+  .toolbar-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .toolbar-search {
+    max-width: 420px;
+    min-width: 180px;
   }
   .filter-label {
     font-size: 0.875rem;
@@ -648,49 +640,47 @@
   .v-alert--variant-outlined {
     border: 0.1px solid currentColor;
   }
-  #filter-bar {
-    position: -webkit-sticky;
-    position: sticky;
-    top: var(--publications-filter-top);
-    align-self: flex-start;
-    height: fit-content;
-    z-index: 10;
-    background: white;
-    padding: 1rem 0;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    border-bottom: 0.2px solid rgba(0, 0, 0, 0.08);
-  }
   .publications-layout-row {
     padding-top: var(--publications-layout-padding-top);
     padding-bottom: var(--publications-layout-padding-bottom);
   }
+  .results-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .active-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .filter-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .filter-panel__actions {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
   @media (max-width: 959px) {
     #publication-page {
       --publications-banner-height: 64px;
-      --publications-content-gap: 0px;
       --publications-layout-padding-top: 1rem;
       --publications-layout-padding-bottom: 1.25rem;
     }
     .explorer-toolbar-track {
       margin: 0;
     }
-    .explorer-toolbar {
-      border-radius: 0;
-      width: 100% !important;
-      margin-left: 0 !important;
+    .toolbar-title {
+      font-size: 1rem;
     }
-    :deep(.explorer-toolbar .v-toolbar-title) {
-      font-size: 1.125rem !important;
-      text-align: left;
-      padding-left: 0.5rem;
-    }
-    #filter-bar {
-      position: static;
-      top: auto;
-    }
-    .mobile-filter-drawer {
-      z-index: 30;
+    .toolbar-search {
+      max-width: 44vw;
+      min-width: 120px;
     }
     .scroll-to-results-btn {
       right: 1rem;
