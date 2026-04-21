@@ -374,14 +374,24 @@
 
 <style scoped>
   #publication-page {
+    position: relative;
+    --publications-layout-top: var(--v-layout-top, 0px);
     --publications-banner-height: 72px;
-    --publications-content-offset: calc(var(--publications-banner-height) + 1rem);
+    --publications-content-gap: 1rem;
+    --publications-content-offset: calc(
+      var(--publications-banner-height) + var(--publications-content-gap)
+    );
+    --publications-filter-top: calc(
+      var(--publications-layout-top) + var(--publications-content-offset)
+    );
+    --publications-layout-padding-top: calc(3rem + var(--publications-content-offset));
+    --publications-layout-padding-bottom: 3rem;
   }
   .blue-banner {
     background: linear-gradient(45deg, #3f51b5, #8e24aa, #009688);
     position: -webkit-sticky;
     position: sticky;
-    top: var(--v-layout-top, 0px);
+    top: var(--publications-layout-top);
     z-index: 20;
     min-height: var(--publications-banner-height);
   }
@@ -451,13 +461,10 @@
   .v-alert--variant-outlined {
     border: 0.1px solid currentColor;
   }
-  #publication-page {
-    position: relative;
-  }
   #filter-bar {
     position: -webkit-sticky;
     position: sticky;
-    top: calc(var(--v-layout-top, 0px) + var(--publications-content-offset));
+    top: var(--publications-filter-top);
     align-self: flex-start;
     height: fit-content;
     z-index: 10;
@@ -468,10 +475,14 @@
     border-bottom: 0.2px solid rgba(0, 0, 0, 0.08);
   }
   .publications-layout-row {
-    padding-top: calc(3rem + var(--publications-content-offset));
-    padding-bottom: 3rem;
+    padding-top: var(--publications-layout-padding-top);
+    padding-bottom: var(--publications-layout-padding-bottom);
   }
   @media (max-width: 959px) {
+    #publication-page {
+      --publications-banner-height: 0px;
+      --publications-content-gap: 0px;
+    }
     .blue-banner {
       position: static;
       top: auto;
@@ -480,6 +491,10 @@
     #filter-bar {
       position: static;
       top: auto;
+    }
+    .scroll-to-results-btn {
+      right: 1rem;
+      bottom: 1rem;
     }
   }
   .publication-links {
@@ -498,12 +513,5 @@
     right: 1.25rem;
     bottom: 1.25rem;
     z-index: 40;
-  }
-
-  @media (max-width: 959px) {
-    .scroll-to-results-btn {
-      right: 1rem;
-      bottom: 1rem;
-    }
   }
 </style>
