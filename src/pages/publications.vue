@@ -92,6 +92,7 @@
               color="white"
               @click="openFilterPanel"
               aria-label="Show filters"
+              label="Filter"
             />
           </v-badge>
         </v-toolbar>
@@ -518,7 +519,7 @@
               date: formatWhitepaperDate(d.Date),
               tag: d.Tag,
               year: getYearFromDate(d.Date),
-              publisher: 'PRISM',
+              publisher: 'PRISM White Papers',
               author: d.Author,
               featured: d.Featured,
             };
@@ -531,7 +532,7 @@
               year: d.Year,
               link: d.Link,
               publisher: d.Conference,
-              author: 'PRISM',
+              author: null,
               featured: d.Featured,
             };
           }),
