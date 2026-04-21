@@ -164,9 +164,11 @@
       const cfManager = new CrossfilterManager(this.data, this.filters);
       this.cfManager = cfManager;
 
-      // Default to a single type selected
-      const firstType = this.filters.type.options[0]?.value;
-      const defaultTypeSelection = firstType ? [firstType] : [];
+      // // Default to a single type selected
+      // const firstType = this.filters.type.options[0]?.value;
+      // const defaultTypeSelection = firstType ? [firstType] : [];
+      // Default to all types selected
+      const defaultTypeSelection = this.filters.type.options.map((option) => option.value); // Default to all types selected
       this.filters.type.active = defaultTypeSelection;
       this.cfManager.setActive('type', defaultTypeSelection);
 
