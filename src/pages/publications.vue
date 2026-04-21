@@ -9,17 +9,20 @@
         <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
           <v-card class="featured-card h-100" variant="flat">
             <div class="featured-card__content">
-              <div
-                class="featured-card__icon"
-                :style="{ backgroundColor: typeStyles[card.type].bg }"
-              >
-                <v-icon size="22" :color="typeStyles[card.type].fg">
-                  {{ typeStyles[card.type].icon }}
-                </v-icon>
-              </div>
-
               <div class="featured-card__body">
-                <p class="featured-card__type">{{ card.type }}</p>
+                <div class="featured-card__header">
+                  <div
+                    class="featured-card__icon"
+                    :style="{ backgroundColor: typeStyles[card.type].bg }"
+                  >
+                    <v-icon size="20" :color="typeStyles[card.type].fg">
+                      {{ typeStyles[card.type].icon }}
+                    </v-icon>
+                  </div>
+                  <p class="featured-card__type" :style="{ color: typeStyles[card.type].bg }">
+                    {{ card.type }}
+                  </p>
+                </div>
                 <h3 class="featured-card__title">{{ card.title }}</h3>
                 <div class="featured-card__meta">
                   <span v-if="card.author">{{ card.author }}, et al. </span>
@@ -297,7 +300,10 @@
     },
     computed: {
       featuredCards() {
-        return this.data.filter((d, i) => i < 3);
+        console.log('All data:', this.data);
+        return this.data.filter(
+          (d) => d.featured == 'true' || d.link == 'https://doi.org/10.1038/nbt.3460,2',
+        );
       },
       activeFilterCount() {
         const nonTypeCount = ['year', 'publisher', 'author'].reduce(
@@ -467,6 +473,7 @@
               link: d.Link,
               publisher: d.Publisher,
               author: d.Author,
+              featured: d.Featured,
             };
           }),
           d3.csv(`${dataPath}${whitepaperFile}`, function (d, i) {
@@ -481,6 +488,7 @@
               year: d.Date.split(' ')[2],
               publisher: 'PRISM',
               author: d.Author,
+              featured: d.Featured,
               // publisher: d.Publisher,
             };
           }),
@@ -493,6 +501,7 @@
               link: d.Link,
               publisher: d.Publisher,
               author: 'N/A',
+              featured: d.Featured,
             };
           }),
         ]).then((response) => {
@@ -657,14 +666,19 @@
     box-shadow: 0 12px 28px rgba(20, 30, 60, 0.14);
   }
   .featured-card__content {
-    display: flex;
-    gap: 0.9rem;
+    display: block;
     padding: 1rem;
   }
+  .featured-card__header {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.55rem;
+  }
   .featured-card__icon {
-    min-width: 44px;
-    min-height: 44px;
-    border-radius: 12px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 10px;
     display: grid;
     place-items: center;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
@@ -674,12 +688,14 @@
     min-width: 0;
   }
   .featured-card__type {
-    margin: 0 0 0.2rem;
+    margin: 0;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-size: 0.7rem;
-    color: rgba(55, 65, 81, 0.78);
+    letter-spacing: 0.075em;
+    font-size: 0.8rem;
     font-weight: 700;
+    padding: 0.2rem 0.45rem;
+    border-radius: 999px;
+    line-height: 1;
   }
   .featured-card__title {
     margin: 0;
