@@ -9,7 +9,7 @@
     <section>
       <v-row class="blue-banner mt-3 mb-3 pa-6"> </v-row>
       <v-row>
-        <v-col cols="12" md="4" lg="3" class="mx-auto" id="filter-bar">
+        <v-col cols="12" md="4" lg="3" class="mx-auto my-6" id="filter-bar">
           <v-row>
             <v-col cols="12">
               <v-text-field
@@ -70,7 +70,7 @@
           </v-row>
         </v-col>
 
-        <v-col ref="filterResults" class="filter-results my-12 py-12">
+        <v-col ref="filterResults" class="filter-results my-6 py-6">
           <div v-if="noResultsMessage" class="mt-5">
             <v-alert variant="outlined" color="info" class="text-center">
               {{ noResultsMessage }}
@@ -130,6 +130,7 @@
       </v-row>
 
       <v-btn
+        v-show="showScrollToResultsBtn"
         class="scroll-to-results-btn"
         color="primary"
         size="large"
@@ -171,7 +172,19 @@
         },
         filteredData: [],
         cfManager: null,
+        showScrollToResultsBtn: false,
       };
+    },
+    mounted() {
+      this.updateScrollToResultsButtonVisibility();
+      window.addEventListener('scroll', this.updateScrollToResultsButtonVisibility, {
+        passive: true,
+      });
+      window.addEventListener('resize', this.updateScrollToResultsButtonVisibility);
+    },
+    beforeUnmount() {
+      window.removeEventListener('scroll', this.updateScrollToResultsButtonVisibility);
+      window.removeEventListener('resize', this.updateScrollToResultsButtonVisibility);
     },
     async created() {
       this.data = await this.getData();
@@ -322,9 +335,9 @@
         this.filters.type.active = next;
         this.onFilterChange('type', next);
       },
-      scrollToResultsTop() {
+      getResultsTopScrollPosition() {
         const target = this.$refs.filterResults?.$el || this.$refs.filterResults;
-        if (!target) return;
+        if (!target) return 0;
 
         const pageStyles = getComputedStyle(document.getElementById('publication-page'));
         const layoutTop =
@@ -335,12 +348,20 @@
           parseFloat(pageStyles.getPropertyValue('--publications-banner-height')) || 0;
         const extraSpacing = 16;
 
-        const top =
+        return (
           target.getBoundingClientRect().top +
           window.scrollY -
           layoutTop -
           bannerHeight -
-          extraSpacing;
+          extraSpacing
+        );
+      },
+      updateScrollToResultsButtonVisibility() {
+        const targetTop = this.getResultsTopScrollPosition();
+        this.showScrollToResultsBtn = window.scrollY > targetTop + 4;
+      },
+      scrollToResultsTop() {
+        const top = this.getResultsTopScrollPosition();
         window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
       },
     },
