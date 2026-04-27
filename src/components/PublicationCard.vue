@@ -165,24 +165,27 @@
 
   /* Compact list layout */
   .publication-card {
-    padding: 1rem;
     border-radius: 12px;
     border: 0.2px solid rgba(0, 0, 0, 0.16);
+    overflow: hidden;
   }
   .publication-card__content {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
+    align-items: stretch;
+    gap: 0;
   }
   .publication-card__icon {
-    min-width: 56px;
-    min-height: 56px;
+    align-self: stretch;
+    min-width: 0px;
+    padding: 1rem;
     display: grid;
     place-items: center;
-    border-radius: 16px;
+    border-radius: 0;
+    flex-shrink: 0;
   }
   .publication-card__details {
     flex: 1;
+    padding: 1rem;
   }
   .publication-card__title {
     display: inline-flex;
