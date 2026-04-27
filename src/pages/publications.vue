@@ -7,7 +7,7 @@
     <container-md>
       <v-row justify="center" class="mb-12">
         <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
-          <publication-card
+          <publication-card-panel
             :item="card"
             :type-style="typeStyles[card.type]"
             :links="getLinks(card)"
@@ -17,17 +17,13 @@
       </v-row>
     </container-md>
 
-    <publications-explorer
-      :items="data"
-      :type-styles="typeStyles"
-      :get-links="getLinks"
-    />
+    <publications-explorer :items="data" :type-styles="typeStyles" :get-links="getLinks" />
   </page>
 </template>
 
 <script>
   import * as d3 from 'd3';
-  import PublicationCard from '@/components/PublicationCard.vue';
+  import PublicationCardPanel from '@/components/PublicationCardPanel.vue';
   import PublicationsExplorer from '@/components/PublicationsExplorer.vue';
 
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL + 'data/' : '../public/data/';
@@ -123,7 +119,7 @@
 
   export default {
     components: {
-      PublicationCard,
+      PublicationCardPanel,
       PublicationsExplorer,
     },
     data() {

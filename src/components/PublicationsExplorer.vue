@@ -152,7 +152,7 @@
             </v-alert>
           </div>
           <div v-else>
-            <publication-card
+            <publication-card-panel
               v-for="each in filteredData"
               :key="each.id"
               :item="each"
@@ -179,11 +179,11 @@
 
 <script>
   import CrossfilterManager from '@/utils/crossfilter-helpers.js';
-  import PublicationCard from '@/components/PublicationCard.vue';
+  import PublicationCardPanel from '@/components/PublicationCardPanel.vue';
 
   export default {
     name: 'PublicationsExplorer',
-    components: { PublicationCard },
+    components: { PublicationCardPanel },
     props: {
       items: { type: Array, required: true },
       typeStyles: { type: Object, required: true },
