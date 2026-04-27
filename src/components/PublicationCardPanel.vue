@@ -15,9 +15,7 @@
         <p v-if="featured" class="publication-card__type" :style="{ color: typeStyle.bg }">
           {{ item.type }}
         </p>
-        <component :is="featured ? 'h3' : 'span'" class="publication-card__title">{{
-          item.title
-        }}</component>
+        <h3 class="publication-card__title">{{ item.title }}</h3>
         <div class="publication-card__meta">
           <span v-if="item.author">{{ item.author }}, et al. </span>
           <span v-if="item.publisher"
@@ -62,6 +60,7 @@
 <style scoped>
   /* ---------- Shared base ---------- */
   .publication-card {
+    --my-title: 0.5rem;
     border: 0.2px solid rgba(0, 0, 0, 0.16);
     border-radius: 12px;
     overflow: hidden;
@@ -79,7 +78,7 @@
     align-self: stretch;
     flex-shrink: 0;
     min-width: 0;
-    padding: 1rem;
+    padding: 0.75rem;
   }
 
   .publication-card__body {
@@ -89,7 +88,7 @@
   }
 
   .publication-card__title {
-    margin: 0;
+    margin: var(--my-title) 0;
     font-size: 1rem;
     line-height: 1.35;
     font-weight: 600;
@@ -98,7 +97,6 @@
   }
 
   .publication-card__meta {
-    margin-top: 0.4rem;
     font-size: 0.875rem;
     color: rgb(99, 107, 123);
   }
