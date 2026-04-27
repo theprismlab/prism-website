@@ -36,38 +36,14 @@
 
                 <div class="featured-card__links">
                   <a
-                    v-if="getPrimaryLink(card)"
+                    v-for="link in getLinks(card)"
+                    :key="link.field"
                     class="featured-card-link"
-                    :href="getPrimaryLink(card)"
+                    :href="link.href"
                     target="_blank"
                   >
-                    {{ getReadLabel(card) }}
-                    <v-icon right size="x-small" class="featured-card-link-icon"
-                      >mdi-arrow-right</v-icon
-                    >
-                  </a>
-
-                  <a
-                    v-if="card.posterLink"
-                    class="featured-card-link"
-                    :href="card.posterLink"
-                    target="_blank"
-                  >
-                    <v-icon left size="small">mdi-eye-outline</v-icon>
-                    View Conference Poster
-                    <v-icon right size="x-small" class="featured-card-link-icon"
-                      >mdi-arrow-right</v-icon
-                    >
-                  </a>
-
-                  <a
-                    v-if="card.portalLink"
-                    class="featured-card-link"
-                    :href="card.portalLink"
-                    target="_blank"
-                  >
-                    <v-icon left size="small">mdi-chart-box-outline</v-icon>
-                    Explore data
+                    <v-icon v-if="link.icon" left size="small">{{ link.icon }}</v-icon>
+                    {{ link.label }}
                     <v-icon right size="x-small" class="featured-card-link-icon"
                       >mdi-arrow-right</v-icon
                     >
@@ -239,34 +215,14 @@
                     </div>
                     <div class="publication-links">
                       <a
-                        v-if="getPrimaryLink(each)"
+                        v-for="link in getLinks(each)"
+                        :key="link.field"
                         class="publication-link"
-                        :href="getPrimaryLink(each)"
+                        :href="link.href"
                         target="_blank"
                       >
-                        {{ getReadLabel(each) }}
-                        <v-icon right size="x-small" class="publication-card__external-icon"
-                          >mdi-arrow-right</v-icon
-                        >
-                      </a>
-                      <a
-                        v-if="each.posterLink"
-                        class="publication-link"
-                        :href="each.posterLink"
-                        target="_blank"
-                      >
-                        <v-icon left>mdi-eye-outline</v-icon> View Conference Poster
-                        <v-icon right size="x-small" class="publication-card__external-icon"
-                          >mdi-arrow-right</v-icon
-                        >
-                      </a>
-                      <a
-                        class="publication-link"
-                        v-if="each.portalLink"
-                        :href="each.portalLink"
-                        target="_blank"
-                      >
-                        <v-icon left>mdi-chart-box-outline</v-icon> Explore data
+                        <v-icon v-if="link.icon" left>{{ link.icon }}</v-icon>
+                        {{ link.label }}
                         <v-icon right size="x-small" class="publication-card__external-icon"
                           >mdi-arrow-right</v-icon
                         >
@@ -335,13 +291,15 @@
 
   // Single source of truth for per-type customization.
   // To add a new type: add a new entry here. No other code changes required.
+  // `links` lists all possible link fields for the type, in display order.
+  // The first entry is treated as the primary link (no left icon by convention).
   const TYPE_CONFIG = {
     Publication: {
       icon: 'mdi-file-document-outline',
       color: '#3f51b5',
       file: 'Website Content - 2025  - Publications.csv',
       idPrefix: 'publication',
-      readLabel: 'Read Publication',
+      links: [{ field: 'link', label: 'Read Publication' }],
       parseRow: (d) => ({
         year: d.Year,
         link: d.Link,
@@ -354,7 +312,10 @@
       color: '#8e24aa',
       file: 'Website Content - 2025  - White Papers.csv',
       idPrefix: 'white-paper',
-      readLabel: 'Read White Paper',
+      links: [
+        { field: 'link', label: 'Read White Paper' },
+        { field: 'portalLink', label: 'Explore Data', icon: 'mdi-chart-box-outline' },
+      ],
       parseRow: (d) => ({
         link: d['Paper Link'],
         portalLink: d['Portal Link'],
@@ -370,7 +331,10 @@
       color: '#009688',
       file: 'Website Content - 2025  - Conference Abstracts.csv',
       idPrefix: 'conference-abstract',
-      readLabel: 'Read Conference Abstract',
+      links: [
+        { field: 'link', label: 'Read Abstract' },
+        { field: 'posterLink', label: 'View Poster', icon: 'mdi-eye-outline' },
+      ],
       parseRow: (d) => ({
         year: d.Year,
         link: d.Link,
@@ -575,11 +539,10 @@
         }
         this.updateFilteredData();
       },
-      getPrimaryLink(item) {
-        return item?.link || '';
-      },
-      getReadLabel(item) {
-        return TYPE_CONFIG[item?.type]?.readLabel || 'Read more';
+      getLinks(item) {
+        const cfg = TYPE_CONFIG[item?.type];
+        if (!cfg?.links) return [];
+        return cfg.links.map((l) => ({ ...l, href: item[l.field] })).filter((l) => l.href);
       },
       updateFilteredData() {
         // Crossfilter handles all filtering (type, year, publisher, author, search)
@@ -788,7 +751,7 @@
     gap: 0.2rem;
     font-size: 0.84rem;
     font-weight: 600;
-    color: #3f51b5;
+    /* color: #3f51b5; */
     text-decoration: none;
   }
   .featured-card-link:hover {
