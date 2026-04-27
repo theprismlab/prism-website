@@ -35,12 +35,18 @@
                 </div>
 
                 <div class="featured-card__links">
-                  <a class="featured-card-link" :href="card.link" target="_blank">
-                    Read more
+                  <a
+                    v-if="getPrimaryLink(card)"
+                    class="featured-card-link"
+                    :href="getPrimaryLink(card)"
+                    target="_blank"
+                  >
+                    {{ getReadLabel(card) }}
                     <v-icon right size="x-small" class="featured-card-link-icon"
                       >mdi-arrow-right</v-icon
                     >
                   </a>
+
                   <a
                     v-if="card.portalLink"
                     class="featured-card-link"
@@ -92,7 +98,6 @@
               color="white"
               @click="openFilterPanel"
               aria-label="Show filters"
-              label="Filter"
             />
           </v-badge>
         </v-toolbar>
@@ -220,8 +225,13 @@
                       >.
                     </div>
                     <div class="publication-links">
-                      <a class="publication-link" :href="each.link" target="_blank">
-                        Read more
+                      <a
+                        v-if="getPrimaryLink(each)"
+                        class="publication-link"
+                        :href="getPrimaryLink(each)"
+                        target="_blank"
+                      >
+                        {{ getReadLabel(each) }}
                         <v-icon right size="x-small" class="publication-card__external-icon"
                           >mdi-arrow-right</v-icon
                         >
@@ -264,15 +274,16 @@
   const paperColor = '#3f51b5';
   const whitePaperColor = '#8e24aa';
   const conferenceAbstractColor = '#009688';
+  const conferencePosterColor = '#ff7043';
 
   import * as d3 from 'd3';
   import CrossfilterManager from '@/utils/crossfilter-helpers.js';
   import BaseButton from '@/components/BaseButton.vue';
-  import ContainerMd from '@/components/ContainerMd.vue';
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL + 'data/' : '../public/data/';
   const publicationsFile = 'Website Content - 2025  - Publications.csv';
   const whitepaperFile = 'Website Content - 2025  - White Papers.csv';
   const conferenceAbstractsFile = 'Website Content - 2025  - Conference Abstracts.csv';
+  const conferencePostersFile = 'Website Content - 2025  - Posters.csv';
   const whitepaperDateFormatter = new Intl.DateTimeFormat(undefined, {
     month: 'long',
     day: 'numeric',
@@ -405,6 +416,12 @@
             fg: '#ffffff',
             border: conferenceAbstractColor,
           },
+          'Conference Poster': {
+            icon: 'mdi-image-text',
+            bg: conferencePosterColor,
+            fg: '#ffffff',
+            border: conferencePosterColor,
+          },
         };
       },
     },
@@ -503,7 +520,7 @@
               type: 'Publication',
               id: `publication-${i}`,
               year: d.Year,
-              link: d.Link,
+              publicationLink: d.Link,
               publisher: d.Publisher,
               author: d.Author,
               featured: d.Featured,
@@ -514,7 +531,7 @@
               title: d.Title,
               type: 'White Paper',
               id: `white-paper-${i}`,
-              link: d.Link,
+              whitePaperLink: d['Paper Link'],
               portalLink: d['Portal Link'],
               date: formatWhitepaperDate(d.Date),
               tag: d.Tag,
@@ -530,9 +547,21 @@
               type: 'Conference Abstract',
               id: `conference-abstract-${i}`,
               year: d.Year,
-              link: d.Link,
+              conferenceAbstractLink: d.Link,
               publisher: d.Conference,
               author: null,
+              featured: d.Featured,
+            };
+          }),
+          d3.csv(`${dataPath}${conferencePostersFile}`, function (d, i) {
+            return {
+              title: d.Title,
+              type: 'Conference Poster',
+              id: `conference-poster-${i}`,
+              year: d.Year,
+              conferencePosterLink: d.Link,
+              publisher: d.Conference,
+              author: d.Author,
               featured: d.Featured,
             };
           }),
@@ -540,7 +569,11 @@
           let publications = response[0];
           let whitepapers = response[1];
           let conferenceAbstracts = response[2];
-          let data = publications.concat(whitepapers).concat(conferenceAbstracts);
+          let conferencePosters = response[3];
+          let data = publications
+            .concat(whitepapers)
+            .concat(conferenceAbstracts)
+            .concat(conferencePosters);
           data = data.sort((a, b) => +b.year - +a.year);
           return data;
         });
@@ -552,6 +585,22 @@
           this.cfManager.setActive(field, values || []);
         }
         this.updateFilteredData();
+      },
+      getPrimaryLink(item) {
+        return (
+          item.publicationLink ||
+          item.whitePaperLink ||
+          item.conferenceAbstractLink ||
+          item.conferencePosterLink ||
+          item.link ||
+          ''
+        );
+      },
+      getReadLabel(item) {
+        if (item?.type === 'Conference Poster') {
+          return 'View Conference Poster';
+        }
+        return item?.type ? `Read ${item.type}` : 'Read more';
       },
       updateFilteredData() {
         // Crossfilter handles all filtering (type, year, publisher, author, search)
