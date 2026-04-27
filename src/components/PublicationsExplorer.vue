@@ -499,23 +499,14 @@
     padding-top: 1.5rem;
   }
   /* Remove v-list's default 8px top/bottom padding so the sticky footer
-     sits flush against the scroll container's bottom edge. */
-  :deep(.v-overlay__content .v-list) {
-    padding-block: 0;
-  }
+     sits flush against the scroll container's bottom edge.
+     The actual rule is in the unscoped style block below because Vuetify
+     teleports the overlay outside this component. */
   .autocomplete-footer {
     position: sticky;
     bottom: 0;
     background: rgb(var(--v-theme-surface, 255, 255, 255));
     z-index: 1;
-  }
-</style>
-
-<style>
-  /* Vuetify teleports the autocomplete overlay outside this component, so
-     scoped :deep() can't reach it. Target the menu via its contentClass. */
-  .pubs-autocomplete-menu .v-list {
-    padding-block: 0 !important;
   }
   @media (max-width: 959px) {
     .publications-explorer {
@@ -543,5 +534,13 @@
     right: 1.25rem;
     bottom: 1.25rem;
     z-index: 40;
+  }
+</style>
+
+<style>
+  /* Vuetify teleports the autocomplete overlay outside this component, so
+     scoped :deep() can't reach it. Target the menu via its contentClass. */
+  .pubs-autocomplete-menu .v-list {
+    padding-block: 0 !important;
   }
 </style>
