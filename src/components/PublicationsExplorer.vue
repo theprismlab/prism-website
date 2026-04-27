@@ -1,112 +1,130 @@
 <template>
   <section class="publications-explorer">
-    <div class="explorer-toolbar-track">
-      <v-toolbar class="explorer-toolbar" flat>
-        <v-toolbar-title class="toolbar-title text-white">Explore publications</v-toolbar-title>
-        <v-spacer />
-
-        <v-text-field
-          v-model="searchQuery"
-          placeholder="Search titles..."
-          prepend-inner-icon="mdi-magnify"
-          clearable
-          hide-details
-          density="compact"
-          variant="solo-filled"
-          flat
-          class="toolbar-search"
-        />
-
-        <v-badge
-          :model-value="activeFilterCount > 0"
-          :content="activeFilterCount"
-          color="error"
-          offset-x="5"
-          offset-y="5"
-          class="ml-2"
-        >
-          <v-btn
-            variant="text"
-            color="white"
-            prepend-icon="mdi-filter-variant"
-            @click="openFilterPanel"
-            aria-label="Show filters"
-          >
-            Filters
-          </v-btn>
-        </v-badge>
-      </v-toolbar>
-    </div>
-
-    <v-navigation-drawer
-      v-model="filterPanelOpen"
-      location="left"
-      temporary
-      width="360"
-      class="mobile-filter-drawer"
-    >
-      <div class="filter-panel pa-4">
-        <div class="d-flex align-center justify-space-between mb-4">
-          <span class="text-subtitle-1 font-weight-semibold">Filters</span>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            @click="filterPanelOpen = false"
-            aria-label="Hide filters"
-          />
-        </div>
-
-        <span class="v-label ml-1" style="font-size: 12px">Type</span>
-        <div class="type-filter-chips">
-          <v-chip
-            v-for="option in filters.type.options"
-            :key="`draft-${option.value}`"
-            :color="
-              draftFilters.type.includes(option.value) ? typeStyles[option.value].bg : 'lightgray'
-            "
-            :text-color="
-              draftFilters.type.includes(option.value) ? typeStyles[option.value].fg : '#999'
-            "
-            :variant="draftFilters.type.includes(option.value) ? 'flat' : 'tonal'"
-            size="large"
-            @click="toggleDraftTypeSelection(option.value)"
-            class="type-chip"
-          >
-            <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
-            <span class="pr-1">{{ option.text.split(' (')[0] }}</span>
-          </v-chip>
-        </div>
-
-        <v-row class="mt-2">
-          <v-col cols="12" v-for="key in Object.keys(filters).filter((k) => k !== 'type')">
-            <v-autocomplete
-              :key="`draft-${key}`"
-              v-model="draftFilters[key]"
-              :items="filters[key].options"
-              item-title="text"
-              item-value="value"
-              :label="`Filter ${key}`"
-              multiple
-              chips
-              clearable
-              closable-chips
-              hide-details
-              chip-size="large"
-              @update:modelValue="(val) => onDraftFilterChange(key, val)"
-            >
-            </v-autocomplete>
-          </v-col>
-        </v-row>
-
-        <div class="filter-panel__actions mt-8">
-          <v-btn variant="text" @click="resetDraftFilters">Reset</v-btn>
+    <div class="explorer-sticky-header">
+      <div class="explorer-toolbar-track">
+        <v-toolbar class="explorer-toolbar" flat>
+          <v-toolbar-title class="toolbar-title text-white">Explore publications</v-toolbar-title>
           <v-spacer />
-          <v-btn variant="text" rounded color="primary-base" @click="applyDraftFilters"
-            >Apply filters</v-btn
+
+          <v-text-field
+            v-model="searchQuery"
+            placeholder="Search titles..."
+            prepend-inner-icon="mdi-magnify"
+            clearable
+            hide-details
+            density="compact"
+            variant="solo-filled"
+            flat
+            class="toolbar-search"
+          />
+
+          <v-badge
+            :model-value="activeFilterCount > 0"
+            :content="activeFilterCount"
+            color="error"
+            offset-x="5"
+            offset-y="5"
+            class="ml-2"
           >
-        </div>
+            <v-btn
+              variant="text"
+              color="white"
+              prepend-icon="mdi-filter-variant"
+              @click="openFilterPanel"
+              aria-label="Show filters"
+            >
+              Filters
+            </v-btn>
+          </v-badge>
+        </v-toolbar>
       </div>
-    </v-navigation-drawer>
+
+      <v-navigation-drawer
+        v-model="filterPanelOpen"
+        location="left"
+        temporary
+        width="360"
+        class="mobile-filter-drawer"
+      >
+        <div class="filter-panel pa-4">
+          <div class="d-flex align-center justify-space-between mb-4">
+            <span class="text-subtitle-1 font-weight-semibold">Filters</span>
+            <v-btn
+              icon="mdi-close"
+              variant="text"
+              @click="filterPanelOpen = false"
+              aria-label="Hide filters"
+            />
+          </div>
+
+          <span class="v-label ml-1" style="font-size: 12px">Type</span>
+          <div class="type-filter-chips">
+            <v-chip
+              v-for="option in filters.type.options"
+              :key="`draft-${option.value}`"
+              :color="
+                draftFilters.type.includes(option.value) ? typeStyles[option.value].bg : 'lightgray'
+              "
+              :text-color="
+                draftFilters.type.includes(option.value) ? typeStyles[option.value].fg : '#999'
+              "
+              :variant="draftFilters.type.includes(option.value) ? 'flat' : 'tonal'"
+              size="large"
+              @click="toggleDraftTypeSelection(option.value)"
+              class="type-chip"
+            >
+              <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
+              <span class="pr-1">{{ option.text.split(' (')[0] }}</span>
+            </v-chip>
+          </div>
+
+          <v-row class="mt-2">
+            <v-col cols="12" v-for="key in Object.keys(filters).filter((k) => k !== 'type')">
+              <v-autocomplete
+                :key="`draft-${key}`"
+                v-model="draftFilters[key]"
+                :items="filters[key].options"
+                item-title="text"
+                item-value="value"
+                :label="`Filter ${key}`"
+                multiple
+                chips
+                clearable
+                closable-chips
+                hide-details
+                chip-size="large"
+                :menu-props="{ contentClass: 'pubs-autocomplete-menu' }"
+                @update:modelValue="(val) => onDraftFilterChange(key, val)"
+              >
+                <template #append-item>
+                  <div class="autocomplete-footer">
+                    <v-divider />
+                    <div class="px-4 py-2 text-right">
+                      <v-btn
+                        variant="text"
+                        color="primary-base"
+                        elevation="0"
+                        @click="closeAutocompleteMenu"
+                      >
+                        Done
+                      </v-btn>
+                    </div>
+                  </div>
+                </template>
+              </v-autocomplete>
+            </v-col>
+          </v-row>
+
+          <div class="filter-panel__actions mt-8">
+            <v-btn variant="text" @click="resetDraftFilters">Reset</v-btn>
+            <v-spacer />
+            <v-btn variant="text" rounded color="primary-base" @click="applyDraftFilters"
+              >Apply filters</v-btn
+            >
+          </div>
+        </div>
+      </v-navigation-drawer>
+    </div>
 
     <container-md>
       <v-row class="publications-layout-row px-2" align="start">
@@ -341,6 +359,12 @@
         this.draftFilters[field] = values || [];
         this.applyDraftFilters({ closePanel: false, scrollToTop: false });
       },
+      closeAutocompleteMenu() {
+        // Blurring the active element collapses the autocomplete's overlay menu.
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+          document.activeElement.blur();
+        }
+      },
       removeAppliedFilter(chip) {
         if (chip.key === 'type') {
           const allTypes = this.filters.type.options.map((option) => option.value);
@@ -389,12 +413,19 @@
     --publications-layout-padding-top: 1.5rem;
     --publications-layout-padding-bottom: 3rem;
   }
-  .explorer-toolbar-track {
+  .explorer-sticky-header {
+    /* Single sticky parent for both toolbar and drawer.
+       The drawer is absolutely positioned inside, so it won't push
+       sibling content (the publication list) downward. */
     position: -webkit-sticky;
     position: sticky;
     top: var(--publications-layout-top);
     z-index: 20;
     margin: 1rem 0;
+  }
+  .explorer-toolbar-track {
+    /* now just a presentational wrapper around the toolbar */
+    position: relative;
   }
   .explorer-toolbar {
     background: linear-gradient(45deg, #3f51b5, #8e24aa, #009688);
@@ -402,8 +433,11 @@
     border-radius: 0;
   }
   .mobile-filter-drawer {
-    position: sticky !important;
-    top: calc(var(--publications-layout-top) + 0rem) !important;
+    /* Absolute inside the sticky header so it overlays the page below
+       without contributing to layout height. Aligned with the top of
+       the toolbar-track (top: 0 of the sticky header). */
+    position: absolute !important;
+    top: 0 !important;
     height: calc(100vh - var(--publications-layout-top)) !important;
   }
   :deep(.explorer-toolbar .v-toolbar__content) {
@@ -414,6 +448,13 @@
     font-size: 1.125rem;
     font-weight: 600;
     white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    flex: 0 0 auto;
+  }
+  :deep(.toolbar-title .v-toolbar-title__placeholder) {
+    overflow: visible;
+    text-overflow: clip;
   }
   .toolbar-search {
     max-width: 420px;
@@ -456,7 +497,25 @@
     align-items: center;
     margin-top: 0.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  /* Remove v-list's default 8px top/bottom padding so the sticky footer
+     sits flush against the scroll container's bottom edge. */
+  :deep(.v-overlay__content .v-list) {
+    padding-block: 0;
+  }
+  .autocomplete-footer {
+    position: sticky;
+    bottom: 0;
+    background: rgb(var(--v-theme-surface, 255, 255, 255));
+    z-index: 1;
+  }
+</style>
+
+<style>
+  /* Vuetify teleports the autocomplete overlay outside this component, so
+     scoped :deep() can't reach it. Target the menu via its contentClass. */
+  .pubs-autocomplete-menu .v-list {
+    padding-block: 0 !important;
   }
   @media (max-width: 959px) {
     .publications-explorer {
@@ -464,7 +523,7 @@
       --publications-layout-padding-top: 1rem;
       --publications-layout-padding-bottom: 1.25rem;
     }
-    .explorer-toolbar-track {
+    .explorer-sticky-header {
       margin: 0;
     }
     .toolbar-title {
