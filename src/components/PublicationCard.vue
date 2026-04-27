@@ -1,93 +1,218 @@
 <template>
-    <v-card :class="`elevation-${elevation} ${classes}`" max-width="1000px">
-        <v-row>
-            <v-col v-if="image" cols="12" xs="12" sm="3" md="3" lg="3" xl="3">
-                <v-img style="border-radius:10px;" max-width="250px" :src="image" cover></v-img>
-            </v-col>
-            <v-col>
-                <v-card-item v-if="suptitle" class="pt-0">
-                    <card-overline class="text-grey" v-html="suptitle"></card-overline>
-                </v-card-item>
-                <h2 v-if="title" :class="`v-card-title text-size-${titleSize}`" v-html="title"></h2>
-                <h3 v-if="subtitle" class="v-card-subtitle" v-html="subtitle"></h3>
-                <p v-if="text" :class="`v-card-text text-size-${textSize}`" v-html="text"></p>
-                <v-btn v-if="button" :color="button.color || 'primary-base'" :variant="button.variant || 'outlined'" v-html="button.text" :href="button.url" target="_blank" rounded></v-btn>
-            </v-col>
-        </v-row>
-    </v-card>
-  </template>
+  <!-- Featured layout: icon + type pill in header, title below -->
+  <v-card v-if="featured" class="featured-card h-100" variant="flat">
+    <div class="featured-card__content">
+      <div class="featured-card__body">
+        <div class="featured-card__header">
+          <div class="featured-card__icon" :style="{ backgroundColor: typeStyle.bg }">
+            <v-icon size="20" :color="typeStyle.fg">{{ typeStyle.icon }}</v-icon>
+          </div>
+          <p class="featured-card__type" :style="{ color: typeStyle.bg }">{{ item.type }}</p>
+        </div>
+        <h3 class="featured-card__title">{{ item.title }}</h3>
+        <div class="featured-card__meta">
+          <span v-if="item.author">{{ item.author }}, et al. </span>
+          <span v-if="item.publisher"
+            ><i>{{ item.publisher }}</i
+            >,
+          </span>
+          <span>{{ item.date || item.year }}</span
+          >.
+        </div>
+        <div class="featured-card__links">
+          <a
+            v-for="link in links"
+            :key="link.field"
+            class="featured-card-link"
+            :href="link.href"
+            target="_blank"
+          >
+            <v-icon v-if="link.icon" left size="small">{{ link.icon }}</v-icon>
+            {{ link.label }}
+            <v-icon right size="x-small" class="featured-card-link-icon">mdi-arrow-right</v-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+  </v-card>
+
+  <!-- Compact list layout: icon to the left of details -->
+  <v-card v-else class="publication-card mb-3" variant="flat">
+    <div class="publication-card__content">
+      <div class="publication-card__icon" :style="{ backgroundColor: typeStyle.bg }">
+        <v-icon size="28" :color="typeStyle.fg">{{ typeStyle.icon }}</v-icon>
+      </div>
+      <div class="publication-card__details">
+        <span class="publication-card__title">{{ item.title }}</span>
+        <div class="publication-meta">
+          <span v-if="item.author">{{ item.author }}, et al. </span>
+          <span v-if="item.publisher"
+            ><i>{{ item.publisher }}</i
+            >,
+          </span>
+          <span>{{ item.date || item.year }}</span
+          >.
+        </div>
+        <div class="publication-links">
+          <a
+            v-for="link in links"
+            :key="link.field"
+            class="publication-link"
+            :href="link.href"
+            target="_blank"
+          >
+            <v-icon v-if="link.icon" left>{{ link.icon }}</v-icon>
+            {{ link.label }}
+            <v-icon right size="x-small" class="publication-card__external-icon"
+              >mdi-arrow-right</v-icon
+            >
+          </a>
+        </div>
+      </div>
+    </div>
+  </v-card>
+</template>
+
 <script>
-
-import CardOverline from '@/components/CardOverline.vue'
-export default {
-    name: "PublicationCard",
-    props: {    
-        size: {
-            type: String,
-            required: false,
-            default: "md"
-        },
-        classes: {
-            type: String,
-            required: false
-        },
-        elevation: {
-            type: Number,
-            required: false,
-            default: 0
-        },
-        image: {
-            type: String,
-            required: false
-        },
-        subtitle: {
-            type: String,
-            required: false
-        },
-        suptitle: {
-            type: String,
-            required: false
-        },
-        title: {
-            type: String,
-            required: false
-        },
-        text: {
-            type: String,
-            required: false
-        },
-        button: {
-            type: Object,
-            required: false
-        },
-        link: {
-            type: String,
-            required: false
-        }
-
+  export default {
+    name: 'PublicationCard',
+    props: {
+      item: { type: Object, required: true },
+      typeStyle: { type: Object, required: true },
+      links: { type: Array, default: () => [] },
+      featured: { type: Boolean, default: false },
     },
-    computed: {
-        titleSize(){
-            return this.size === "lg" ? "h3" : "h5"
-        },
-        textSize(){
-            return this.size === "lg" ? "body-1" : "body-2"
-        }
-    }
-}
+  };
 </script>
+
 <style scoped>
-.text-overline{
-    line-height: normal !important;
-}
-/* To do: remove this, make a class for specifying the type of link (ie: title link) */
-.v-card-title > * {
-    text-decoration: none !important;
-    border-bottom: 1px solid #cccccc !important;
-} 
-/* .v-chip{
+  /* Featured layout */
+  .featured-card {
+    border: 1px solid rgba(63, 81, 181, 0.14);
+    border-radius: 14px;
+    box-shadow: 0 8px 22px rgba(20, 30, 60, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(249, 251, 255, 0.96));
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+  .featured-card:hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(20, 30, 60, 0.14);
+  }
+  .featured-card__content {
+    display: block;
+    padding: 1rem;
+  }
+  .featured-card__header {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.55rem;
+  }
+  .featured-card__icon {
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+  .featured-card__body {
+    flex: 1;
+    min-width: 0;
+  }
+  .featured-card__type {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.075em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.2rem 0.45rem;
+    border-radius: 999px;
+    line-height: 1;
+  }
+  .featured-card__title {
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.35;
+    color: rgb(20, 24, 34);
+    font-weight: 700;
+  }
+  .featured-card__meta {
+    margin-top: 0.4rem;
+    font-size: 0.84rem;
+    color: rgb(99, 107, 123);
+  }
+  .featured-card__links {
+    margin-top: 0.7rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .featured-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.84rem;
     font-weight: 600;
-} */
+    text-decoration: none;
+  }
+  .featured-card-link:hover {
+    opacity: 0.85;
+  }
 
+  /* Compact list layout */
+  .publication-card {
+    padding: 1rem;
+    border-radius: 12px;
+    border: 0.2px solid rgba(0, 0, 0, 0.16);
+  }
+  .publication-card__content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .publication-card__icon {
+    min-width: 56px;
+    min-height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+  }
+  .publication-card__details {
+    flex: 1;
+  }
+  .publication-card__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgb(23, 23, 23);
+    text-decoration: none;
+  }
+  .publication-card__title:hover {
+    opacity: 0.88;
+  }
+  .publication-card__external-icon {
+    margin-left: 0.25rem;
+  }
+  .publication-meta {
+    font-size: 0.875rem;
+    color: rgb(135, 135, 135);
+    margin-top: 4px;
+  }
+  .publication-links {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 2.5rem;
+  }
+  .publication-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--v-primary-base);
+    text-decoration: none;
+  }
 </style>
-
