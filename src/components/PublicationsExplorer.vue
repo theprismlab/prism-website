@@ -26,12 +26,14 @@
           class="ml-2"
         >
           <v-btn
-            icon="mdi-filter-variant"
             variant="text"
             color="white"
+            prepend-icon="mdi-filter-variant"
             @click="openFilterPanel"
             aria-label="Show filters"
-          />
+          >
+            Filters
+          </v-btn>
         </v-badge>
       </v-toolbar>
     </div>
@@ -398,6 +400,11 @@
     background: linear-gradient(45deg, #3f51b5, #8e24aa, #009688);
     min-height: var(--publications-banner-height);
     border-radius: 0;
+  }
+  .mobile-filter-drawer {
+    position: sticky !important;
+    top: calc(var(--publications-layout-top) + 0rem) !important;
+    height: calc(100vh - var(--publications-layout-top)) !important;
   }
   :deep(.explorer-toolbar .v-toolbar__content) {
     min-height: var(--publications-banner-height) !important;
