@@ -189,6 +189,7 @@
       typeStyles: { type: Object, required: true },
       getLinks: { type: Function, required: true },
       bannerHeight: { type: Number, default: 70 },
+      cardStyle: { type: String, default: 'minimal' },
     },
     data() {
       return {

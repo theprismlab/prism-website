@@ -25,7 +25,7 @@
           <span>{{ item.date || item.year }}</span
           >.
         </div>
-        <div class="publication-card__links">
+        <div v-if="links.length" class="publication-card__links">
           <a
             v-for="link in links"
             :key="link.field"
@@ -33,11 +33,8 @@
             :href="link.href"
             target="_blank"
           >
-            <v-icon v-if="link.icon" left size="small">{{ link.icon }}</v-icon>
             {{ link.label }}
-            <v-icon right size="x-small" class="publication-card__external-icon"
-              >mdi-arrow-right</v-icon
-            >
+            <v-icon size="14" class="publication-card__link-icon">mdi-arrow-top-right</v-icon>
           </a>
         </div>
       </div>
@@ -103,29 +100,34 @@
 
   .publication-card__links {
     display: flex;
-    justify-content: flex-start;
-    gap: 1rem;
     flex-wrap: wrap;
+    gap: 1.25rem;
     margin-top: 0.75rem;
   }
 
   .publication-card__link {
     display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 2px;
-    font-size: 0.85rem;
+    gap: 0.2rem;
+    font-size: 0.825rem;
     font-weight: 600;
     text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    transition: opacity 150ms ease;
   }
 
   .publication-card__link:hover {
-    opacity: 0.85;
+    opacity: 0.8;
   }
 
-  /* .publication-card__external-icon {
-    margin-left: 0.2rem;
-  } */
+  .publication-card__link-icon {
+    transition: transform 150ms ease;
+  }
+
+  .publication-card__link:hover .publication-card__link-icon {
+    transform: translate(1px, -1px);
+  }
 
   /* ---------- Featured-only overrides ---------- */
   .publication-card--featured {
