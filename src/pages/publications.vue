@@ -271,19 +271,10 @@
 </template>
 
 <script>
-  const paperColor = '#3f51b5';
-  const whitePaperColor = '#8e24aa';
-  const conferenceAbstractColor = '#009688';
-  const conferencePosterColor = '#ff7043';
-
   import * as d3 from 'd3';
   import CrossfilterManager from '@/utils/crossfilter-helpers.js';
   import BaseButton from '@/components/BaseButton.vue';
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL + 'data/' : '../public/data/';
-  const publicationsFile = 'Website Content - 2025  - Publications.csv';
-  const whitepaperFile = 'Website Content - 2025  - White Papers.csv';
-  const conferenceAbstractsFile = 'Website Content - 2025  - Conference Abstracts.csv';
-  const conferencePostersFile = 'Website Content - 2025  - Posters.csv';
   const whitepaperDateFormatter = new Intl.DateTimeFormat(undefined, {
     month: 'long',
     day: 'numeric',
@@ -317,6 +308,66 @@
     const parsed = parseDateValue(dateValue);
     return parsed ? String(parsed.getFullYear()) : '';
   }
+
+  // Single source of truth for per-type customization.
+  // To add a new type: add a new entry here. No other code changes required.
+  const TYPE_CONFIG = {
+    Publication: {
+      icon: 'mdi-file-document-outline',
+      color: '#3f51b5',
+      file: 'Website Content - 2025  - Publications.csv',
+      idPrefix: 'publication',
+      readLabel: 'Read Publication',
+      parseRow: (d) => ({
+        year: d.Year,
+        link: d.Link,
+        publisher: d.Publisher,
+        author: d.Author,
+      }),
+    },
+    'White Paper': {
+      icon: 'mdi-book-outline',
+      color: '#8e24aa',
+      file: 'Website Content - 2025  - White Papers.csv',
+      idPrefix: 'white-paper',
+      readLabel: 'Read White Paper',
+      parseRow: (d) => ({
+        link: d['Paper Link'],
+        portalLink: d['Portal Link'],
+        date: formatWhitepaperDate(d.Date),
+        tag: d.Tag,
+        year: getYearFromDate(d.Date),
+        publisher: 'PRISM White Papers',
+        author: d.Author,
+      }),
+    },
+    'Conference Abstract': {
+      icon: 'mdi-presentation',
+      color: '#009688',
+      file: 'Website Content - 2025  - Conference Abstracts.csv',
+      idPrefix: 'conference-abstract',
+      readLabel: 'Read Conference Abstract',
+      parseRow: (d) => ({
+        year: d.Year,
+        link: d.Link,
+        publisher: d.Conference,
+        author: null,
+      }),
+    },
+    'Conference Poster': {
+      icon: 'mdi-image-text',
+      color: '#ff7043',
+      file: 'Website Content - 2025  - Posters.csv',
+      idPrefix: 'conference-poster',
+      readLabel: 'View Conference Poster',
+      parseRow: (d) => ({
+        year: d.Year,
+        link: d.Link,
+        publisher: d.Conference,
+        author: d.Author,
+      }),
+    },
+  };
 
   export default {
     components: {
@@ -397,32 +448,12 @@
           : '../../public/images/publications/';
       },
       typeStyles() {
-        return {
-          Publication: {
-            icon: 'mdi-file-document-outline',
-            bg: paperColor,
-            fg: '#ffffff',
-            border: paperColor,
-          },
-          'White Paper': {
-            icon: 'mdi-book-outline',
-            bg: whitePaperColor,
-            fg: '#ffffff',
-            border: whitePaperColor,
-          },
-          'Conference Abstract': {
-            icon: 'mdi-presentation',
-            bg: conferenceAbstractColor,
-            fg: '#ffffff',
-            border: conferenceAbstractColor,
-          },
-          'Conference Poster': {
-            icon: 'mdi-image-text',
-            bg: conferencePosterColor,
-            fg: '#ffffff',
-            border: conferencePosterColor,
-          },
-        };
+        return Object.fromEntries(
+          Object.entries(TYPE_CONFIG).map(([type, cfg]) => [
+            type,
+            { icon: cfg.icon, bg: cfg.color, fg: '#ffffff', border: cfg.color },
+          ]),
+        );
       },
     },
     mounted() {
@@ -512,71 +543,17 @@
         }
       },
       async getData() {
-        const self = this;
-        return Promise.all([
-          d3.csv(`${dataPath}${publicationsFile}`, function (d, i) {
-            return {
-              title: d.Title,
-              type: 'Publication',
-              id: `publication-${i}`,
-              year: d.Year,
-              publicationLink: d.Link,
-              publisher: d.Publisher,
-              author: d.Author,
-              featured: d.Featured,
-            };
-          }),
-          d3.csv(`${dataPath}${whitepaperFile}`, function (d, i) {
-            return {
-              title: d.Title,
-              type: 'White Paper',
-              id: `white-paper-${i}`,
-              whitePaperLink: d['Paper Link'],
-              portalLink: d['Portal Link'],
-              date: formatWhitepaperDate(d.Date),
-              tag: d.Tag,
-              year: getYearFromDate(d.Date),
-              publisher: 'PRISM White Papers',
-              author: d.Author,
-              featured: d.Featured,
-            };
-          }),
-          d3.csv(`${dataPath}${conferenceAbstractsFile}`, function (d, i) {
-            return {
-              title: d.Title,
-              type: 'Conference Abstract',
-              id: `conference-abstract-${i}`,
-              year: d.Year,
-              conferenceAbstractLink: d.Link,
-              publisher: d.Conference,
-              author: null,
-              featured: d.Featured,
-            };
-          }),
-          d3.csv(`${dataPath}${conferencePostersFile}`, function (d, i) {
-            return {
-              title: d.Title,
-              type: 'Conference Poster',
-              id: `conference-poster-${i}`,
-              year: d.Year,
-              conferencePosterLink: d.Link,
-              publisher: d.Conference,
-              author: d.Author,
-              featured: d.Featured,
-            };
-          }),
-        ]).then((response) => {
-          let publications = response[0];
-          let whitepapers = response[1];
-          let conferenceAbstracts = response[2];
-          let conferencePosters = response[3];
-          let data = publications
-            .concat(whitepapers)
-            .concat(conferenceAbstracts)
-            .concat(conferencePosters);
-          data = data.sort((a, b) => +b.year - +a.year);
-          return data;
-        });
+        const loaders = Object.entries(TYPE_CONFIG).map(([type, cfg]) =>
+          d3.csv(`${dataPath}${cfg.file}`, (d, i) => ({
+            title: d.Title,
+            type,
+            id: `${cfg.idPrefix}-${i}`,
+            featured: d.Featured,
+            ...cfg.parseRow(d),
+          })),
+        );
+        const groups = await Promise.all(loaders);
+        return groups.flat().sort((a, b) => +b.year - +a.year);
       },
       onFilterChange(field, values) {
         if (field === 'search') {
@@ -587,20 +564,10 @@
         this.updateFilteredData();
       },
       getPrimaryLink(item) {
-        return (
-          item.publicationLink ||
-          item.whitePaperLink ||
-          item.conferenceAbstractLink ||
-          item.conferencePosterLink ||
-          item.link ||
-          ''
-        );
+        return item?.link || '';
       },
       getReadLabel(item) {
-        if (item?.type === 'Conference Poster') {
-          return 'View Conference Poster';
-        }
-        return item?.type ? `Read ${item.type}` : 'Read more';
+        return TYPE_CONFIG[item?.type]?.readLabel || 'Read more';
       },
       updateFilteredData() {
         // Crossfilter handles all filtering (type, year, publisher, author, search)
