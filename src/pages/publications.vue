@@ -48,6 +48,19 @@
                   </a>
 
                   <a
+                    v-if="card.posterLink"
+                    class="featured-card-link"
+                    :href="card.posterLink"
+                    target="_blank"
+                  >
+                    <v-icon left size="small">mdi-eye-outline</v-icon>
+                    View Conference Poster
+                    <v-icon right size="x-small" class="featured-card-link-icon"
+                      >mdi-arrow-right</v-icon
+                    >
+                  </a>
+
+                  <a
                     v-if="card.portalLink"
                     class="featured-card-link"
                     :href="card.portalLink"
@@ -237,6 +250,17 @@
                         >
                       </a>
                       <a
+                        v-if="each.posterLink"
+                        class="publication-link"
+                        :href="each.posterLink"
+                        target="_blank"
+                      >
+                        <v-icon left>mdi-eye-outline</v-icon> View Conference Poster
+                        <v-icon right size="x-small" class="publication-card__external-icon"
+                          >mdi-arrow-right</v-icon
+                        >
+                      </a>
+                      <a
                         class="publication-link"
                         v-if="each.portalLink"
                         :href="each.portalLink"
@@ -350,21 +374,9 @@
       parseRow: (d) => ({
         year: d.Year,
         link: d.Link,
+        posterLink: d['Poster Link'],
         publisher: d.Conference,
-        author: null,
-      }),
-    },
-    'Conference Poster': {
-      icon: 'mdi-image-text',
-      color: '#ff7043',
-      file: 'Website Content - 2025  - Posters.csv',
-      idPrefix: 'conference-poster',
-      readLabel: 'View Conference Poster',
-      parseRow: (d) => ({
-        year: d.Year,
-        link: d.Link,
-        publisher: d.Conference,
-        author: d.Author,
+        author: d.Author != '' ? d.Author : 'N/A',
       }),
     },
   };
