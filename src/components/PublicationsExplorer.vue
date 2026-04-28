@@ -152,16 +152,7 @@
             </v-alert>
           </div>
           <div v-else>
-            <publication-card-panel
-              v-if="useMinimalCards == false"
-              v-for="each in filteredData"
-              :key="each.id"
-              :item="each"
-              :type-style="typeStyles[each.type]"
-              :links="getLinks(each)"
-            />
-            <publication-card-minimal3
-              v-else
+            <publication-card
               v-for="each in filteredData"
               :key="each.id"
               :item="each"
@@ -188,13 +179,13 @@
 
 <script>
   import CrossfilterManager from '@/utils/crossfilter-helpers.js';
-  import PublicationCardPanel from '@/components/PublicationCardPanel.vue';
-  import PublicationCardMinimal3 from '@/components/PublicationCardMinimal3.vue';
-  const useMinimalCards = false; // Toggle for testing minimal card layout without affecting main panel
+  import PublicationCard from '@/components/PublicationCard.vue';
 
   export default {
     name: 'PublicationsExplorer',
-    components: { PublicationCardPanel, PublicationCardMinimal3 },
+    components: {
+      PublicationCard,
+    },
     props: {
       items: { type: Array, required: true },
       typeStyles: { type: Object, required: true },

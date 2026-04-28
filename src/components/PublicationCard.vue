@@ -4,13 +4,17 @@
     :class="[featured ? 'pub-card-minimal--featured h-100' : 'mb-3']"
     variant="flat"
     elevation="0"
+    :style="{ '--type-color': typeStyle.bg }"
   >
+    <!-- Thin colored accent stripe on the left -->
+    <span class="pub-card-minimal__accent" :style="{ backgroundColor: typeStyle.bg }" />
+
     <div class="pub-card-minimal__body">
       <div v-if="featured" class="pub-card-minimal__eyebrow" :style="{ color: typeStyle.bg }">
         <v-icon
           class="pub-card-minimal__eyebrow-icon"
           :color="typeStyle.bg"
-          size="14"
+          size="18"
           :title="item.type"
           :aria-label="item.type"
         >
@@ -66,7 +70,7 @@
 
 <script>
   export default {
-    name: 'PublicationCardMinimal3',
+    name: 'PublicationCard',
     props: {
       item: { type: Object, required: true },
       typeStyle: { type: Object, required: true },
@@ -87,7 +91,7 @@
     border-radius: 10px;
     background: #fff;
     overflow: hidden;
-    padding: 1rem 1.15rem;
+    padding: 1rem 1.15rem 1rem 1.5rem;
     box-shadow:
       0 1px 2px rgba(20, 30, 60, 0.06),
       0 3px 8px rgba(20, 30, 60, 0.07);
@@ -95,13 +99,24 @@
       border-color 180ms ease,
       box-shadow 180ms ease,
       transform 180ms ease;
+    border-color: color-mix(in srgb, var(--type-color, #000) 10%, transparent);
   }
 
   .pub-card-minimal:hover {
-    border-color: rgba(0, 0, 0, 0.12);
+    border-color: color-mix(in srgb, var(--type-color, #000) 45%, transparent);
     box-shadow:
       0 2px 4px rgba(20, 30, 60, 0.07),
       0 10px 24px rgba(20, 30, 60, 0.11);
+  }
+
+  /* Thin colored accent stripe on the left edge */
+  .pub-card-minimal__accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 10px;
+    opacity: 0.4;
   }
 
   /* ---------- Type icon tile ---------- */
@@ -109,7 +124,7 @@
     flex-shrink: 0;
     width: 38px;
     height: 38px;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -189,7 +204,7 @@
 
   /* ---------- Featured-only ---------- */
   .pub-card-minimal--featured {
-    padding: 1.25rem 1.35rem;
+    padding: 1.25rem 1.35rem 1.25rem 1.7rem;
     gap: 1.15rem;
   }
 
@@ -207,6 +222,12 @@
 
   .pub-card-minimal--featured .pub-card-minimal__body {
     gap: 0.55rem;
+  }
+
+  .pub-card-minimal--featured .pub-card-minimal__eyebrow {
+    font-size: 0.82rem;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
   }
 
   /* ---------- Featured eyebrow (type label above title) ---------- */
