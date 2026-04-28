@@ -5,17 +5,21 @@
     variant="flat"
     elevation="0"
   >
-    <!-- Thin colored accent stripe on the left -->
-    <span class="pub-card-minimal__accent" :style="{ backgroundColor: typeStyle.bg }" />
-
     <div class="pub-card-minimal__body">
-      <!-- Caption row: outlined icon + type label + date dot -->
-      <div class="pub-card-minimal__caption">
-        <v-icon size="16" class="pub-card-minimal__icon" :color="typeStyle.bg">
-          {{ typeStyle.icon }}
-        </v-icon>
-        <span class="pub-card-minimal__type">{{ item.type }}</span>
-        <span v-if="item.date || item.year" class="pub-card-minimal__dot" aria-hidden="true" />
+      <!-- Header row: prominent type badge + subtle date -->
+      <div class="pub-card-minimal__header">
+        <span
+          class="pub-card-minimal__badge"
+          :style="{
+            color: typeStyle.bg,
+            backgroundColor: typeStyle.bgSoft || `${typeStyle.bg}14`,
+          }"
+        >
+          <v-icon size="14" class="pub-card-minimal__badge-icon">
+            {{ typeStyle.icon }}
+          </v-icon>
+          {{ item.type }}
+        </span>
         <span v-if="item.date || item.year" class="pub-card-minimal__date">
           {{ item.date || item.year }}
         </span>
@@ -61,7 +65,7 @@
   /* ---------- Shared base ---------- */
   .pub-card-minimal {
     position: relative;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: 10px;
     background: #fff;
     overflow: hidden;
@@ -71,56 +75,51 @@
   }
 
   .pub-card-minimal:hover {
-    border-color: rgba(0, 0, 0, 0.16);
-    box-shadow: 0 4px 14px rgba(20, 30, 60, 0.06);
-  }
-
-  /* Thin colored accent stripe (only color on the card) */
-  .pub-card-minimal__accent {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 10px;
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 14px rgba(20, 30, 60, 0.05);
   }
 
   .pub-card-minimal__body {
-    padding: 1rem 1.1rem 1rem 1.35rem;
+    padding: 1rem 1.15rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     height: 100%;
   }
 
-  .pub-card-minimal__caption {
+  /* ---------- Header: type badge + date ---------- */
+  .pub-card-minimal__header {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.74rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: rgb(99, 107, 123);
+    justify-content: space-between;
+    gap: 0.75rem;
   }
 
-  .pub-card-minimal__icon {
+  .pub-card-minimal__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .pub-card-minimal__badge-icon {
     flex-shrink: 0;
   }
 
-  .pub-card-minimal__type {
-    font-weight: 600;
-  }
-
-  .pub-card-minimal__dot {
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.25);
-  }
-
   .pub-card-minimal__date {
+    font-size: 0.75rem;
     font-weight: 500;
+    color: rgb(140, 146, 158);
+    white-space: nowrap;
   }
 
+  /* ---------- Title & meta ---------- */
   .pub-card-minimal__title {
     margin: 0;
     font-size: 1rem;
@@ -132,10 +131,11 @@
 
   .pub-card-minimal__meta {
     font-size: 0.85rem;
-    color: rgb(110, 116, 130);
+    color: rgb(120, 126, 140);
     line-height: 1.4;
   }
 
+  /* ---------- Links ---------- */
   .pub-card-minimal__links {
     display: flex;
     flex-wrap: wrap;
@@ -150,7 +150,6 @@
     gap: 0.2rem;
     font-size: 0.825rem;
     font-weight: 600;
-    /* color: rgb(40, 50, 80); */
     text-decoration: none;
     border-bottom: 1px solid transparent;
     padding-bottom: 1px;
@@ -176,11 +175,12 @@
   }
 
   .pub-card-minimal--featured .pub-card-minimal__body {
-    padding: 1.25rem 1.25rem 1.25rem 1.5rem;
-    gap: 0.6rem;
+    padding: 1.25rem 1.35rem;
+    gap: 0.65rem;
   }
 
-  /* .pub-card-minimal--featured .pub-card-minimal__accent {
-    width: 4px;
-  } */
+  .pub-card-minimal--featured .pub-card-minimal__badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.65rem;
+  }
 </style>
