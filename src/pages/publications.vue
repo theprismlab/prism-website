@@ -8,6 +8,14 @@
       <v-row justify="center" class="mb-12">
         <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
           <publication-card-panel
+            v-if="useMinimalCards == false"
+            :item="card"
+            :type-style="typeStyles[card.type]"
+            :links="getLinks(card)"
+            featured
+          />
+          <publication-card-minimal
+            v-else
             :item="card"
             :type-style="typeStyles[card.type]"
             :links="getLinks(card)"
@@ -24,8 +32,9 @@
 <script>
   import * as d3 from 'd3';
   import PublicationCardPanel from '@/components/PublicationCardPanel.vue';
+  import PublicationCardMinimal from '@/components/PublicationCardMinimal.vue';
   import PublicationsExplorer from '@/components/PublicationsExplorer.vue';
-
+  const useMinimalCards = false; // Toggle for testing minimal card layout without affecting main panel
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL + 'data/' : '../public/data/';
   const whitepaperDateFormatter = new Intl.DateTimeFormat(undefined, {
     month: 'long',
@@ -120,6 +129,7 @@
   export default {
     components: {
       PublicationCardPanel,
+      PublicationCardMinimal,
       PublicationsExplorer,
     },
     data() {

@@ -81,7 +81,7 @@
     top: 0;
     left: 0;
     bottom: 0;
-    width: 3px;
+    width: 10px;
   }
 
   .pub-card-minimal__body {
@@ -180,7 +180,7 @@
     gap: 0.6rem;
   }
 
-  .pub-card-minimal--featured .pub-card-minimal__accent {
+  /* .pub-card-minimal--featured .pub-card-minimal__accent {
     width: 4px;
-  }
+  } */
 </style>
