@@ -67,10 +67,13 @@
           </div>
 
           <div class="filter-panel__body">
-            <span class="filter-panel__field-label">Type</span>
+            <span class="filter-panel__field-label">Select type</span>
             <div class="type-filter-chips">
               <v-chip
-                v-for="option in filters.type.options"
+                v-for="option in filters.type.options.slice().sort((a, b) => {
+                  const order = { Publication: 1, Conference: 2, 'White Paper': 3 };
+                  return (order[a.value] || 99) - (order[b.value] || 99);
+                })"
                 :key="`draft-${option.value}`"
                 :color="
                   draftFilters.type.includes(option.value)
@@ -251,7 +254,8 @@
 
         ['year', 'publisher', 'author'].forEach((key) => {
           this.filters[key].active.forEach((value) => {
-            chips.push({ key, value, label: `${key}: ${value}` });
+            const label = key.charAt(0).toUpperCase() + key.slice(1);
+            chips.push({ key, value, label: `${label}: ${value}` });
           });
         });
 
