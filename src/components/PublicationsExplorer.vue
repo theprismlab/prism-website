@@ -46,81 +46,90 @@
         width="360"
         class="mobile-filter-drawer"
       >
-        <div class="filter-panel pa-4">
-          <div class="d-flex align-center justify-space-between mb-4">
-            <span class="text-subtitle-1 font-weight-semibold">Filters</span>
+        <div class="filter-panel">
+          <div class="filter-panel__header">
+            <div class="filter-panel__heading">
+              <v-icon class="filter-panel__heading-icon" size="20">mdi-filter-variant</v-icon>
+              <span class="filter-panel__title">Filters</span>
+            </div>
             <v-btn
-              icon="mdi-close"
+              icon="mdi-chevron-left"
               variant="text"
+              size="small"
+              color="=black"
               @click="filterPanelOpen = false"
               aria-label="Hide filters"
             />
           </div>
 
-          <span class="v-label ml-1" style="font-size: 12px">Type</span>
-          <div class="type-filter-chips">
-            <v-chip
-              v-for="option in filters.type.options"
-              :key="`draft-${option.value}`"
-              :color="
-                draftFilters.type.includes(option.value) ? typeStyles[option.value].bg : 'lightgray'
-              "
-              :text-color="
-                draftFilters.type.includes(option.value) ? typeStyles[option.value].fg : '#999'
-              "
-              :variant="draftFilters.type.includes(option.value) ? 'flat' : 'tonal'"
-              size="large"
-              @click="toggleDraftTypeSelection(option.value)"
-              class="type-chip"
-            >
-              <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
-              <span class="pr-1">{{ option.text.split(' (')[0] }}</span>
-            </v-chip>
-          </div>
-
-          <v-row class="mt-2">
-            <v-col cols="12" v-for="key in Object.keys(filters).filter((k) => k !== 'type')">
-              <v-autocomplete
-                :key="`draft-${key}`"
-                v-model="draftFilters[key]"
-                :items="filters[key].options"
-                item-title="text"
-                item-value="value"
-                :label="`Filter ${key}`"
-                multiple
-                chips
-                clearable
-                closable-chips
-                hide-details
-                chip-size="large"
-                :menu-props="{ contentClass: 'pubs-autocomplete-menu' }"
-                @update:modelValue="(val) => onDraftFilterChange(key, val)"
+          <div class="filter-panel__body">
+            <span class="filter-panel__field-label">Type</span>
+            <div class="type-filter-chips">
+              <v-chip
+                v-for="option in filters.type.options"
+                :key="`draft-${option.value}`"
+                :color="
+                  draftFilters.type.includes(option.value)
+                    ? typeStyles[option.value].bg
+                    : 'lightgray'
+                "
+                :text-color="
+                  draftFilters.type.includes(option.value) ? typeStyles[option.value].fg : '#999'
+                "
+                :variant="draftFilters.type.includes(option.value) ? 'flat' : 'tonal'"
+                size="large"
+                @click="toggleDraftTypeSelection(option.value)"
+                class="type-chip"
               >
-                <template #append-item>
-                  <div class="autocomplete-footer">
-                    <v-divider />
-                    <div class="px-4 py-2 text-right">
-                      <v-btn
-                        variant="text"
-                        color="primary-base"
-                        elevation="0"
-                        @click="closeAutocompleteMenu"
-                      >
-                        Done
-                      </v-btn>
-                    </div>
-                  </div>
-                </template>
-              </v-autocomplete>
-            </v-col>
-          </v-row>
+                <v-icon left class="mr-2">{{ typeStyles[option.value].icon }}</v-icon>
+                <span class="pr-1">{{ option.text.split(' (')[0] }}</span>
+              </v-chip>
+            </div>
 
-          <div class="filter-panel__actions mt-8">
-            <v-btn variant="text" @click="resetDraftFilters">Reset</v-btn>
-            <v-spacer />
-            <v-btn variant="text" rounded color="primary-base" @click="applyDraftFilters"
-              >Apply filters</v-btn
-            >
+            <v-row class="mt-2">
+              <v-col cols="12" v-for="key in Object.keys(filters).filter((k) => k !== 'type')">
+                <v-autocomplete
+                  :key="`draft-${key}`"
+                  v-model="draftFilters[key]"
+                  :items="filters[key].options"
+                  item-title="text"
+                  item-value="value"
+                  :label="`Filter ${key}`"
+                  multiple
+                  chips
+                  clearable
+                  closable-chips
+                  hide-details
+                  chip-size="large"
+                  :menu-props="{ contentClass: 'pubs-autocomplete-menu' }"
+                  @update:modelValue="(val) => onDraftFilterChange(key, val)"
+                >
+                  <template #append-item>
+                    <div class="autocomplete-footer">
+                      <v-divider />
+                      <div class="px-4 py-2 text-right">
+                        <v-btn
+                          variant="text"
+                          color="primary-base"
+                          elevation="0"
+                          @click="closeAutocompleteMenu"
+                        >
+                          Done
+                        </v-btn>
+                      </div>
+                    </div>
+                  </template>
+                </v-autocomplete>
+              </v-col>
+            </v-row>
+
+            <div class="filter-panel__actions mt-8">
+              <v-btn variant="text" @click="resetDraftFilters">Reset</v-btn>
+              <v-spacer />
+              <v-btn variant="text" rounded color="primary-base" @click="applyDraftFilters"
+                >Done</v-btn
+              >
+            </div>
           </div>
         </div>
       </v-navigation-drawer>
@@ -500,6 +509,46 @@
   .filter-panel {
     display: flex;
     flex-direction: column;
+  }
+  .filter-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0 0.75rem 0 1rem;
+    min-height: var(--publications-banner-height);
+    /* background: linear-gradient(135deg, #1e2230 0%, #2a2f42 60%, #353b52 100%); */
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  }
+  .filter-panel__heading {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+  .filter-panel__heading-icon {
+    /* color: rgba(255, 255, 255, 0.85); */
+    flex-shrink: 0;
+  }
+  .filter-panel__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    /* color: #ffffff; */
+    letter-spacing: -0.005em;
+  }
+  .filter-panel__body {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .filter-panel__field-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(30, 34, 48, 0.6);
+    margin-left: 0.25rem;
   }
   .filter-panel__actions {
     display: flex;
