@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar density="comfortable" app color="white" light class="elevation-1 px-8">
+  <v-app-bar density="comfortable" app color="white" light class="elevation-1">
     <!-- Menu icon for mobile -->
     <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
     <v-app-bar-title>

@@ -17,11 +17,7 @@
       </v-row>
     </container-md>
 
-    <publications-explorer
-      :items="data"
-      :type-styles="typeStyles"
-      :get-links="getLinks"
-    />
+    <publications-explorer :items="data" :type-styles="typeStyles" :get-links="getLinks" />
   </page>
 </template>
 

@@ -1,71 +1,66 @@
 <template>
-  <!-- Featured layout: icon + type pill in header, title below -->
-  <v-card v-if="featured" class="featured-card h-100" variant="flat">
-    <div class="featured-card__content">
-      <div class="featured-card__body">
-        <div class="featured-card__header">
-          <div class="featured-card__icon" :style="{ backgroundColor: typeStyle.bg }">
-            <v-icon size="20" :color="typeStyle.fg">{{ typeStyle.icon }}</v-icon>
-          </div>
-          <p class="featured-card__type" :style="{ color: typeStyle.bg }">{{ item.type }}</p>
-        </div>
-        <h3 class="featured-card__title">{{ item.title }}</h3>
-        <div class="featured-card__meta">
-          <span v-if="item.author">{{ item.author }}, et al. </span>
-          <span v-if="item.publisher"
-            ><i>{{ item.publisher }}</i
-            >,
-          </span>
-          <span>{{ item.date || item.year }}</span
-          >.
-        </div>
-        <div class="featured-card__links">
-          <a
-            v-for="link in links"
-            :key="link.field"
-            class="featured-card-link"
-            :href="link.href"
-            target="_blank"
-          >
-            <v-icon v-if="link.icon" left size="small">{{ link.icon }}</v-icon>
-            {{ link.label }}
-            <v-icon right size="x-small" class="featured-card-link-icon">mdi-arrow-right</v-icon>
-          </a>
-        </div>
-      </div>
-    </div>
-  </v-card>
+  <v-card
+    class="pub-card-minimal"
+    :class="[featured ? 'pub-card-minimal--featured h-100' : 'mb-3']"
+    variant="flat"
+    elevation="0"
+    :style="{ '--type-color': typeStyle.bg }"
+  >
+    <!-- Thin colored accent stripe on the left -->
+    <span class="pub-card-minimal__accent" :style="{ backgroundColor: typeStyle.bg }" />
 
-  <!-- Compact list layout: icon to the left of details -->
-  <v-card v-else class="publication-card mb-3" variant="flat">
-    <div class="publication-card__content">
-      <div class="publication-card__icon" :style="{ backgroundColor: typeStyle.bg }">
-        <v-icon size="28" :color="typeStyle.fg">{{ typeStyle.icon }}</v-icon>
+    <div class="pub-card-minimal__body">
+      <div v-if="featured" class="pub-card-minimal__eyebrow">
+        <v-icon
+          class="pub-card-minimal__eyebrow-icon"
+          :color="typeStyle.bg"
+          size="18"
+          :title="item.type"
+          :aria-label="item.type"
+        >
+          {{ typeStyle.icon }}
+        </v-icon>
+        <span class="pub-card-minimal__eyebrow-label">{{ item.type }}</span>
       </div>
-      <div class="publication-card__details">
-        <span class="publication-card__title">{{ item.title }}</span>
-        <div class="publication-meta">
-          <span v-if="item.author">{{ item.author }}, et al. </span>
-          <span v-if="item.publisher"
-            ><i>{{ item.publisher }}</i
-            >,
-          </span>
-          <span>{{ item.date || item.year }}</span
-          >.
-        </div>
-        <div class="publication-links">
+
+      <h3 v-if="featured" class="pub-card-minimal__title">{{ item.title }}</h3>
+
+      <div v-else>
+        <h3 class="pub-card-minimal__title">
+          <!-- <v-icon
+            class="pub-card-minimal__title-icon"
+            :color="typeStyle.bg"
+            size="16"
+            :title="item.type"
+            :aria-label="item.type"
+          >
+            {{ typeStyle.icon }}
+          </v-icon> -->
+          <span class="ml-1">{{ item.title }}</span>
+        </h3>
+      </div>
+
+      <div v-if="item.author || item.publisher" class="pub-card-minimal__meta">
+        <span v-if="item.author">{{ item.author }}, et al., </span>
+        <span v-if="item.publisher"
+          ><i>{{ item.publisher }}, </i></span
+        >
+        <span v-if="item.date || item.year">
+          {{ item.date || item.year }}
+        </span>
+      </div>
+
+      <div v-if="links.length || item.date || item.year" class="pub-card-minimal__footer">
+        <div v-if="links.length" class="pub-card-minimal__links">
           <a
             v-for="link in links"
             :key="link.field"
-            class="publication-link"
+            class="pub-card-minimal__link"
             :href="link.href"
             target="_blank"
           >
-            <v-icon v-if="link.icon" left>{{ link.icon }}</v-icon>
             {{ link.label }}
-            <v-icon right size="x-small" class="publication-card__external-icon"
-              >mdi-arrow-right</v-icon
-            >
+            <v-icon size="14" class="pub-card-minimal__link-icon">mdi-arrow-top-right</v-icon>
           </a>
         </div>
       </div>
@@ -86,133 +81,176 @@
 </script>
 
 <style scoped>
-  /* Featured layout */
-  .featured-card {
-    border: 1px solid rgba(63, 81, 181, 0.14);
-    border-radius: 14px;
-    box-shadow: 0 8px 22px rgba(20, 30, 60, 0.08);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(249, 251, 255, 0.96));
+  /* ---------- Shared base ---------- */
+  .pub-card-minimal {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+    padding: 1rem 2rem;
+    box-shadow:
+      0 1px 2px rgba(20, 30, 60, 0.06),
+      0 3px 8px rgba(20, 30, 60, 0.07);
     transition:
-      transform 180ms ease,
-      box-shadow 180ms ease;
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+    border-color: color-mix(in srgb, var(--type-color, #000) 10%, transparent);
   }
-  .featured-card:hover {
-    cursor: pointer;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(20, 30, 60, 0.14);
+
+  .pub-card-minimal:hover {
+    border-color: color-mix(in srgb, var(--type-color, #000) 45%, transparent);
+    box-shadow:
+      0 2px 4px rgba(20, 30, 60, 0.07),
+      0 10px 24px rgba(20, 30, 60, 0.11);
   }
-  .featured-card__content {
-    display: block;
-    padding: 1rem;
+
+  /* Thin colored accent stripe on the left edge */
+  .pub-card-minimal__accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 16px;
+    opacity: 0.28;
   }
-  .featured-card__header {
+
+  /* ---------- Type icon tile ---------- */
+  .pub-card-minimal__type-tile {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    /* border-radius: 8px; */
     display: flex;
     align-items: center;
-    gap: 0.55rem;
-    margin-bottom: 0.55rem;
+    justify-content: center;
   }
-  .featured-card__icon {
-    min-width: 36px;
-    min-height: 36px;
-    border-radius: 10px;
-    display: grid;
-    place-items: center;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-  }
-  .featured-card__body {
+
+  /* ---------- Body ---------- */
+  .pub-card-minimal__body {
     flex: 1;
     min-width: 0;
-  }
-  .featured-card__type {
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.075em;
-    font-size: 0.8rem;
-    font-weight: 700;
-    padding: 0.2rem 0.45rem;
-    border-radius: 999px;
-    line-height: 1;
-  }
-  .featured-card__title {
-    margin: 0;
-    font-size: 1.02rem;
-    line-height: 1.35;
-    color: rgb(20, 24, 34);
-    font-weight: 700;
-  }
-  .featured-card__meta {
-    margin-top: 0.4rem;
-    font-size: 0.84rem;
-    color: rgb(99, 107, 123);
-  }
-  .featured-card__links {
-    margin-top: 0.7rem;
     display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.4rem;
   }
-  .featured-card-link {
+
+  .pub-card-minimal__title {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.35;
+    font-weight: 600;
+    color: rgb(23, 23, 23);
+    letter-spacing: -0.005em;
+  }
+
+  .pub-card-minimal__meta {
+    font-size: 0.85rem;
+    color: rgb(120, 126, 140);
+    line-height: 1.4;
+  }
+
+  /* ---------- Footer: links + date ---------- */
+  .pub-card-minimal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.25rem;
+  }
+
+  .pub-card-minimal__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .pub-card-minimal__link {
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
-    font-size: 0.84rem;
+    font-size: 0.825rem;
     font-weight: 600;
     text-decoration: none;
-  }
-  .featured-card-link:hover {
-    opacity: 0.85;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    transition: opacity 150ms ease;
   }
 
-  /* Compact list layout */
-  .publication-card {
-    padding: 1rem;
-    border-radius: 12px;
-    border: 0.2px solid rgba(0, 0, 0, 0.16);
+  .pub-card-minimal__link:hover {
+    opacity: 0.8;
   }
-  .publication-card__content {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
+
+  .pub-card-minimal__link-icon {
+    transition: transform 150ms ease;
   }
-  .publication-card__icon {
-    min-width: 56px;
-    min-height: 56px;
-    display: grid;
-    place-items: center;
-    border-radius: 16px;
+
+  .pub-card-minimal__link:hover .pub-card-minimal__link-icon {
+    transform: translate(1px, -1px);
   }
-  .publication-card__details {
-    flex: 1;
+
+  .pub-card-minimal__date {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgb(140, 146, 158);
+    white-space: nowrap;
+    margin-left: auto;
   }
-  .publication-card__title {
+
+  /* ---------- Featured-only ---------- */
+  .pub-card-minimal--featured {
+    padding: 1.25rem 1.35rem 1.25rem 2rem;
+    gap: 1.15rem;
+  }
+
+  .pub-card-minimal--featured .pub-card-minimal__type-tile {
+    width: 44px;
+    height: 44px;
+    border-radius: 9px;
+  }
+
+  /* .pub-card-minimal--featured .pub-card-minimal__title {
+    font-size: 1.18rem;
+    line-height: 1.3;
+    gap: 0.55rem;
+  } */
+
+  .pub-card-minimal--featured .pub-card-minimal__body {
+    gap: 0.55rem;
+  }
+
+  .pub-card-minimal--featured .pub-card-minimal__eyebrow {
+    font-size: 0.82rem;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
+
+  /* ---------- Featured eyebrow (type label above title) ---------- */
+  .pub-card-minimal__eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: rgb(23, 23, 23);
-    text-decoration: none;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    margin-bottom: 0.15rem;
+    /* slightly muted version of the type color so it doesn't shout */
+    color: color-mix(in srgb, var(--type-color, #000) 98%, rgb(60, 65, 80));
   }
-  .publication-card__title:hover {
-    opacity: 0.88;
+
+  .pub-card-minimal__eyebrow-icon {
+    flex-shrink: 0;
   }
-  .publication-card__external-icon {
-    margin-left: 0.25rem;
-  }
-  .publication-meta {
-    font-size: 0.875rem;
-    color: rgb(135, 135, 135);
-    margin-top: 4px;
-  }
-  .publication-links {
-    margin-top: 0.75rem;
-    display: flex;
-    gap: 2.5rem;
-  }
-  .publication-link {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--v-primary-base);
-    text-decoration: none;
+
+  .pub-card-minimal__eyebrow-label {
+    /* subtle separator beneath the label for editorial feel */
+    padding-bottom: 1px;
   }
 </style>
