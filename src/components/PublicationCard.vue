@@ -91,7 +91,7 @@
     border-radius: 10px;
     background: #fff;
     overflow: hidden;
-    padding: 1rem 1.15rem 1rem 1.5rem;
+    padding: 1rem 2rem;
     box-shadow:
       0 1px 2px rgba(20, 30, 60, 0.06),
       0 3px 8px rgba(20, 30, 60, 0.07);
@@ -115,7 +115,7 @@
     top: 0;
     left: 0;
     bottom: 0;
-    width: 10px;
+    width: 16px;
     opacity: 0.28;
   }
 
@@ -204,7 +204,7 @@
 
   /* ---------- Featured-only ---------- */
   .pub-card-minimal--featured {
-    padding: 1.25rem 1.35rem 1.25rem 1.7rem;
+    padding: 1.25rem 1.35rem 1.25rem 2rem;
     gap: 1.15rem;
   }
 
