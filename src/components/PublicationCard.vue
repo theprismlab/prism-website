@@ -13,7 +13,7 @@
       <div v-if="featured" class="pub-card-minimal__eyebrow">
         <v-icon
           class="pub-card-minimal__eyebrow-icon"
-          :color="typeStyle.bg"
+          color="white"
           size="18"
           :title="item.type"
           :aria-label="item.type"
@@ -116,7 +116,7 @@
     left: 0;
     bottom: 0;
     width: 16px;
-    opacity: 0.28;
+    opacity: 100%;
   }
 
   /* ---------- Type icon tile ---------- */
@@ -225,9 +225,27 @@
   }
 
   .pub-card-minimal--featured .pub-card-minimal__eyebrow {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     gap: 0.5rem;
-    margin-bottom: 0.3rem;
+    /* Break out of the card's padding so the colored bar spans the
+       full width. Negative margins must match the featured card's
+       top/left/right padding values. */
+    margin: -1.25rem -1.35rem 0.75rem;
+    padding: 0.5rem 1.35rem;
+    border-radius: 0;
+    align-self: stretch;
+    background-color: var(--type-color, #000);
+    color: #ffffff;
+  }
+
+  /* When the eyebrow is acting as a colored pill (featured),
+     the parent card no longer needs the left accent stripe. */
+  .pub-card-minimal--featured .pub-card-minimal__accent {
+    display: none;
+  }
+
+  .pub-card-minimal--featured {
+    padding-left: 1.35rem;
   }
 
   /* ---------- Featured eyebrow (type label above title) ---------- */
