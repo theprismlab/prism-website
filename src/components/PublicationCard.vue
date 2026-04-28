@@ -27,7 +27,7 @@
 
       <div v-else>
         <h3 class="pub-card-minimal__title">
-          <v-icon
+          <!-- <v-icon
             class="pub-card-minimal__title-icon"
             :color="typeStyle.bg"
             size="16"
@@ -35,7 +35,7 @@
             :aria-label="item.type"
           >
             {{ typeStyle.icon }}
-          </v-icon>
+          </v-icon> -->
           <span class="ml-1">{{ item.title }}</span>
         </h3>
       </div>
