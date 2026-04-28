@@ -68,6 +68,7 @@
   // The first entry is treated as the primary link (no left icon by convention).
   const TYPE_CONFIG = {
     Publication: {
+      order: 1,
       icon: 'mdi-file-document-outline',
       color: '#3f51b5',
       file: 'Website Content - 2025  - Publications.csv',
@@ -81,6 +82,7 @@
       }),
     },
     'White Paper': {
+      order: 3,
       icon: 'mdi-book-outline',
       color: '#8e24aa',
       file: 'Website Content - 2025  - White Papers.csv',
@@ -99,11 +101,12 @@
         author: d.Author,
       }),
     },
-    'Conference Abstract': {
+    Conference: {
+      order: 2,
       icon: 'mdi-presentation',
       color: '#009688',
       file: 'Website Content - 2025  - Conference Abstracts.csv',
-      idPrefix: 'conference-abstract',
+      idPrefix: 'conference',
       links: [
         { field: 'link', label: 'Read Abstract' },
         { field: 'posterLink', label: 'View Poster', icon: 'mdi-eye-outline' },
@@ -130,7 +133,14 @@
     },
     computed: {
       featuredCards() {
-        return this.data.filter((d) => d.featured == 1);
+        // Sort featured cards by the 'order' property from TYPE_CONFIG
+        return this.data
+          .filter((d) => d.featured == 1)
+          .sort((a, b) => {
+            const orderA = TYPE_CONFIG[a.type]?.order || 99;
+            const orderB = TYPE_CONFIG[b.type]?.order || 99;
+            return orderA - orderB;
+          });
       },
       typeStyles() {
         return Object.fromEntries(
@@ -142,7 +152,7 @@
       },
     },
     async created() {
-      this.data = await this.getData();
+      this.data = (await this.getData()).sort((a, b) => a.order - b.order);
     },
     methods: {
       async getData() {
