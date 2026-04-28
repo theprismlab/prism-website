@@ -1,4 +1,5 @@
 <template>
+  <!-- Option 1: Type icon inline with the title -->
   <v-card
     class="pub-card-minimal"
     :class="[featured ? 'pub-card-minimal--featured h-100' : 'mb-3']"
@@ -6,44 +7,23 @@
     elevation="0"
   >
     <div class="pub-card-minimal__body">
-      <div v-if="featured" class="pub-card-minimal__eyebrow" :style="{ color: typeStyle.bg }">
+      <h3 class="pub-card-minimal__title">
         <v-icon
-          class="pub-card-minimal__eyebrow-icon"
+          class="pub-card-minimal__title-icon"
           :color="typeStyle.bg"
-          size="14"
+          :size="featured ? 22 : 18"
           :title="item.type"
           :aria-label="item.type"
         >
           {{ typeStyle.icon }}
         </v-icon>
-        <span class="pub-card-minimal__eyebrow-label">{{ item.type }}</span>
-      </div>
-
-      <h3 v-if="featured" class="pub-card-minimal__title">{{ item.title }}</h3>
-
-      <div v-else>
-        <h3 class="pub-card-minimal__title">
-          <v-icon
-            class="pub-card-minimal__title-icon"
-            :color="typeStyle.bg"
-            size="16"
-            :title="item.type"
-            :aria-label="item.type"
-          >
-            {{ typeStyle.icon }}
-          </v-icon>
-          <span class="ml-1">{{ item.title }}</span>
-        </h3>
-      </div>
+        <span>{{ item.title }}</span>
+      </h3>
 
       <div v-if="item.author || item.publisher" class="pub-card-minimal__meta">
-        <span v-if="item.author">{{ item.author }}, et al., </span>
-        <span v-if="item.publisher"
-          ><i>{{ item.publisher }}, </i></span
-        >
-        <span v-if="item.date || item.year">
-          {{ item.date || item.year }}
-        </span>
+        <span v-if="item.author">{{ item.author }}, et al.</span>
+        <span v-if="item.author && item.publisher"> · </span>
+        <i v-if="item.publisher">{{ item.publisher }}</i>
       </div>
 
       <div v-if="links.length || item.date || item.year" class="pub-card-minimal__footer">
@@ -59,6 +39,9 @@
             <v-icon size="14" class="pub-card-minimal__link-icon">mdi-arrow-top-right</v-icon>
           </a>
         </div>
+        <span v-if="item.date || item.year" class="pub-card-minimal__date">
+          {{ item.date || item.year }}
+        </span>
       </div>
     </div>
   </v-card>
@@ -66,7 +49,7 @@
 
 <script>
   export default {
-    name: 'PublicationCardMinimal3',
+    name: 'PublicationCardMinimal4',
     props: {
       item: { type: Object, required: true },
       typeStyle: { type: Object, required: true },
@@ -80,50 +63,28 @@
   /* ---------- Shared base ---------- */
   .pub-card-minimal {
     position: relative;
-    display: flex;
-    align-items: stretch;
-    gap: 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     background: #fff;
     overflow: hidden;
     padding: 1rem 1.15rem;
-    box-shadow:
-      0 1px 2px rgba(20, 30, 60, 0.06),
-      0 3px 8px rgba(20, 30, 60, 0.07);
     transition:
       border-color 180ms ease,
-      box-shadow 180ms ease,
-      transform 180ms ease;
+      box-shadow 180ms ease;
   }
 
   .pub-card-minimal:hover {
     border-color: rgba(0, 0, 0, 0.12);
-    box-shadow:
-      0 2px 4px rgba(20, 30, 60, 0.07),
-      0 10px 24px rgba(20, 30, 60, 0.11);
+    box-shadow: 0 4px 14px rgba(20, 30, 60, 0.05);
   }
 
-  /* ---------- Type icon tile ---------- */
-  .pub-card-minimal__type-tile {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* ---------- Body ---------- */
   .pub-card-minimal__body {
-    flex: 1;
-    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    height: 100%;
   }
 
+  /* ---------- Title with leading type icon ---------- */
   .pub-card-minimal__title {
     margin: 0;
     font-size: 1rem;
@@ -131,6 +92,15 @@
     font-weight: 600;
     color: rgb(23, 23, 23);
     letter-spacing: -0.005em;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .pub-card-minimal__title-icon {
+    flex-shrink: 0;
+    /* nudge icon to optically align with text baseline */
+    transform: translateY(3px);
   }
 
   .pub-card-minimal__meta {
@@ -190,44 +160,15 @@
   /* ---------- Featured-only ---------- */
   .pub-card-minimal--featured {
     padding: 1.25rem 1.35rem;
-    gap: 1.15rem;
   }
 
-  .pub-card-minimal--featured .pub-card-minimal__type-tile {
-    width: 44px;
-    height: 44px;
-    border-radius: 9px;
-  }
-
-  /* .pub-card-minimal--featured .pub-card-minimal__title {
+  .pub-card-minimal--featured .pub-card-minimal__title {
     font-size: 1.18rem;
     line-height: 1.3;
-    gap: 0.55rem;
-  } */
+    gap: 0.6rem;
+  }
 
   .pub-card-minimal--featured .pub-card-minimal__body {
     gap: 0.55rem;
-  }
-
-  /* ---------- Featured eyebrow (type label above title) ---------- */
-  .pub-card-minimal__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    line-height: 1;
-    margin-bottom: 0.15rem;
-  }
-
-  .pub-card-minimal__eyebrow-icon {
-    flex-shrink: 0;
-  }
-
-  .pub-card-minimal__eyebrow-label {
-    /* subtle separator beneath the label for editorial feel */
-    padding-bottom: 1px;
   }
 </style>

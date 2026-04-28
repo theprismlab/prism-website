@@ -14,7 +14,7 @@
             :links="getLinks(card)"
             featured
           />
-          <publication-card-minimal
+          <publication-card-minimal3
             v-else
             :item="card"
             :type-style="typeStyles[card.type]"
@@ -32,7 +32,7 @@
 <script>
   import * as d3 from 'd3';
   import PublicationCardPanel from '@/components/PublicationCardPanel.vue';
-  import PublicationCardMinimal from '@/components/PublicationCardMinimal.vue';
+  import PublicationCardMinimal3 from '@/components/PublicationCardMinimal3.vue';
   import PublicationsExplorer from '@/components/PublicationsExplorer.vue';
   const useMinimalCards = false; // Toggle for testing minimal card layout without affecting main panel
   const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL + 'data/' : '../public/data/';
@@ -129,7 +129,7 @@
   export default {
     components: {
       PublicationCardPanel,
-      PublicationCardMinimal,
+      PublicationCardMinimal3,
       PublicationsExplorer,
     },
     data() {
