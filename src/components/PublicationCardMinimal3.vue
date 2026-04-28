@@ -5,26 +5,20 @@
     variant="flat"
     elevation="0"
   >
-    <div class="pub-card-minimal__body">
-      <!-- Header row: prominent type badge + subtle date -->
-      <div class="pub-card-minimal__header">
-        <span
-          class="pub-card-minimal__badge"
-          :style="{
-            color: typeStyle.bg,
-            backgroundColor: typeStyle.bgSoft || `${typeStyle.bg}14`,
-          }"
-        >
-          <v-icon size="14" class="pub-card-minimal__badge-icon">
-            {{ typeStyle.icon }}
-          </v-icon>
-          {{ item.type }}
-        </span>
-        <span v-if="item.date || item.year" class="pub-card-minimal__date">
-          {{ item.date || item.year }}
-        </span>
-      </div>
+    <!-- Type icon tile on the left -->
+    <div
+      class="pub-card-minimal__type-tile"
+      :style="{
+        color: typeStyle.bg,
+        backgroundColor: typeStyle.bgSoft || `${typeStyle.bg}14`,
+      }"
+      :title="item.type"
+      :aria-label="item.type"
+    >
+      <v-icon size="20">{{ typeStyle.icon }}</v-icon>
+    </div>
 
+    <div class="pub-card-minimal__body">
       <h3 class="pub-card-minimal__title">{{ item.title }}</h3>
 
       <div v-if="item.author || item.publisher" class="pub-card-minimal__meta">
@@ -33,17 +27,22 @@
         <i v-if="item.publisher">{{ item.publisher }}</i>
       </div>
 
-      <div v-if="links.length" class="pub-card-minimal__links">
-        <a
-          v-for="link in links"
-          :key="link.field"
-          class="pub-card-minimal__link"
-          :href="link.href"
-          target="_blank"
-        >
-          {{ link.label }}
-          <v-icon size="14" class="pub-card-minimal__link-icon">mdi-arrow-top-right</v-icon>
-        </a>
+      <div v-if="links.length || item.date || item.year" class="pub-card-minimal__footer">
+        <div v-if="links.length" class="pub-card-minimal__links">
+          <a
+            v-for="link in links"
+            :key="link.field"
+            class="pub-card-minimal__link"
+            :href="link.href"
+            target="_blank"
+          >
+            {{ link.label }}
+            <v-icon size="14" class="pub-card-minimal__link-icon">mdi-arrow-top-right</v-icon>
+          </a>
+        </div>
+        <span v-if="item.date || item.year" class="pub-card-minimal__date">
+          {{ item.date || item.year }}
+        </span>
       </div>
     </div>
   </v-card>
@@ -51,7 +50,7 @@
 
 <script>
   export default {
-    name: 'PublicationCardMinimal2',
+    name: 'PublicationCardMinimal3',
     props: {
       item: { type: Object, required: true },
       typeStyle: { type: Object, required: true },
@@ -65,10 +64,13 @@
   /* ---------- Shared base ---------- */
   .pub-card-minimal {
     position: relative;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 10px;
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     background: #fff;
     overflow: hidden;
+    padding: 1rem 1.15rem;
     transition:
       border-color 180ms ease,
       box-shadow 180ms ease;
@@ -79,47 +81,26 @@
     box-shadow: 0 4px 14px rgba(20, 30, 60, 0.05);
   }
 
+  /* ---------- Type icon tile ---------- */
+  .pub-card-minimal__type-tile {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ---------- Body ---------- */
   .pub-card-minimal__body {
-    padding: 1rem 1.15rem;
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    height: 100%;
+    gap: 0.4rem;
   }
 
-  /* ---------- Header: type badge + date ---------- */
-  .pub-card-minimal__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
-
-  .pub-card-minimal__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.2rem 0.55rem;
-    border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  .pub-card-minimal__badge-icon {
-    flex-shrink: 0;
-  }
-
-  .pub-card-minimal__date {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: rgb(140, 146, 158);
-    white-space: nowrap;
-  }
-
-  /* ---------- Title & meta ---------- */
   .pub-card-minimal__title {
     margin: 0;
     font-size: 1rem;
@@ -135,13 +116,20 @@
     line-height: 1.4;
   }
 
-  /* ---------- Links ---------- */
+  /* ---------- Footer: links + date ---------- */
+  .pub-card-minimal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.25rem;
+  }
+
   .pub-card-minimal__links {
     display: flex;
     flex-wrap: wrap;
     gap: 1.25rem;
-    margin-top: auto;
-    padding-top: 0.25rem;
   }
 
   .pub-card-minimal__link {
@@ -168,19 +156,32 @@
     transform: translate(1px, -1px);
   }
 
+  .pub-card-minimal__date {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgb(140, 146, 158);
+    white-space: nowrap;
+    margin-left: auto;
+  }
+
   /* ---------- Featured-only ---------- */
+  .pub-card-minimal--featured {
+    padding: 1.25rem 1.35rem;
+    gap: 1.15rem;
+  }
+
+  .pub-card-minimal--featured .pub-card-minimal__type-tile {
+    width: 44px;
+    height: 44px;
+    border-radius: 9px;
+  }
+
   .pub-card-minimal--featured .pub-card-minimal__title {
     font-size: 1.18rem;
     line-height: 1.3;
   }
 
   .pub-card-minimal--featured .pub-card-minimal__body {
-    padding: 1.25rem 1.35rem;
-    gap: 0.65rem;
-  }
-
-  .pub-card-minimal--featured .pub-card-minimal__badge {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.65rem;
+    gap: 0.55rem;
   }
 </style>
