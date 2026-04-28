@@ -10,7 +10,7 @@
     <span class="pub-card-minimal__accent" :style="{ backgroundColor: typeStyle.bg }" />
 
     <div class="pub-card-minimal__body">
-      <div v-if="featured" class="pub-card-minimal__eyebrow" :style="{ color: typeStyle.bg }">
+      <div v-if="featured" class="pub-card-minimal__eyebrow">
         <v-icon
           class="pub-card-minimal__eyebrow-icon"
           :color="typeStyle.bg"
@@ -116,7 +116,7 @@
     left: 0;
     bottom: 0;
     width: 10px;
-    opacity: 0.4;
+    opacity: 0.28;
   }
 
   /* ---------- Type icon tile ---------- */
@@ -241,6 +241,8 @@
     letter-spacing: 0.1em;
     line-height: 1;
     margin-bottom: 0.15rem;
+    /* slightly muted version of the type color so it doesn't shout */
+    color: color-mix(in srgb, var(--type-color, #000) 98%, rgb(60, 65, 80));
   }
 
   .pub-card-minimal__eyebrow-icon {
