@@ -3,39 +3,43 @@
     <div class="explorer-sticky-header">
       <div class="explorer-toolbar-track">
         <v-toolbar class="explorer-toolbar" flat>
-          <v-toolbar-title class="toolbar-title text-white">Explore publications</v-toolbar-title>
-          <v-spacer />
+          <container-md class="explorer-toolbar__container">
+            <div class="explorer-toolbar__inner">
+              <v-toolbar-title class="toolbar-title text-overline">Explore All</v-toolbar-title>
+              <v-spacer />
 
-          <v-text-field
-            v-model="searchQuery"
-            placeholder="Search titles..."
-            prepend-inner-icon="mdi-magnify"
-            clearable
-            hide-details
-            density="compact"
-            variant="solo-filled"
-            flat
-            class="toolbar-search"
-          />
+              <v-text-field
+                v-model="searchQuery"
+                placeholder="Search titles..."
+                prepend-inner-icon="mdi-magnify"
+                clearable
+                hide-details
+                density="compact"
+                variant="solo-filled"
+                flat
+                class="toolbar-search"
+              />
 
-          <v-badge
-            :model-value="activeFilterCount > 0"
-            :content="activeFilterCount"
-            color="error"
-            offset-x="5"
-            offset-y="5"
-            class="ml-2"
-          >
-            <v-btn
-              variant="text"
-              color="white"
-              prepend-icon="mdi-filter-variant"
-              @click="openFilterPanel"
-              aria-label="Show filters"
-            >
-              Filters
-            </v-btn>
-          </v-badge>
+              <v-badge
+                :model-value="activeFilterCount > 0"
+                :content="activeFilterCount"
+                color="error"
+                offset-x="5"
+                offset-y="5"
+                class="ml-2"
+              >
+                <v-btn
+                  variant="text"
+                  color="white"
+                  prepend-icon="mdi-filter-variant"
+                  @click="openFilterPanel"
+                  aria-label="Show filters"
+                >
+                  Filters
+                </v-btn>
+              </v-badge>
+            </div>
+          </container-md>
         </v-toolbar>
       </div>
 
@@ -135,7 +139,7 @@
       </v-navigation-drawer>
     </div>
 
-    <container-md>
+    <container-sm>
       <v-row class="publications-layout-row px-2" align="start">
         <v-col ref="filterResults" class="filter-results" cols="12">
           <div class="results-header mb-4">
@@ -171,7 +175,7 @@
           </div>
         </v-col>
       </v-row>
-    </container-md>
+    </container-sm>
 
     <v-btn
       v-show="showScrollToResultsBtn"
@@ -460,11 +464,37 @@
   }
   :deep(.explorer-toolbar .v-toolbar__content) {
     min-height: var(--publications-banner-height) !important;
-    padding-inline: 0.75rem;
+    padding-inline: 0;
+  }
+  /* The container fills the toolbar; its inner v-container handles the
+     responsive gutters so the toolbar contents align with the page body. */
+  .explorer-toolbar__container {
+    width: 100%;
+  }
+  :deep(.explorer-toolbar__container > .v-container) {
+    padding-block: 0;
+    height: 100%;
+  }
+  :deep(.explorer-toolbar__container .v-row) {
+    height: 100%;
+    margin: 0;
+  }
+  :deep(.explorer-toolbar__container .v-col) {
+    padding-block: 0;
+    display: flex;
+    align-items: center;
+  }
+  .explorer-toolbar__inner {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 0.5rem;
   }
   .toolbar-title {
-    font-size: 1.125rem;
+    font-size: 1.0625rem;
     font-weight: 600;
+    letter-spacing: 0.005em;
+    color: rgba(255, 255, 255, 0.95);
     white-space: nowrap;
     overflow: visible;
     text-overflow: clip;
@@ -576,7 +606,7 @@
       margin: 0;
     }
     .toolbar-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
     }
     .toolbar-search {
       max-width: 44vw;

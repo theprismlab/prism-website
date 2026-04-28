@@ -5,6 +5,7 @@
     </container-md>
 
     <container-md>
+      <h2 class="text-overline">Featured</h2>
       <v-row justify="center" class="mb-12">
         <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
           <publication-card
