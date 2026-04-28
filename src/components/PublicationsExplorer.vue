@@ -430,10 +430,16 @@
     /* now just a presentational wrapper around the toolbar */
     position: relative;
   }
-  .explorer-toolbar {
+  /* .explorer-toolbar {
     background: linear-gradient(45deg, #3f51b5, #8e24aa, #009688);
     min-height: var(--publications-banner-height);
     border-radius: 0;
+  } */
+  .explorer-toolbar {
+    background: linear-gradient(135deg, #1e2230 0%, #2a2f42 60%, #353b52 100%);
+    min-height: var(--publications-banner-height);
+    border-radius: 0;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
   }
   .mobile-filter-drawer {
     /* Absolute inside the sticky header so it overlays the page below
