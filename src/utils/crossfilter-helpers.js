@@ -11,6 +11,7 @@ export default class CrossfilterManager {
     this.filters = filters; // { field: { options: [], active: [] } }
     this.cf = crossfilter(this.data);
     this.dimensions = {};
+    this.searchQuery = '';
     this._initDimensions();
     this.updateAllOptions();
   }
@@ -20,6 +21,8 @@ export default class CrossfilterManager {
     Object.keys(this.filters).forEach(field => {
       this.dimensions[field] = this.cf.dimension(d => d[field]);
     });
+    // Create search dimension for title searching
+    this.dimensions['search'] = this.cf.dimension(d => d.title);
   }
 
   // Set the active values for a filter and update all options
@@ -49,17 +52,23 @@ export default class CrossfilterManager {
         this.dimensions[field].filterAll();
       }
     });
-
+    
+    // Apply search filter to title
+    if (this.searchQuery) {
+      this.dimensions['search'].filter(title =>
+        title.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    } else {
+      this.dimensions['search'].filterAll();
+    }
   }
 
-  // Get the filtered data (after all filters applied)
-//   getFilteredData() {
-//     try {
-//       return this.cf.allFiltered();
-//     } catch {
-//       return this.data;
-//     }
-//   }
+  // Set search query and update filters
+  setSearchQuery(query) {
+    this.searchQuery = query;
+    this._applyFilters();
+    this.updateAllOptions();
+  }
 
   // Update options for all filters, sorted and labeled by counts
   updateAllOptions() {
@@ -68,59 +77,36 @@ export default class CrossfilterManager {
     });
   }
 
-  // Build menu options for a single filter, with counts and labels
+  // Build menu options for a single filter, with counts and labels.
+  // Counts reflect how many items have each value given all OTHER active filters.
   _buildOptions(field) {
     if (!this.dimensions[field]) return [];
-    // Save current filters
-    const prevFilters = {};
-    Object.keys(this.filters).forEach(f => {
-      prevFilters[f] = this.dimensions[f].filter();
-    });
+
+    // Temporarily remove THIS field's filter so we count against all other filters only
+    this.dimensions[field].filterAll();
+
+    // Get data filtered by all other dimensions (+ search)
+    const crossFiltered = this.cf.allFiltered();
 
     // Get all possible values for this field
     const allValues = [...new Set(this.data.map(d => d[field]))];
-    // For each value, count how many records would match if this value were selected (with other filters applied)
+
     const options = allValues.map(value => {
-      // Apply all other filters, but not this one
-      Object.keys(this.filters).forEach(f => {
-        if (f !== field) {
-          const selected = this.filters[f].active;
-          if (selected && selected.length > 0) {
-            this.dimensions[f].filter(v => selected.includes(v));
-          } else {
-            this.dimensions[f].filterAll();
-          }
-        }
-      });
-      // Apply this value as the only filter for this field
-      this.dimensions[field].filterExact(value);
-
-      // Count filtered results
-      let count = 0;
-      try {
-        count = this.cf.allFiltered().length;
-      } catch {
-        count = 0;
-      }
-
-      // Restore previous filter for this field
-      this.dimensions[field].filter(prevFilters[field]);
-
-      // Calculate total (unfiltered) count for this value
+      const count = crossFiltered.filter(item => item[field] === value).length;
       const total = this.data.filter(d => d[field] === value).length;
-
       return {
-        value: value,
-        count: count,
-        total: total,
+        value,
+        count,
+        total,
         text: `${value} (${count}/${total})`
       };
     });
 
-    // Restore all previous filters
-    Object.keys(this.filters).forEach(f => {
-      this.dimensions[f].filter(prevFilters[f]);
-    });
+    // Restore this field's filter
+    const selected = this.filters[field].active;
+    if (selected && selected.length > 0) {
+      this.dimensions[field].filter(v => selected.includes(v));
+    }
 
     // Sort: available (count > 0) first, then alphabetically or numerically
     options.sort((a, b) => {
@@ -150,14 +136,12 @@ export default class CrossfilterManager {
     this._applyFilters();
     this.updateAllOptions();
   }
-    get filteredData() {
-    const self = this;
-    return self.data.filter(item => {
-      return Object.keys(self.filters).every(field => {
-        const selected = self.filters[field].active;
-        // Compare as string for robustness
-        return !selected.length || selected.map(String).includes(String(item[field]));
-      });
-    });
+  // Get filtered data using crossfilter
+  get filteredData() {
+    try {
+      return this.cf.allFiltered();
+    } catch {
+      return this.data;
+    }
   }
 }

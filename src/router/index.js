@@ -11,9 +11,25 @@ import { routes } from 'vue-router/auto-routes' // Automatically generated route
 
 
 
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: setupLayouts(routes),
+  routes: [
+    ...setupLayouts(routes),
+    // Redirect legacy research URLs to /publications
+    {
+      path: '/research/white-papers',
+      redirect: '/publications',
+    },
+    {
+      path: '/research/conference-abstracts',
+      redirect: '/publications',
+    },
+    {
+      path: '/research/publications',
+      redirect: '/publications',
+    },
+  ],
 })
 
 router.afterEach(() => {
