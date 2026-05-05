@@ -32,7 +32,7 @@ const dataFile = "Website Content - 2025  - Team Page.csv";
     },
     computed: {
       imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/team_headshots_png/" : "../../public/images/team_headshots_png/"
+          return 'https://assets.clue.io/theprismlab.org/team_headshots_png/';
         },
    
     },

@@ -144,7 +144,7 @@ export default {
     },
     computed: {
     imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/assay/" : "../../public/images/assay/"
+          return 'https://assets.clue.io/theprismlab.org/assay/';
         },
     },
     watch: {

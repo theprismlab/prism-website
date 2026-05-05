@@ -35,12 +35,12 @@ export default {
                 text: 'PRISM portal',
                 link: 'https://theprismlab.org/portal/projects'
             },
-            image: 'macbook-portal-01.png'
+            image: 'macbook-portal.png'
         }
     },
     computed: {
         imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/" : "../../public/images/"
+          return 'https://assets.clue.io/theprismlab.org/'
         },
     },
     mounted(){

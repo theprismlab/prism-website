@@ -4,7 +4,7 @@
     <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
     <v-app-bar-title>
       <router-link to="/" tag="span" style="cursor: pointer; text-decoration: none; border: none">
-        <v-img eager id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png" />
+        <v-img eager id="prism_logo" alt="PRISM Logo" width="160px" :src="`${imgPath}PRISMLogo.png`" />
       </router-link>
     </v-app-bar-title>
     <!-- Tabs for desktop -->
@@ -110,6 +110,7 @@
     name: 'AppBar',
     data() {
       return {
+        imgPath: 'https://assets.clue.io/theprismlab.org/',
         drawer: false,
         items: [
           // {

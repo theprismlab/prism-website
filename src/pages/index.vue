@@ -147,9 +147,7 @@
     },
     computed: {
       imgPath() {
-        return import.meta.env.PROD
-          ? import.meta.env.BASE_URL + 'images/home/'
-          : '../../public/images/home/';
+        return 'https://assets.clue.io/theprismlab.org/';
       },
       mobile() {
         return this.$vuetify.display.mobile;

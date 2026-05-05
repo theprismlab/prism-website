@@ -11,7 +11,7 @@
     </v-row>  
   
     <v-row class="justify-center mb-4">
-      <v-img eager style="max-width:800px;" :src="`${imgPath}${imgFiles[selectedIndex]}`" alt="Cell Line Collection"></v-img>
+      <v-img eager style="max-width:800px;" :src="`${imgPath}${imgFile}`" alt="Cell Line Collection"></v-img>
     </v-row>
 
     <v-row>
@@ -50,18 +50,12 @@ export default {
   name: 'DataAnalysis',
 data() {
     return {
-      selectedIndex: 1,
-      imgFiles: [
-        'data-analysis-11.png',
-        'data-analysis-09.png',
-        'data-analysis-10.png',
-
-      ]
+      imgFile: 'data-analysis.png'
     };
   },
     computed:{
     imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/" : "../../public/images/"
+          return 'https://assets.clue.io/theprismlab.org/';
         },
     },
   components: {
