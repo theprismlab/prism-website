@@ -6,15 +6,16 @@
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and wide genomic diversity. Among them, our collection includes a significant number of pediatric cancer cell lines, as well as over 100 hematopoietic cell lines. Our cell lines are our most important asset, and we therefore take great pride in the quality of our cell lines.
       </p>
   </container-sm>
-<div class="background-01 py-6">
-  <container-md>  
+
+<page-section background="tinted" :padding="6">
+  <container-md>
     <v-row>
       <v-col v-for="(card, index) in cellLineCards" :key="index" cols="12" xs="6" sm="6" md="3" lg="3" xl="3">
         <stat-card :index="index" :title="card.title" :subtitle="card.subtitle" :showIcon="false" variant="flat" elevation="0"></stat-card>
       </v-col>
     </v-row>
   </container-md>
-</div>
+</page-section>
 
 
   <container-sm class="mt-6 mb-12">
@@ -120,7 +121,4 @@
 </script>
 
 <style scoped>
-.background-01 {
-  background-color: var(--v-primary-lighten-6-desaturated);
-}
 </style>

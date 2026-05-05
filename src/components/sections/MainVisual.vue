@@ -1,26 +1,22 @@
 <template>
-  <div class="background py-12">
-    <container-md>
-      <v-row justify="space-evenly">
-        <v-col v-for="(card, index) in cards" :key="index" cols="12" xs="12" sm="12" md="4" lg="4">
-          <v-card class="pa-4 fill-height" variant="flat">
-            <v-row no-gutters>
-              <v-col cols="5" xs="5" sm="5" md="12" lg="12" xl="12">
-                  <v-img eager style="margin:auto;" :src="card.img" width="100%" max-width="250px"></v-img>
-              </v-col>
-              <v-col>
-                <v-card-item>
-                <h4 class="text-h5 text-black">{{ card.title }}</h4>
-                <p class="text-body-2 mb-2">{{ card.description }}</p>
-                <a class="v-btn v-btn--size-default pa-0" :href="card.action.url" :target="card.action.target">{{ card.action.text }} <v-icon right>mdi-chevron-right</v-icon></a>
-              </v-card-item>
-            </v-col>
-          </v-row>         
-        </v-card>
-      </v-col>
-      </v-row>
-    </container-md>
-  </div>  
+  <v-row justify="space-evenly">
+    <v-col v-for="(card, index) in cards" :key="index" cols="12" xs="12" sm="12" md="4" lg="4">
+      <v-card class="pa-4 fill-height" variant="flat">
+        <v-row no-gutters>
+          <v-col cols="5" xs="5" sm="5" md="12" lg="12" xl="12">
+              <v-img eager style="margin:auto;" :src="card.img" width="100%" max-width="250px"></v-img>
+          </v-col>
+          <v-col>
+            <v-card-item>
+            <h4 class="text-h5 text-black">{{ card.title }}</h4>
+            <p class="text-body-2 mb-2">{{ card.description }}</p>
+            <a class="v-btn v-btn--size-default pa-0" :href="card.action.url" :target="card.action.target">{{ card.action.text }} <v-icon right>mdi-chevron-right</v-icon></a>
+          </v-card-item>
+        </v-col>
+      </v-row>         
+    </v-card>
+  </v-col>
+  </v-row>
 </template>
 <script>
 import { ASSET_BASE } from '@/utils/assets';
@@ -78,10 +74,6 @@ export default {
 }
 </script>
 <style scoped>
-.background{
-  background-color: var(--v-grey-lighten-5);
-  /* background-color: var(--v-primary-lighten-6); */
-}
 .v-card{
   background-color: white;
   border: 1px solid var(--v-grey-lighten-2);

@@ -22,8 +22,17 @@
       </p>
     </container-sm>
 
-    <MainVisual></MainVisual>
-    <our-portal></our-portal>
+    <page-section background="muted">
+      <container-md>
+        <MainVisual></MainVisual>
+      </container-md>
+    </page-section>
+
+    <page-section background="gradient" :padding="8">
+      <container-md>
+        <our-portal></our-portal>
+      </container-md>
+    </page-section>
 
     <container-sm class="my-12">
       <section-overline>Impact</section-overline>
