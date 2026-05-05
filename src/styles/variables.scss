@@ -1,13 +1,14 @@
 
 
-$heading-font-family: 'Inter';
-$body-font-family: 'Inter';
+$heading-font-family: 'Archivo Expanded', sans-serif;
+$body-font-family: 'Inter', sans-serif;
 
 @use 'vuetify/settings' with (
     $color-pack: true,
     $body-font-family: 'Inter',
+    $heading-font-family: 'Archivo Expanded',
     $font-size-root: var(--font-size-root),
-    $heading-font-family: 'Inter',
+
     $card-title-white-space: normal,
     $card-title-word-wrap: initial,
     $card-title-text-overflow: visible,
@@ -53,7 +54,7 @@ $body-font-family: 'Inter';
          //   'letter-spacing': -.0083333333em,
             'font-family': $heading-font-family,
             'text-transform': none,
-        //    'weight': 500
+            'weight': 600
         ),
         'h3': (
             'size': var(--h3-size),
@@ -61,7 +62,7 @@ $body-font-family: 'Inter';
             'letter-spacing': normal,
             'font-family': $heading-font-family,
             'text-transform': none,
-           // 'weight': 500
+            'weight': 600
         ),
         'h4': (
             'size': var(--h4-size),
@@ -69,14 +70,15 @@ $body-font-family: 'Inter';
             'letter-spacing': .0073529412em,
             'font-family': $heading-font-family,
             'text-transform': none,
-          //  'weight': 500
+            'weight': 600
         ),
         'h5': (
             'size': var(--h5-size),
             // 'line-height': 1.33,
             // 'letter-spacing': normal,
             'font-family': $heading-font-family,
-            'text-transform': none
+            'text-transform': none,
+            'weight': 600
         ),
         // 'h6': (
         //     'size': var(--h6-size),

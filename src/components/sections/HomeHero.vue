@@ -6,7 +6,7 @@
             </div>
             <div class="hero-overlay text-center">
                 <h1 class="text-hero text-h1 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
-                <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
+                <h2 class="text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
             </div>
         </section>
     </div>
@@ -16,7 +16,7 @@
 import DynamicSpread from '@/visualization/DynamicSpread.vue';
 
 export default {
-    name: 'hero',
+    name: 'HomeHero',
     components: {
         DynamicSpread,
     },
@@ -25,6 +25,21 @@ export default {
 </script>
 
 <style scoped lang="scss">
+// .text-h3{
+//   font-weight: 900 !important;
+//   color: white;
+//   background-color: rgba(0, 0, 0, 0.5);
+//   display: inline;
+//   padding: 0.25em 0.5em;
+//   line-height: 1.6em;
+// }
+.text-h3{
+  font-weight: 900 !important;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  line-height: 1.6em;
+}
 .hero-section {
   display: grid;
   margin-bottom: 100px;
