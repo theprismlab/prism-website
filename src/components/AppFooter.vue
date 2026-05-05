@@ -33,10 +33,10 @@
         <v-col align-self="center">
             <v-row class="justify-end align-center">
               <v-col cols="6" xs="6" sm="6" md="6" lg="4" xl="4">
-                <v-img eager src="../../public/images/logo-white.png" max-width="166" width="100%" ></v-img>
+                <v-img eager :src="`${imgPath}PRISMLogo_All-White.png`" max-width="166" width="100%" ></v-img>
               </v-col>
               <v-col cols="6" xs="6" sm="6" md="6" lg="4" xl="4">
-                <v-img eager src="../../public/images/BroadLogo_All-White.png"  max-width="166" width="100%" ></v-img>
+                <v-img eager :src="`${imgPath}BroadLogo_All-White.png`"  max-width="166" width="100%" ></v-img>
               </v-col>
             </v-row>
         </v-col>
@@ -45,8 +45,23 @@
   </v-footer>
 </template>
 
-<script setup>
-import { link } from 'd3';
+<script>
+import { ASSET_BASE } from '@/utils/assets';
+
+export default {
+    name: "AppFooter",
+    data() {
+        return {
+          imgPath: ASSET_BASE,
+        }
+    },
+    computed: {
+
+    },
+    mounted() {
+
+    }
+}
 
  
 </script>

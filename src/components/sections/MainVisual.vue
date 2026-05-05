@@ -23,7 +23,7 @@
   </div>  
 </template>
 <script>
-
+import { ASSET_BASE } from '@/utils/assets';
 
 export default {
     name: "MainVisual",
@@ -35,12 +35,12 @@ export default {
     },
     computed: {
         imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/" : "../../public/images/"
+          return ASSET_BASE;
         },
         cards() {
           return [
           {
-            img: `${this.imgPath}main-11.png`,
+            img: `${this.imgPath}home-cell-lines.png`,
             title: "900+ genomically diverse barcoded and pooled cell lines",
             description: "Hematopoietic and solid tumor, covering 80 cancer subtypes",
             action: {
@@ -50,7 +50,7 @@ export default {
             }
           },
           {
-            img: `${this.imgPath}main-12.png`,
+            img: `${this.imgPath}home-features.png`,
             title: "150K+ unique baseline genetic and functional genomic features",
             description: "Features from the Dependency Map are correlated with the PRISM viability profile using univariate and multivariate predictive models",
              action: {
@@ -60,7 +60,7 @@ export default {
             }
           },
           {
-            img: `${this.imgPath}main-13.png`,
+            img: `${this.imgPath}home-target.png`,
             title: "Identify target and patient population of your drug",
             description: "Confirm hypothesis and establish biomarkers of sensitivity and resistance",
             action: {

@@ -78,12 +78,14 @@
 </template>
 
 <script>
+  import { ASSET_BASE } from '@/utils/assets';
+
   export default {
     name: "CellLineCollection",
 
   computed:{
     imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/" : "../../public/images/"
+          return ASSET_BASE;
         },
     },
     data() {

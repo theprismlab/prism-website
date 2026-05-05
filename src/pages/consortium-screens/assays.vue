@@ -62,6 +62,8 @@
 </template>
 <script>
 
+import { assetUrl } from '@/utils/assets';
+
 export default {
     name: 'Assays',
     data() {
@@ -144,7 +146,7 @@ export default {
     },
     computed: {
     imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/assay/" : "../../public/images/assay/"
+          return assetUrl('assay/');
         },
     },
     watch: {

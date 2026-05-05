@@ -79,6 +79,7 @@
   import { mdiAccountGroup } from '@mdi/js';
   // import TheViabilityScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityScene.vue';
   import Hero from '../components/sections/Hero.vue';
+  import { ASSET_BASE } from '@/utils/assets';
   export default {
     components: {
       SvgIcon,
@@ -147,9 +148,7 @@
     },
     computed: {
       imgPath() {
-        return import.meta.env.PROD
-          ? import.meta.env.BASE_URL + 'images/home/'
-          : '../../public/images/home/';
+        return ASSET_BASE;
       },
       mobile() {
         return this.$vuetify.display.mobile;

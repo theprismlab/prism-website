@@ -18,6 +18,7 @@
 <script>
 
 import * as content from '@/utils/content.js'
+import { ASSET_BASE } from '@/utils/assets';
 
 export default {
     name: "OurTechnology",
@@ -34,7 +35,7 @@ export default {
     },
     computed: {
         imgPath() {
-          return import.meta.env.PROD ? import.meta.env.BASE_URL + "images/home/" : "../../public/images/home/"
+          return ASSET_BASE;
         },
     },
     mounted(){
