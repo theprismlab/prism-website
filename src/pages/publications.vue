@@ -110,11 +110,13 @@
       links: [
         { field: 'link', label: 'Read Abstract' },
         { field: 'posterLink', label: 'View Poster', icon: 'mdi-eye-outline' },
+        { field: 'presentationLink', label: 'View Presentation', icon: 'mdi-video-outline' },
       ],
       parseRow: (d) => ({
         year: d.Year,
         link: d.Link,
         posterLink: d['Poster Link'],
+        presentationLink: d['Presentation Link'],
         publisher: d.Conference,
         author: d.Author != '' ? d.Author : 'N/A',
       }),
