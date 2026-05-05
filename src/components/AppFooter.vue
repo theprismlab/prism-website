@@ -46,11 +46,13 @@
 </template>
 
 <script>
+import { ASSET_BASE } from '@/utils/assets';
+
 export default {
     name: "AppFooter",
     data() {
         return {
-          imgPath: 'https://assets.clue.io/theprismlab.org/',
+          imgPath: ASSET_BASE,
         }
     },
     computed: {

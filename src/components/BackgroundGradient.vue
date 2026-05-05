@@ -41,9 +41,7 @@ export default {
         }
     },
     computed: {
-        imgPath() {
-            return this.$store.state.imgPath;
-        },
+
 
     },
     watch:{

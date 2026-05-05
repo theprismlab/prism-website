@@ -46,6 +46,8 @@
 
 <script>
 
+import { ASSET_BASE } from '@/utils/assets';
+
 export default {
   name: 'DataAnalysis',
 data() {
@@ -55,7 +57,7 @@ data() {
   },
     computed:{
     imgPath() {
-          return 'https://assets.clue.io/theprismlab.org/';
+          return ASSET_BASE;
         },
     },
   components: {

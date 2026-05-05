@@ -79,6 +79,7 @@
   import { mdiAccountGroup } from '@mdi/js';
   // import TheViabilityScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityScene.vue';
   import Hero from '../components/sections/Hero.vue';
+  import { ASSET_BASE } from '@/utils/assets';
   export default {
     components: {
       SvgIcon,
@@ -147,7 +148,7 @@
     },
     computed: {
       imgPath() {
-        return 'https://assets.clue.io/theprismlab.org/';
+        return ASSET_BASE;
       },
       mobile() {
         return this.$vuetify.display.mobile;

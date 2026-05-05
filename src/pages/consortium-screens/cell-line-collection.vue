@@ -78,12 +78,14 @@
 </template>
 
 <script>
+  import { ASSET_BASE } from '@/utils/assets';
+
   export default {
     name: "CellLineCollection",
 
   computed:{
     imgPath() {
-          return 'https://assets.clue.io/theprismlab.org/';
+          return ASSET_BASE;
         },
     },
     data() {

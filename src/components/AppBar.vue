@@ -106,11 +106,13 @@
 </template>
 
 <script>
+  import { ASSET_BASE } from '@/utils/assets';
+
   export default {
     name: 'AppBar',
     data() {
       return {
-        imgPath: 'https://assets.clue.io/theprismlab.org/',
+        imgPath: ASSET_BASE,
         drawer: false,
         items: [
           // {
