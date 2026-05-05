@@ -1,6 +1,6 @@
 <template>
     <v-card class="fill-height" :elevation="elevation" style="max-width:350px">
-        <v-img v-if="image" class="align-end technology-card-image" alt="" :src="image"></v-img>
+        <v-img eager v-if="image" class="align-end technology-card-image" alt="" :src="image"></v-img>
         <h3 v-if="title" class="v-card-title text-h4 font-weight-bold" v-html="title"></h3>
         <h4 v-if="subtitle" class="v-card-subtitle" v-html="subtitle"></h4>
         <p v-if="text" class="v-card-text" v-html="text"></p>

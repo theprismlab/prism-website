@@ -11,7 +11,7 @@
     </v-row>  
   
     <v-row class="justify-center mb-4">
-      <v-img style="max-width:800px;" :src="`${imgPath}${imgFiles[selectedIndex]}`" alt="Cell Line Collection"></v-img>
+      <v-img eager style="max-width:800px;" :src="`${imgPath}${imgFiles[selectedIndex]}`" alt="Cell Line Collection"></v-img>
     </v-row>
 
     <v-row>

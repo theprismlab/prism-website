@@ -4,7 +4,7 @@
     <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
     <v-app-bar-title>
       <router-link to="/" tag="span" style="cursor: pointer; text-decoration: none; border: none">
-        <v-img id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png" />
+        <v-img eager id="prism_logo" alt="PRISM Logo" width="160px" src="../assets/logo.png" />
       </router-link>
     </v-app-bar-title>
     <!-- Tabs for desktop -->
@@ -57,24 +57,33 @@
   <v-navigation-drawer v-model="drawer" app temporary>
     <v-list>
       <v-list-item>
-        <v-list-group v-for="item in items" :value="item.title" :key="item.title" no-action>
-          <template v-slot:activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              :title="item.title"
-              :class="{ 'active-menu-item': isParentActive(item) }"
-            ></v-list-item>
-          </template>
+        <template v-for="item in items" :key="item.title">
           <v-list-item
-            v-for="child in item.children"
-            :key="child.id"
-            :to="child.route"
+            v-if="!item.children || item.children.length === 0"
+            :to="item.route"
             exact
+            :title="item.title"
             active-class="active-menu-item"
-          >
-            <v-list-item-title>{{ child.title }}</v-list-item-title>
-          </v-list-item>
-        </v-list-group>
+          ></v-list-item>
+          <v-list-group v-else :value="item.title" no-action>
+            <template v-slot:activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                :title="item.title"
+                :class="{ 'active-menu-item': isParentActive(item) }"
+              ></v-list-item>
+            </template>
+            <v-list-item
+              v-for="child in item.children"
+              :key="child.id"
+              :to="child.route"
+              exact
+              active-class="active-menu-item"
+            >
+              <v-list-item-title>{{ child.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list-group>
+        </template>
       </v-list-item>
 
       <v-list-item>

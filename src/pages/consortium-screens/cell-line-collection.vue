@@ -20,7 +20,7 @@
   <container-sm class="mt-6 mb-12">
     <!-- <v-card class="py-6" variant="outlined" color="grey-lighten-2">
       <v-card-item> -->
-        <v-img  style="max-width:800px; margin: auto;" :src="`${imgPath}img-kb-1.2-step-1.svg`" alt="Cell Line Collection"></v-img>
+        <v-img eager style="max-width:800px; margin: auto;" :src="`${imgPath}img-kb-1.2-step-1.svg`" alt="Cell Line Collection"></v-img>
       <!-- </v-card-item>
 
     </v-card> -->
