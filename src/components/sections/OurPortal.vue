@@ -3,7 +3,7 @@
         <container-md class="py-8">
             <v-row class="d-flex align-center justify-center">
                 <v-col cols="11" xs="11" sm="5" md="5" lg="5">
-                    <v-img class="align-end" :src="`${imgPath}${image}`" width="100%"></v-img>
+                    <v-img eager class="align-end" :src="`${imgPath}${image}`" width="100%"></v-img>
                 </v-col>
                 <v-col>
                     <v-card variant="transparent">

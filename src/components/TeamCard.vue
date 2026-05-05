@@ -2,7 +2,7 @@
     <v-card elevation="0" class="fill-height" align="center" justify="center" >
         <v-card-item>
             <div class="avatar-bg" :class="gradientClass">
-                <v-img :src="image" height="auto" width="90%" aspect-ratio="1/1" class="rounded-circle"></v-img>
+                <v-img eager :src="image" height="auto" width="90%" aspect-ratio="1/1" class="rounded-circle"></v-img>
             </div>
             <h3 class="text-h5 mt-2">{{ name }}</h3>
             <p class="v-card-subtitle">{{ title }}</p>

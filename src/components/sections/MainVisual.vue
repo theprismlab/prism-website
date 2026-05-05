@@ -6,7 +6,7 @@
           <v-card class="pa-4 fill-height" variant="flat">
             <v-row no-gutters>
               <v-col cols="5" xs="5" sm="5" md="12" lg="12" xl="12">
-                  <v-img  style="margin:auto;" :src="card.img" width="100%" max-width="250px"></v-img>
+                  <v-img eager style="margin:auto;" :src="card.img" width="100%" max-width="250px"></v-img>
               </v-col>
               <v-col>
                 <v-card-item>
