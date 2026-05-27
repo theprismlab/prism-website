@@ -1,27 +1,46 @@
 <template>
-  <AppBar/>
+  <prism-app-bar
+    logo-href="/"
+    :is-logged-in="isLoggedIn"
+    :current-path="currentPath"
+    @navigate="onNavigate"
+  />
   <v-main>
-    <!-- <AACRBanner v-if="showBanner"></AACRBanner> -->
     <router-view />
   </v-main>
   <AppFooter />
 </template>
 
 <script>
-// import AACRBanner from '@/components/AACRBanner.vue';
-
-export default {
-  name: 'Default',
-  components: {
-    // AACRBanner
-  },
-  data: function() {
-    return {
-    //  showBanner: true
-    }
-  }
-}
+  export default {
+    name: 'Default',
+    components: {},
+    data: function () {
+      return {
+        //  showBanner: true
+      };
+    },
+    computed: {
+      isLoggedIn() {
+        return false;
+      },
+      currentPath() {
+        return this.$route.path;
+      },
+    },
+    methods: {
+      onNavigate(item) {
+        console.log('currentPath', this.currentPath);
+        console.log('Navigating to', item.route);
+        if (item.route !== this.currentPath) {
+          if (item.route === '/portal') {
+            window.open('https://theprismlab.org/portal', '_blank');
+            return;
+          }
+          this.$router.push(item.route);
+        }
+      },
+    },
+  };
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>
