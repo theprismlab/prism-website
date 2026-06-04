@@ -1,7 +1,6 @@
 <template>
   <page class="mt-0 pt-0">
-    <Hero></Hero>
-
+    <HomeHero></HomeHero>
     <container-sm>
       <p class="text-h3 text-center">
         Our lab partners with researchers to reveal clinically important differences in drug
@@ -24,7 +23,7 @@
 
     <page-section background="muted">
       <container-md>
-        <MainVisual></MainVisual>
+        <HomeOverviewCards></HomeOverviewCards>
       </container-md>
     </page-section>
 
@@ -41,43 +40,12 @@
         Working with pharmaceutical and biotech companies and academics to improve the outcome for
         cancer patients worldwide.
       </p>
-      <v-row class="mt-12">
-        <v-col
-          v-for="(card, index) in ourImpactCards"
-          :key="card.title"
-          cols="12"
-          xs="12"
-          sm="4"
-          md="4"
-          lg="4"
-          xl="4"
-        >
-          <stat-card
-            :index="index"
-            :title="card.title"
-            :subtitle="card.subtitle"
-            :icon="card.icon"
-          ></stat-card>
-        </v-col>
-      </v-row>
+      <HomeImpactCards></HomeImpactCards>
     </container-sm>
 
     <container-sm class="my-12">
       <section-overline>Testimonials</section-overline>
-      <v-row class="mt-6 mb-6">
-        <v-col
-          v-for="(card, index) in testimonialCards"
-          :key="index"
-          cols="12"
-          xs="12"
-          sm="6"
-          md="6"
-          lg="6"
-          xl="6"
-        >
-          <testimonial-card :index="index" :card="card"></testimonial-card>
-        </v-col>
-      </v-row>
+      <HomeTestimonialCards></HomeTestimonialCards>
     </container-sm>
   </page>
 </template>
@@ -86,13 +54,18 @@
   import { mdiHexagonMultiple } from '@mdi/js';
   import { mdiFileDocumentMultipleOutline } from '@mdi/js';
   import { mdiAccountGroup } from '@mdi/js';
-  // import TheViabilityScene from '../visualization/viability-heatmap-scatter-plot/TheViabilityScene.vue';
-  import Hero from '../components/sections/Hero.vue';
+  import HomeHero from '../components/sections/HomeHero.vue';
   import { ASSET_BASE } from '@/utils/assets';
+  import HomeOverviewCards from '@/components/sections/HomeOverviewCards.vue';
+  import HomeTestimonialCards from '@/components/sections/HomeTestimonialCards.vue';
+  import HomeImpactCards from '@/components/sections/HomeImpactCards.vue';
   export default {
     components: {
       SvgIcon,
-      Hero,
+      HomeHero,
+      HomeOverviewCards,
+      HomeTestimonialCards,
+      HomeImpactCards,
     },
     data() {
       return {
@@ -131,20 +104,6 @@
               size: 54,
               borderRadius: '50%',
             },
-          },
-        ],
-        testimonialCards: [
-          {
-            quote:
-              'I would encourage anyone in the oncology drug development space to take advantage of... the seamless integration of the generated drug-sensitivity data (900+ cell lines) with the Broad’s DepMap multi-omic annotation.',
-            author: 'Florian Muller',
-            company: 'Head of Chemistry<br>Lindonlight Collective',
-          },
-          {
-            quote:
-              'The true value of PRISM lies in its ability to generate high-throughput data incredibly cost-effectively. The user-friendly, auto-generated reports with built-in analytics supply invaluable insights, streamlining our research process.',
-            author: 'Discovery Oncology Scientist',
-            company: 'Fortune 500<br>Pharmaceutical Company',
           },
         ],
       };

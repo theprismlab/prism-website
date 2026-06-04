@@ -6,7 +6,7 @@
             </div>
             <div class="hero-overlay text-center">
                 <h1 class="text-hero text-h1 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
-                <h2 class="text-hero text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
+                <h2 class="text-h3">Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission driven.</h2>
             </div>
         </section>
     </div>
@@ -16,7 +16,7 @@
 import DynamicSpread from '@/visualization/DynamicSpread.vue';
 
 export default {
-    name: 'hero',
+    name: 'HomeHero',
     components: {
         DynamicSpread,
     },
@@ -25,6 +25,43 @@ export default {
 </script>
 
 <style scoped lang="scss">
+// .text-h3{
+//   font-weight: 900 !important;
+//   color: white;
+//   background-color: rgba(0, 0, 0, 0.5);
+//   display: inline;
+//   padding: 0.25em 0.5em;
+//   line-height: 1.6em;
+// }
+.text-h3 {
+  font-weight: 900 !important;
+  background:
+    /* Tight bright core for legibility */
+    radial-gradient(
+      ellipse 45% 55% at center,
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(255, 255, 255, 0.65) 45%,
+      rgba(255, 255, 255, 0.15) 75%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    /* Soft mid halo */
+      radial-gradient(
+        ellipse 80% 90% at center,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0.12) 55%,
+        rgba(255, 255, 255, 0) 100%
+      ),
+    /* Wide outer atmospheric glow */
+      radial-gradient(
+        ellipse 110% 140% at center,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.05) 60%,
+        rgba(255, 255, 255, 0) 100%
+      );
+  display: inline-block;
+  padding: 0.5em 0.5em;
+  line-height: 1.6em;
+}
 .hero-section {
   display: grid;
   margin-bottom: 100px;
