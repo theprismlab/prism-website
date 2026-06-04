@@ -686,7 +686,7 @@ const j = [
     resolveItem: (e, t) => {
       if (e.id === "portal")
         return { ...e, route: "/" };
-      const a = (p) => t ? { ...p, route: `${t}${p.route}`, external: !0 } : p;
+      const a = (p) => ({ ...p, route: t ? `${t}${p.route}` : p.route, external: !0 });
       return e.children ? { ...e, children: e.children.map(a) } : a(e);
     }
   }
@@ -965,7 +965,7 @@ function ue(e, t, a, p, s, f) {
     })
   ]);
 }
-const T = /* @__PURE__ */ y(V, [["render", ue], ["__scopeId", "data-v-4773874f"]]);
+const T = /* @__PURE__ */ y(V, [["render", ue], ["__scopeId", "data-v-8efc60bd"]]);
 T.install = function(t) {
   t.component(T.name, T);
 };
