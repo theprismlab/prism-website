@@ -6,8 +6,8 @@
 
 // Plugins
 import { registerPlugins } from '@/plugins';
-import Prism from '@theprismlab/component-library/vue3';
-import '@theprismlab/component-library/vue3/style.css';
+import Prism from './lib/prism.js';
+import './lib/prism.css';
 
 // Components
 import App from './App.vue';
