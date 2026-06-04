@@ -1,9 +1,9 @@
 <template>
   <prism-app-bar
-    logo-href="/"
+    site="marketing"
+    :base-url="baseUrl"
     :is-logged-in="isLoggedIn"
     :current-path="currentPath"
-    @navigate="onNavigate"
   />
   <v-main>
     <router-view />
@@ -17,30 +17,25 @@
     components: {},
     data: function () {
       return {
+        baseUrl: import.meta.env.VITE_PRISM_BASE_URL || '',
         //  showBanner: true
       };
     },
     computed: {
       isLoggedIn() {
+        console.log(localStorage);
+        const user_info = localStorage.getItem('user_info');
+        const user_info_parsed = JSON.parse(user_info);
+        if (user_info_parsed) {
+          return user_info_parsed.email !== 'clue_demo@clue.io';
+        }
         return false;
       },
       currentPath() {
         return this.$route.path;
       },
     },
-    methods: {
-      onNavigate(item) {
-        console.log('currentPath', this.currentPath);
-        console.log('Navigating to', item.route);
-        if (item.route !== this.currentPath) {
-          if (item.route === '/portal') {
-            window.open('https://theprismlab.org/portal', '_blank');
-            return;
-          }
-          this.$router.push(item.route);
-        }
-      },
-    },
+    methods: {},
   };
 </script>
 <style scoped></style>
