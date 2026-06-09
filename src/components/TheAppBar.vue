@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app clipped-left color="white" elevation="0" height="64">
-    <prism-app-bar site="portal" :base-url="baseUrl" />
+    <prism-app-bar site="marketing" :base-url="baseUrl" />
   </v-app-bar>
 </template>
 
