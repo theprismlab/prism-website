@@ -35,27 +35,27 @@ const routes = [
   { path: '/faq', component: () => import('@/pages/faq.vue') },
   { path: '/publications', component: () => import('@/pages/publications.vue') },
 
-  {
-    path: '/hero/hero-central-cluster-2d',
-    component: () => import('@/pages/hero/hero-central-cluster-2d.vue'),
-  },
-  {
-    path: '/hero/hero-central-cluster-3d',
-    component: () => import('@/pages/hero/hero-central-cluster-3d.vue'),
-  },
-  {
-    path: '/hero/hero-dynamic-spread',
-    component: () => import('@/pages/hero/hero-dynamic-spread.vue'),
-  },
-  { path: '/hero/hero-even-spread', component: () => import('@/pages/hero/hero-even-spread.vue') },
-  {
-    path: '/hero/hero-heatmap-scatter',
-    component: () => import('@/pages/hero/hero-heatmap-scatter.vue'),
-  },
-  {
-    path: '/hero/hero-multi-cluster',
-    component: () => import('@/pages/hero/hero-multi-cluster.vue'),
-  },
+  // {
+  //   path: '/hero/hero-central-cluster-2d',
+  //   component: () => import('@/pages/hero/hero-central-cluster-2d.vue'),
+  // },
+  // {
+  //   path: '/hero/hero-central-cluster-3d',
+  //   component: () => import('@/pages/hero/hero-central-cluster-3d.vue'),
+  // },
+  // {
+  //   path: '/hero/hero-dynamic-spread',
+  //   component: () => import('@/pages/hero/hero-dynamic-spread.vue'),
+  // },
+  // { path: '/hero/hero-even-spread', component: () => import('@/pages/hero/hero-even-spread.vue') },
+  // {
+  //   path: '/hero/hero-heatmap-scatter',
+  //   component: () => import('@/pages/hero/hero-heatmap-scatter.vue'),
+  // },
+  // {
+  //   path: '/hero/hero-multi-cluster',
+  //   component: () => import('@/pages/hero/hero-multi-cluster.vue'),
+  // },
 
   // ─── Submissions layout ───────────────────────────────────────────────────
   {

@@ -1,5 +1,12 @@
 <template>
-  <v-navigation-drawer v-model="drawer" :rail="isSubSection" app location="left" width="260" :order="1">
+  <v-navigation-drawer
+    v-model="drawer"
+    :rail="isSubSection"
+    app
+    location="left"
+    width="260"
+    :order="1"
+  >
     <v-list density="comfortable" nav>
       <v-list-subheader>Submissions</v-list-subheader>
       <v-list-item
@@ -16,8 +23,17 @@
 </template>
 
 <script>
+  import SvgIcon from '@jamescoyle/vue-icon';
+  import { mdiInformationVariantBoxOutline } from '@mdi/js';
+  import { mdiFileDocumentArrowRightOutline } from '@mdi/js';
+  import { mdiCurrencyUsd } from '@mdi/js';
+  import { mdiFileDocumentEditOutline } from '@mdi/js';
+  import { mdiFlaskOutline } from '@mdi/js';
+  import { mdiTruckOutline } from '@mdi/js';
+
   export default {
     name: 'SubmissionsDrawer',
+    components: { SvgIcon },
     data() {
       return {
         drawer: true,
