@@ -1,8 +1,3 @@
-<route lang="yaml">
-meta:
-  layout: submissions
-</route>
-
 <template>
   <page>
     <container-md>
