@@ -12,7 +12,13 @@
       <template v-for="item in items" :key="item.id">
         <v-list-group v-if="item.pages" :value="item.id">
           <template #activator="{ props }">
-            <v-list-item v-bind="props" :prepend-icon="item.icon" :title="item.title" />
+            <v-list-item
+              v-bind="props"
+              :prepend-icon="item.icon"
+              :title="item.title"
+              :active="isGroupActive(item)"
+              active-class="active-menu-item"
+            />
           </template>
           <v-list-item
             v-for="pageDef in item.pages"
@@ -20,10 +26,10 @@
             :to="{ path: item.route, query: { page: pageDef.slug } }"
             :title="pageDef.title"
             :active="isPageActive(item, pageDef)"
-            prepend-icon="mdi-file-outline"
             active-class="active-menu-item"
           />
         </v-list-group>
+
         <v-list-item
           v-else
           :to="item.route"
@@ -32,8 +38,17 @@
           exact
           active-class="active-menu-item"
         />
+        <v-divider></v-divider>
       </template>
-      <v-list-item> </v-list-item>
+    </v-list>
+    <v-list v-if="screen" density="comfortable" nav>
+      <v-list-item
+        id="form-btn"
+        :to="`/submissions/forms/${screen}`"
+        title="Start Form"
+        append-icon="mdi-arrow-right"
+        exact
+      />
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -70,13 +85,13 @@
             icon: 'mdi-truck-outline',
             pages: SHIPPING_PAGES,
           },
-          {
-            id: 'forms',
-            title: `Start Form`,
-            route: `/submissions/forms/${this.screen}`,
-            icon: 'mdi-file-document-arrow-right-outline',
-            type: 'button',
-          },
+          // {
+          //   id: 'forms',
+          //   title: `Start Form`,
+          //   route: `/submissions/forms/${this.screen}`,
+          //   icon: 'mdi-file-document-arrow-right-outline',
+          //   type: 'button',
+          // },
         ];
       },
     },
@@ -93,6 +108,9 @@
       },
     },
     methods: {
+      isGroupActive(item) {
+        return this.$route.path.includes(`/${item.id}`);
+      },
       isPageActive(item, pageDef) {
         if (!this.$route.path.endsWith(item.id)) return false;
         const currentSlug = this.$route.query.page;
@@ -102,4 +120,28 @@
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+  #form-btn {
+    padding-left: 24px;
+    padding-right: 16px;
+    font-weight: bold;
+    color: black;
+    border-radius: 40px;
+    border: 1px solid black;
+  }
+  .v-list--nav {
+    padding-inline: 0px;
+  }
+  .v-list-item {
+    border-radius: 0px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .v-list-item--active {
+    color: var(--v-primary-base);
+    font-weight: 900 !important;
+  }
+  /* .v-list-item__overlay {
+
+  } */
+</style>

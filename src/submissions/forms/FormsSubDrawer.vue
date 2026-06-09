@@ -21,6 +21,16 @@
         </div>
       </div>
     </div>
+    <div v-if="screen">
+      <v-list density="comfortable" nav>
+        <v-list-item
+          :to="`/submissions/instructions/${screen}`"
+          title="Back to Instructions"
+          prepend-icon="mdi-arrow-left"
+          exact
+        />
+      </v-list>
+    </div>
   </v-navigation-drawer>
 </template>
 
