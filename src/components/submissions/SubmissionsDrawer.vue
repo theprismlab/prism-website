@@ -18,18 +18,23 @@
 <script>
   export default {
     name: 'SubmissionsDrawer',
+    data() {
+      return {
+        drawer: true,
+      };
+    },
     computed: {
+      screen() {
+        return this.$route.params.screen;
+      },
       isSubSection() {
         const path = this.$route.path;
         return (
           path.startsWith('/submissions/instructions') || path.startsWith('/submissions/forms')
         );
       },
-    },
-    data() {
-      return {
-        drawer: true,
-        items: [
+      items() {
+        return [
           {
             id: 'screens',
             title: 'Screens',
@@ -40,14 +45,16 @@
           {
             id: 'instructions',
             title: 'Instructions',
-            route: '/submissions/instructions',
+            route: this.screen
+              ? `/submissions/instructions/${this.screen}`
+              : '/submissions/instructions',
             icon: 'mdi-information-variant-box-outline',
             exact: false,
           },
           {
             id: 'forms',
             title: 'Forms',
-            route: '/submissions/forms',
+            route: this.screen ? `/submissions/forms/${this.screen}` : '/submissions/forms',
             icon: 'mdi-file-document-arrow-right-outline',
             exact: false,
           },
@@ -58,8 +65,8 @@
             icon: 'mdi-currency-usd',
             exact: true,
           },
-        ],
-      };
+        ];
+      },
     },
   };
 </script>
