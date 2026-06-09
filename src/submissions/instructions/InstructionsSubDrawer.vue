@@ -17,7 +17,7 @@
 </template>
 
 <script>
-  import ScreenSelector from './ScreenSelector.vue';
+  import ScreenSelector from '../ScreenSelector.vue';
 
   export default {
     name: 'InstructionsSubDrawer',

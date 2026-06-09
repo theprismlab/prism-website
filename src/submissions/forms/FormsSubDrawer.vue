@@ -25,8 +25,8 @@
 </template>
 
 <script>
-  import ScreenSelector from './ScreenSelector.vue';
-  import { FORM_STEPS, useFormProgressStore } from './store';
+  import ScreenSelector from '../ScreenSelector.vue';
+  import { FORM_STEPS, useFormProgressStore } from '../store';
 
   export default {
     name: 'FormsSubDrawer',

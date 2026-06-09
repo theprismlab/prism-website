@@ -9,8 +9,8 @@
 
 <script>
   import SubmissionsDrawer from './SubmissionsDrawer.vue';
-  import InstructionsSubDrawer from './InstructionsSubDrawer.vue';
-  import FormsSubDrawer from './FormsSubDrawer.vue';
+  import InstructionsSubDrawer from './instructions/InstructionsSubDrawer.vue';
+  import FormsSubDrawer from './forms/FormsSubDrawer.vue';
 
   export default {
     name: 'SubmissionsLayout',

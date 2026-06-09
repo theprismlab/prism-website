@@ -28,18 +28,18 @@ const routes = [
   { path: '/hero/hero-multi-cluster', component: () => import('@/pages/hero/hero-multi-cluster.vue') },
 
   // ─── Submissions layout ───────────────────────────────────────────────────
-  { path: '/submissions', component: () => import('@/pages/submissions/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/quote-and-po', component: () => import('@/pages/submissions/quote-and-po.vue'), meta: submissionsMeta },
+  { path: '/submissions', component: () => import('@/submissions/index.vue'), meta: submissionsMeta },
+  { path: '/submissions/quote-and-po', component: () => import('@/submissions/quote-and-po.vue'), meta: submissionsMeta },
 
-  { path: '/submissions/instructions', component: () => import('@/pages/submissions/instructions/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/instructions/:screen', component: () => import('@/pages/submissions/instructions/[screen]/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/instructions/:screen/getting-started', component: () => import('@/pages/submissions/instructions/[screen]/getting-started.vue'), meta: submissionsMeta },
-  { path: '/submissions/instructions/:screen/requirements', component: () => import('@/pages/submissions/instructions/[screen]/requirements.vue'), meta: submissionsMeta },
+  { path: '/submissions/instructions', component: () => import('@/submissions/instructions/index.vue'), meta: submissionsMeta },
+  { path: '/submissions/instructions/:screen', component: () => import('@/submissions/instructions/screen/index.vue'), meta: submissionsMeta },
+  { path: '/submissions/instructions/:screen/getting-started', component: () => import('@/submissions/instructions/screen/getting-started.vue'), meta: submissionsMeta },
+  { path: '/submissions/instructions/:screen/requirements', component: () => import('@/submissions/instructions/screen/requirements.vue'), meta: submissionsMeta },
 
-  { path: '/submissions/forms', component: () => import('@/pages/submissions/forms/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/forms/:screen', component: () => import('@/pages/submissions/forms/[screen]/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/forms/:screen/application', component: () => import('@/pages/submissions/forms/[screen]/application.vue'), meta: submissionsMeta },
-  { path: '/submissions/forms/:screen/documents', component: () => import('@/pages/submissions/forms/[screen]/documents.vue'), meta: submissionsMeta },
+  { path: '/submissions/forms', component: () => import('@/submissions/forms/index.vue'), meta: submissionsMeta },
+  { path: '/submissions/forms/:screen', component: () => import('@/submissions/forms/screen/index.vue'), meta: submissionsMeta },
+  { path: '/submissions/forms/:screen/application', component: () => import('@/submissions/forms/screen/application.vue'), meta: submissionsMeta },
+  { path: '/submissions/forms/:screen/documents', component: () => import('@/submissions/forms/screen/documents.vue'), meta: submissionsMeta },
 ]
 
 const redirects = [
