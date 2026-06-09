@@ -2,7 +2,7 @@
   <page>
     <container-md>
       <page-title>Test Agent Instructions</page-title>
-      <iframe :src="pdfUrl" class="pdf-embed" />
+      <iframe :key="page" :src="pdfUrl" class="pdf-embed" />
     </container-md>
   </page>
 </template>
@@ -14,8 +14,11 @@
       screen() {
         return this.$route.params.screen;
       },
+      page() {
+        return parseInt(this.$route.query.page) || 1;
+      },
       pdfUrl() {
-        return `/pdfs/instructions/${this.screen}_test_agent_instructions.pdf`;
+        return `/pdfs/instructions/${this.screen}_test_agent_instructions.pdf#page=${this.page}`;
       },
     },
   };
