@@ -1,6 +1,7 @@
 <template>
   <v-navigation-drawer app location="left" width="220" :order="2">
-    <v-list density="comfortable" nav>
+    <screen-selector />
+    <v-list v-if="screen" density="comfortable" nav>
       <v-list-subheader>Forms</v-list-subheader>
       <v-list-item
         v-for="item in items"
@@ -16,31 +17,37 @@
 </template>
 
 <script>
+  import ScreenSelector from './ScreenSelector.vue';
+
   export default {
     name: 'FormsSubDrawer',
-    data() {
-      return {
-        items: [
+    components: { ScreenSelector },
+    computed: {
+      screen() {
+        return this.$route.params.screen;
+      },
+      items() {
+        return [
           {
             id: 'overview',
             title: 'Overview',
-            route: '/submissions/forms',
+            route: `/submissions/forms/${this.screen}`,
             icon: 'mdi-home-outline',
           },
           {
             id: 'application',
             title: 'Application',
-            route: '/submissions/forms/application',
+            route: `/submissions/forms/${this.screen}/application`,
             icon: 'mdi-file-document-edit-outline',
           },
           {
             id: 'documents',
             title: 'Supporting Documents',
-            route: '/submissions/forms/documents',
+            route: `/submissions/forms/${this.screen}/documents`,
             icon: 'mdi-paperclip',
           },
-        ],
-      };
+        ];
+      },
     },
   };
 </script>

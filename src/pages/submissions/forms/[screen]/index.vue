@@ -6,14 +6,14 @@ meta:
 <template>
   <page>
     <container-md>
-      <page-title>Instructions</page-title>
-      <p class="text-body-1">Select a screen above to view instructions.</p>
+      <page-title>Forms</page-title>
+      <p class="text-body-1">Overview of submission forms.</p>
     </container-md>
   </page>
 </template>
 
 <script>
   export default {
-    name: 'InstructionsIndex',
+    name: 'FormsOverview',
   };
 </script>

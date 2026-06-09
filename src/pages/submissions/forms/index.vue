@@ -7,13 +7,13 @@ meta:
   <page>
     <container-md>
       <page-title>Forms</page-title>
-      <p class="text-body-1">Overview of submission forms.</p>
+      <p class="text-body-1">Select a screen above to view forms.</p>
     </container-md>
   </page>
 </template>
 
 <script>
   export default {
-    name: 'FormsOverview',
+    name: 'FormsIndex',
   };
 </script>

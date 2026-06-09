@@ -1,6 +1,7 @@
 <template>
   <v-navigation-drawer app location="left" width="220" :order="2">
-    <v-list density="comfortable" nav>
+    <screen-selector />
+    <v-list v-if="screen" density="comfortable" nav>
       <v-list-subheader>Instructions</v-list-subheader>
       <v-list-item
         v-for="item in items"
@@ -16,31 +17,37 @@
 </template>
 
 <script>
+  import ScreenSelector from './ScreenSelector.vue';
+
   export default {
     name: 'InstructionsSubDrawer',
-    data() {
-      return {
-        items: [
+    components: { ScreenSelector },
+    computed: {
+      screen() {
+        return this.$route.params.screen;
+      },
+      items() {
+        return [
           {
             id: 'overview',
             title: 'Overview',
-            route: '/submissions/instructions',
+            route: `/submissions/instructions/${this.screen}`,
             icon: 'mdi-home-outline',
           },
           {
             id: 'getting-started',
             title: 'Getting Started',
-            route: '/submissions/instructions/getting-started',
+            route: `/submissions/instructions/${this.screen}/getting-started`,
             icon: 'mdi-rocket-launch-outline',
           },
           {
             id: 'requirements',
             title: 'Requirements',
-            route: '/submissions/instructions/requirements',
+            route: `/submissions/instructions/${this.screen}/requirements`,
             icon: 'mdi-checkbox-marked-circle-outline',
           },
-        ],
-      };
+        ];
+      },
     },
   };
 </script>
