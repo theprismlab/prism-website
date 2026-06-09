@@ -12,11 +12,7 @@
       <template v-for="item in items" :key="item.id">
         <v-list-group v-if="item.pages" :value="item.id">
           <template #activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              :prepend-icon="item.icon"
-              :title="item.title"
-            />
+            <v-list-item v-bind="props" :prepend-icon="item.icon" :title="item.title" />
           </template>
           <v-list-item
             v-for="pageDef in item.pages"
@@ -37,6 +33,7 @@
           active-class="active-menu-item"
         />
       </template>
+      <v-list-item> </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -72,6 +69,13 @@
             route: `/submissions/instructions/${this.screen}/shipping`,
             icon: 'mdi-truck-outline',
             pages: SHIPPING_PAGES,
+          },
+          {
+            id: 'forms',
+            title: `Start Form`,
+            route: `/submissions/forms/${this.screen}`,
+            icon: 'mdi-file-document-arrow-right-outline',
+            type: 'button',
           },
         ];
       },
