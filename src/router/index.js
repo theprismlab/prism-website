@@ -32,7 +32,7 @@ const routes = [
   { path: '/submissions/quote-and-po', component: () => import('@/submissions/quote-and-po.vue'), meta: submissionsMeta },
 
   { path: '/submissions/instructions', component: () => import('@/submissions/instructions/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/instructions/:screen', component: () => import('@/submissions/instructions/screen/index.vue'), meta: submissionsMeta },
+  { path: '/submissions/instructions/:screen', redirect: (to) => `/submissions/instructions/${to.params.screen}/test-agent` },
   { path: '/submissions/instructions/:screen/test-agent', component: () => import('@/submissions/instructions/screen/test-agent.vue'), meta: submissionsMeta, beforeEnter: (to) => { if (!to.query.page) return { ...to, query: { page: 1 } } } },
   { path: '/submissions/instructions/:screen/shipping', component: () => import('@/submissions/instructions/screen/shipping.vue'), meta: submissionsMeta },
 
