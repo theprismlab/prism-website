@@ -14,10 +14,8 @@
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
-              :to="item.route"
               :prepend-icon="item.icon"
               :title="item.title"
-              active-class="active-menu-item"
             />
           </template>
           <v-list-item
@@ -25,8 +23,8 @@
             :key="idx"
             :to="{ path: item.route, query: { page: idx + 1 } }"
             :title="pageLabel"
+            :active="isPageActive(item, idx + 1)"
             prepend-icon="mdi-file-outline"
-            exact
             active-class="active-menu-item"
           />
         </v-list-group>
@@ -51,7 +49,7 @@
     components: { ScreenSelector },
     data() {
       return {
-        openedGroups: [],
+        openedGroups: ['test-agent'],
       };
     },
     computed: {
@@ -78,12 +76,18 @@
     },
     watch: {
       '$route.path': {
-        immediate: true,
         handler(path) {
           if (path.includes('/test-agent') && !this.openedGroups.includes('test-agent')) {
             this.openedGroups = ['test-agent'];
           }
         },
+      },
+    },
+    methods: {
+      isPageActive(item, page) {
+        if (!this.$route.path.endsWith(item.id)) return false;
+        const current = parseInt(this.$route.query.page) || 1;
+        return current === page;
       },
     },
   };

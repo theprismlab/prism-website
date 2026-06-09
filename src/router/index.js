@@ -33,7 +33,7 @@ const routes = [
 
   { path: '/submissions/instructions', component: () => import('@/submissions/instructions/index.vue'), meta: submissionsMeta },
   { path: '/submissions/instructions/:screen', component: () => import('@/submissions/instructions/screen/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/instructions/:screen/test-agent', component: () => import('@/submissions/instructions/screen/test-agent.vue'), meta: submissionsMeta },
+  { path: '/submissions/instructions/:screen/test-agent', component: () => import('@/submissions/instructions/screen/test-agent.vue'), meta: submissionsMeta, beforeEnter: (to) => { if (!to.query.page) return { ...to, query: { page: 1 } } } },
   { path: '/submissions/instructions/:screen/shipping', component: () => import('@/submissions/instructions/screen/shipping.vue'), meta: submissionsMeta },
 
   { path: '/submissions/forms', component: () => import('@/submissions/forms/index.vue'), meta: submissionsMeta },
