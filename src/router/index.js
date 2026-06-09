@@ -83,7 +83,7 @@ const routes = [
     component: () => import('@/submissions/instructions/screen/test-agent.vue'),
     meta: submissionsMeta,
     beforeEnter: (to) => {
-      if (!to.query.page) return { ...to, query: { page: 1 } };
+      if (!to.query.page) return { ...to, query: { page: '1' } };
     },
   },
   {
@@ -91,7 +91,7 @@ const routes = [
     component: () => import('@/submissions/instructions/screen/shipping.vue'),
     meta: submissionsMeta,
     beforeEnter: (to) => {
-      if (!to.query.page) return { ...to, query: { page: 1 } };
+      if (!to.query.page) return { ...to, query: { page: '1' } };
     },
   },
 

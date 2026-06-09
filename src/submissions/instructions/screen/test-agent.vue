@@ -12,6 +12,13 @@
 
   export default {
     name: 'TestAgentInstructions',
+    beforeRouteUpdate(to, _from, next) {
+      if (!to.query.page) {
+        next({ ...to, query: { page: '1' } });
+      } else {
+        next();
+      }
+    },
     computed: {
       screen() {
         return this.$route.params.screen;
