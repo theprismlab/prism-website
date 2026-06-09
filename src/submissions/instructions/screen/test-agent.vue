@@ -1,24 +1,29 @@
 <template>
   <page>
     <container-md>
-      <page-title>Test Agent Instructions</page-title>
-      <iframe :key="page" :src="pdfUrl" class="pdf-embed" />
+      <page-title>{{ currentPage.title }}</page-title>
+      <iframe :key="pageSlug" :src="pdfUrl" class="pdf-embed" />
     </container-md>
   </page>
 </template>
 
 <script>
+  import { TEST_AGENT_PAGES } from '../pages-config';
+
   export default {
     name: 'TestAgentInstructions',
     computed: {
       screen() {
         return this.$route.params.screen;
       },
-      page() {
-        return parseInt(this.$route.query.page) || 1;
+      pageSlug() {
+        return this.$route.query.page;
+      },
+      currentPage() {
+        return TEST_AGENT_PAGES.find((p) => p.slug === this.pageSlug) || TEST_AGENT_PAGES[0];
       },
       pdfUrl() {
-        return `/pdfs/instructions/${this.screen}_test_agent_instructions.pdf#page=${this.page}`;
+        return `/pdfs/instructions/${this.screen}_test_agent_instructions.pdf#page=${this.currentPage.pdfPage}`;
       },
     },
   };

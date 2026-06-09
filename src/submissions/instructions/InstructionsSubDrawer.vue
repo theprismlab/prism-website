@@ -19,11 +19,11 @@
             />
           </template>
           <v-list-item
-            v-for="(pageLabel, idx) in item.pages"
-            :key="idx"
-            :to="{ path: item.route, query: { page: idx + 1 } }"
-            :title="pageLabel"
-            :active="isPageActive(item, idx + 1)"
+            v-for="pageDef in item.pages"
+            :key="pageDef.slug"
+            :to="{ path: item.route, query: { page: pageDef.slug } }"
+            :title="pageDef.title"
+            :active="isPageActive(item, pageDef)"
             prepend-icon="mdi-file-outline"
             active-class="active-menu-item"
           />
@@ -43,6 +43,7 @@
 
 <script>
   import ScreenSelector from '../ScreenSelector.vue';
+  import { TEST_AGENT_PAGES, SHIPPING_PAGES } from './pages-config';
 
   export default {
     name: 'InstructionsSubDrawer',
@@ -63,13 +64,14 @@
             title: 'Test Agent Instructions',
             route: `/submissions/instructions/${this.screen}/test-agent`,
             icon: 'mdi-flask-outline',
-            pages: ['Page 1', 'Page 2'],
+            pages: TEST_AGENT_PAGES,
           },
           {
             id: 'shipping',
             title: 'Shipping Instructions',
             route: `/submissions/instructions/${this.screen}/shipping`,
             icon: 'mdi-truck-outline',
+            pages: SHIPPING_PAGES,
           },
         ];
       },
@@ -77,17 +79,20 @@
     watch: {
       '$route.path': {
         handler(path) {
+          if (path.includes('/shipping') && !this.openedGroups.includes('shipping')) {
+            this.openedGroups = [...this.openedGroups, 'shipping'];
+          }
           if (path.includes('/test-agent') && !this.openedGroups.includes('test-agent')) {
-            this.openedGroups = ['test-agent'];
+            this.openedGroups = [...this.openedGroups, 'test-agent'];
           }
         },
       },
     },
     methods: {
-      isPageActive(item, page) {
+      isPageActive(item, pageDef) {
         if (!this.$route.path.endsWith(item.id)) return false;
-        const current = parseInt(this.$route.query.page) || 1;
-        return current === page;
+        const currentSlug = this.$route.query.page;
+        return currentSlug === pageDef.slug || (!currentSlug && pageDef === item.pages[0]);
       },
     },
   };

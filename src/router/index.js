@@ -10,43 +10,118 @@ const routes = [
   { path: '/about-us/about-prism', component: () => import('@/pages/about-us/about-prism.vue') },
   { path: '/about-us/team', component: () => import('@/pages/about-us/team.vue') },
 
-  { path: '/consortium-screens/assays', component: () => import('@/pages/consortium-screens/assays.vue') },
-  { path: '/consortium-screens/cell-line-collection', component: () => import('@/pages/consortium-screens/cell-line-collection.vue') },
-  { path: '/consortium-screens/collaborating', component: () => import('@/pages/consortium-screens/collaborating.vue') },
-  { path: '/consortium-screens/data-analysis', component: () => import('@/pages/consortium-screens/data-analysis.vue') },
-  { path: '/consortium-screens/deliverables', component: () => import('@/pages/consortium-screens/deliverables.vue') },
+  {
+    path: '/consortium-screens/assays',
+    component: () => import('@/pages/consortium-screens/assays.vue'),
+  },
+  {
+    path: '/consortium-screens/cell-line-collection',
+    component: () => import('@/pages/consortium-screens/cell-line-collection.vue'),
+  },
+  {
+    path: '/consortium-screens/collaborating',
+    component: () => import('@/pages/consortium-screens/collaborating.vue'),
+  },
+  {
+    path: '/consortium-screens/data-analysis',
+    component: () => import('@/pages/consortium-screens/data-analysis.vue'),
+  },
+  {
+    path: '/consortium-screens/deliverables',
+    component: () => import('@/pages/consortium-screens/deliverables.vue'),
+  },
 
   { path: '/contact-us', component: () => import('@/pages/contact-us.vue') },
   { path: '/faq', component: () => import('@/pages/faq.vue') },
   { path: '/publications', component: () => import('@/pages/publications.vue') },
 
-  { path: '/hero/hero-central-cluster-2d', component: () => import('@/pages/hero/hero-central-cluster-2d.vue') },
-  { path: '/hero/hero-central-cluster-3d', component: () => import('@/pages/hero/hero-central-cluster-3d.vue') },
-  { path: '/hero/hero-dynamic-spread', component: () => import('@/pages/hero/hero-dynamic-spread.vue') },
+  {
+    path: '/hero/hero-central-cluster-2d',
+    component: () => import('@/pages/hero/hero-central-cluster-2d.vue'),
+  },
+  {
+    path: '/hero/hero-central-cluster-3d',
+    component: () => import('@/pages/hero/hero-central-cluster-3d.vue'),
+  },
+  {
+    path: '/hero/hero-dynamic-spread',
+    component: () => import('@/pages/hero/hero-dynamic-spread.vue'),
+  },
   { path: '/hero/hero-even-spread', component: () => import('@/pages/hero/hero-even-spread.vue') },
-  { path: '/hero/hero-heatmap-scatter', component: () => import('@/pages/hero/hero-heatmap-scatter.vue') },
-  { path: '/hero/hero-multi-cluster', component: () => import('@/pages/hero/hero-multi-cluster.vue') },
+  {
+    path: '/hero/hero-heatmap-scatter',
+    component: () => import('@/pages/hero/hero-heatmap-scatter.vue'),
+  },
+  {
+    path: '/hero/hero-multi-cluster',
+    component: () => import('@/pages/hero/hero-multi-cluster.vue'),
+  },
 
   // ─── Submissions layout ───────────────────────────────────────────────────
-  { path: '/submissions', component: () => import('@/submissions/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/quote-and-po', component: () => import('@/submissions/quote-and-po.vue'), meta: submissionsMeta },
+  {
+    path: '/submissions',
+    component: () => import('@/submissions/index.vue'),
+    meta: submissionsMeta,
+  },
+  {
+    path: '/submissions/quote-and-po',
+    component: () => import('@/submissions/quote-and-po.vue'),
+    meta: submissionsMeta,
+  },
 
-  { path: '/submissions/instructions', component: () => import('@/submissions/instructions/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/instructions/:screen', redirect: (to) => `/submissions/instructions/${to.params.screen}/test-agent` },
-  { path: '/submissions/instructions/:screen/test-agent', component: () => import('@/submissions/instructions/screen/test-agent.vue'), meta: submissionsMeta, beforeEnter: (to) => { if (!to.query.page) return { ...to, query: { page: 1 } } } },
-  { path: '/submissions/instructions/:screen/shipping', component: () => import('@/submissions/instructions/screen/shipping.vue'), meta: submissionsMeta },
+  {
+    path: '/submissions/instructions',
+    component: () => import('@/submissions/instructions/index.vue'),
+    meta: submissionsMeta,
+  },
+  {
+    path: '/submissions/instructions/:screen',
+    redirect: (to) => `/submissions/instructions/${to.params.screen}/test-agent`,
+  },
+  {
+    path: '/submissions/instructions/:screen/test-agent',
+    component: () => import('@/submissions/instructions/screen/test-agent.vue'),
+    meta: submissionsMeta,
+    beforeEnter: (to) => {
+      if (!to.query.page) return { ...to, query: { page: 1 } };
+    },
+  },
+  {
+    path: '/submissions/instructions/:screen/shipping',
+    component: () => import('@/submissions/instructions/screen/shipping.vue'),
+    meta: submissionsMeta,
+    beforeEnter: (to) => {
+      if (!to.query.page) return { ...to, query: { page: 1 } };
+    },
+  },
 
-  { path: '/submissions/forms', component: () => import('@/submissions/forms/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/forms/:screen', component: () => import('@/submissions/forms/screen/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/forms/:screen/application', component: () => import('@/submissions/forms/screen/application.vue'), meta: submissionsMeta },
-  { path: '/submissions/forms/:screen/documents', component: () => import('@/submissions/forms/screen/documents.vue'), meta: submissionsMeta },
-]
+  {
+    path: '/submissions/forms',
+    component: () => import('@/submissions/forms/index.vue'),
+    meta: submissionsMeta,
+  },
+  {
+    path: '/submissions/forms/:screen',
+    component: () => import('@/submissions/forms/screen/index.vue'),
+    meta: submissionsMeta,
+  },
+  {
+    path: '/submissions/forms/:screen/application',
+    component: () => import('@/submissions/forms/screen/application.vue'),
+    meta: submissionsMeta,
+  },
+  {
+    path: '/submissions/forms/:screen/documents',
+    component: () => import('@/submissions/forms/screen/documents.vue'),
+    meta: submissionsMeta,
+  },
+];
 
 const redirects = [
   { path: '/research/white-papers', redirect: '/publications' },
   { path: '/research/conference-abstracts', redirect: '/publications' },
   { path: '/research/publications', redirect: '/publications' },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

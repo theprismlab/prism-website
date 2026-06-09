@@ -1,21 +1,26 @@
 <template>
   <page>
     <container-md>
-      <page-title>Shipping Instructions</page-title>
-      <iframe :src="pdfUrl" class="pdf-embed" />
+      <page-title>{{ currentPage.title }}</page-title>
+      <iframe :key="pageSlug" :src="pdfUrl" class="pdf-embed" />
     </container-md>
   </page>
 </template>
 
 <script>
+  import { SHIPPING_PAGES } from '../pages-config';
+
   export default {
     name: 'ShippingInstructions',
     computed: {
-      screen() {
-        return this.$route.params.screen;
+      pageSlug() {
+        return this.$route.query.page;
+      },
+      currentPage() {
+        return SHIPPING_PAGES.find((p) => p.slug === this.pageSlug) || SHIPPING_PAGES[0];
       },
       pdfUrl() {
-        return `/pdfs/instructions/${this.screen}_shipping.pdf`;
+        return `/pdfs/instructions/shipping.pdf#page=${this.currentPage.pdfPage}`;
       },
     },
   };
