@@ -8,9 +8,9 @@
 </template>
 
 <script>
-  import SubmissionsDrawer from '@/components/submissions/SubmissionsDrawer.vue';
-  import InstructionsSubDrawer from '@/components/submissions/InstructionsSubDrawer.vue';
-  import FormsSubDrawer from '@/components/submissions/FormsSubDrawer.vue';
+  import SubmissionsDrawer from './SubmissionsDrawer.vue';
+  import InstructionsSubDrawer from './InstructionsSubDrawer.vue';
+  import FormsSubDrawer from './FormsSubDrawer.vue';
 
   export default {
     name: 'SubmissionsLayout',

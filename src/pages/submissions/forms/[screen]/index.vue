@@ -44,12 +44,12 @@ meta:
 </template>
 
 <script>
-  import { FORM_STEPS, useFormProgressStore } from '@/stores/formProgress';
-  import ContactStep from '@/components/submissions/form-steps/ContactStep.vue';
-  import ScreenDetailsStep from '@/components/submissions/form-steps/ScreenDetailsStep.vue';
-  import ApplicationStep from '@/components/submissions/form-steps/ApplicationStep.vue';
-  import DocumentsStep from '@/components/submissions/form-steps/DocumentsStep.vue';
-  import ReviewStep from '@/components/submissions/form-steps/ReviewStep.vue';
+  import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
+  import ContactStep from '@/submissions/form-steps/ContactStep.vue';
+  import ScreenDetailsStep from '@/submissions/form-steps/ScreenDetailsStep.vue';
+  import ApplicationStep from '@/submissions/form-steps/ApplicationStep.vue';
+  import DocumentsStep from '@/submissions/form-steps/DocumentsStep.vue';
+  import ReviewStep from '@/submissions/form-steps/ReviewStep.vue';
 
   export default {
     name: 'FormsScreen',

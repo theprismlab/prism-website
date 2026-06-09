@@ -15,7 +15,7 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig({
   plugins: [
     VueRouter(),
-    Layouts(),
+    Layouts({ layoutsDirs: ['src/layouts', 'src/submissions'] }),
     Vue({
       template: { transformAssetUrls }
     }),
