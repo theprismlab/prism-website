@@ -1,4 +1,4 @@
-import { openBlock as n, createElementBlock as i, normalizeClass as o, renderSlot as y, normalizeStyle as C, createElementVNode as s, toDisplayString as f, resolveComponent as X, createBlock as k, resolveDynamicComponent as K, mergeProps as L, withCtx as m, Fragment as b, renderList as _, createTextVNode as v, createCommentVNode as p, createVNode as W, Transition as D, withModifiers as x } from "vue";
+import { openBlock as n, createElementBlock as i, normalizeClass as o, renderSlot as y, normalizeStyle as C, createElementVNode as s, toDisplayString as f, resolveComponent as R, createBlock as k, resolveDynamicComponent as N, mergeProps as K, withCtx as m, Fragment as b, renderList as _, createTextVNode as h, createCommentVNode as u, createVNode as W, Transition as D, withModifiers as L } from "vue";
 const rt = {
   red: {
     base: "#f44336",
@@ -554,8 +554,8 @@ const rt = {
 };
 const A = (e, t) => {
   const r = e.__vccOpts || e;
-  for (const [u, d] of t)
-    r[u] = d;
+  for (const [p, d] of t)
+    r[p] = d;
   return r;
 }, M = {
   name: "PrismButton",
@@ -596,7 +596,7 @@ const A = (e, t) => {
     }
   }
 }, F = ["type", "disabled"];
-function J(e, t, r, u, d, l) {
+function J(e, t, r, p, d, l) {
   return n(), i("button", {
     type: r.type,
     class: o(["prism-button", `prism-button--${r.variant}`, `prism-button--${r.size}`, { "is-disabled": r.disabled }]),
@@ -631,7 +631,7 @@ const Q = {
     }
   }
 }, U = { class: "hero__content" }, z = { class: "hero__title" }, j = { class: "hero__description" };
-function E(e, t, r, u, d, l) {
+function E(e, t, r, p, d, l) {
   return n(), i("section", {
     class: o(["hero__container", `hero__container--${r.variant} ${r.image ? "hero__container--image" : ""}`]),
     style: C(r.image ? {
@@ -678,21 +678,21 @@ const q = { marketing: "", portal: "/portal" }, Y = [
     { title: "Data Analysis", route: "/consortium-screens/data-analysis", id: "data-analysis", site: "marketing" },
     { title: "Deliverables", route: "/consortium-screens/deliverables", id: "deliverables", site: "marketing" },
     { title: "Collaborating", route: "/consortium-screens/collaborating", id: "collaborating", site: "marketing" },
-    { title: "Submissions", route: "/submissions", id: "submissions", site: "marketing" }
+    { title: "Submissions", route: "/submissions", id: "submissions", matchPrefix: !0, site: "marketing" }
   ] },
   { title: "Contact us", route: "/contact-us", id: "contact-us", site: "marketing" },
-  { title: "Portal", route: "/portal", id: "portal", matchPrefix: !0, site: "portal" }
+  { title: "Portal", route: "/portal", id: "portal", matchPrefix: !0, site: "portal", excludeRoutes: ["/portal/log-in"] }
 ], Z = { route: "/", site: "marketing" }, G = { route: "/portal/log-in", site: "portal" };
 function S(e, t, r) {
   if (e.children)
     return {
       ...e,
-      children: e.children.map((u) => S(u, t, r))
+      children: e.children.map((p) => S(p, t, r))
     };
   if (!e.route)
     return e;
   if (!e.site || e.site === t) {
-    const u = q[t] || "", d = u && e.route.startsWith(u), l = d ? e.route.slice(u.length) || "/" : e.route;
+    const p = q[t] || "", d = p && e.route.startsWith(p), l = d ? e.route.slice(p.length) || "/" : e.route;
     return {
       ...e,
       route: l,
@@ -761,7 +761,7 @@ const $ = {
       }
     },
     isParentActive(e) {
-      return !e.children || !e.children.length ? !1 : e.children.some((t) => this._matchPath(t.route));
+      return !e.children || !e.children.length ? !1 : e.children.some((t) => this.isItemActive(t));
     },
     isItemActive(e) {
       if (e.children && e.children.length)
@@ -769,8 +769,8 @@ const $ = {
       if (e.matchPrefix) {
         const t = e.activePrefix || e.route;
         try {
-          const r = new URL(t, window.location.href).pathname;
-          return window.location.pathname.startsWith(r);
+          const r = new URL(t, window.location.href).pathname, p = window.location.pathname.startsWith(r);
+          return p && e.excludeRoutes ? !e.excludeRoutes.includes(window.location.pathname) : p;
         } catch {
           return window.location.pathname.startsWith(t);
         }
@@ -806,7 +806,7 @@ const $ = {
 }, pe = ["href"], ue = ["href", "onClick"], ge = ["onClick"], be = {
   key: 0,
   class: "prism-nav-drawer__children"
-}, he = ["href"], ve = ["href", "onClick"], me = { class: "prism-nav-drawer__actions" }, Ae = {
+}, ve = ["href"], he = ["href", "onClick"], me = { class: "prism-nav-drawer__actions" }, Ae = {
   key: 0,
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 24 24",
@@ -815,12 +815,12 @@ const $ = {
   height: "16",
   "aria-hidden": "true"
 };
-function ke(e, t, r, u, d, l) {
-  const g = X("router-link");
+function ke(e, t, r, p, d, l) {
+  const g = R("router-link");
   return n(), i("div", ee, [
     s("header", te, [
       s("div", ae, [
-        (n(), k(K(l.resolvedLogo.external ? "a" : "router-link"), L(l.resolvedLogo.external ? { href: l.resolvedLogo.route } : { to: l.resolvedLogo.route }, { class: "prism-app-bar__logo-link" }), {
+        (n(), k(N(l.resolvedLogo.external ? "a" : "router-link"), K(l.resolvedLogo.external ? { href: l.resolvedLogo.route } : { to: l.resolvedLogo.route }, { class: "prism-app-bar__logo-link" }), {
           default: m(() => [
             s("img", {
               src: d.prismLogo,
@@ -841,8 +841,8 @@ function ke(e, t, r, u, d, l) {
           s("span", null, null, -1)
         ])], 8, re),
         s("nav", ie, [
-          (n(!0), i(b, null, _(l.resolvedItems, (a, h) => (n(), i("div", {
-            key: h,
+          (n(!0), i(b, null, _(l.resolvedItems, (a, v) => (n(), i("div", {
+            key: v,
             class: o(["prism-app-bar__nav-item", { "prism-app-bar__nav-item--has-children": a.children && a.children.length }])
           }, [
             a.children && a.children.length ? (n(), i("button", {
@@ -850,7 +850,7 @@ function ke(e, t, r, u, d, l) {
               type: "button",
               class: o(["prism-app-bar__nav-link", { "is-active": l.isParentActive(a) }])
             }, [
-              v(f(a.title) + " ", 1),
+              h(f(a.title) + " ", 1),
               t[6] || (t[6] = s("svg", {
                 class: "prism-app-bar__chevron",
                 xmlns: "http://www.w3.org/2000/svg",
@@ -876,7 +876,7 @@ function ke(e, t, r, u, d, l) {
               class: o(["prism-app-bar__nav-link", { "is-active": l.isItemActive(a) }])
             }, {
               default: m(() => [
-                v(f(a.title), 1)
+                h(f(a.title), 1)
               ]),
               _: 2
             }, 1032, ["to", "class"])),
@@ -885,27 +885,27 @@ function ke(e, t, r, u, d, l) {
                 c.external ? (n(), i("a", {
                   key: `ext-${c.id}`,
                   href: c.route,
-                  class: o(["prism-app-bar__dropdown-link", { "is-active": e.$route && e.$route.path === c.route }])
+                  class: o(["prism-app-bar__dropdown-link", { "is-active": l.isItemActive(c) }])
                 }, f(c.title), 11, de)) : (n(), k(g, {
                   key: c.id,
                   to: c.route,
-                  class: o(["prism-app-bar__dropdown-link", { "is-active": e.$route && e.$route.path === c.route }])
+                  class: o(["prism-app-bar__dropdown-link", { "is-active": l.isItemActive(c) }])
                 }, {
                   default: m(() => [
-                    v(f(c.title), 1)
+                    h(f(c.title), 1)
                   ]),
                   _: 2
                 }, 1032, ["to", "class"]))
               ], 64))), 256))
-            ])) : p("", !0)
+            ])) : u("", !0)
           ], 2))), 128)),
           s("div", fe, [
-            (n(), k(K(l.resolvedLoginItem.external ? "a" : "router-link"), L(l.resolvedLoginItem.external ? { href: l.resolvedLoginItem.route } : { to: l.resolvedLoginItem.route }, { class: "prism-app-bar__login-btn" }), {
+            (n(), k(N(l.resolvedLoginItem.external ? "a" : "router-link"), K(l.resolvedLoginItem.external ? { href: l.resolvedLoginItem.route } : { to: l.resolvedLoginItem.route }, { class: "prism-app-bar__login-btn" }), {
               default: m(() => [
                 d.isLoggedIn ? (n(), i("svg", ce, [...t[7] || (t[7] = [
                   s("path", { d: "M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" }, null, -1)
-                ])])) : p("", !0),
-                v(" " + f(d.isLoggedIn ? "" : "Log In"), 1)
+                ])])) : u("", !0),
+                h(" " + f(d.isLoggedIn ? "" : "Log In"), 1)
               ]),
               _: 1
             }, 16))
@@ -918,12 +918,12 @@ function ke(e, t, r, u, d, l) {
       class: "prism-nav-drawer__backdrop",
       "aria-hidden": "true",
       onClick: t[1] || (t[1] = (a) => d.drawerOpen = !1)
-    })) : p("", !0),
+    })) : u("", !0),
     W(D, { name: "prism-drawer-slide" }, {
       default: m(() => [
         d.drawerOpen ? (n(), i("nav", oe, [
-          (n(!0), i(b, null, _(l.resolvedItems, (a, h) => (n(), i("div", {
-            key: h,
+          (n(!0), i(b, null, _(l.resolvedItems, (a, v) => (n(), i("div", {
+            key: v,
             class: "prism-nav-drawer__item"
           }, [
             !a.children || a.children.length === 0 ? (n(), i(b, { key: 0 }, [
@@ -936,17 +936,17 @@ function ke(e, t, r, u, d, l) {
                 key: a.id,
                 href: a.route,
                 class: o(["prism-nav-drawer__link", { "is-active": e.$route && e.$route.path === a.route }]),
-                onClick: x((c) => l.navigateTo(a.route), ["prevent"])
+                onClick: L((c) => l.navigateTo(a.route), ["prevent"])
               }, f(a.title), 11, ue))
             ], 64)) : (n(), i(b, { key: 1 }, [
               s("button", {
                 class: o([
                   "prism-nav-drawer__group-btn",
-                  { "is-active": l.isParentActive(a), "is-open": d.openGroups.includes(h) }
+                  { "is-active": l.isParentActive(a), "is-open": d.openGroups.includes(v) }
                 ]),
-                onClick: (c) => l.toggleGroup(h)
+                onClick: (c) => l.toggleGroup(v)
               }, [
-                v(f(a.title) + " ", 1),
+                h(f(a.title) + " ", 1),
                 t[8] || (t[8] = s("svg", {
                   class: "prism-nav-drawer__chevron",
                   xmlns: "http://www.w3.org/2000/svg",
@@ -963,44 +963,44 @@ function ke(e, t, r, u, d, l) {
                   })
                 ], -1))
               ], 10, ge),
-              d.openGroups.includes(h) ? (n(), i("div", be, [
+              d.openGroups.includes(v) ? (n(), i("div", be, [
                 (n(!0), i(b, null, _(a.children, (c) => (n(), i(b, null, [
                   c.external ? (n(), i("a", {
                     key: `ext-${c.id}`,
                     href: c.route,
-                    class: o(["prism-nav-drawer__child-link", { "is-active": e.$route && e.$route.path === c.route }]),
-                    onClick: t[3] || (t[3] = (R) => d.drawerOpen = !1)
-                  }, f(c.title), 11, he)) : (n(), i("a", {
+                    class: o(["prism-nav-drawer__child-link", { "is-active": l.isItemActive(c) }]),
+                    onClick: t[3] || (t[3] = (X) => d.drawerOpen = !1)
+                  }, f(c.title), 11, ve)) : (n(), i("a", {
                     key: c.id,
                     href: c.route,
-                    class: o(["prism-nav-drawer__child-link", { "is-active": e.$route && e.$route.path === c.route }]),
-                    onClick: x((R) => l.navigateTo(c.route), ["prevent"])
-                  }, f(c.title), 11, ve))
+                    class: o(["prism-nav-drawer__child-link", { "is-active": l.isItemActive(c) }]),
+                    onClick: L((X) => l.navigateTo(c.route), ["prevent"])
+                  }, f(c.title), 11, he))
                 ], 64))), 256))
-              ])) : p("", !0)
+              ])) : u("", !0)
             ], 64))
           ]))), 128)),
           s("div", me, [
-            (n(), k(K(l.resolvedLoginItem.external ? "a" : "router-link"), L(l.resolvedLoginItem.external ? { href: l.resolvedLoginItem.route } : { to: l.resolvedLoginItem.route }, {
+            (n(), k(N(l.resolvedLoginItem.external ? "a" : "router-link"), K(l.resolvedLoginItem.external ? { href: l.resolvedLoginItem.route } : { to: l.resolvedLoginItem.route }, {
               class: "prism-app-bar__login-btn",
               onClick: t[4] || (t[4] = (a) => d.drawerOpen = !1)
             }), {
               default: m(() => [
                 d.isLoggedIn ? (n(), i("svg", Ae, [...t[9] || (t[9] = [
                   s("path", { d: "M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" }, null, -1)
-                ])])) : p("", !0),
-                v(" " + f(d.isLoggedIn ? "Account" : "Log In"), 1)
+                ])])) : u("", !0),
+                h(" " + f(d.isLoggedIn ? "Account" : "Log In"), 1)
               ]),
               _: 1
             }, 16))
           ])
-        ])) : p("", !0)
+        ])) : u("", !0)
       ]),
       _: 1
     })
   ]);
 }
-const T = /* @__PURE__ */ A($, [["render", ke], ["__scopeId", "data-v-8e24ede0"]]);
+const T = /* @__PURE__ */ A($, [["render", ke], ["__scopeId", "data-v-6f6334f1"]]);
 T.install = function(t) {
   t.component(T.name, T);
 };
@@ -1072,7 +1072,7 @@ const _e = {
   key: 0,
   class: "prism-alert__title"
 }, Be = { class: "prism-alert__message" };
-function Ne(e, t, r, u, d, l) {
+function xe(e, t, r, p, d, l) {
   return d.visible ? (n(), i("div", {
     key: 0,
     class: o(["prism-alert", `prism-alert--${r.variant}`, { "prism-alert--bordered": r.bordered }]),
@@ -1106,10 +1106,10 @@ function Ne(e, t, r, u, d, l) {
       ])]))
     ]),
     s("div", Pe, [
-      r.title ? (n(), i("p", Oe, f(r.title), 1)) : p("", !0),
+      r.title ? (n(), i("p", Oe, f(r.title), 1)) : u("", !0),
       s("div", Be, [
         y(e.$slots, "default", {}, () => [
-          v(f(r.message), 1)
+          h(f(r.message), 1)
         ], !0)
       ])
     ]),
@@ -1129,14 +1129,14 @@ function Ne(e, t, r, u, d, l) {
       }, [
         s("path", { d: "M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" })
       ], -1)
-    ])])) : p("", !0)
-  ], 2)) : p("", !0);
+    ])])) : u("", !0)
+  ], 2)) : u("", !0);
 }
-const P = /* @__PURE__ */ A(_e, [["render", Ne], ["__scopeId", "data-v-8d5eb52d"]]);
+const P = /* @__PURE__ */ A(_e, [["render", xe], ["__scopeId", "data-v-8d5eb52d"]]);
 P.install = function(t) {
   t.component(P.name, P);
 };
-const Ke = {
+const Ne = {
   name: "PrismSplitSection",
   props: {
     image: {
@@ -1164,47 +1164,47 @@ const Ke = {
       default: !1
     }
   }
-}, Le = { class: "prism-split__image-col" }, xe = ["src", "alt"], He = { class: "prism-split__content-col" }, Ce = {
+}, Ke = { class: "prism-split__image-col" }, Le = ["src", "alt"], He = { class: "prism-split__content-col" }, Ce = {
   key: 0,
   class: "prism-split__eyebrow"
-}, Xe = {
+}, Re = {
   key: 1,
   class: "prism-split__title"
-}, Re = {
+}, Xe = {
   key: 2,
   class: "prism-split__body"
 }, We = {
   key: 3,
   class: "prism-split__actions"
 };
-function De(e, t, r, u, d, l) {
+function De(e, t, r, p, d, l) {
   return n(), i("section", {
     class: o(["prism-split", { "prism-split--reverse": r.reverse }])
   }, [
-    s("div", Le, [
+    s("div", Ke, [
       r.image ? (n(), i("img", {
         key: 0,
         src: r.image,
         alt: r.imageAlt,
         class: "prism-split__image"
-      }, null, 8, xe)) : p("", !0),
+      }, null, 8, Le)) : u("", !0),
       y(e.$slots, "image", {}, void 0, !0)
     ]),
     s("div", He, [
-      r.eyebrow ? (n(), i("p", Ce, f(r.eyebrow), 1)) : p("", !0),
-      r.title ? (n(), i("h2", Xe, f(r.title), 1)) : p("", !0),
-      r.body || e.$slots.default ? (n(), i("div", Re, [
+      r.eyebrow ? (n(), i("p", Ce, f(r.eyebrow), 1)) : u("", !0),
+      r.title ? (n(), i("h2", Re, f(r.title), 1)) : u("", !0),
+      r.body || e.$slots.default ? (n(), i("div", Xe, [
         y(e.$slots, "default", {}, () => [
-          v(f(r.body), 1)
+          h(f(r.body), 1)
         ], !0)
-      ])) : p("", !0),
+      ])) : u("", !0),
       e.$slots.actions ? (n(), i("div", We, [
         y(e.$slots, "actions", {}, void 0, !0)
-      ])) : p("", !0)
+      ])) : u("", !0)
     ])
   ], 2);
 }
-const O = /* @__PURE__ */ A(Ke, [["render", De], ["__scopeId", "data-v-46e54712"]]);
+const O = /* @__PURE__ */ A(Ne, [["render", De], ["__scopeId", "data-v-46e54712"]]);
 O.install = function(t) {
   t.component(O.name, O);
 };
@@ -1236,7 +1236,7 @@ const Me = {
   key: 0,
   class: "prism-timeline__caption"
 };
-function Ee(e, t, r, u, d, l) {
+function Ee(e, t, r, p, d, l) {
   return n(), i("ol", {
     class: o(["prism-timeline", `prism-timeline--${r.variant}`])
   }, [
@@ -1267,7 +1267,7 @@ function Ee(e, t, r, u, d, l) {
       ]),
       s("div", Ue, [
         s("p", ze, f(g.title), 1),
-        g.caption ? (n(), i("p", je, f(g.caption), 1)) : p("", !0)
+        g.caption ? (n(), i("p", je, f(g.caption), 1)) : u("", !0)
       ])
     ], 2))), 128))
   ], 2);
@@ -1300,8 +1300,8 @@ const Ve = {
     }
   }
 }, qe = { class: "prism-app-nav-drawer__list" }, Ye = ["href", "title"], Ze = ["innerHTML"], Ge = { class: "prism-app-nav-drawer__label" }, $e = ["innerHTML"], et = { class: "prism-app-nav-drawer__label" };
-function tt(e, t, r, u, d, l) {
-  const g = X("router-link");
+function tt(e, t, r, p, d, l) {
+  const g = R("router-link");
   return n(), i("nav", {
     class: o(["prism-app-nav-drawer", { "is-expanded": d.isExpanded }]),
     style: C({ top: r.top }),
@@ -1310,8 +1310,8 @@ function tt(e, t, r, u, d, l) {
     "aria-label": "Side navigation"
   }, [
     s("ul", qe, [
-      (n(!0), i(b, null, _(r.items, (a, h) => (n(), i("li", {
-        key: h,
+      (n(!0), i(b, null, _(r.items, (a, v) => (n(), i("li", {
+        key: v,
         class: "prism-app-nav-drawer__item"
       }, [
         a.external ? (n(), i("a", {
@@ -1346,11 +1346,11 @@ function tt(e, t, r, u, d, l) {
     ])
   ], 38);
 }
-const N = /* @__PURE__ */ A(Ve, [["render", tt], ["__scopeId", "data-v-b4c93d9a"]]);
-N.install = function(t) {
-  t.component(N.name, N);
+const x = /* @__PURE__ */ A(Ve, [["render", tt], ["__scopeId", "data-v-b4c93d9a"]]);
+x.install = function(t) {
+  t.component(x.name, x);
 };
-const at = [w, I, T, P, O, B, N], it = {
+const at = [w, I, T, P, O, B, x], it = {
   install(e) {
     at.forEach((t) => e.component(t.name, t));
   }
@@ -1358,7 +1358,7 @@ const at = [w, I, T, P, O, B, N], it = {
 export {
   P as PrismAlertBanner,
   T as PrismAppBar,
-  N as PrismAppNavDrawer,
+  x as PrismAppNavDrawer,
   w as PrismButton,
   I as PrismHeroBanner,
   O as PrismSplitSection,
