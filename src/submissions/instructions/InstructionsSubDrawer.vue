@@ -29,22 +29,16 @@
       items() {
         return [
           {
-            id: 'overview',
-            title: 'Overview',
-            route: `/submissions/instructions/${this.screen}`,
-            icon: 'mdi-home-outline',
+            id: 'test-agent',
+            title: 'Test Agent Instructions',
+            route: `/submissions/instructions/${this.screen}/test-agent`,
+            icon: 'mdi-flask-outline',
           },
           {
-            id: 'getting-started',
-            title: 'Getting Started',
-            route: `/submissions/instructions/${this.screen}/getting-started`,
-            icon: 'mdi-rocket-launch-outline',
-          },
-          {
-            id: 'requirements',
-            title: 'Requirements',
-            route: `/submissions/instructions/${this.screen}/requirements`,
-            icon: 'mdi-checkbox-marked-circle-outline',
+            id: 'shipping',
+            title: 'Shipping Instructions',
+            route: `/submissions/instructions/${this.screen}/shipping`,
+            icon: 'mdi-truck-outline',
           },
         ];
       },

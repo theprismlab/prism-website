@@ -33,8 +33,8 @@ const routes = [
 
   { path: '/submissions/instructions', component: () => import('@/submissions/instructions/index.vue'), meta: submissionsMeta },
   { path: '/submissions/instructions/:screen', component: () => import('@/submissions/instructions/screen/index.vue'), meta: submissionsMeta },
-  { path: '/submissions/instructions/:screen/getting-started', component: () => import('@/submissions/instructions/screen/getting-started.vue'), meta: submissionsMeta },
-  { path: '/submissions/instructions/:screen/requirements', component: () => import('@/submissions/instructions/screen/requirements.vue'), meta: submissionsMeta },
+  { path: '/submissions/instructions/:screen/test-agent', component: () => import('@/submissions/instructions/screen/test-agent.vue'), meta: submissionsMeta },
+  { path: '/submissions/instructions/:screen/shipping', component: () => import('@/submissions/instructions/screen/shipping.vue'), meta: submissionsMeta },
 
   { path: '/submissions/forms', component: () => import('@/submissions/forms/index.vue'), meta: submissionsMeta },
   { path: '/submissions/forms/:screen', component: () => import('@/submissions/forms/screen/index.vue'), meta: submissionsMeta },
