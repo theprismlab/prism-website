@@ -21,6 +21,7 @@
     },
     computed: {
       flatPages() {
+        console.log('Flattening pages', this.pages);
         return flattenOutline(this.pages);
       },
       currentPage() {

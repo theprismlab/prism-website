@@ -21,38 +21,15 @@
             />
           </template>
 
-          <template v-for="pageDef in item.pages" :key="pageDef.key">
-            <v-list-group
-              v-if="pageDef.children && pageDef.children.length"
-              :value="subGroupKey(item, pageDef)"
-            >
-              <template #activator="{ props: subProps }">
-                <v-list-item
-                  v-bind="subProps"
-                  :to="{ path: item.route, query: { dest: pageDef.key } }"
-                  :title="pageDef.title"
-                  :active="isPageActive(item, pageDef)"
-                  active-class="active-menu-item"
-                />
-              </template>
-              <v-list-item
-                v-for="child in pageDef.children"
-                :key="child.key"
-                :to="{ path: item.route, query: { dest: child.key } }"
-                :title="child.title"
-                :active="isPageActive(item, child)"
-                active-class="active-menu-item"
-              />
-            </v-list-group>
-
-            <v-list-item
-              v-else
-              :to="{ path: item.route, query: { dest: pageDef.key } }"
-              :title="pageDef.title"
-              :active="isPageActive(item, pageDef)"
-              active-class="active-menu-item"
-            />
-          </template>
+          <v-list-item
+            v-for="pageDef in flattenOutline(item.pages)"
+            :key="pageDef.key"
+            :to="{ path: item.route, query: { dest: pageDef.key } }"
+            :title="pageDef.title"
+            :active="isPageActive(item, pageDef)"
+            :style="{ marginLeft: `${pageDef.level * 12 + 8}px` }"
+            active-class="active-menu-item"
+          />
         </v-list-group>
 
         <v-list-item
@@ -80,7 +57,7 @@
 
 <script>
   import ScreenSelector from '../ScreenSelector.vue';
-  import { loadPdfOutline } from './pdf-outline';
+  import { loadPdfOutline, flattenOutline } from './pdf-outline';
 
   export default {
     name: 'InstructionsSubDrawer',
@@ -144,45 +121,16 @@
           }
         },
       },
-      '$route.query.dest': {
-        immediate: true,
-        handler(dest) {
-          if (!dest) return;
-          this.ensureParentOpen(dest);
-        },
-      },
-      items: {
-        handler() {
-          const dest = this.$route.query.dest;
-          if (dest) this.ensureParentOpen(dest);
-        },
-        deep: true,
-      },
     },
     methods: {
+      flattenOutline,
       isGroupActive(item) {
         return this.$route.path.includes(`/${item.id}`);
       },
       isPageActive(item, pageDef) {
         if (!this.$route.path.endsWith(item.id)) return false;
         const current = this.$route.query.dest;
-        return current === pageDef.key || (!current && pageDef === item.pages[0]);
-      },
-      subGroupKey(item, pageDef) {
-        return `${item.id}/${pageDef.key}`;
-      },
-      ensureParentOpen(dest) {
-        for (const item of this.items) {
-          for (const page of item.pages || []) {
-            if (page.children && page.children.some((c) => c.key === dest)) {
-              const key = this.subGroupKey(item, page);
-              if (!this.openedGroups.includes(key)) {
-                this.openedGroups = [...this.openedGroups, key];
-              }
-              return;
-            }
-          }
-        }
+        return current === pageDef.key || (!current && pageDef === flattenOutline(item.pages)[0]);
       },
     },
   };
