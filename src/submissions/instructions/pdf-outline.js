@@ -48,32 +48,64 @@ async function fetchOutline(url) {
   const pdf = await pdfjsLib.getDocument({ url }).promise;
   const outline = await pdf.getOutline();
   if (!outline || outline.length === 0) return [];
-  return buildItems(pdf, outline);
+  const namedDestIndex = await buildNamedDestIndex(pdf);
+  return buildItems(pdf, outline, namedDestIndex);
 }
 
-async function buildItems(pdf, nodes) {
+/**
+ * Build a reverse map from dest-array signature → named destination string.
+ * This lets us resolve explicit array destinations back to `nameddest=` keys
+ * rather than falling back to bare page numbers.
+ */
+async function buildNamedDestIndex(pdf) {
+  const index = new Map();
+  const dests = await pdf.getDestinations();
+  if (!dests) return index;
+  for (const [name, destArray] of Object.entries(dests)) {
+    if (destArray?.[0]) {
+      const key = destArrayKey(destArray);
+      if (!index.has(key)) index.set(key, name);
+    }
+  }
+  return index;
+}
+
+/** Stable string key for a destination array based on page ref + position. */
+function destArrayKey(destArray) {
+  const ref = destArray[0];
+  const x = destArray[2] != null ? Math.round(destArray[2]) : '';
+  const y = destArray[3] != null ? Math.round(destArray[3]) : '';
+  return `${ref.num}:${ref.gen}:${x}:${y}`;
+}
+
+async function buildItems(pdf, nodes, namedDestIndex) {
   const items = [];
   for (const node of nodes) {
-    const resolved = await resolveDest(pdf, node.dest);
+    const resolved = await resolveDest(pdf, node.dest, namedDestIndex);
     if (!resolved) continue;
-    const children = node.items && node.items.length ? await buildItems(pdf, node.items) : [];
+    const children = node.items?.length ? await buildItems(pdf, node.items, namedDestIndex) : [];
     items.push({ title: node.title, ...resolved, children });
   }
   return items;
 }
 
-async function resolveDest(pdf, dest) {
+async function resolveDest(pdf, dest, namedDestIndex) {
   // Named destination -> a string we can pass straight through.
   if (typeof dest === 'string') {
     return { key: dest, hash: `nameddest=${encodeURIComponent(dest)}` };
   }
 
-  // Explicit destination array: [pageRef, {name: 'XYZ'|'Fit'|...}, ...args]
-  let destArray = dest;
-  if (!Array.isArray(destArray)) return null;
+  // Explicit destination array: try reverse-lookup into named destinations first.
+  if (!Array.isArray(dest)) return null;
 
+  const name = namedDestIndex.get(destArrayKey(dest));
+  if (name) {
+    return { key: name, hash: `nameddest=${encodeURIComponent(name)}` };
+  }
+
+  // Last resort: fall back to page number.
   try {
-    const pageIndex = await pdf.getPageIndex(destArray[0]);
+    const pageIndex = await pdf.getPageIndex(dest[0]);
     const pageNumber = pageIndex + 1;
     return { key: `page-${pageNumber}`, hash: `page=${pageNumber}` };
   } catch {
