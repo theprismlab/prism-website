@@ -34,6 +34,7 @@ export function loadPdfOutline(url) {
 
 /** Flatten a nested outline into a single list, depth-first. */
 export function flattenOutline(items) {
+  console.log('Flattening outline', items);
   const out = [];
   for (const item of items) {
     out.push(item);
@@ -78,13 +79,13 @@ function destArrayKey(destArray) {
   return `${ref.num}:${ref.gen}:${x}:${y}`;
 }
 
-async function buildItems(pdf, nodes, namedDestIndex) {
+async function buildItems(pdf, nodes, namedDestIndex, level = 0) {
   const items = [];
   for (const node of nodes) {
     const resolved = await resolveDest(pdf, node.dest, namedDestIndex);
     if (!resolved) continue;
-    const children = node.items?.length ? await buildItems(pdf, node.items, namedDestIndex) : [];
-    items.push({ title: node.title, ...resolved, children });
+    const children = node.items?.length ? await buildItems(pdf, node.items, namedDestIndex, level + 1) : [];
+    items.push({ title: node.title, level, ...resolved, children });
   }
   return items;
 }
