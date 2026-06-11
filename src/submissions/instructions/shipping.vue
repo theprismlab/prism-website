@@ -1,25 +1,42 @@
 <template>
   <page>
     <container-md>
-      <prism-page-title>{{ currentPage.title }}</prism-page-title>
-      <iframe :key="currentPage.namedest" :src="pdfUrl" class="pdf-embed" />
+      <prism-page-title>{{
+        currentPage ? currentPage.title : 'Shipping Instructions'
+      }}</prism-page-title>
+      <iframe :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
     </container-md>
   </page>
 </template>
 
 <script>
-  import { SHIPPING_PAGES } from './pages-config';
+  import { loadPdfOutline, flattenOutline } from './pdf-outline';
+
+  const PDF_PATH = '/pdfs/instructions/Shipping.pdf';
 
   export default {
     name: 'ShippingInstructions',
+    data() {
+      return { pages: [] };
+    },
     computed: {
+      flatPages() {
+        return flattenOutline(this.pages);
+      },
       currentPage() {
-        const dest = this.$route.query.namedest;
-        return SHIPPING_PAGES.find((p) => p.namedest === dest) || SHIPPING_PAGES[0];
+        const dest = this.$route.query.dest;
+        return this.flatPages.find((p) => p.key === dest) || this.flatPages[0] || null;
       },
       pdfUrl() {
-        return `/pdfs/instructions/shipping.pdf#nameddest=${this.currentPage.namedest}`;
+        const hash = this.currentPage ? this.currentPage.hash : '';
+        return hash ? `${PDF_PATH}#${hash}` : PDF_PATH;
       },
+      iframeKey() {
+        return this.currentPage ? this.currentPage.key : 'default';
+      },
+    },
+    async created() {
+      this.pages = await loadPdfOutline(PDF_PATH);
     },
   };
 </script>
