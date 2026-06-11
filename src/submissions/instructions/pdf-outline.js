@@ -79,13 +79,24 @@ function destArrayKey(destArray) {
   return `${ref.num}:${ref.gen}:${x}:${y}`;
 }
 
-async function buildItems(pdf, nodes, namedDestIndex, level = 0) {
+function slugify(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+async function buildItems(pdf, nodes, namedDestIndex, level = 0, slugCounts = new Map()) {
   const items = [];
   for (const node of nodes) {
     const resolved = await resolveDest(pdf, node.dest, namedDestIndex);
     if (!resolved) continue;
-    const children = node.items?.length ? await buildItems(pdf, node.items, namedDestIndex, level + 1) : [];
-    items.push({ title: node.title, level, ...resolved, children });
+    const base = slugify(node.title) || resolved.key;
+    const count = slugCounts.get(base) ?? 0;
+    slugCounts.set(base, count + 1);
+    const slug = count === 0 ? base : `${base}-${count}`;
+    const children = node.items?.length ? await buildItems(pdf, node.items, namedDestIndex, level + 1, slugCounts) : [];
+    items.push({ title: node.title, slug, level, ...resolved, children });
   }
   return items;
 }

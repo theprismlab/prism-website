@@ -24,7 +24,7 @@
           <v-list-item
             v-for="pageDef in flattenOutline(item.pages)"
             :key="pageDef.key"
-            :to="{ path: item.route, query: { dest: pageDef.key } }"
+            :to="{ path: item.route, query: { dest: pageDef.slug } }"
             :title="pageDef.title"
             :active="isPageActive(item, pageDef)"
             :class="`outline-level-${pageDef.level}`"
@@ -130,7 +130,7 @@
       isPageActive(item, pageDef) {
         if (!this.$route.path.endsWith(item.id)) return false;
         const current = this.$route.query.dest;
-        return current === pageDef.key || (!current && pageDef === flattenOutline(item.pages)[0]);
+        return current === pageDef.slug || (!current && pageDef === flattenOutline(item.pages)[0]);
       },
     },
   };

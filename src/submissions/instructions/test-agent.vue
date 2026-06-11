@@ -29,7 +29,7 @@
       },
       currentPage() {
         const dest = this.$route.query.dest;
-        return this.flatPages.find((p) => p.key === dest) || this.flatPages[0] || null;
+        return this.flatPages.find((p) => p.slug === dest) || this.flatPages[0] || null;
       },
       pdfUrl() {
         if (!this.pdfPath) return null;
