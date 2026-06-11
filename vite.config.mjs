@@ -13,7 +13,7 @@ import { fileURLToPath, URL } from 'node:url'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    Layouts({ layoutsDirs: ['src/layouts', 'src/submissions'] }),
+    Layouts(),
     Vue({
       template: { transformAssetUrls }
     }),

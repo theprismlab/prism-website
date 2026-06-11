@@ -8,7 +8,7 @@
 </template>
 
 <script>
-  import { SHIPPING_PAGES } from '../pages-config';
+  import { SHIPPING_PAGES } from './pages-config';
 
   export default {
     name: 'ShippingInstructions',

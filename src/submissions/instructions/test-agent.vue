@@ -8,7 +8,7 @@
 </template>
 
 <script>
-  import { TEST_AGENT_PAGES } from '../pages-config';
+  import { TEST_AGENT_PAGES } from './pages-config';
 
   export default {
     name: 'TestAgentInstructions',

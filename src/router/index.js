@@ -82,7 +82,7 @@ const routes = [
   },
   {
     path: '/submissions/instructions/:screen/test-agent',
-    component: () => import('@/submissions/instructions/screen/test-agent.vue'),
+    component: () => import('@/submissions/instructions/test-agent.vue'),
     meta: submissionsMeta,
     beforeEnter: (to) => {
       if (!to.query.page) return { ...to, query: { page: '1' } };
@@ -90,7 +90,7 @@ const routes = [
   },
   {
     path: '/submissions/instructions/:screen/shipping',
-    component: () => import('@/submissions/instructions/screen/shipping.vue'),
+    component: () => import('@/submissions/instructions/shipping.vue'),
     meta: submissionsMeta,
     beforeEnter: (to) => {
       if (!to.query.page) return { ...to, query: { page: '1' } };
@@ -104,17 +104,7 @@ const routes = [
   },
   {
     path: '/submissions/forms/:screen',
-    component: () => import('@/submissions/forms/screen/index.vue'),
-    meta: submissionsMeta,
-  },
-  {
-    path: '/submissions/forms/:screen/application',
-    component: () => import('@/submissions/forms/screen/application.vue'),
-    meta: submissionsMeta,
-  },
-  {
-    path: '/submissions/forms/:screen/documents',
-    component: () => import('@/submissions/forms/screen/documents.vue'),
+    component: () => import('@/submissions/forms/screen.vue'),
     meta: submissionsMeta,
   },
 ];

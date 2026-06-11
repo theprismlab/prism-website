@@ -44,11 +44,11 @@
 
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
-  import ContactStep from '../steps/ContactStep.vue';
-  import ScreenDetailsStep from '../steps/ScreenDetailsStep.vue';
-  import ApplicationStep from '../steps/ApplicationStep.vue';
-  import DocumentsStep from '../steps/DocumentsStep.vue';
-  import ReviewStep from '../steps/ReviewStep.vue';
+  import ContactStep from './steps/ContactStep.vue';
+  import ScreenDetailsStep from './steps/ScreenDetailsStep.vue';
+  import ApplicationStep from './steps/ApplicationStep.vue';
+  import DocumentsStep from './steps/DocumentsStep.vue';
+  import ReviewStep from './steps/ReviewStep.vue';
 
   export default {
     name: 'FormsScreen',
