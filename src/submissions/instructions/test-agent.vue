@@ -21,7 +21,7 @@
         return TEST_AGENT_PAGES.find((p) => p.namedest === dest) || TEST_AGENT_PAGES[0];
       },
       pdfUrl() {
-        return `/pdfs/instructions/${this.screen}_test_agent_instructions.pdf#nameddest=${this.currentPage.namedest}`;
+        return `/pdfs/instructions/${this.screen}_Instructions.pdf#nameddest=${this.currentPage.namedest}`;
       },
     },
   };
