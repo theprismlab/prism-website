@@ -22,8 +22,8 @@
           </template>
           <v-list-item
             v-for="pageDef in item.pages"
-            :key="pageDef.slug"
-            :to="{ path: item.route, query: { page: pageDef.slug } }"
+            :key="pageDef.namedest"
+            :to="{ path: item.route, query: { namedest: pageDef.namedest } }"
             :title="pageDef.title"
             :active="isPageActive(item, pageDef)"
             active-class="active-menu-item"
@@ -113,8 +113,8 @@
       },
       isPageActive(item, pageDef) {
         if (!this.$route.path.endsWith(item.id)) return false;
-        const currentSlug = this.$route.query.page;
-        return currentSlug === pageDef.slug || (!currentSlug && pageDef === item.pages[0]);
+        const current = this.$route.query.namedest;
+        return current === pageDef.namedest || (!current && pageDef === item.pages[0]);
       },
     },
   };

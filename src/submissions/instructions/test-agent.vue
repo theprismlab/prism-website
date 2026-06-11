@@ -2,7 +2,7 @@
   <page>
     <container-md>
       <prism-page-title>{{ currentPage.title }}</prism-page-title>
-      <iframe :key="pageSlug" :src="pdfUrl" class="pdf-embed" />
+      <iframe :key="currentPage.namedest" :src="pdfUrl" class="pdf-embed" />
     </container-md>
   </page>
 </template>
@@ -12,25 +12,16 @@
 
   export default {
     name: 'TestAgentInstructions',
-    beforeRouteUpdate(to, _from, next) {
-      if (!to.query.page) {
-        next({ ...to, query: { page: '1' } });
-      } else {
-        next();
-      }
-    },
     computed: {
       screen() {
         return this.$route.params.screen;
       },
-      pageSlug() {
-        return this.$route.query.page;
-      },
       currentPage() {
-        return TEST_AGENT_PAGES.find((p) => p.slug === this.pageSlug) || TEST_AGENT_PAGES[0];
+        const dest = this.$route.query.namedest;
+        return TEST_AGENT_PAGES.find((p) => p.namedest === dest) || TEST_AGENT_PAGES[0];
       },
       pdfUrl() {
-        return `/pdfs/instructions/${this.screen}_test_agent_instructions.pdf#page=${this.currentPage.pdfPage}`;
+        return `/pdfs/instructions/${this.screen}_test_agent_instructions.pdf#nameddest=${this.currentPage.namedest}`;
       },
     },
   };

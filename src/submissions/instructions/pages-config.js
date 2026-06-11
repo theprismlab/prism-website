@@ -1,10 +1,11 @@
 export const TEST_AGENT_PAGES = [
-  { slug: '1', title: 'Preparation', pdfPage: 1 },
-  { slug: '2', title: 'Handling', pdfPage: 2 },
-  { slug: '3', title: 'More Stuff', pdfPage: 3 },
+  { title: 'Preparation', namedest: 'Preparation' },
+  { title: 'Handling', namedest: 'Handling' },
+  { title: 'More Stuff', namedest: 'More_Stuff' },
 ];
 
 export const SHIPPING_PAGES = [
-  { slug: '1', title: 'Domestic', pdfPage: 1 },
-  { slug: '2', title: 'International', pdfPage: 2 },
+  { title: 'General', namedest: 'General' },
+  { title: 'Domestic', namedest: 'Domestic' },
+  { title: 'International', namedest: 'International' },
 ];
