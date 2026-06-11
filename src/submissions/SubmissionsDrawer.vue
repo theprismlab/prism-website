@@ -15,7 +15,7 @@
         :to="item.route"
         :title="item.title"
         :prepend-icon="item.icon"
-        :exact="item.exact"
+        :active="isItemActive(item)"
         active-class="active-menu-item"
       />
     </v-list>
@@ -29,6 +29,12 @@
       return {
         drawer: true,
       };
+    },
+    methods: {
+      isItemActive(item) {
+        if (item.activePrefix) return this.$route.path.startsWith(item.activePrefix);
+        return this.$route.path === item.route;
+      },
     },
     computed: {
       screen() {
@@ -47,7 +53,7 @@
             title: 'Screens',
             route: '/submissions',
             icon: 'mdi-flask-outline',
-            exact: true,
+            activePrefix: null,
           },
           {
             id: 'instructions',
@@ -56,21 +62,21 @@
               ? `/submissions/instructions/${this.screen}`
               : '/submissions/instructions',
             icon: 'mdi-information-variant-box-outline',
-            exact: false,
+            activePrefix: '/submissions/instructions',
           },
           {
             id: 'forms',
             title: 'Forms',
             route: this.screen ? `/submissions/forms/${this.screen}` : '/submissions/forms',
             icon: 'mdi-file-document-arrow-right-outline',
-            exact: false,
+            activePrefix: '/submissions/forms',
           },
           {
             id: 'quote-po',
             title: 'View Quote & Upload PO',
             route: '/submissions/quote-and-po',
             icon: 'mdi-currency-usd',
-            exact: true,
+            activePrefix: null,
           },
         ];
       },
