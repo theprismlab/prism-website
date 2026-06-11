@@ -2,14 +2,14 @@
   <page class="mt-0 pt-0">
     <HomeHero></HomeHero>
     <container-sm>
-      <p class="text-h3 text-center">
+      <p class="prism-text-h3 text-center">
         Our lab partners with researchers to reveal clinically important differences in drug
         behavior by screening over 900 cancer cell lines and correlating the viability results with
         baseline and functional genomic features
       </p>
     </container-sm>
     <container-sm>
-      <p class="text-body-1">
+      <p class="prism-text-body-1">
         Cancer cell line models remain essential in drug development, providing a controlled system
         to assess potency and confirm on-target engagement. At a larger scale using PRISM, these
         models provide power to <span class="text-emphasize">understand heterogeneity</span> in drug
@@ -35,8 +35,8 @@
 
     <container-sm class="my-12">
       <section-overline>Impact</section-overline>
-      <section-title>Dedicated to advancing oncology research</section-title>
-      <p class="text-body-1">
+      <prism-section-title>Dedicated to advancing oncology research</prism-section-title>
+      <p class="prism-text-body-1">
         Working with pharmaceutical and biotech companies and academics to improve the outcome for
         cancer patients worldwide.
       </p>

@@ -1,6 +1,6 @@
 <template>
   <page>
-    <prism-page-title>Frequently Asked Questions</prism-page-title>
+    <prism-page-title>Webinars</prism-page-title>
   </page>
 </template>
 

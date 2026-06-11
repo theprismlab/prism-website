@@ -1,8 +1,8 @@
 <template>
   <page>
     <container-md>
-      <page-title>Instructions</page-title>
-      <p class="text-body-1">Overview of submission instructions.</p>
+      <prism-page-title>Instructions</prism-page-title>
+      <p class="prism-text-body-1">Overview of submission instructions.</p>
     </container-md>
   </page>
 </template>

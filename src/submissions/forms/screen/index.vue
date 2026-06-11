@@ -1,7 +1,7 @@
 <template>
   <page>
     <container-md>
-      <page-title>Forms — {{ screen }}</page-title>
+      <prism-page-title>Forms — {{ screen }}</prism-page-title>
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel
           v-for="(step, i) in steps"
@@ -13,8 +13,12 @@
             <v-icon :color="iconColor(i)" class="mr-2" size="20">{{ step.icon }}</v-icon>
             <span :class="{ 'text-medium-emphasis': isLocked(i) }">{{ step.title }}</span>
             <template #actions>
-              <v-chip v-if="isCompleted(i)" color="success" size="x-small" class="mr-1">Done</v-chip>
-              <v-icon v-else-if="isLocked(i)" size="18" color="medium-emphasis">mdi-lock-outline</v-icon>
+              <v-chip v-if="isCompleted(i)" color="success" size="x-small" class="mr-1"
+                >Done</v-chip
+              >
+              <v-icon v-else-if="isLocked(i)" size="18" color="medium-emphasis"
+                >mdi-lock-outline</v-icon
+              >
               <v-icon v-else>$expand</v-icon>
             </template>
           </v-expansion-panel-title>

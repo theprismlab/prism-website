@@ -33,6 +33,8 @@ const routes = [
 
   { path: '/contact-us', component: () => import('@/pages/contact-us.vue') },
   { path: '/faq', component: () => import('@/pages/faq.vue') },
+  { path: '/webinars', component: () => import('@/pages/webinars.vue') },
+
   { path: '/publications', component: () => import('@/pages/publications.vue') },
 
   // {

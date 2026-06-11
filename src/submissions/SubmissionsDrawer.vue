@@ -23,17 +23,8 @@
 </template>
 
 <script>
-  import SvgIcon from '@jamescoyle/vue-icon';
-  import { mdiInformationVariantBoxOutline } from '@mdi/js';
-  import { mdiFileDocumentArrowRightOutline } from '@mdi/js';
-  import { mdiCurrencyUsd } from '@mdi/js';
-  import { mdiFileDocumentEditOutline } from '@mdi/js';
-  import { mdiFlaskOutline } from '@mdi/js';
-  import { mdiTruckOutline } from '@mdi/js';
-
   export default {
     name: 'SubmissionsDrawer',
-    components: { SvgIcon },
     data() {
       return {
         drawer: true,

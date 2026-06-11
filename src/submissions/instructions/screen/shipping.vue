@@ -1,7 +1,7 @@
 <template>
   <page>
     <container-md>
-      <page-title>{{ currentPage.title }}</page-title>
+      <prism-page-title>{{ currentPage.title }}</prism-page-title>
       <iframe :key="pageSlug" :src="pdfUrl" class="pdf-embed" />
     </container-md>
   </page>
