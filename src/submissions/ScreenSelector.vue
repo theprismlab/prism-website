@@ -2,11 +2,8 @@
   <v-select
     :model-value="$route.params.screen"
     :items="screens"
-    density="compact"
-    variant="outlined"
     :placeholder="$route.params.screen ? undefined : 'Select screen'"
     hide-details
-    class="mx-3 mt-2 mb-1"
     v-model:menu="menuOpen"
     @update:model-value="onScreenChange"
   />

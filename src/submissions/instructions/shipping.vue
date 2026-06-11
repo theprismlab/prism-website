@@ -1,9 +1,10 @@
 <template>
   <page>
     <container-md>
-      <prism-page-title>{{
+      <prism-page-title>Instructions — {{ this.screen }}</prism-page-title>
+      <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Shipping Instructions'
-      }}</prism-page-title>
+      }}</prism-page-title> -->
       <iframe :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
     </container-md>
   </page>
@@ -20,6 +21,9 @@
       return { pages: [] };
     },
     computed: {
+      screen() {
+        return this.$route.params.screen;
+      },
       flatPages() {
         console.log('Flattening pages', this.pages);
         return flattenOutline(this.pages);
