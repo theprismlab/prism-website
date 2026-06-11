@@ -27,7 +27,7 @@
             :to="{ path: item.route, query: { dest: pageDef.key } }"
             :title="pageDef.title"
             :active="isPageActive(item, pageDef)"
-            :style="{ marginLeft: `${pageDef.level * 12 + 8}px` }"
+            :class="`outline-level-${pageDef.level}`"
             active-class="active-menu-item"
           />
         </v-list-group>
@@ -40,9 +40,9 @@
           exact
           active-class="active-menu-item"
         />
-        <v-divider></v-divider>
       </template>
     </v-list>
+
     <v-list v-if="screen" density="comfortable" nav>
       <v-list-item
         id="form-btn"
@@ -153,11 +153,23 @@
     padding-left: 8px;
     padding-right: 8px;
   }
-  .v-list-item--active {
+  /* .v-list-item--active {
     color: var(--v-primary-base);
-    font-weight: 900 !important;
+  } */
+  .v-list-item--active > * > * {
+    font-weight: bold !important;
   }
-  /* .v-list-item__overlay {
 
+  .outline-level-0 > * {
+    padding-left: 0px !important;
+  }
+  .outline-level-1 > * {
+    padding-left: 24px !important;
+  }
+  .outline-level-2 > * {
+    padding-left: 32px !important;
+  }
+  /* .v-list-group--open:has(.v-list-item--active) {
+    background-color: rgba(var(--v-theme-primary), 0.08);
   } */
 </style>
