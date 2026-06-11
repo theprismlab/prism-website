@@ -1,24 +1,16 @@
 <template>
-<page>
-<container-sm>
-    <page-title>Contact us</page-title>
-     <section>
-      <!-- <h2 class="text-43">Want to collaborate?</h2>
-          <p class="text-body-1">Tell us more about your project or inquiries using form below.</p> -->
-          <!-- <hubspot-form></hubspot-form> -->
-                 <hubspot-form></hubspot-form>
-     </section>
-</container-sm>
-</page>
-
+  <page>
+    <container-sm>
+      <prism-page-title>Contact us</prism-page-title>
+      <section>
+        <hubspot-form></hubspot-form>
+      </section>
+    </container-sm>
+  </page>
 </template>
 <script>
   export default {
-    mounted() {
-
-  }
-}
+    mounted() {},
+  };
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

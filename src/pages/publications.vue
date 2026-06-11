@@ -1,7 +1,7 @@
 <template>
   <page id="publication-page">
     <container-md>
-      <page-title>Publications</page-title>
+      <prism-page-title>Publications</prism-page-title>
     </container-md>
 
     <container-md>

@@ -1,14 +1,14 @@
 <template>
   <page>
     <container-md>
-      <page-title>{{ currentPage.title }}</page-title>
+      <prism-page-title>{{ currentPage.title }}</prism-page-title>
       <iframe :key="pageSlug" :src="pdfUrl" class="pdf-embed" />
     </container-md>
   </page>
 </template>
 
 <script>
-  import { SHIPPING_PAGES } from '../pages-config';
+  import { SHIPPING_PAGES } from './pages-config';
 
   export default {
     name: 'ShippingInstructions',

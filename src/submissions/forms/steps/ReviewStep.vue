@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="text-body-2 text-medium-emphasis mb-4">
+    <p class="prism-text-body-2 text-medium-emphasis mb-4">
       Review your submission details before sending.
     </p>
     <v-list lines="one" density="compact" class="mb-4">
