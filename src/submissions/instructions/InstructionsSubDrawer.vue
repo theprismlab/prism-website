@@ -10,7 +10,7 @@
     >
       <v-list-subheader>Instructions</v-list-subheader>
       <template v-for="item in items" :key="item.id">
-        <v-list-group v-if="item.pages" :value="item.id">
+        <v-list-group v-if="item.pages && item.pages.length" :value="item.id">
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
@@ -20,12 +20,14 @@
               active-class="active-menu-item"
             />
           </template>
+
           <v-list-item
-            v-for="pageDef in item.pages"
-            :key="pageDef.slug"
-            :to="{ path: item.route, query: { page: pageDef.slug } }"
+            v-for="pageDef in flattenOutline(item.pages)"
+            :key="pageDef.key"
+            :to="{ path: item.route, query: { dest: pageDef.slug } }"
             :title="pageDef.title"
             :active="isPageActive(item, pageDef)"
+            :class="`outline-level-${pageDef.level}`"
             active-class="active-menu-item"
           />
         </v-list-group>
@@ -38,9 +40,9 @@
           exact
           active-class="active-menu-item"
         />
-        <v-divider></v-divider>
       </template>
     </v-list>
+
     <v-list v-if="screen" density="comfortable" nav>
       <v-list-item
         id="form-btn"
@@ -55,7 +57,7 @@
 
 <script>
   import ScreenSelector from '../ScreenSelector.vue';
-  import { TEST_AGENT_PAGES, SHIPPING_PAGES } from './pages-config';
+  import { loadPdfOutline, flattenOutline } from './pdf-outline';
 
   export default {
     name: 'InstructionsSubDrawer',
@@ -63,11 +65,19 @@
     data() {
       return {
         openedGroups: ['test-agent'],
+        testAgentPages: [],
+        shippingPages: [],
       };
     },
     computed: {
       screen() {
         return this.$route.params.screen;
+      },
+      testAgentPdf() {
+        return this.screen ? '/pdfs/instructions/Instructions.pdf' : null;
+      },
+      shippingPdf() {
+        return this.screen ? '/pdfs/instructions/Shipping.pdf' : null;
       },
       items() {
         return [
@@ -76,26 +86,31 @@
             title: 'Test Agent Instructions',
             route: `/submissions/instructions/${this.screen}/test-agent`,
             icon: 'mdi-flask-outline',
-            pages: TEST_AGENT_PAGES,
+            pages: this.testAgentPages,
           },
           {
             id: 'shipping',
             title: 'Shipping Instructions',
             route: `/submissions/instructions/${this.screen}/shipping`,
             icon: 'mdi-truck-outline',
-            pages: SHIPPING_PAGES,
+            pages: this.shippingPages,
           },
-          // {
-          //   id: 'forms',
-          //   title: `Start Form`,
-          //   route: `/submissions/forms/${this.screen}`,
-          //   icon: 'mdi-file-document-arrow-right-outline',
-          //   type: 'button',
-          // },
         ];
       },
     },
     watch: {
+      testAgentPdf: {
+        immediate: true,
+        async handler(url) {
+          this.testAgentPages = url ? await loadPdfOutline(url) : [];
+        },
+      },
+      shippingPdf: {
+        immediate: true,
+        async handler(url) {
+          this.shippingPages = url ? await loadPdfOutline(url) : [];
+        },
+      },
       '$route.path': {
         handler(path) {
           if (path.includes('/shipping') && !this.openedGroups.includes('shipping')) {
@@ -108,13 +123,14 @@
       },
     },
     methods: {
+      flattenOutline,
       isGroupActive(item) {
         return this.$route.path.includes(`/${item.id}`);
       },
       isPageActive(item, pageDef) {
         if (!this.$route.path.endsWith(item.id)) return false;
-        const currentSlug = this.$route.query.page;
-        return currentSlug === pageDef.slug || (!currentSlug && pageDef === item.pages[0]);
+        const current = this.$route.query.dest;
+        return current === pageDef.slug || (!current && pageDef === flattenOutline(item.pages)[0]);
       },
     },
   };
@@ -137,11 +153,23 @@
     padding-left: 8px;
     padding-right: 8px;
   }
-  .v-list-item--active {
+  /* .v-list-item--active {
     color: var(--v-primary-base);
-    font-weight: 900 !important;
+  } */
+  .v-list-item--active > * > * {
+    font-weight: bold !important;
   }
-  /* .v-list-item__overlay {
 
+  .outline-level-0 > * {
+    padding-left: 0px !important;
+  }
+  .outline-level-1 > * {
+    padding-left: 24px !important;
+  }
+  .outline-level-2 > * {
+    padding-left: 32px !important;
+  }
+  /* .v-list-group--open:has(.v-list-item--active) {
+    background-color: rgba(var(--v-theme-primary), 0.08);
   } */
 </style>

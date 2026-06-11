@@ -84,17 +84,11 @@ const routes = [
     path: '/submissions/instructions/:screen/test-agent',
     component: () => import('@/submissions/instructions/test-agent.vue'),
     meta: submissionsMeta,
-    beforeEnter: (to) => {
-      if (!to.query.page) return { ...to, query: { page: '1' } };
-    },
   },
   {
     path: '/submissions/instructions/:screen/shipping',
     component: () => import('@/submissions/instructions/shipping.vue'),
     meta: submissionsMeta,
-    beforeEnter: (to) => {
-      if (!to.query.page) return { ...to, query: { page: '1' } };
-    },
   },
 
   {

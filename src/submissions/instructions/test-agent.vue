@@ -1,36 +1,52 @@
 <template>
   <page>
     <container-md>
-      <prism-page-title>{{ currentPage.title }}</prism-page-title>
-      <iframe :key="pageSlug" :src="pdfUrl" class="pdf-embed" />
+      <prism-page-title>Instructions — {{ this.screen }}</prism-page-title>
+      <!-- <prism-page-title>{{
+        currentPage ? currentPage.title : 'Test Agent Instructions'
+      }}</prism-page-title> -->
+      <iframe v-if="pdfUrl" :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
     </container-md>
   </page>
 </template>
 
 <script>
-  import { TEST_AGENT_PAGES } from './pages-config';
+  import { loadPdfOutline, flattenOutline } from './pdf-outline';
 
   export default {
     name: 'TestAgentInstructions',
-    beforeRouteUpdate(to, _from, next) {
-      if (!to.query.page) {
-        next({ ...to, query: { page: '1' } });
-      } else {
-        next();
-      }
+    data() {
+      return { pages: [] };
     },
     computed: {
       screen() {
         return this.$route.params.screen;
       },
-      pageSlug() {
-        return this.$route.query.page;
+      pdfPath() {
+        return this.screen ? `/pdfs/instructions/Instructions.pdf` : null;
+      },
+      flatPages() {
+        return flattenOutline(this.pages);
       },
       currentPage() {
-        return TEST_AGENT_PAGES.find((p) => p.slug === this.pageSlug) || TEST_AGENT_PAGES[0];
+        const dest = this.$route.query.dest;
+        return this.flatPages.find((p) => p.slug === dest) || this.flatPages[0] || null;
       },
       pdfUrl() {
-        return `/pdfs/instructions/${this.screen}_test_agent_instructions.pdf#page=${this.currentPage.pdfPage}`;
+        if (!this.pdfPath) return null;
+        const hash = this.currentPage ? this.currentPage.hash : '';
+        return hash ? `${this.pdfPath}#${hash}` : this.pdfPath;
+      },
+      iframeKey() {
+        return this.currentPage ? this.currentPage.key : 'default';
+      },
+    },
+    watch: {
+      pdfPath: {
+        immediate: true,
+        async handler(url) {
+          this.pages = url ? await loadPdfOutline(url) : [];
+        },
       },
     },
   };
