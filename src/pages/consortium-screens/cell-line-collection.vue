@@ -15,25 +15,35 @@
         <cell-line-stats />
       </app-container>
 
-    <app-container class="mt-6 mb-12">
-      <v-img
-        eager
-        style="max-width: 800px; margin: auto"
-        :src="`${imgPath}img-kb-1.2-step-1.svg`"
-        alt="Cell Line Collection"
-      ></v-img>
-    </app-container>
+    <page-section background="muted" :padding="10">
+      <app-container>
+        <section-overline class="text-center">Methodology</section-overline>
+        <h2 class="prism-text-h3 text-center">Cell line barcoding and pooling workflow</h2>
+        <p class="prism-text-body-1 text-center mx-auto mb-8" style="max-width: 560px">
+          Each cell line is individually DNA-barcoded, quality-controlled, and mixed by doubling
+          time into pools for use in high-throughput PRISM screens.
+        </p>
+        <v-img
+          eager
+          style="max-width: 800px; margin: auto"
+          :src="`${imgPath}img-kb-1.2-step-1.svg`"
+          alt="Cell line barcoding and pooling workflow diagram"
+        ></v-img>
+      </app-container>
+    </page-section>
 
     <app-container class="mb-12">
-      <h2 class="prism-text-h3 text-black">All of our cell lines are:</h2>
-      <v-list class="mt-6" style="background-color: transparent">
-        <v-list-item v-for="item in checklist" :key="checklist">
-          <template v-slot:prepend>
-            <v-icon class="text-success-accent-4">mdi-check</v-icon>
-          </template>
-          <v-list-item-title>{{ item }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
+      <v-card class="checklist-card" elevation="0">
+        <h2 class="prism-text-h3 mb-0">All of our cell lines are:</h2>
+        <v-list class="mt-2 checklist-list">
+          <v-list-item v-for="item in checklist" :key="item">
+            <template v-slot:prepend>
+              <v-icon class="text-success-accent-4 mr-1">mdi-check-circle-outline</v-icon>
+            </template>
+            <v-list-item-title class="text-wrap">{{ item }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-card>
     </app-container>
 
     <app-container class="mt-12 mb-12">
@@ -90,4 +100,16 @@
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+  .checklist-card {
+    background: color-mix(in srgb, var(--v-success-accent-4) 6%, white);
+    border: 1px solid color-mix(in srgb, var(--v-success-accent-4) 20%, white);
+    border-left: 4px solid var(--v-success-accent-4);
+    border-radius: 12px;
+    padding: 28px 32px;
+  }
+
+  .checklist-list {
+    background: transparent !important;
+  }
+</style>
