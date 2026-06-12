@@ -54,11 +54,11 @@
   import { mdiHexagonMultiple } from '@mdi/js';
   import { mdiFileDocumentMultipleOutline } from '@mdi/js';
   import { mdiAccountGroup } from '@mdi/js';
-  import HomeHero from '../components/sections/HomeHero.vue';
+  import HomeHero from '@/pages/index/HomeHero.vue';
   import { ASSET_BASE } from '@/utils/assets';
-  import HomeOverviewCards from '@/components/sections/HomeOverviewCards.vue';
-  import HomeTestimonialCards from '@/components/sections/HomeTestimonialCards.vue';
-  import HomeImpactCards from '@/components/sections/HomeImpactCards.vue';
+  import HomeOverviewCards from '@/pages/index/HomeOverviewCards.vue';
+  import HomeTestimonialCards from '@/pages/index/HomeTestimonialCards.vue';
+  import HomeImpactCards from '@/pages/index/HomeImpactCards.vue';
   export default {
     components: {
       SvgIcon,

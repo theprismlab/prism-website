@@ -69,7 +69,7 @@
 
 <script>
   import { ASSET_BASE } from '@/utils/assets';
-  import CellLineStats from '@/components/sections/CellLineStats.vue';
+  import CellLineStats from './cell-line-collection/CellLineStats.vue';
 
   export default {
     name: 'CellLineCollection',

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import ImpactCards from './ImpactCards.vue';
+  import ImpactCards from '@/components/ImpactCards.vue';
   import { mdiMicroscope, mdiSitemap, mdiLabel, mdiHumanChild } from '@mdi/js';
 
   export default {
