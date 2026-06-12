@@ -2,7 +2,7 @@
   <page>
     <app-container>
       <prism-page-title>Cell line collection</prism-page-title>
-      <p class="text-body-1">
+      <p class="prism-text-body-1">
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45
         major types of cancer and wide genomic diversity. Among them, our collection includes a
         significant number of pediatric cancer cell lines, as well as over 100 hematopoietic cell
@@ -11,7 +11,7 @@
       </p>
     </app-container>
 
-      <app-container wide>
+      <app-container wide class="mb-8">
         <cell-line-stats />
       </app-container>
 
@@ -32,7 +32,7 @@
       </app-container>
     </page-section>
 
-    <app-container class="mb-12">
+    <app-container class="my-12">
       <v-card class="checklist-card" elevation="0">
         <h2 class="prism-text-h3 mb-0">All of our cell lines are:</h2>
         <v-list class="mt-2 checklist-list">
@@ -52,25 +52,32 @@
         PRISM’s collection of over 900 cell lines is screened for all standard PRISM experiments and
         is divided into two cell sets:
       </p>
-      <v-list class="mb-6" lines="auto" style="max-width: 500px">
-        <v-list-item title="PR2025A" subtitle="20 fastest pools" />
-        <v-divider />
-        <v-list-item title="PR2025B" subtitle="20 slowest pools" />
 
-        <v-list-item
-          class="mt-4"
-          subtitle="All 40 pools are used in our 5-day consortium screens"
-        />
-      </v-list>
-
-      <p class="prism-text-body-1">
-        See a full annotated list of our
-        <a
-          href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx"
-          target="_blank"
-          >PRISM barcoded cell lines <v-icon size="small">mdi-download</v-icon> </a
-        >.
+      <v-row class="mt-2" style="max-width: 420px">
+        <v-col cols="6">
+          <div class="cell-set-card">
+            <div class="cell-set-name">PR2025A</div>
+            <div class="cell-set-detail">20 fastest pools</div>
+          </div>
+        </v-col>
+        <v-col cols="6">
+          <div class="cell-set-card">
+            <div class="cell-set-name">PR2025B</div>
+            <div class="cell-set-detail">20 slowest pools</div>
+          </div>
+        </v-col>
+      </v-row>
+      <p class="text-body-2 text-grey-darken-1 mt-3 mb-8">
+        All 40 pools are used in our 5-day consortium screens
       </p>
+
+      <v-btn
+        variant="outlined"
+        color="primary"
+        href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx"
+        target="_blank"
+        prepend-icon="mdi-download"
+      >PRISM barcoded cell lines</v-btn>
     </app-container>
   </page>
 </template>
@@ -111,5 +118,24 @@
 
   .checklist-list {
     background: transparent !important;
+  }
+
+  .cell-set-card {
+    border: .1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    background: #fcfcfc;
+  }
+
+  .cell-set-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--v-grey-darken-2);
+    margin-bottom: 4px;
+  }
+
+  .cell-set-detail {
+    font-size: 1rem;
+    color: var(--v-grey-darken-1);
   }
 </style>
