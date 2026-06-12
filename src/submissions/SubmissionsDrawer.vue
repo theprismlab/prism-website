@@ -54,7 +54,7 @@
             title: 'Screens',
             route: '/submissions',
             // icon: 'mdi-flask-outline',
-                        icon: 'mdi-layers-outline',
+            icon: 'mdi-layers-outline',
             activePrefix: null,
           },
           {

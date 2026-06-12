@@ -1,6 +1,7 @@
 <template>
   <page>
     <container-md>
+      <breadcrumbs :items="breadcrumbs" />
       <prism-page-title>Instructions — {{ this.screen }}</prism-page-title>
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Test Agent Instructions'
@@ -12,15 +13,24 @@
 
 <script>
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
+  import Breadcrumbs from '@/components/Breadcrumbs.vue';
 
   export default {
     name: 'TestAgentInstructions',
+    components: { Breadcrumbs },
     data() {
       return { pages: [] };
     },
     computed: {
       screen() {
         return this.$route.params.screen;
+      },
+      breadcrumbs() {
+        return [
+          { title: 'Submissions', to: '/submissions' },
+          { title: 'Instructions', to: '/submissions/instructions' },
+          { title: `${this.screen} — Test Agent`, disabled: true },
+        ];
       },
       pdfPath() {
         return this.screen ? PDF_PATHS.TEST_AGENT : null;

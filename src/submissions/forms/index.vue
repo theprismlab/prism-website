@@ -1,6 +1,12 @@
 <template>
   <page>
     <container-md>
+      <breadcrumbs
+        :items="[
+          { title: 'Submissions', to: '/submissions' },
+          { title: 'Forms', disabled: true },
+        ]"
+      />
       <prism-page-title>Forms</prism-page-title>
       <p class="prism-text-body-1">Select a screen above to view forms.</p>
     </container-md>
@@ -8,7 +14,10 @@
 </template>
 
 <script>
+  import Breadcrumbs from '@/components/Breadcrumbs.vue';
+
   export default {
     name: 'FormsIndex',
+    components: { Breadcrumbs },
   };
 </script>
