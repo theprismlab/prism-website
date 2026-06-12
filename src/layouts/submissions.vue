@@ -3,7 +3,7 @@
   <InstructionsSubDrawer v-if="isInstructions" />
   <FormsSubDrawer v-if="isForms" />
   <v-main>
-    <container-md>
+    <container-md v-if="$route.meta.breadcrumbs">
       <breadcrumbs />
     </container-md>
     <router-view />

@@ -1,6 +1,6 @@
 <template>
   <v-main>
-    <container-sm>
+    <container-sm v-if="$route.meta.breadcrumbs">
       <breadcrumbs />
     </container-sm>
     <router-view />

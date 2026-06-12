@@ -13,27 +13,7 @@
 
     <page-section background="tinted" :padding="6">
       <container-md>
-        <v-row>
-          <v-col
-            v-for="(card, index) in cellLineCards"
-            :key="index"
-            cols="12"
-            xs="6"
-            sm="6"
-            md="3"
-            lg="3"
-            xl="3"
-          >
-            <stat-card
-              :index="index"
-              :title="card.title"
-              :subtitle="card.subtitle"
-              :showIcon="false"
-              variant="flat"
-              elevation="0"
-            ></stat-card>
-          </v-col>
-        </v-row>
+        <cell-line-stats />
       </container-md>
     </page-section>
 
@@ -89,10 +69,11 @@
 
 <script>
   import { ASSET_BASE } from '@/utils/assets';
+  import CellLineStats from '@/components/sections/CellLineStats.vue';
 
   export default {
     name: 'CellLineCollection',
-
+    components: { CellLineStats },
     computed: {
       imgPath() {
         return ASSET_BASE;
@@ -100,24 +81,6 @@
     },
     data() {
       return {
-        cellLineCards: [
-          {
-            title: '900+',
-            subtitle: 'Cancer cell lines',
-          },
-          {
-            title: '45+',
-            subtitle: 'Lineages',
-          },
-          {
-            title: '80+',
-            subtitle: 'Subtypes',
-          },
-          {
-            title: '100+',
-            subtitle: 'Hematopoietic /<br> Pediatric',
-          },
-        ],
         checklist: [
           'Grown in antibiotic-free RPMI 1640 media',
           'Mycoplasma negative',
