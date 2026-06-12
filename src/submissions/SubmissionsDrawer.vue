@@ -8,15 +8,16 @@
     :order="1"
   >
     <v-list density="comfortable" nav>
-      <v-list-subheader>Submissions</v-list-subheader>
+      <v-list-subheader v-if="!isSubSection">Submissions</v-list-subheader>
       <v-list-item
         v-for="item in items"
         :key="item.id"
         :to="item.route"
-        :title="item.title"
+        :title="isSubSection ? undefined : item.title"
         :prepend-icon="item.icon"
         :active="isItemActive(item)"
         active-class="active-menu-item"
+        lines="one"
       />
     </v-list>
   </v-navigation-drawer>
@@ -75,7 +76,7 @@
             id: 'quote-po',
             title: 'View Quote & Upload PO',
             route: '/submissions/quote-and-po',
-            icon: 'mdi-currency-usd',
+            icon: 'mdi-invoice-import-outline',
             activePrefix: null,
           },
         ];
