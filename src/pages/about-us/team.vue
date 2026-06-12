@@ -1,6 +1,7 @@
 <template>
   <page>
     <container-md>
+      <breadcrumbs />
       <prism-page-title>Team</prism-page-title>
       <v-row class="mt-12" justify="space-around">
         <v-col

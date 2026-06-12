@@ -1,6 +1,7 @@
 <template>
   <page>
     <container-sm>
+      <breadcrumbs />
       <prism-page-title>Deliverables</prism-page-title>
       <p class="text-body-1">
         We provide a complete analysis of your data via a secure data portal. Data analysis includes

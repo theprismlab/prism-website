@@ -1,5 +1,6 @@
 <template>
   <page>
+    <breadcrumbs />
     <prism-page-title>Frequently Asked Questions</prism-page-title>
   </page>
 </template>

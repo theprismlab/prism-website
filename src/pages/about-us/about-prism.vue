@@ -1,6 +1,7 @@
 <template>
   <page>
     <container-sm>
+      <breadcrumbs />
       <prism-page-title>About PRISM</prism-page-title>
       <section>
         <p class="prism-text-body-1">

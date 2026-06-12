@@ -1,7 +1,7 @@
 <template>
   <page>
     <container-md>
-      <breadcrumbs :items="breadcrumbs" />
+      <breadcrumbs />
       <prism-page-title>Forms — {{ screen }}</prism-page-title>
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel
@@ -64,13 +64,6 @@
     computed: {
       screen() {
         return this.$route.params.screen;
-      },
-      breadcrumbs() {
-        return [
-          { title: 'Submissions', to: '/submissions' },
-          { title: 'Forms', to: '/submissions/forms' },
-          { title: this.screen, disabled: true },
-        ];
       },
       openPanel() {
         return this.screen ? this.formStore.openPanel(this.screen) : 0;

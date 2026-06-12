@@ -1,12 +1,7 @@
 <template>
   <page>
     <container-md>
-      <breadcrumbs
-        :items="[
-          { title: 'Submissions', to: '/submissions' },
-          { title: 'Instructions', disabled: true },
-        ]"
-      />
+      <breadcrumbs />
       <prism-page-title>Instructions</prism-page-title>
       <p class="prism-text-body-1">Select a screen above to view instructions.</p>
     </container-md>

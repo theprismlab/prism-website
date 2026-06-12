@@ -1,6 +1,7 @@
 <template>
   <page>
     <container-sm>
+      <breadcrumbs />
       <prism-page-title>Cell line collection</prism-page-title>
       <p class="text-body-1">
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45

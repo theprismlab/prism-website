@@ -8,7 +8,7 @@
     :order="1"
   >
     <v-list density="comfortable" nav>
-      <v-list-subheader v-if="!isSubSection">Submissions</v-list-subheader>
+      <!-- <v-list-subheader v-if="!isSubSection">Submissions</v-list-subheader> -->
       <v-list-item
         v-for="item in items"
         :key="item.id"

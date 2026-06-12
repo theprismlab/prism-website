@@ -1,7 +1,7 @@
 <template>
   <page>
     <container-md>
-      <breadcrumbs :items="[{ title: 'Submissions', disabled: true }]" />
+      <breadcrumbs />
       <prism-page-title>Submissions</prism-page-title>
       <p class="prism-text-body-1">Submissions page content goes here.</p>
     </container-md>

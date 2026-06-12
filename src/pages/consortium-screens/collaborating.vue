@@ -2,6 +2,7 @@
   <page>
     <container-sm>
       <section>
+        <breadcrumbs />
         <prism-page-title>Collaborate with us!</prism-page-title>
         <p class="prism-text-body-1">
           If you have a test agent you want to screen in PRISM, participate in one of our

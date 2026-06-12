@@ -1,7 +1,7 @@
 <template>
   <page>
     <container-md>
-      <breadcrumbs :items="breadcrumbs" />
+      <breadcrumbs />
       <prism-page-title>Instructions — {{ this.screen }}</prism-page-title>
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Test Agent Instructions'
@@ -24,13 +24,6 @@
     computed: {
       screen() {
         return this.$route.params.screen;
-      },
-      breadcrumbs() {
-        return [
-          { title: 'Submissions', to: '/submissions' },
-          { title: 'Instructions', to: '/submissions/instructions' },
-          { title: `${this.screen} — Test Agent`, disabled: true },
-        ];
       },
       pdfPath() {
         return this.screen ? PDF_PATHS.TEST_AGENT : null;

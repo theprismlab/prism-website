@@ -1,5 +1,5 @@
 <template>
-  <v-breadcrumbs :items="items" class="breadcrumbs pa-0">
+  <v-breadcrumbs v-if="items.length" :items="items" class="breadcrumbs pa-0">
     <template #divider>
       <v-icon size="14" color="grey-darken-1">mdi-chevron-right</v-icon>
     </template>
@@ -19,18 +19,12 @@
 <script>
   export default {
     name: 'Breadcrumbs',
-    props: {
-      items: {
-        type: Array,
-        required: true,
-        // Each item: { title: String, to?: String | Object, disabled?: Boolean }
+    computed: {
+      items() {
+        const fn = this.$route?.meta?.breadcrumbs;
+        return fn ? fn(this.$route) : [];
       },
     },
-    data() {
-      return {};
-    },
-    methods: {},
-    watch: {},
   };
 </script>
 

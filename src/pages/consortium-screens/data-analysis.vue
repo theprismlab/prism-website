@@ -3,6 +3,7 @@
     <container-sm>
       <v-row>
         <v-col>
+          <breadcrumbs />
           <prism-page-title>Data Analysis</prism-page-title>
           <p class="text-body-1">
             PRISM sensitivity profiles are compared to deep multi-omic cell line characterization
