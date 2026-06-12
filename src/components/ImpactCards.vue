@@ -13,9 +13,10 @@
         class="impact-card fill-height d-flex flex-column align-center text-center"
         :elevation="0"
         :style="{
-          border: `3px solid color-mix(in srgb, ${card.color} 10%, white)`,
+          // border: `2px solid color-mix(in srgb, ${card.color} 20%, white)`,
           borderTop: `3px solid ${card.color}`,
-          background: `color-mix(in srgb, ${card.color} 2%, white)`,
+          background: `color-mix(in srgb, ${card.color} 5%, white)`,
+          //  background: `oklch(from ${card.color} 0.96 calc(c * 0.12) h)`,
         }"
       >
         <div

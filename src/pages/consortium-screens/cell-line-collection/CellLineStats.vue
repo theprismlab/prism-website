@@ -1,5 +1,5 @@
 <template>
-  <impact-cards :cards="cards" class="mt-8" />
+  <impact-cards :cards="cards"/>
 </template>
 
 <script>
@@ -16,13 +16,13 @@
             title: '900+',
             subtitle: 'Cancer cell lines',
             icon: mdiMicroscope,
-            color: 'var(--v-primary-base)',
+             color: 'var(--v-red-accent-2)',
           },
           {
             title: '45+',
             subtitle: 'Lineages',
             icon: mdiSitemap,
-            color: 'var(--v-indigo-accent-2)',
+            color: 'var(--v-secondary-accent-4)',
           },
           {
             title: '80+',
@@ -34,7 +34,7 @@
             title: '100+',
             subtitle: 'Hematopoietic / Pediatric',
             icon: mdiHumanChild,
-            color: 'var(--v-red-accent-2)',
+            color: 'var(--v-indigo-accent-2)',
           },
         ],
       };

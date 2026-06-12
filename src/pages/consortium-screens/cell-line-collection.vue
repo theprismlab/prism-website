@@ -11,11 +11,9 @@
       </p>
     </app-container>
 
-    <page-section background="tinted" :padding="6">
       <app-container wide>
         <cell-line-stats />
       </app-container>
-    </page-section>
 
     <app-container class="mt-6 mb-12">
       <v-img
