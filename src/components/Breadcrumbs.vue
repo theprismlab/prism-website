@@ -30,7 +30,7 @@
 
 <style scoped>
   .breadcrumbs {
-    margin-bottom: 12px;
+    /* margin-bottom: 12px; */
   }
 
   .breadcrumb-item {

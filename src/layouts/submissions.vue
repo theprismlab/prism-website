@@ -3,6 +3,9 @@
   <InstructionsSubDrawer v-if="isInstructions" />
   <FormsSubDrawer v-if="isForms" />
   <v-main>
+    <container-md>
+      <breadcrumbs />
+    </container-md>
     <router-view />
   </v-main>
 </template>

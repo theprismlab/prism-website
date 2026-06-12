@@ -1,7 +1,6 @@
 <template>
   <page id="publication-page">
     <container-md>
-      <breadcrumbs />
       <prism-page-title>Publications</prism-page-title>
     </container-md>
 

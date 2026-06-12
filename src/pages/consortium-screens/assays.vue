@@ -1,7 +1,6 @@
 <template>
   <page id="" class="mb-0">
     <container-sm>
-      <breadcrumbs />
       <prism-page-title>Assays</prism-page-title>
       <p class="text-body-1">
         Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures

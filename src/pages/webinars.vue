@@ -1,6 +1,5 @@
 <template>
   <page>
-    <breadcrumbs />
     <prism-page-title>Webinars</prism-page-title>
   </page>
 </template>

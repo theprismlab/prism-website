@@ -1,7 +1,6 @@
 <template>
   <page>
     <container-md>
-      <breadcrumbs />
       <prism-page-title>Forms — {{ screen }}</prism-page-title>
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel
@@ -50,11 +49,9 @@
   import ApplicationStep from './steps/ApplicationStep.vue';
   import DocumentsStep from './steps/DocumentsStep.vue';
   import ReviewStep from './steps/ReviewStep.vue';
-  import Breadcrumbs from '@/components/Breadcrumbs.vue';
-
   export default {
     name: 'FormsScreen',
-    components: { ContactStep, ScreenDetailsStep, ApplicationStep, DocumentsStep, ReviewStep, Breadcrumbs },
+    components: { ContactStep, ScreenDetailsStep, ApplicationStep, DocumentsStep, ReviewStep },
     setup() {
       return { formStore: useFormProgressStore() };
     },
