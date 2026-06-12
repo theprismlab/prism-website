@@ -11,9 +11,7 @@
 </template>
 
 <script>
-  import { loadPdfOutline, flattenOutline } from './pdf-outline';
-
-  const PDF_PATH = '/pdfs/instructions/Shipping.pdf';
+  import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
 
   export default {
     name: 'ShippingInstructions',
@@ -34,14 +32,14 @@
       },
       pdfUrl() {
         const hash = this.currentPage ? this.currentPage.hash : '';
-        return hash ? `${PDF_PATH}#${hash}` : PDF_PATH;
+        return hash ? `${PDF_PATHS.SHIPPING}#${hash}` : PDF_PATHS.SHIPPING;
       },
       iframeKey() {
         return this.currentPage ? this.currentPage.key : 'default';
       },
     },
     async created() {
-      this.pages = await loadPdfOutline(PDF_PATH);
+      this.pages = await loadPdfOutline(PDF_PATHS.SHIPPING);
     },
   };
 </script>

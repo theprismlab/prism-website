@@ -57,7 +57,7 @@
 
 <script>
   import ScreenSelector from '../ScreenSelector.vue';
-  import { loadPdfOutline, flattenOutline } from './pdf-outline';
+  import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
 
   export default {
     name: 'InstructionsSubDrawer',
@@ -74,10 +74,10 @@
         return this.$route.params.screen;
       },
       testAgentPdf() {
-        return this.screen ? '/pdfs/instructions/Instructions.pdf' : null;
+        return this.screen ? PDF_PATHS.TEST_AGENT : null;
       },
       shippingPdf() {
-        return this.screen ? '/pdfs/instructions/Shipping.pdf' : null;
+        return this.screen ? PDF_PATHS.SHIPPING : null;
       },
       items() {
         return [

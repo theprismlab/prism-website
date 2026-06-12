@@ -11,7 +11,7 @@
 </template>
 
 <script>
-  import { loadPdfOutline, flattenOutline } from './pdf-outline';
+  import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
 
   export default {
     name: 'TestAgentInstructions',
@@ -23,7 +23,7 @@
         return this.$route.params.screen;
       },
       pdfPath() {
-        return this.screen ? `/pdfs/instructions/Instructions.pdf` : null;
+        return this.screen ? PDF_PATHS.TEST_AGENT : null;
       },
       flatPages() {
         return flattenOutline(this.pages);

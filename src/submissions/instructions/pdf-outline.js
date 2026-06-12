@@ -3,6 +3,11 @@ import PdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = PdfWorker;
 
+export const PDF_PATHS = {
+  TEST_AGENT: '/pdfs/instructions/Instructions.pdf',
+  SHIPPING: '/pdfs/instructions/Shipping.pdf',
+};
+
 const cache = new Map();
 
 /**
