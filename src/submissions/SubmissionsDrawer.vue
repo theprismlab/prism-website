@@ -53,7 +53,8 @@
             id: 'screens',
             title: 'Screens',
             route: '/submissions',
-            icon: 'mdi-flask-outline',
+            // icon: 'mdi-flask-outline',
+                        icon: 'mdi-layers-outline',
             activePrefix: null,
           },
           {
@@ -69,7 +70,7 @@
             id: 'forms',
             title: 'Forms',
             route: this.screen ? `/submissions/forms/${this.screen}` : '/submissions/forms',
-            icon: 'mdi-file-document-arrow-right-outline',
+            icon: 'mdi-file-document-outline',
             activePrefix: '/submissions/forms',
           },
           {
