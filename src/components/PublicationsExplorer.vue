@@ -3,7 +3,7 @@
     <div class="explorer-sticky-header">
       <div class="explorer-toolbar-track">
         <v-toolbar class="explorer-toolbar" flat>
-          <container-md class="explorer-toolbar__container">
+          <app-container wide class="explorer-toolbar__container">
             <div class="explorer-toolbar__inner">
               <v-toolbar-title class="toolbar-title text-overline">Explore All</v-toolbar-title>
               <v-spacer />
@@ -39,7 +39,7 @@
                 </v-btn>
               </v-badge>
             </div>
-          </container-md>
+          </app-container>
         </v-toolbar>
       </div>
 
@@ -142,7 +142,7 @@
       </v-navigation-drawer>
     </div>
 
-    <container-sm>
+    <app-container>
       <v-row class="publications-layout-row px-2" align="start">
         <v-col ref="filterResults" class="filter-results" cols="12">
           <div class="results-header mb-4">
@@ -178,7 +178,7 @@
           </div>
         </v-col>
       </v-row>
-    </container-sm>
+    </app-container>
 
     <v-btn
       v-show="showScrollToResultsBtn"

@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-md>
+    <app-container wide>
       <prism-page-title>Team</prism-page-title>
       <v-row class="mt-12" justify="space-around">
         <v-col
@@ -21,7 +21,7 @@
           ></TeamCard>
         </v-col>
       </v-row>
-    </container-md>
+    </app-container>
   </page>
 </template>
 <script>

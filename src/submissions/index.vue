@@ -1,9 +1,9 @@
 <template>
   <page>
-    <container-md>
+    <app-container wide>
       <prism-page-title>Submissions</prism-page-title>
       <p class="prism-text-body-1">Submissions page content goes here.</p>
-    </container-md>
+    </app-container>
   </page>
 </template>
 

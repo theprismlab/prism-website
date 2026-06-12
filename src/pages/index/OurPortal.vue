@@ -1,5 +1,6 @@
 <template>
-  <v-row class="d-flex align-center justify-center">
+  <div class="gradient-background">
+ <v-row class="d-flex align-center justify-center">
     <v-col cols="11" xs="11" sm="5" md="5" lg="5">
       <v-img eager class="align-end" :src="`${imgPath}${image}`" width="100%"></v-img>
     </v-col>
@@ -15,6 +16,8 @@
       </v-card>
     </v-col>
   </v-row>
+  </div>
+ 
 </template>
 <script>
   import { ASSET_BASE } from '@/utils/assets';
@@ -41,4 +44,9 @@
     mounted() {},
   };
 </script>
-<style scoped></style>
+<style scoped>
+.gradient-background {
+  background: linear-gradient(180deg, #D4EAF6, #F9F9F9 75%, #FFF);
+}
+
+</style>

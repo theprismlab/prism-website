@@ -1,8 +1,8 @@
 <template>
   <v-main>
-    <container-sm v-if="$route.meta.breadcrumbs">
+    <app-container v-if="$route.meta.breadcrumbs">
       <breadcrumbs />
-    </container-sm>
+    </app-container>
     <router-view />
   </v-main>
   <AppFooter />

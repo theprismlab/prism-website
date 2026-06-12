@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-sm>
+    <app-container>
       <prism-page-title>Cell line collection</prism-page-title>
       <p class="text-body-1">
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45
@@ -9,24 +9,24 @@
         lines. Our cell lines are our most important asset, and we therefore take great pride in the
         quality of our cell lines.
       </p>
-    </container-sm>
+    </app-container>
 
     <page-section background="tinted" :padding="6">
-      <container-md>
+      <app-container wide>
         <cell-line-stats />
-      </container-md>
+      </app-container>
     </page-section>
 
-    <container-sm class="mt-6 mb-12">
+    <app-container class="mt-6 mb-12">
       <v-img
         eager
         style="max-width: 800px; margin: auto"
         :src="`${imgPath}img-kb-1.2-step-1.svg`"
         alt="Cell Line Collection"
       ></v-img>
-    </container-sm>
+    </app-container>
 
-    <container-sm class="mb-12">
+    <app-container class="mb-12">
       <h2 class="prism-text-h3 text-black">All of our cell lines are:</h2>
       <v-list class="mt-6" style="background-color: transparent">
         <v-list-item v-for="item in checklist" :key="checklist">
@@ -36,9 +36,9 @@
           <v-list-item-title>{{ item }}</v-list-item-title>
         </v-list-item>
       </v-list>
-    </container-sm>
+    </app-container>
 
-    <container-sm class="mt-12 mb-12">
+    <app-container class="mt-12 mb-12">
       <h2 class="prism-text-h3">Cell sets in PRISM screens</h2>
       <p class="prism-text-body-1">
         PRISM’s collection of over 900 cell lines is screened for all standard PRISM experiments and
@@ -63,7 +63,7 @@
           >PRISM barcoded cell lines <v-icon size="small">mdi-download</v-icon> </a
         >.
       </p>
-    </container-sm>
+    </app-container>
   </page>
 </template>
 

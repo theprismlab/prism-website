@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-md>
+    <app-container wide>
       <prism-page-title>Forms — {{ screen }}</prism-page-title>
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel
@@ -38,7 +38,7 @@
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
-    </container-md>
+    </app-container>
   </page>
 </template>
 

@@ -1,11 +1,11 @@
 <template>
   <page>
-    <container-sm>
+    <app-container>
       <prism-page-title>Contact us</prism-page-title>
       <section>
         <hubspot-form></hubspot-form>
       </section>
-    </container-sm>
+    </app-container>
   </page>
 </template>
 <script>

@@ -78,9 +78,7 @@ export default {
   background-color: white;
   border: 1px solid var(--v-grey-lighten-2);
 }
-p{
-    max-width: 500px;
-}
+
 .text-h4 {
     line-height: 1.4em;
     font-weight:500;

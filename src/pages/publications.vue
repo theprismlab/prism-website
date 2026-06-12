@@ -1,10 +1,10 @@
 <template>
   <page id="publication-page">
-    <container-md>
+    <app-container wide>
       <prism-page-title>Publications</prism-page-title>
-    </container-md>
+    </app-container>
 
-    <container-md>
+    <app-container wide>
       <h2 class="text-overline">Featured</h2>
       <v-row justify="center" class="mb-12">
         <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
@@ -16,7 +16,7 @@
           />
         </v-col>
       </v-row>
-    </container-md>
+    </app-container>
 
     <publications-explorer :items="data" :type-styles="typeStyles" :get-links="getLinks" />
   </page>

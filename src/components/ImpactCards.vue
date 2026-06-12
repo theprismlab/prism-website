@@ -10,22 +10,22 @@
       :xl="mdCols"
     >
       <v-card
-        class="impact-card fill-height d-flex flex-column align-center justify-center text-center"
+        class="impact-card fill-height d-flex flex-column align-center text-center"
         :elevation="0"
-        flat
-        :style="{ border: `1px solid ${card.color}` }"
+        :style="{
+          border: `3px solid color-mix(in srgb, ${card.color} 10%, white)`,
+          borderTop: `3px solid ${card.color}`,
+          background: `color-mix(in srgb, ${card.color} 2%, white)`,
+        }"
       >
         <div
-          :id="`icon-circle-${index}`"
-          class="icon-circle d-flex align-center justify-center"
+          class="icon-badge d-flex align-center justify-center"
           :style="{ backgroundColor: card.color }"
         >
-          <svg-icon :size="iconSize" type="mdi" :path="card.icon" color="white" />
+          <svg-icon :size="28" type="mdi" :path="card.icon" color="white" />
         </div>
-        <h2 class="text-h2 font-weight-light card-title">{{ card.title }}</h2>
-        <p class="text-h4 font-weight-normal text-grey-darken-1 card-subtitle">
-          {{ card.subtitle }}
-        </p>
+        <div class="card-stat" :style="{ color: card.color }">{{ card.title }}</div>
+        <p class="card-label">{{ card.subtitle }}</p>
       </v-card>
     </v-col>
   </v-row>
@@ -38,13 +38,7 @@
     name: 'ImpactCards',
     components: { SvgIcon },
     props: {
-      cards: {
-        type: Array,
-        required: true,
-      },
-    },
-    data() {
-      return { iconSize: 54 };
+      cards: { type: Array, required: true },
     },
     computed: {
       mdCols() {
@@ -59,30 +53,33 @@
 
 <style scoped>
   .impact-card {
+    border-radius: 16px;
+    padding: 36px 28px 32px;
+    gap: 14px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  }
+
+  .icon-badge {
+    width: 56px;
+    height: 56px;
     border-radius: 14px;
-    padding: 32px 24px;
-    gap: 16px;
+    flex-shrink: 0;
   }
 
-  .icon-circle {
-    width: 54px;
-    height: 54px;
-    padding: 13.5px;
-    border-radius: 50%;
-  }
-
-  .card-title {
+  .card-stat {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    font-family: 'Archivo Expanded', sans-serif;
+    letter-spacing: -0.02em;
     margin: 0;
-    line-height: 1.2em !important;
-    font-family: 'Archivo Expanded', sans-serif !important;
   }
 
-  .card-subtitle {
+  .card-label {
+    font-size: 0.975rem;
+    font-weight: 500;
+    color: #666;
+    line-height: 1.5;
     margin: 0;
-    opacity: 1;
-    line-height: 1.4em !important;
-    font-size: 1.12rem !important;
-    font-weight: 600 !important;
-    color: var(--v-grey) !important;
   }
 </style>
