@@ -1,26 +1,21 @@
 <template>
   <v-row class="overview-cards">
     <v-col v-for="(card, index) in cards" :key="index" cols="12" md="4">
-      <v-card class="overview-card fill-height" :elevation="0">
-        <div class="overview-card-media">
-          <v-img eager :src="card.img" max-width="200px" class="mx-auto"></v-img>
-        </div>
-        <div class="overview-card-body">
-          <h4 class="overview-card-title">{{ card.title }}</h4>
-          <p class="text-body-2 text-grey-darken-2 mb-4">{{ card.description }}</p>
-          <v-btn
-            variant="text"
-            :href="card.action.url"
-            :target="card.action.target"
-            color="primary"
-            class="px-0"
-            size="small"
-          >
-            {{ card.action.text }}
-            <v-icon end size="16">mdi-arrow-right</v-icon>
-          </v-btn>
-        </div>
-      </v-card>
+      <a :href="card.action.url" :target="card.action.target" class="overview-card-link">
+        <v-card class="overview-card fill-height" :elevation="0">
+          <div class="overview-card-media">
+            <v-img eager :src="card.img" max-width="200px" class="mx-auto"></v-img>
+          </div>
+          <div class="overview-card-body">
+            <h4 class="overview-card-title">{{ card.title }}</h4>
+            <p class="text-body-2 text-grey-darken-2 mb-4">{{ card.description }}</p>
+            <span class="overview-card-action">
+              {{ card.action.text }}
+              <v-icon size="16" class="overview-card-action-icon">mdi-arrow-right</v-icon>
+            </span>
+          </div>
+        </v-card>
+      </a>
     </v-col>
   </v-row>
 </template>
@@ -66,11 +61,29 @@
     padding: 8px 0 32px;
   }
 
+  .overview-card-link {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
   .overview-card {
     border-radius: 16px;
     background: white;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+    border: 1px solid rgba(41, 121, 255, 0.12);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
     overflow: hidden;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .overview-card-link:hover .overview-card {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.11);
+    border-color: rgba(41, 121, 255, 0.32);
   }
 
   .overview-card-media {
@@ -90,5 +103,22 @@
     line-height: 1.35em;
     color: #1a1a1a;
     margin-bottom: 12px;
+  }
+
+  .overview-card-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--v-primary-darken-2);
+  }
+
+  .overview-card-action-icon {
+    transition: transform 0.2s ease;
+  }
+
+  .overview-card-link:hover .overview-card-action-icon {
+    transform: translateX(3px);
   }
 </style>
