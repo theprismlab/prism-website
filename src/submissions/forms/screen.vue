@@ -17,8 +17,9 @@
 
           <v-expansion-panel-text>
             <collaborator-step v-if="i === 0" :data="fd.collaborator" />
-            <screen-details-step v-else-if="i === 1" :data="fd['screen-details']" />
-            <documents-step v-else-if="i === 3" :data="fd.documents" />
+            <institution-step v-else-if="i === 1" :data="fd.institution" />
+            <test-agent-step v-else-if="i === 2" :data="fd.testAgent" />
+            <acknowledgments-step v-else-if="i === 3" :data="fd.acknowledgments" />
             <review-step v-else-if="i === 4" :data="fd.review" />
 
             <div class="d-flex justify-end mt-4">
@@ -36,15 +37,17 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
-  import ScreenDetailsStep from './steps/ScreenDetailsStep.vue';
-  import DocumentsStep from './steps/DocumentsStep.vue';
+  import InstitutionStep from './steps/InstitutionStep.vue';
+  import TestAgentStep from './steps/TestAgentStep.vue';
+  import AcknowledgmentsStep from './steps/AcknowledgmentsStep.vue';
   import ReviewStep from './steps/ReviewStep.vue';
   export default {
     name: 'FormsScreen',
     components: {
       CollaboratorStep,
-      ScreenDetailsStep,
-      DocumentsStep,
+      InstitutionStep,
+      TestAgentStep,
+      AcknowledgmentsStep,
       ReviewStep,
     },
     setup() {

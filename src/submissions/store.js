@@ -2,9 +2,9 @@ import { defineStore } from 'pinia';
 
 export const FORM_STEPS = [
   { id: 'collaborator', title: 'Collaborator', icon: 'mdi-account-outline' },
-  { id: 'screen-details', title: 'Screen Details', icon: 'mdi-television-play' },
-  { id: 'application', title: 'Application', icon: 'mdi-file-document-edit-outline' },
-  { id: 'documents', title: 'Supporting Documents', icon: 'mdi-paperclip' },
+  { id: 'institution', title: 'Institution', icon: 'mdi-office-building' },
+  { id: 'testAgent', title: 'Test Agent', icon: 'mdi-flask-outline' },
+  { id: 'acknowledgments', title: 'Acknowledgments', icon: 'mdi-handshake-outline' },
   { id: 'review', title: 'Review & Submit', icon: 'mdi-check-circle-outline' },
 ];
 
@@ -29,11 +29,31 @@ export const useFormProgressStore = defineStore('formProgress', {
           openPanel: 0,
           completed: [],
           formData: {
-            collaborator: { firstName: '', lastName: '', email: '', company: '' },
-            'screen-details': { rows: [{ pert_name: '', pert_dose: '', pert_id: '' }] },
-            application: { campaignDescription: '', campaignStartDate: '', duration: null },
-            documents: { notes: '' },
-            review: { confirmed: false },
+            collaborator: {
+              yourName: '',
+              yourEmail: '',
+              investigatorName: '',
+              investigatorEmail: '',
+              dataAccessManagerNames: '',
+              dataAccessManagerEmails: '',
+            },
+            institution: {
+              institutionType: '', // dropdown with options for: broad, dmc, academic, industry
+              institutionName: '', // if broad or dms, show dropdown with mock-array of a few names; if academic or industry, show text input
+              // if DMS, go to next step. If broad or academic or industry, show the following additional fields:
+              quoteAcknowledgement: '',
+              commerecialUse: '', // if yes, show commerecialUseAcknowledgement
+              commerecialUseAcknowledgement: '',
+              // if industry, show the following additional fields:
+              fundingInstitutionName: '', // for type 'industry'
+              fundingInstitutionAddress: '', // for type 'industry'
+              billingInvoiceContactName: '', // for type 'industry'
+              billingInvoiceContactEmail: '', // for type 'industry'
+              comments: '',
+            },
+            testAgent: { rows: [{ pert_name: '', pert_dose: '', pert_id: '' }] },
+            acknowledgments: { acknowledgement1: '', acknowledgement2: '' },
+            review: { confirmed: false }, // populate questions and answers for each previous step to display in the review step
           },
         };
       }

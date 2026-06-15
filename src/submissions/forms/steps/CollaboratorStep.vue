@@ -1,30 +1,58 @@
 <template>
   <v-row dense>
-    <v-col cols="12">
-      <v-textarea
-        v-model="data.campaignDescription"
-        label="Campaign Description"
+    <v-col cols="12" sm="6">
+      <v-text-field
+        v-model="data.yourName"
+        label="Your Name"
         variant="outlined"
         density="compact"
-        rows="3"
       />
     </v-col>
     <v-col cols="12" sm="6">
       <v-text-field
-        v-model="data.campaignStartDate"
-        label="Campaign Start Date"
+        v-model="data.yourEmail"
+        label="Your Email"
         variant="outlined"
         density="compact"
-        type="date"
+        type="email"
+      />
+    </v-col>
+  </v-row>
+  <v-row dense>
+    <v-col cols="12" sm="6">
+      <v-text-field
+        v-model="data.investigatorName"
+        label="Investigator Name"
+        variant="outlined"
+        density="compact"
       />
     </v-col>
     <v-col cols="12" sm="6">
-      <v-select
-        v-model="data.duration"
-        label="Duration"
-        :items="['1 week', '2 weeks', '1 month', '3 months', '6 months']"
+      <v-text-field
+        v-model="data.investigatorEmail"
+        label="Investigator Email"
         variant="outlined"
         density="compact"
+        type="email"
+      />
+    </v-col>
+  </v-row>
+  <v-row dense>
+    <v-col cols="12" sm="6">
+      <v-text-field
+        v-model="data.dataAccessManagerNames"
+        label="Data Access Manager Name(s)"
+        variant="outlined"
+        density="compact"
+      />
+    </v-col>
+    <v-col cols="12" sm="6">
+      <v-text-field
+        v-model="data.dataAccessManagerEmails"
+        label="Data Access Manager Email(s)"
+        variant="outlined"
+        density="compact"
+        type="email"
       />
     </v-col>
   </v-row>

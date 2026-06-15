@@ -43,7 +43,7 @@
 
 <script>
   export default {
-    name: 'ScreenDetailsStep',
+    name: 'TestAgentStep',
     props: {
       data: { type: Object, required: true },
     },
