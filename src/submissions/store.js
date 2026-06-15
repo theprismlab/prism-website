@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { STEP_REGISTRY } from './forms/steps/registry';
 
 export const FORM_STEPS = [
   { id: 'collaborator', title: 'Collaborator', icon: 'mdi-account-outline' },
@@ -28,33 +29,9 @@ export const useFormProgressStore = defineStore('formProgress', {
         this.screens[screen] = {
           openPanel: 0,
           completed: [],
-          formData: {
-            collaborator: {
-              yourName: 'Lia Petronio',
-              yourEmail: 'lpetroni@broadinstitute.org',
-              investigatorName: '',
-              investigatorEmail: '',
-              dataAccessManagerNames: '',
-              dataAccessManagerEmails: '',
-            },
-            institution: {
-              institutionType: '', // dropdown with options for: broad, dmc, academic, industry
-              institutionName: '', // if broad or dms, show dropdown with mock-array of a few names; if academic or industry, show text input
-              // if DMS, go to next step. If broad or academic or industry, show the following additional fields:
-              quoteAcknowledgement: '',
-              commerecialUse: '', // if yes, show commerecialUseAcknowledgement
-              commerecialUseAcknowledgement: '',
-              // if industry, show the following additional fields:
-              fundingInstitutionName: '', // for type 'industry'
-              fundingInstitutionAddress: '', // for type 'industry'
-              billingInvoiceContactName: '', // for type 'industry'
-              billingInvoiceContactEmail: '', // for type 'industry'
-              comments: '',
-            },
-            testAgent: { rows: [{ pert_name: '', pert_dose: '', pert_id: '' }] },
-            acknowledgments: { acknowledgement1: false, acknowledgement2: false },
-            review: { confirmed: false }, // populate questions and answers for each previous step to display in the review step
-          },
+          formData: Object.fromEntries(
+            FORM_STEPS.map((s) => [s.id, STEP_REGISTRY[s.id].getInitialData()])
+          ),
         };
       }
     },

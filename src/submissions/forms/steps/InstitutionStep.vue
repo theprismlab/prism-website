@@ -7,6 +7,7 @@
         :items="institutionTypes"
         variant="outlined"
         density="compact"
+        :error-messages="errors.institutionType"
       />
     </v-col>
 
@@ -18,6 +19,7 @@
         :items="institutionNameOptions"
         variant="outlined"
         density="compact"
+        :error-messages="errors.institutionName"
       />
       <v-text-field
         v-else
@@ -25,6 +27,7 @@
         label="Institution Name"
         variant="outlined"
         density="compact"
+        :error-messages="errors.institutionName"
       />
     </v-col>
 
@@ -35,6 +38,7 @@
           label="Quote Acknowledgement"
           variant="outlined"
           density="compact"
+          :error-messages="errors.quoteAcknowledgement"
         />
       </v-col>
 
@@ -45,6 +49,7 @@
           :items="['Yes', 'No']"
           variant="outlined"
           density="compact"
+          :error-messages="errors.commerecialUse"
         />
       </v-col>
 
@@ -54,6 +59,7 @@
           label="Commercial Use Acknowledgement"
           variant="outlined"
           density="compact"
+          :error-messages="errors.commerecialUseAcknowledgement"
         />
       </v-col>
 
@@ -64,6 +70,7 @@
             label="Funding Institution Name"
             variant="outlined"
             density="compact"
+            :error-messages="errors.fundingInstitutionName"
           />
         </v-col>
         <v-col cols="12" sm="6">
@@ -72,6 +79,7 @@
             label="Funding Institution Address"
             variant="outlined"
             density="compact"
+            :error-messages="errors.fundingInstitutionAddress"
           />
         </v-col>
         <v-col cols="12" sm="6">
@@ -80,6 +88,7 @@
             label="Billing / Invoice Contact Name"
             variant="outlined"
             density="compact"
+            :error-messages="errors.billingInvoiceContactName"
           />
         </v-col>
         <v-col cols="12" sm="6">
@@ -89,6 +98,7 @@
             variant="outlined"
             density="compact"
             type="email"
+            :error-messages="errors.billingInvoiceContactEmail"
           />
         </v-col>
       </template>
@@ -111,10 +121,45 @@
   const BROAD_NAMES = ['Broad Institute', 'Broad Institute Europe'];
   const DMC_NAMES = ['PRISM DMC', 'Partner DMC'];
 
+  export function getInitialData() {
+    return {
+      institutionType: '',
+      institutionName: '',
+      quoteAcknowledgement: '',
+      commerecialUse: '',
+      commerecialUseAcknowledgement: '',
+      fundingInstitutionName: '',
+      fundingInstitutionAddress: '',
+      billingInvoiceContactName: '',
+      billingInvoiceContactEmail: '',
+      comments: '',
+    };
+  }
+
+  export function validate(data, _screenType) {
+    const errors = {};
+    if (!data.institutionType) errors.institutionType = 'Required';
+    if (!data.institutionName) errors.institutionName = 'Required';
+    if (data.institutionType && data.institutionType !== 'dmc') {
+      if (!data.quoteAcknowledgement) errors.quoteAcknowledgement = 'Required';
+      if (!data.commerecialUse) errors.commerecialUse = 'Required';
+      if (data.commerecialUse === 'Yes' && !data.commerecialUseAcknowledgement)
+        errors.commerecialUseAcknowledgement = 'Required';
+    }
+    if (data.institutionType === 'industry') {
+      if (!data.fundingInstitutionName) errors.fundingInstitutionName = 'Required';
+      if (!data.fundingInstitutionAddress) errors.fundingInstitutionAddress = 'Required';
+      if (!data.billingInvoiceContactName) errors.billingInvoiceContactName = 'Required';
+      if (!data.billingInvoiceContactEmail) errors.billingInvoiceContactEmail = 'Required';
+    }
+    return errors;
+  }
+
   export default {
     name: 'InstitutionStep',
     props: {
       data: { type: Object, required: true },
+      errors: { type: Object, default: () => ({}) },
     },
     data() {
       return {

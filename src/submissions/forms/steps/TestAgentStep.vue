@@ -14,8 +14,8 @@
             v-model="data.rows[0].pert_name"
             variant="plain"
             density="compact"
-            hide-details
             single-line
+            :error-messages="errors.pert_name"
           />
         </td>
         <td>
@@ -23,8 +23,8 @@
             v-model="data.rows[0].pert_dose"
             variant="plain"
             density="compact"
-            hide-details
             single-line
+            :error-messages="errors.pert_dose"
           />
         </td>
         <td>
@@ -32,8 +32,8 @@
             v-model="data.rows[0].pert_id"
             variant="plain"
             density="compact"
-            hide-details
             single-line
+            :error-messages="errors.pert_id"
           />
         </td>
       </tr>
@@ -42,10 +42,24 @@
 </template>
 
 <script>
+  export function getInitialData() {
+    return { rows: [{ pert_name: '', pert_dose: '', pert_id: '' }] };
+  }
+
+  export function validate(data, _screenType) {
+    const errors = {};
+    const row = data.rows[0];
+    if (!row.pert_name) errors.pert_name = 'Required';
+    if (!row.pert_dose) errors.pert_dose = 'Required';
+    if (!row.pert_id) errors.pert_id = 'Required';
+    return errors;
+  }
+
   export default {
     name: 'TestAgentStep',
     props: {
       data: { type: Object, required: true },
+      errors: { type: Object, default: () => ({}) },
     },
   };
 </script>

@@ -8,19 +8,37 @@
             <v-icon :color="iconColor(i)" class="mr-2" size="20">{{ step.icon }}</v-icon>
             <span>{{ step.title }}</span>
             <template #actions>
-              <v-chip v-if="isCompleted(i)" color="success" size="x-small" class="mr-1"
-                >Done</v-chip
-              >
+              <v-chip v-if="isCompleted(i)" color="success" size="x-small" class="mr-1">Done</v-chip>
               <v-icon v-else>$expand</v-icon>
             </template>
           </v-expansion-panel-title>
 
           <v-expansion-panel-text>
-            <collaborator-step v-if="i === 0" :data="fd.collaborator" />
-            <institution-step v-else-if="i === 1" :data="fd.institution" />
-            <test-agent-step v-else-if="i === 2" :data="fd.testAgent" />
-            <acknowledgments-step v-else-if="i === 3" :data="fd.acknowledgments" />
-            <review-step v-else-if="i === 4" :data="fd.review" />
+            <collaborator-step
+              v-if="step.id === 'collaborator'"
+              :data="fd.collaborator"
+              :errors="stepErrors.collaborator || {}"
+            />
+            <institution-step
+              v-else-if="step.id === 'institution'"
+              :data="fd.institution"
+              :errors="stepErrors.institution || {}"
+            />
+            <test-agent-step
+              v-else-if="step.id === 'testAgent'"
+              :data="fd.testAgent"
+              :errors="stepErrors.testAgent || {}"
+            />
+            <acknowledgments-step
+              v-else-if="step.id === 'acknowledgments'"
+              :data="fd.acknowledgments"
+              :errors="stepErrors.acknowledgments || {}"
+            />
+            <review-step
+              v-else-if="step.id === 'review'"
+              :data="fd.review"
+              :errors="stepErrors.review || {}"
+            />
 
             <div class="d-flex justify-end mt-4">
               <v-btn color="primary" @click="completeStep(i)">
@@ -36,11 +54,13 @@
 
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
+  import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
   import TestAgentStep from './steps/TestAgentStep.vue';
   import AcknowledgmentsStep from './steps/AcknowledgmentsStep.vue';
   import ReviewStep from './steps/ReviewStep.vue';
+
   export default {
     name: 'FormsScreen',
     components: {
@@ -54,7 +74,7 @@
       return { formStore: useFormProgressStore() };
     },
     data() {
-      return { steps: FORM_STEPS };
+      return { steps: FORM_STEPS, stepErrors: {} };
     },
     computed: {
       screen() {
@@ -67,6 +87,9 @@
         if (!this.screen) return null;
         this.formStore._ensure(this.screen);
         return this.formStore.screens[this.screen].formData;
+      },
+      screenType() {
+        return this.fd?.institution?.institutionType || null;
       },
     },
     methods: {
@@ -85,6 +108,13 @@
         }
       },
       completeStep(i) {
+        const step = this.steps[i];
+        const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
+        if (Object.keys(errors).length > 0) {
+          this.stepErrors = { ...this.stepErrors, [step.id]: errors };
+          return;
+        }
+        this.stepErrors = { ...this.stepErrors, [step.id]: {} };
         this.formStore.completeStep(this.screen, i);
       },
     },
