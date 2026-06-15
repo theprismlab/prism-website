@@ -24,11 +24,11 @@
               :data="fd.institution"
               :errors="stepErrors.institution || {}"
             />
-            <component
-              :is="testAgentStep.component"
+            <test-agent-step
               v-else-if="step.id === 'testAgent'"
               :data="fd.testAgent"
               :errors="stepErrors.testAgent || {}"
+              :screen-type="screenType"
             />
             <acknowledgments-step
               v-else-if="step.id === 'acknowledgments'"
@@ -56,9 +56,10 @@
 
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
-  import { STEP_REGISTRY, TEST_AGENT_REGISTRY } from './steps/registry';
+  import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
+  import TestAgentStep from './steps/TestAgentStep.vue';
   import AcknowledgmentsStep from './steps/AcknowledgmentsStep.vue';
   import ReviewStep from './steps/ReviewStep.vue';
 
@@ -67,6 +68,7 @@
     components: {
       CollaboratorStep,
       InstitutionStep,
+      TestAgentStep,
       AcknowledgmentsStep,
       ReviewStep,
     },
@@ -98,9 +100,6 @@
         if (s.startsWith('CPS')) return 'CPS';
         return null;
       },
-      testAgentStep() {
-        return TEST_AGENT_REGISTRY[this.screenType];
-      },
     },
     methods: {
       isCompleted(i) {
@@ -119,8 +118,7 @@
       },
       completeStep(i) {
         const step = this.steps[i];
-        const registry = step.id === 'testAgent' ? this.testAgentStep : STEP_REGISTRY[step.id];
-        const errors = registry.validate(this.fd[step.id]);
+        const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
         if (Object.keys(errors).length > 0) {
           this.stepErrors = { ...this.stepErrors, [step.id]: errors };
           return;
