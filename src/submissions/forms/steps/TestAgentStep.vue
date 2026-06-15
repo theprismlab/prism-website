@@ -52,6 +52,42 @@
     conc_unit: { options: ['mM'] },
   };
 
+  const APS_OVERRIDES = {
+    top_dose_unit: { options: ['uM', 'ug/mL'] },
+    conc: {
+      validate: (val, row) => {
+        if (!row.top_dose) return;
+        const expected = Number(row.top_dose) * 0.25;
+        if (Math.abs(Number(val) - expected) > 0.001)
+          return `Must equal 250× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
+      },
+    },
+    conc_unit: {
+      options: ['mM', 'mg/mL'],
+      validate: (val, row) => {
+        const pairs = { uM: 'mM', 'ug/mL': 'mg/mL' };
+        if (row.top_dose_unit && pairs[row.top_dose_unit] !== val)
+          return `Must be ${pairs[row.top_dose_unit]} when top dose unit is ${row.top_dose_unit}`;
+      },
+    },
+  };
+
+  const AIR_OVERRIDES = {
+    top_dose: {
+      validate: (val) => Number(val) > 2 ? 'Max top dose for AIR submissions is 2 ug/mL' : undefined,
+    },
+    top_dose_unit: { options: ['ug/mL'] },
+    conc: {
+      validate: (val, row) => {
+        if (!row.top_dose) return;
+        const expected = Number(row.top_dose) * 0.5;
+        if (Math.abs(Number(val) - expected) > 0.001)
+          return `Must equal 500× top dose (expected ${expected.toFixed(3)} mg/mL)`;
+      },
+    },
+    conc_unit: { options: ['mg/mL'] },
+  };
+
   const MTS_CPS_KEYS = [
     'compound_name', 'full_brd',
     'top_dose', 'top_dose_unit', 'conc', 'conc_unit',
@@ -88,46 +124,8 @@
     MTS: { keys: MTS_CPS_KEYS, overrides: DMSO_OVERRIDES },
     CPS: { keys: MTS_CPS_KEYS, overrides: DMSO_OVERRIDES },
     EPS: { keys: EPS_KEYS, overrides: DMSO_OVERRIDES },
-    APS: {
-      keys: APS_KEYS,
-      overrides: {
-        top_dose_unit: { options: ['uM', 'ug/mL'] },
-        conc: {
-          validate: (val, row) => {
-            if (!row.top_dose) return;
-            const expected = Number(row.top_dose) * 0.25;
-            if (Math.abs(Number(val) - expected) > 0.001)
-              return `Must equal 250× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-          },
-        },
-        conc_unit: {
-          options: ['mM', 'mg/mL'],
-          validate: (val, row) => {
-            const pairs = { uM: 'mM', 'ug/mL': 'mg/mL' };
-            if (row.top_dose_unit && pairs[row.top_dose_unit] !== val)
-              return `Must be ${pairs[row.top_dose_unit]} when top dose unit is ${row.top_dose_unit}`;
-          },
-        },
-      },
-    },
-    AIR: {
-      keys: AIR_KEYS,
-      overrides: {
-        top_dose: {
-          validate: (val) => Number(val) > 2 ? 'Max top dose for AIR submissions is 2 ug/mL' : undefined,
-        },
-        top_dose_unit: { options: ['ug/mL'] },
-        conc: {
-          validate: (val, row) => {
-            if (!row.top_dose) return;
-            const expected = Number(row.top_dose) * 0.5;
-            if (Math.abs(Number(val) - expected) > 0.001)
-              return `Must equal 500× top dose (expected ${expected.toFixed(3)} mg/mL)`;
-          },
-        },
-        conc_unit: { options: ['mg/mL'] },
-      },
-    },
+    APS: { keys: APS_KEYS, overrides: APS_OVERRIDES },
+    AIR: { keys: AIR_KEYS, overrides: AIR_OVERRIDES },
   };
 
   // ── Merge helper ───────────────────────────────────────────────────────────
