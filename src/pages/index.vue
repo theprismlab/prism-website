@@ -27,7 +27,7 @@
       </p>
     </app-container>
 
-    <app-container wide class="gradient-background">
+    <app-container wide>
       <HomeOverviewCards></HomeOverviewCards>
     </app-container>
 
@@ -114,10 +114,7 @@
     padding-top: 24px;
     padding-bottom: 24px;
   }
-  .gradient-background {
-    background: linear-gradient(180deg, #d4eaf6, #f9f9f9 75%, #fff);
-  }
-  .hero-section {
+.hero-section {
     display: grid;
     height: calc(100dvh - var(--v-layout-top, 64px));
     overflow: hidden;
