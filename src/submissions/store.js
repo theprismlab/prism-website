@@ -30,8 +30,8 @@ export const useFormProgressStore = defineStore('formProgress', {
           completed: [],
           formData: {
             collaborator: {
-              yourName: '',
-              yourEmail: '',
+              yourName: 'Lia Petronio',
+              yourEmail: 'lpetroni@broadinstitute.org',
               investigatorName: '',
               investigatorEmail: '',
               dataAccessManagerNames: '',
@@ -52,7 +52,7 @@ export const useFormProgressStore = defineStore('formProgress', {
               comments: '',
             },
             testAgent: { rows: [{ pert_name: '', pert_dose: '', pert_id: '' }] },
-            acknowledgments: { acknowledgement1: '', acknowledgement2: '' },
+            acknowledgments: { acknowledgement1: false, acknowledgement2: false },
             review: { confirmed: false }, // populate questions and answers for each previous step to display in the review step
           },
         };
