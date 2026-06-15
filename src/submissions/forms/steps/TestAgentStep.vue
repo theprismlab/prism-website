@@ -1,5 +1,5 @@
 <template>
-  <test-agent-table :fields="screenFields" :row="data.rows[0]" :errors="errors" />
+  <test-agent-table :fields="screenFields" :row="row" :errors="errors" />
 </template>
 
 <script>
@@ -17,6 +17,9 @@
     computed: {
       screenFields() {
         return buildScreenFields(this.screenType);
+      },
+      row() {
+        return this.data.row;
       },
     },
   };

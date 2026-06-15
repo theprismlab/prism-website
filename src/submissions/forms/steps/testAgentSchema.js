@@ -11,8 +11,10 @@ const MOLECULE_TYPES = [
   'Antibody Drug Conjugate',
   'Small Molecule',
 ];
+const AMOUNT_UNITS = ['uL']; // only supported unit
 
 // ── Field registry ─────────────────────────────────────────────────────────
+// All fields are required by default; set required: false to opt out.
 
 const FIELDS = {
   COMPOUND_NAME:         { key: 'compound_name',        label: 'Test Agent Name' },
@@ -25,7 +27,7 @@ const FIELDS = {
   CONC_UNIT:             { key: 'conc_unit',             label: 'Stock Conc. Unit' },
   DILUTION_FACTOR:       { key: 'dilution_factor',       label: 'Dilution Factor' },
   AMOUNT:                { key: 'amount',                label: 'Amount', type: 'number' },
-  AMOUNT_UNIT:           { key: 'amount_unit',           label: 'Amount Unit', options: ['uL'] },
+  AMOUNT_UNIT:           { key: 'amount_unit',           label: 'Amount Unit', options: AMOUNT_UNITS },
   SUPPLIER:              { key: 'supplier',              label: 'Supplier' },
   SUPPLIER_CATALOG_NAME: { key: 'supplier_catalog_name', label: 'Supplier Catalog Name' },
   STORAGE_CONDITIONS:    { key: 'storage_conditions',    label: 'Storage Conditions', options: STORAGE_OPTIONS },
@@ -34,6 +36,9 @@ const FIELDS = {
   HEALTH_HAZARD:         { key: 'health_hazard',         label: 'Health Hazard?', options: YES_NO },
   ACUTELY_TOXIC:         { key: 'acutely_toxic',         label: 'Acutely Toxic?', options: YES_NO },
 };
+
+// Keyed by data key for O(1) lookups in getSummary and getInitialData.
+const FIELDS_BY_KEY = Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, f]));
 
 // ── Per-screen overrides ───────────────────────────────────────────────────
 // Keyed by FIELDS constant name. row.* references inside validate functions
@@ -46,10 +51,14 @@ const DMSO_OVERRIDES = {
       const topDose = row[FIELDS.TOP_DOSE.key];
       if (!topDose) return;
       if (Number(val) !== Number(topDose))
-        return `Stock concentration (mM) must equal top dose (uM) — expected ${topDose} mM`;
+        return `Must equal 1000× top dose (expected ${topDose} mM)`;
     },
   },
   CONC_UNIT: { options: ['mM'] },
+  AMOUNT: {
+    validate: (val) =>
+      Number(val) < 150 ? 'Minimum 150 uL required (1000× screening concentration in 100% DMSO)' : undefined,
+  },
 };
 
 const APS_OVERRIDES = {
@@ -90,16 +99,20 @@ const AIR_OVERRIDES = {
     },
   },
   CONC_UNIT: { options: ['mg/mL'] },
+  AMOUNT: {
+    validate: (val) =>
+      Number(val) < 500 ? 'Minimum 500 uL required (500× screening concentration)' : undefined,
+  },
 };
 
 // ── Field-group building blocks ────────────────────────────────────────────
 
-const BRD_IDENTITY    = ['COMPOUND_NAME', 'FULL_BRD'];
+const BRD_IDENTITY     = ['COMPOUND_NAME', 'FULL_BRD'];
 const AQUEOUS_IDENTITY = ['COMPOUND_NAME', 'MOLECULE_TYPE', 'SOLVENT'];
-const DOSE            = ['TOP_DOSE', 'TOP_DOSE_UNIT', 'CONC', 'CONC_UNIT'];
-const AMOUNT          = ['AMOUNT', 'AMOUNT_UNIT'];
-const SUPPLIER        = ['SUPPLIER', 'SUPPLIER_CATALOG_NAME', 'STORAGE_CONDITIONS'];
-const SAFETY          = ['QC_LAST_SIX_MONTHS', 'SDS_AVAILABLE', 'HEALTH_HAZARD', 'ACUTELY_TOXIC'];
+const DOSE             = ['TOP_DOSE', 'TOP_DOSE_UNIT', 'CONC', 'CONC_UNIT'];
+const AMOUNT           = ['AMOUNT', 'AMOUNT_UNIT'];
+const SUPPLIER         = ['SUPPLIER', 'SUPPLIER_CATALOG_NAME', 'STORAGE_CONDITIONS'];
+const SAFETY           = ['QC_LAST_SIX_MONTHS', 'SDS_AVAILABLE', 'HEALTH_HAZARD', 'ACUTELY_TOXIC'];
 
 const SCREEN_CONFIGS = {
   MTS: { keys: [...BRD_IDENTITY, ...DOSE, ...AMOUNT, ...SUPPLIER, ...SAFETY], overrides: DMSO_OVERRIDES },
@@ -127,20 +140,18 @@ export function buildScreenFields(screenType) {
 // ── Step lifecycle helpers ─────────────────────────────────────────────────
 
 export function getInitialData() {
-  return { rows: [Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, '']))] };
+  return { row: Object.fromEntries(Object.keys(FIELDS_BY_KEY).map((k) => [k, ''])) };
 }
 
 export function getSummary(data) {
-  const row = data.rows[0];
-  const byKey = Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, f]));
-  return Object.entries(row)
+  return Object.entries(data.row)
     .filter(([, v]) => v)
-    .map(([key, value]) => ({ label: byKey[key]?.label || key, value }));
+    .map(([key, value]) => ({ label: FIELDS_BY_KEY[key]?.label ?? key, value }));
 }
 
 export function validate(data, screenType) {
   const errors = {};
-  const row = data.rows[0];
+  const { row } = data;
   for (const f of buildScreenFields(screenType)) {
     const val = row[f.key];
     if (f.required && !val) {
