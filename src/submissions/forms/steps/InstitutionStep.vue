@@ -136,6 +136,27 @@
     };
   }
 
+  export function getSummary(data) {
+    const items = [
+      { label: 'Institution Type', value: data.institutionType },
+      { label: 'Institution Name', value: data.institutionName },
+    ];
+    if (data.institutionType && data.institutionType !== 'dmc') {
+      items.push({ label: 'Quote Acknowledgement', value: data.quoteAcknowledgement });
+      items.push({ label: 'Commercial Use', value: data.commerecialUse });
+      if (data.commerecialUse === 'Yes')
+        items.push({ label: 'Commercial Use Acknowledgement', value: data.commerecialUseAcknowledgement });
+    }
+    if (data.institutionType === 'industry') {
+      items.push({ label: 'Funding Institution Name', value: data.fundingInstitutionName });
+      items.push({ label: 'Funding Institution Address', value: data.fundingInstitutionAddress });
+      items.push({ label: 'Billing Contact Name', value: data.billingInvoiceContactName });
+      items.push({ label: 'Billing Contact Email', value: data.billingInvoiceContactEmail });
+    }
+    if (data.comments) items.push({ label: 'Comments', value: data.comments });
+    return items.filter((item) => item.value);
+  }
+
   export function validate(data, _screenType) {
     const errors = {};
     if (!data.institutionType) errors.institutionType = 'Required';

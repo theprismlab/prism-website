@@ -76,6 +76,17 @@
     };
   }
 
+  export function getSummary(data) {
+    return [
+      { label: 'Your Name', value: data.yourName },
+      { label: 'Your Email', value: data.yourEmail },
+      { label: 'Investigator Name', value: data.investigatorName },
+      { label: 'Investigator Email', value: data.investigatorEmail },
+      { label: 'Data Access Manager Name(s)', value: data.dataAccessManagerNames },
+      { label: 'Data Access Manager Email(s)', value: data.dataAccessManagerEmails },
+    ].filter((item) => item.value);
+  }
+
   export function validate(data, _screenType) {
     const errors = {};
     if (!data.yourName) errors.yourName = 'Required';

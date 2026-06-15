@@ -21,6 +21,13 @@
     return { acknowledgement1: false, acknowledgement2: false };
   }
 
+  export function getSummary(data) {
+    return [
+      { label: 'Acknowledgement 1', value: data.acknowledgement1 ? 'Confirmed' : null },
+      { label: 'Acknowledgement 2', value: data.acknowledgement2 ? 'Confirmed' : null },
+    ].filter((item) => item.value);
+  }
+
   export function validate(data, _screenType) {
     const errors = {};
     if (!data.acknowledgement1) errors.acknowledgement1 = 'Required';

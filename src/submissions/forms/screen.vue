@@ -37,6 +37,7 @@
             <review-step
               v-else-if="step.id === 'review'"
               :data="fd.review"
+              :form-data="fd"
               :errors="stepErrors.review || {}"
             />
 

@@ -46,6 +46,15 @@
     return { rows: [{ pert_name: '', pert_dose: '', pert_id: '' }] };
   }
 
+  export function getSummary(data) {
+    const row = data.rows[0];
+    return [
+      { label: 'Perturbation Name', value: row.pert_name },
+      { label: 'Perturbation Dose', value: row.pert_dose },
+      { label: 'Perturbation ID', value: row.pert_id },
+    ].filter((item) => item.value);
+  }
+
   export function validate(data, _screenType) {
     const errors = {};
     const row = data.rows[0];
