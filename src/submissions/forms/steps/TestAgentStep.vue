@@ -8,7 +8,12 @@
   const BRD_REGEX = /^BRD-[AKUMC][0-9]{8}-[0-9]{3}-[0-9]{2}-[0-9]$|^BRD-[AKUM][0-9]{8}$/;
   const YES_NO = ['Yes', 'No'];
   const STORAGE_OPTIONS = ['Room temperature', '4°C', '-20°C'];
-  const MOLECULE_TYPES = ['Antibody', 'Aqueous Small Molecule', 'Antibody Drug Conjugate', 'Small Molecule'];
+  const MOLECULE_TYPES = [
+    'Antibody',
+    'Aqueous Small Molecule',
+    'Antibody Drug Conjugate',
+    'Small Molecule',
+  ];
 
   // ── Shared field groups ────────────────────────────────────────────────────
 
@@ -17,37 +22,77 @@
     FULL_BRD: {
       key: 'full_brd',
       label: 'Full BRD',
-      validate: (val) => !BRD_REGEX.test(val.toUpperCase()) ? 'Must be a valid BRD ID' : undefined,
+      validate: (val) =>
+        !BRD_REGEX.test(val.toUpperCase()) ? 'Must be a valid BRD ID' : undefined,
     },
   };
 
   const AQUEOUS_ID_FIELDS = {
     COMPOUND_NAME: { key: 'compound_name', label: 'Test Agent Name', required: true },
-    MOLECULE_TYPE: { key: 'molecule_type', label: 'Molecule Type',   required: true, options: MOLECULE_TYPES },
-    SOLVENT:       { key: 'solvent',       label: 'Solvent',         required: true },
+    MOLECULE_TYPE: {
+      key: 'molecule_type',
+      label: 'Molecule Type',
+      required: true,
+      options: MOLECULE_TYPES,
+    },
+    SOLVENT: { key: 'solvent', label: 'Solvent', required: true },
   };
 
   const VOLUME_FIELDS = {
-    AMOUNT:      { key: 'amount',      label: 'Amount',      required: true, type: 'number' },
+    AMOUNT: { key: 'amount', label: 'Amount', required: true, type: 'number' },
     AMOUNT_UNIT: { key: 'amount_unit', label: 'Amount Unit', required: true, options: ['uL'] },
   };
 
   const SAFETY_FIELDS = {
-    SUPPLIER:              { key: 'supplier',              label: 'Supplier',               required: true },
-    SUPPLIER_CATALOG_NAME: { key: 'supplier_catalog_name', label: 'Supplier Catalog Name',  required: true },
-    STORAGE_CONDITIONS:    { key: 'storage_conditions',    label: 'Storage Conditions',     required: true, options: STORAGE_OPTIONS },
-    QC_LAST_SIX_MONTHS:    { key: 'qc_last_six_months',   label: "QC'd in last 6 months?", required: true, options: YES_NO },
-    SDS_AVAILABLE:         { key: 'sds_available',         label: 'SDS Available?',         required: true, options: YES_NO },
-    HEALTH_HAZARD:         { key: 'health_hazard',         label: 'Health Hazard?',         required: true, options: YES_NO },
-    ACUTELY_TOXIC:         { key: 'acutely_toxic',         label: 'Acutely Toxic?',         required: true, options: YES_NO },
+    SUPPLIER: { key: 'supplier', label: 'Supplier', required: true },
+    SUPPLIER_CATALOG_NAME: {
+      key: 'supplier_catalog_name',
+      label: 'Supplier Catalog Name',
+      required: true,
+    },
+    STORAGE_CONDITIONS: {
+      key: 'storage_conditions',
+      label: 'Storage Conditions',
+      required: true,
+      options: STORAGE_OPTIONS,
+    },
+    QC_LAST_SIX_MONTHS: {
+      key: 'qc_last_six_months',
+      label: "QC'd in last 6 months?",
+      required: true,
+      options: YES_NO,
+    },
+    SDS_AVAILABLE: {
+      key: 'sds_available',
+      label: 'SDS Available?',
+      required: true,
+      options: YES_NO,
+    },
+    HEALTH_HAZARD: {
+      key: 'health_hazard',
+      label: 'Health Hazard?',
+      required: true,
+      options: YES_NO,
+    },
+    ACUTELY_TOXIC: {
+      key: 'acutely_toxic',
+      label: 'Acutely Toxic?',
+      required: true,
+      options: YES_NO,
+    },
   };
 
   // ── Screen-specific dose field groups ─────────────────────────────────────
 
   const DMSO_DOSE_FIELDS = {
-    TOP_DOSE:      { key: 'top_dose',      label: 'Top Screening Dose',       required: true, type: 'number' },
-    TOP_DOSE_UNIT: { key: 'top_dose_unit', label: 'Top Dose Unit',            required: true, options: ['uM'] },
-    CONC:          {
+    TOP_DOSE: { key: 'top_dose', label: 'Top Screening Dose', required: true, type: 'number' },
+    TOP_DOSE_UNIT: {
+      key: 'top_dose_unit',
+      label: 'Top Dose Unit',
+      required: true,
+      options: ['uM'],
+    },
+    CONC: {
       key: 'conc',
       label: 'Stock Concentration',
       required: true,
@@ -57,12 +102,17 @@
           return `Must equal 1000× top dose (expected ${row.top_dose} mM)`;
       },
     },
-    CONC_UNIT:     { key: 'conc_unit', label: 'Stock Conc. Unit', required: true, options: ['mM'] },
+    CONC_UNIT: { key: 'conc_unit', label: 'Stock Conc. Unit', required: true, options: ['mM'] },
   };
 
   const APS_DOSE_FIELDS = {
-    TOP_DOSE:      { key: 'top_dose',      label: 'Top Screening Dose', required: true, type: 'number' },
-    TOP_DOSE_UNIT: { key: 'top_dose_unit', label: 'Top Dose Unit',      required: true, options: ['uM', 'ug/mL'] },
+    TOP_DOSE: { key: 'top_dose', label: 'Top Screening Dose', required: true, type: 'number' },
+    TOP_DOSE_UNIT: {
+      key: 'top_dose_unit',
+      label: 'Top Dose Unit',
+      required: true,
+      options: ['uM', 'ug/mL'],
+    },
     CONC: {
       key: 'conc',
       label: 'Stock Concentration',
@@ -94,9 +144,15 @@
       label: 'Top Screening Dose',
       required: true,
       type: 'number',
-      validate: (val) => Number(val) > 2 ? 'Max top dose for AIR submissions is 2 ug/mL' : undefined,
+      validate: (val) =>
+        Number(val) > 2 ? 'Max top dose for AIR submissions is 2 ug/mL' : undefined,
     },
-    TOP_DOSE_UNIT: { key: 'top_dose_unit', label: 'Top Dose Unit',         required: true, options: ['ug/mL'] },
+    TOP_DOSE_UNIT: {
+      key: 'top_dose_unit',
+      label: 'Top Dose Unit',
+      required: true,
+      options: ['ug/mL'],
+    },
     CONC: {
       key: 'conc',
       label: 'Stock Concentration',
@@ -133,13 +189,17 @@
   // ── Exports ────────────────────────────────────────────────────────────────
 
   const ALL_FIELD_LABELS = Object.fromEntries(
-    Object.values(SCREEN_FIELDS).flatMap((fields) => Object.values(fields).map((f) => [f.key, f.label]))
+    Object.values(SCREEN_FIELDS).flatMap((fields) =>
+      Object.values(fields).map((f) => [f.key, f.label]),
+    ),
   );
 
   export function getInitialData() {
-    const allKeys = [...new Set(
-      Object.values(SCREEN_FIELDS).flatMap((fields) => Object.values(fields).map((f) => f.key))
-    )];
+    const allKeys = [
+      ...new Set(
+        Object.values(SCREEN_FIELDS).flatMap((fields) => Object.values(fields).map((f) => f.key)),
+      ),
+    ];
     return { rows: [Object.fromEntries(allKeys.map((k) => [k, '']))] };
   }
 
@@ -155,7 +215,10 @@
     const row = data.rows[0];
     for (const f of Object.values(SCREEN_FIELDS[screenType] || {})) {
       const val = row[f.key];
-      if (f.required && !val) { errors[f.key] = 'Required'; continue; }
+      if (f.required && !val) {
+        errors[f.key] = 'Required';
+        continue;
+      }
       if (f.validate && val) {
         const msg = f.validate(val, row);
         if (msg) errors[f.key] = msg;
@@ -168,8 +231,8 @@
     name: 'TestAgentStep',
     components: { TestAgentTable },
     props: {
-      data:       { type: Object, required: true },
-      errors:     { type: Object, default: () => ({}) },
+      data: { type: Object, required: true },
+      errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
     },
     computed: {
