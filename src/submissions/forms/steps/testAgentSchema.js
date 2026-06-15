@@ -55,19 +55,18 @@ const FIELDS = {
 const FIELDS_BY_KEY = Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, f]));
 
 // ── Per-screen validators ──────────────────────────────────────────────────
+// validateConc: stock concentration must equal multiplier× top dose.
+// Unit conversion is baked into the multiplier/1000 ratio
+// (e.g. 1000× uM→mM = ×1.0, 250× uM→mM = ×0.25, 500× ug/mL→mg/mL = ×0.5).
 
-function validateDmsoConc(val, row) {
-  const topDose = row.top_dose;
-  if (!topDose) return;
-  if (Number(val) !== Number(topDose)) return `Must equal 1000× top dose (expected ${topDose} mM)`;
-}
-
-function validateApsConc(val, row) {
-  const topDose = row.top_dose;
-  if (!topDose) return;
-  const expected = Number(topDose) * 0.25;
-  if (Math.abs(Number(val) - expected) > 0.001)
-    return `Must equal 250× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
+function validateConc(multiplier) {
+  return (val, row) => {
+    const topDose = row.top_dose;
+    if (!topDose) return;
+    const expected = Number(topDose) * (multiplier / 1000);
+    if (Math.abs(Number(val) - expected) > 0.001)
+      return `Must equal ${multiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
+  };
 }
 
 function validateApsConcUnit(val, row) {
@@ -75,14 +74,6 @@ function validateApsConcUnit(val, row) {
   const expected = pairs[row.top_dose_unit];
   if (expected && expected !== val)
     return `Must be ${expected} when top dose unit is ${row.top_dose_unit}`;
-}
-
-function validateAirConc(val, row) {
-  const topDose = row.top_dose;
-  if (!topDose) return;
-  const expected = Number(topDose) * 0.5;
-  if (Math.abs(Number(val) - expected) > 0.001)
-    return `Must equal 500× top dose (expected ${expected.toFixed(3)} mg/mL)`;
 }
 
 function validateAirTopDose(val) {
@@ -111,90 +102,112 @@ const SAFETY_FIELDS = [
 const SCREENS = {
   // ── MTS ──────────────────────────────────────────────────────────────────
   // DMSO-based. Stock = 1000× top dose (N uM assay → N mM stock). Min 150 uL.
-  MTS: [
-    FIELDS.COMPOUND_NAME,
-    FIELDS.FULL_BRD,
-    FIELDS.TOP_DOSE,
-    { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-    { ...FIELDS.CONC, validate: validateDmsoConc },
-    { ...FIELDS.CONC_UNIT, options: ['mM'] },
-    { ...FIELDS.AMOUNT, validate: minAmount(150) },
-    FIELDS.AMOUNT_UNIT,
-    ...SUPPLIER_FIELDS,
-    ...SAFETY_FIELDS,
-  ],
+  MTS: {
+    concentrationMultiplier: 1000,
+    amountMin: 150,
+    fields: [
+      FIELDS.COMPOUND_NAME,
+      FIELDS.FULL_BRD,
+      FIELDS.TOP_DOSE,
+      { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
+      { ...FIELDS.CONC,          validate: validateConc(1000) },
+      { ...FIELDS.CONC_UNIT,     options: ['mM'] },
+      { ...FIELDS.AMOUNT,        validate: minAmount(150) },
+      FIELDS.AMOUNT_UNIT,
+      ...SUPPLIER_FIELDS,
+      ...SAFETY_FIELDS,
+    ],
+  },
 
   // ── CPS ──────────────────────────────────────────────────────────────────
   // DMSO-based. Stock = 1000× top dose (N uM assay → N mM stock).
   // Min 150 uL per compound (solo); 400 uL × n combinations per compound (combo flow).
-  CPS: [
-    FIELDS.COMPOUND_NAME,
-    FIELDS.FULL_BRD,
-    FIELDS.TOP_DOSE,
-    { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-    { ...FIELDS.CONC, validate: validateDmsoConc },
-    { ...FIELDS.CONC_UNIT, options: ['mM'] },
-    { ...FIELDS.AMOUNT, validate: minAmount(150) },
-    FIELDS.AMOUNT_UNIT,
-    ...SUPPLIER_FIELDS,
-    ...SAFETY_FIELDS,
-  ],
+  CPS: {
+    concentrationMultiplier: 1000,
+    amountMin: 150,
+    fields: [
+      FIELDS.COMPOUND_NAME,
+      FIELDS.FULL_BRD,
+      FIELDS.TOP_DOSE,
+      { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
+      { ...FIELDS.CONC,          validate: validateConc(1000) },
+      { ...FIELDS.CONC_UNIT,     options: ['mM'] },
+      { ...FIELDS.AMOUNT,        validate: minAmount(150) },
+      FIELDS.AMOUNT_UNIT,
+      ...SUPPLIER_FIELDS,
+      ...SAFETY_FIELDS,
+    ],
+  },
 
   // ── EPS ──────────────────────────────────────────────────────────────────
   // DMSO-based. Stock = 1000× top dose (N uM assay → N mM stock).
   // Includes dilution factor. Min 600 uL.
-  EPS: [
-    FIELDS.COMPOUND_NAME,
-    FIELDS.FULL_BRD,
-    FIELDS.TOP_DOSE,
-    { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-    { ...FIELDS.CONC, validate: validateDmsoConc },
-    { ...FIELDS.CONC_UNIT, options: ['mM'] },
-    FIELDS.DILUTION_FACTOR,
-    { ...FIELDS.AMOUNT, validate: minAmount(600) },
-    FIELDS.AMOUNT_UNIT,
-    ...SUPPLIER_FIELDS,
-    ...SAFETY_FIELDS,
-  ],
+  EPS: {
+    concentrationMultiplier: 1000,
+    amountMin: 600,
+    fields: [
+      FIELDS.COMPOUND_NAME,
+      FIELDS.FULL_BRD,
+      FIELDS.TOP_DOSE,
+      { ...FIELDS.TOP_DOSE_UNIT,   options: ['uM'] },
+      { ...FIELDS.CONC,            validate: validateConc(1000) },
+      { ...FIELDS.CONC_UNIT,       options: ['mM'] },
+      FIELDS.DILUTION_FACTOR,
+      { ...FIELDS.AMOUNT,          validate: minAmount(600) },
+      FIELDS.AMOUNT_UNIT,
+      ...SUPPLIER_FIELDS,
+      ...SAFETY_FIELDS,
+    ],
+  },
 
   // ── APS ──────────────────────────────────────────────────────────────────
   // Aqueous. Stock = 250× top dose. Unit pairing: uM→mM, ug/mL→mg/mL. Min 150 uL.
-  APS: [
-    FIELDS.COMPOUND_NAME,
-    FIELDS.MOLECULE_TYPE,
-    FIELDS.SOLVENT,
-    FIELDS.TOP_DOSE,
-    { ...FIELDS.TOP_DOSE_UNIT, options: ['uM', 'ug/mL'] },
-    { ...FIELDS.CONC, validate: validateApsConc },
-    { ...FIELDS.CONC_UNIT, options: ['mM', 'mg/mL'], validate: validateApsConcUnit },
-    { ...FIELDS.AMOUNT, validate: minAmount(150) },
-    FIELDS.AMOUNT_UNIT,
-    ...SUPPLIER_FIELDS,
-    ...SAFETY_FIELDS,
-  ],
+  APS: {
+    concentrationMultiplier: 250,
+    amountMin: 150,
+    fields: [
+      FIELDS.COMPOUND_NAME,
+      FIELDS.MOLECULE_TYPE,
+      FIELDS.SOLVENT,
+      FIELDS.TOP_DOSE,
+      { ...FIELDS.TOP_DOSE_UNIT, options: ['uM', 'ug/mL'] },
+      { ...FIELDS.CONC,          validate: validateConc(250) },
+      { ...FIELDS.CONC_UNIT,     options: ['mM', 'mg/mL'], validate: validateApsConcUnit },
+      { ...FIELDS.AMOUNT,        validate: minAmount(150) },
+      FIELDS.AMOUNT_UNIT,
+      ...SUPPLIER_FIELDS,
+      ...SAFETY_FIELDS,
+    ],
+  },
 
   // ── AIR ──────────────────────────────────────────────────────────────────
   // Aqueous in reagent. Stock = 500× top dose (ug/mL → mg/mL).
   // Top dose capped at 2 ug/mL. Min 500 uL.
-  AIR: [
-    FIELDS.COMPOUND_NAME,
-    FIELDS.MOLECULE_TYPE,
-    FIELDS.SOLVENT,
-    { ...FIELDS.TOP_DOSE, validate: validateAirTopDose },
-    { ...FIELDS.TOP_DOSE_UNIT, options: ['ug/mL'] },
-    { ...FIELDS.CONC, validate: validateAirConc },
-    { ...FIELDS.CONC_UNIT, options: ['mg/mL'] },
-    { ...FIELDS.AMOUNT, validate: minAmount(500) },
-    FIELDS.AMOUNT_UNIT,
-    ...SUPPLIER_FIELDS,
-    ...SAFETY_FIELDS,
-  ],
+  AIR: {
+    concentrationMultiplier: 500,
+    amountMin: 500,
+    fields: [
+      FIELDS.COMPOUND_NAME,
+      FIELDS.MOLECULE_TYPE,
+      FIELDS.SOLVENT,
+      { ...FIELDS.TOP_DOSE,      validate: validateAirTopDose },
+      { ...FIELDS.TOP_DOSE_UNIT, options: ['ug/mL'] },
+      { ...FIELDS.CONC,          validate: validateConc(500) },
+      { ...FIELDS.CONC_UNIT,     options: ['mg/mL'] },
+      { ...FIELDS.AMOUNT,        validate: minAmount(500) },
+      FIELDS.AMOUNT_UNIT,
+      ...SUPPLIER_FIELDS,
+      ...SAFETY_FIELDS,
+    ],
+  },
 };
 
 // ── Merge helper ───────────────────────────────────────────────────────────
 
 export function buildScreenFields(screenType) {
-  return (SCREENS[screenType] || []).map((f) => ({ required: true, ...f }));
+  const screen = SCREENS[screenType];
+  if (!screen) return [];
+  return screen.fields.map((f) => ({ required: true, ...f }));
 }
 
 // ── Step lifecycle helpers ─────────────────────────────────────────────────
