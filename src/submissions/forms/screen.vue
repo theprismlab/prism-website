@@ -24,11 +24,11 @@
               :data="fd.institution"
               :errors="stepErrors.institution || {}"
             />
-            <test-agent-step
+            <component
+              :is="testAgentStep.component"
               v-else-if="step.id === 'testAgent'"
               :data="fd.testAgent"
               :errors="stepErrors.testAgent || {}"
-              :screen-type="screenType"
             />
             <acknowledgments-step
               v-else-if="step.id === 'acknowledgments'"
@@ -56,10 +56,9 @@
 
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
-  import { STEP_REGISTRY } from './steps/registry';
+  import { STEP_REGISTRY, TEST_AGENT_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
-  import TestAgentStep from './steps/TestAgentStep.vue';
   import AcknowledgmentsStep from './steps/AcknowledgmentsStep.vue';
   import ReviewStep from './steps/ReviewStep.vue';
 
@@ -68,7 +67,6 @@
     components: {
       CollaboratorStep,
       InstitutionStep,
-      TestAgentStep,
       AcknowledgmentsStep,
       ReviewStep,
     },
@@ -96,7 +94,12 @@
         if (s.startsWith('APS')) return 'APS';
         if (s.startsWith('AIR')) return 'AIR';
         if (s.startsWith('EPS')) return 'EPS';
+        if (s.startsWith('MTS')) return 'MTS';
+        if (s.startsWith('CPS')) return 'CPS';
         return null;
+      },
+      testAgentStep() {
+        return TEST_AGENT_REGISTRY[this.screenType];
       },
     },
     methods: {
@@ -116,7 +119,8 @@
       },
       completeStep(i) {
         const step = this.steps[i];
-        const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
+        const registry = step.id === 'testAgent' ? this.testAgentStep : STEP_REGISTRY[step.id];
+        const errors = registry.validate(this.fd[step.id]);
         if (Object.keys(errors).length > 0) {
           this.stepErrors = { ...this.stepErrors, [step.id]: errors };
           return;
