@@ -6,8 +6,6 @@
   import TestAgentTable from './TestAgentTable.vue';
   import { buildScreenFields } from './testAgentSchema.js';
 
-  export { getInitialData, getSummary, validate } from './testAgentSchema.js';
-
   export default {
     name: 'TestAgentStep',
     components: { TestAgentTable },

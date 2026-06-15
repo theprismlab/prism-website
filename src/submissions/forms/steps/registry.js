@@ -7,7 +7,7 @@ import {
   getInitialData as institutionInit,
   getSummary as institutionSummary,
   validate as institutionValidate,
-} from './InstitutionStep.vue';
+} from './institutionSchema.js';
 import {
   getInitialData as testAgentInit,
   getSummary as testAgentSummary,
@@ -17,7 +17,7 @@ import {
   getInitialData as acknowledgementsInit,
   getSummary as acknowledgementsSummary,
   validate as acknowledgementsValidate,
-} from './AcknowledgmentsStep.vue';
+} from './acknowledgementsSchema.js';
 import { getInitialData as reviewInit, validate as reviewValidate } from './ReviewStep.vue';
 
 export const STEP_REGISTRY = {

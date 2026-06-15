@@ -1,53 +1,31 @@
 <template>
   <div>
     <v-checkbox
-      v-model="data[F.ACKNOWLEDGEMENT_1.key]"
-      :label="F.ACKNOWLEDGEMENT_1.label"
+      v-for="f in screenFields"
+      :key="f.key"
+      v-model="data[f.key]"
+      :label="f.label"
       hide-details="auto"
       class="mb-2"
-      :error-messages="errors[F.ACKNOWLEDGEMENT_1.key]"
-    />
-    <v-checkbox
-      v-model="data[F.ACKNOWLEDGEMENT_2.key]"
-      :label="F.ACKNOWLEDGEMENT_2.label"
-      hide-details="auto"
-      :error-messages="errors[F.ACKNOWLEDGEMENT_2.key]"
+      :error-messages="errors[f.key]"
     />
   </div>
 </template>
 
 <script>
-  const FIELDS = {
-    ACKNOWLEDGEMENT_1: { key: 'acknowledgement1', label: 'Acknowledgement 1', default: false },
-    ACKNOWLEDGEMENT_2: { key: 'acknowledgement2', label: 'Acknowledgement 2', default: false },
-  };
-
-  export function getInitialData() {
-    return Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, f.default]));
-  }
-
-  export function getSummary(data) {
-    return Object.values(FIELDS)
-      .map((f) => ({ label: f.label, value: data[f.key] ? 'Confirmed' : null }))
-      .filter((item) => item.value);
-  }
-
-  export function validate(data, _screenType) {
-    const errors = {};
-    Object.values(FIELDS).forEach((f) => {
-      if (!data[f.key]) errors[f.key] = 'Required';
-    });
-    return errors;
-  }
+  import { buildScreenFields } from './acknowledgementsSchema.js';
 
   export default {
     name: 'AcknowledgmentsStep',
     props: {
       data: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
+      screenType: { type: String, default: null },
     },
-    data() {
-      return { F: FIELDS };
+    computed: {
+      screenFields() {
+        return buildScreenFields(this.screenType);
+      },
     },
   };
 </script>
