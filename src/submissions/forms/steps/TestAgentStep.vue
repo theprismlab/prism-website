@@ -2,38 +2,38 @@
   <v-table density="compact" class="perturbation-table">
     <thead>
       <tr>
-        <th>pert_name</th>
-        <th>pert_dose</th>
-        <th>pert_id</th>
+        <th>{{ F.PERT_NAME.label }}</th>
+        <th>{{ F.PERT_DOSE.label }}</th>
+        <th>{{ F.PERT_ID.label }}</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td>
           <v-text-field
-            v-model="data.rows[0].pert_name"
+            v-model="data.rows[0][F.PERT_NAME.key]"
             variant="plain"
             density="compact"
             single-line
-            :error-messages="errors.pert_name"
+            :error-messages="errors[F.PERT_NAME.key]"
           />
         </td>
         <td>
           <v-text-field
-            v-model="data.rows[0].pert_dose"
+            v-model="data.rows[0][F.PERT_DOSE.key]"
             variant="plain"
             density="compact"
             single-line
-            :error-messages="errors.pert_dose"
+            :error-messages="errors[F.PERT_DOSE.key]"
           />
         </td>
         <td>
           <v-text-field
-            v-model="data.rows[0].pert_id"
+            v-model="data.rows[0][F.PERT_ID.key]"
             variant="plain"
             density="compact"
             single-line
-            :error-messages="errors.pert_id"
+            :error-messages="errors[F.PERT_ID.key]"
           />
         </td>
       </tr>
@@ -42,25 +42,31 @@
 </template>
 
 <script>
+  const FIELDS = {
+    PERT_NAME: { key: 'pert_name', label: 'Perturbation Name' },
+    PERT_DOSE: { key: 'pert_dose', label: 'Perturbation Dose' },
+    PERT_ID: { key: 'pert_id', label: 'Perturbation ID' },
+  };
+
   export function getInitialData() {
-    return { rows: [{ pert_name: '', pert_dose: '', pert_id: '' }] };
+    return {
+      rows: [Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, '']))],
+    };
   }
 
   export function getSummary(data) {
     const row = data.rows[0];
-    return [
-      { label: 'Perturbation Name', value: row.pert_name },
-      { label: 'Perturbation Dose', value: row.pert_dose },
-      { label: 'Perturbation ID', value: row.pert_id },
-    ].filter((item) => item.value);
+    return Object.values(FIELDS)
+      .map((f) => ({ label: f.label, value: row[f.key] }))
+      .filter((item) => item.value);
   }
 
   export function validate(data, _screenType) {
     const errors = {};
     const row = data.rows[0];
-    if (!row.pert_name) errors.pert_name = 'Required';
-    if (!row.pert_dose) errors.pert_dose = 'Required';
-    if (!row.pert_id) errors.pert_id = 'Required';
+    Object.values(FIELDS).forEach((f) => {
+      if (!row[f.key]) errors[f.key] = 'Required';
+    });
     return errors;
   }
 
@@ -69,6 +75,9 @@
     props: {
       data: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
+    },
+    data() {
+      return { F: FIELDS };
     },
   };
 </script>
