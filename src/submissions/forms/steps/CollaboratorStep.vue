@@ -3,7 +3,7 @@
     <v-col cols="12" sm="6">
       <v-text-field
         v-model="data.yourName"
-        label="Your Name"
+        :label="F.YOUR_NAME.label"
         variant="outlined"
         density="compact"
         :error-messages="errors.yourName"
@@ -12,7 +12,7 @@
     <v-col cols="12" sm="6">
       <v-text-field
         v-model="data.yourEmail"
-        label="Your Email"
+        :label="F.YOUR_EMAIL.label"
         variant="outlined"
         density="compact"
         type="email"
@@ -24,7 +24,7 @@
     <v-col cols="12" sm="6">
       <v-text-field
         v-model="data.investigatorName"
-        label="Investigator Name"
+        :label="F.INVESTIGATOR_NAME.label"
         variant="outlined"
         density="compact"
         :error-messages="errors.investigatorName"
@@ -33,7 +33,7 @@
     <v-col cols="12" sm="6">
       <v-text-field
         v-model="data.investigatorEmail"
-        label="Investigator Email"
+        :label="F.INVESTIGATOR_EMAIL.label"
         variant="outlined"
         density="compact"
         type="email"
@@ -45,7 +45,7 @@
     <v-col cols="12" sm="6">
       <v-text-field
         v-model="data.dataAccessManagerNames"
-        label="Data Access Manager Name(s)"
+        :label="F.DATA_ACCESS_MANAGER_NAMES.label"
         variant="outlined"
         density="compact"
         :error-messages="errors.dataAccessManagerNames"
@@ -54,7 +54,7 @@
     <v-col cols="12" sm="6">
       <v-text-field
         v-model="data.dataAccessManagerEmails"
-        label="Data Access Manager Email(s)"
+        :label="F.DATA_ACCESS_MANAGER_EMAILS.label"
         variant="outlined"
         density="compact"
         type="email"
@@ -65,26 +65,23 @@
 </template>
 
 <script>
+  const FIELDS = {
+    YOUR_NAME: { key: 'yourName', label: 'Your Name' },
+    YOUR_EMAIL: { key: 'yourEmail', label: 'Your Email' },
+    INVESTIGATOR_NAME: { key: 'investigatorName', label: 'Investigator Name' },
+    INVESTIGATOR_EMAIL: { key: 'investigatorEmail', label: 'Investigator Email' },
+    DATA_ACCESS_MANAGER_NAMES: { key: 'dataAccessManagerNames', label: 'Data Access Manager Name(s)' },
+    DATA_ACCESS_MANAGER_EMAILS: { key: 'dataAccessManagerEmails', label: 'Data Access Manager Email(s)' },
+  };
+
   export function getInitialData() {
-    return {
-      yourName: '',
-      yourEmail: '',
-      investigatorName: '',
-      investigatorEmail: '',
-      dataAccessManagerNames: '',
-      dataAccessManagerEmails: '',
-    };
+    return Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, '']));
   }
 
   export function getSummary(data) {
-    return [
-      { label: 'Your Name', value: data.yourName },
-      { label: 'Your Email', value: data.yourEmail },
-      { label: 'Investigator Name', value: data.investigatorName },
-      { label: 'Investigator Email', value: data.investigatorEmail },
-      { label: 'Data Access Manager Name(s)', value: data.dataAccessManagerNames },
-      { label: 'Data Access Manager Email(s)', value: data.dataAccessManagerEmails },
-    ].filter((item) => item.value);
+    return Object.values(FIELDS)
+      .map((f) => ({ label: f.label, value: data[f.key] }))
+      .filter((item) => item.value);
   }
 
   export function validate(data, _screenType) {
@@ -101,6 +98,9 @@
     props: {
       data: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
+    },
+    data() {
+      return { F: FIELDS };
     },
   };
 </script>
