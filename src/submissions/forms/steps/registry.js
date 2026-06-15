@@ -12,7 +12,7 @@ import {
   getInitialData as testAgentInit,
   getSummary as testAgentSummary,
   validate as testAgentValidate,
-} from './TestAgentStep.vue';
+} from './testAgentSchema.js';
 import {
   getInitialData as acknowledgementsInit,
   getSummary as acknowledgementsSummary,

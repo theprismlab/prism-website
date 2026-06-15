@@ -150,9 +150,9 @@
       label: 'Quote Acknowledgement',
       showIf: hasSelectedInstitution,
     },
-    COMMERCIAL_USE: { key: 'commerecialUse', label: 'Commercial Use?', showIf: hasInstitutionName },
+    COMMERCIAL_USE: { key: 'commercialUse', label: 'Commercial Use?', showIf: hasInstitutionName },
     COMMERCIAL_USE_ACKNOWLEDGEMENT: {
-      key: 'commerecialUseAcknowledgement',
+      key: 'commercialUseAcknowledgement',
       label: 'Commercial Use Acknowledgement',
       showIf: (data) => data.commerecialUse === 'Yes',
     },
