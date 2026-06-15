@@ -13,116 +13,100 @@ const MOLECULE_TYPES = [
 ];
 
 // ── Field registry ─────────────────────────────────────────────────────────
-// One entry per field: static label, type, and options.
-// Screen-specific options and validate are applied via SCREEN_CONFIGS overrides.
 
 const FIELDS = {
-  compound_name: { label: 'Test Agent Name' },
-  full_brd: {
-    label: 'Full BRD',
-    required: false,
-    validate: (val) => (BRD_REGEX.test(val.toUpperCase()) ? undefined : 'Must be a valid BRD ID'),
-  },
-  molecule_type: { label: 'Molecule Type', options: MOLECULE_TYPES },
-  solvent: { label: 'Solvent' },
-  top_dose: { label: 'Top Screening Dose', type: 'number' },
-  top_dose_unit: { label: 'Top Dose Unit' },
-  conc: { label: 'Stock Concentration', type: 'number' },
-  conc_unit: { label: 'Stock Conc. Unit' },
-  dilution_factor: { label: 'Dilution Factor' },
-  amount: { label: 'Amount', type: 'number' },
-  amount_unit: { label: 'Amount Unit', options: ['uL'] },
-  supplier: { label: 'Supplier' },
-  supplier_catalog_name: { label: 'Supplier Catalog Name' },
-  storage_conditions: { label: 'Storage Conditions', options: STORAGE_OPTIONS },
-  qc_last_six_months: { label: "QC'd in last 6 months?", options: YES_NO },
-  sds_available: { label: 'SDS Available?', options: YES_NO },
-  health_hazard: { label: 'Health Hazard?', options: YES_NO },
-  acutely_toxic: { label: 'Acutely Toxic?', options: YES_NO },
+  COMPOUND_NAME:         { key: 'compound_name',        label: 'Test Agent Name' },
+  FULL_BRD:              { key: 'full_brd',              label: 'Full BRD', required: false, validate: (val) => (BRD_REGEX.test(val.toUpperCase()) ? undefined : 'Must be a valid BRD ID') },
+  MOLECULE_TYPE:         { key: 'molecule_type',         label: 'Molecule Type', options: MOLECULE_TYPES },
+  SOLVENT:               { key: 'solvent',               label: 'Solvent' },
+  TOP_DOSE:              { key: 'top_dose',              label: 'Top Screening Dose', type: 'number' },
+  TOP_DOSE_UNIT:         { key: 'top_dose_unit',         label: 'Top Dose Unit' },
+  CONC:                  { key: 'conc',                  label: 'Stock Concentration', type: 'number' },
+  CONC_UNIT:             { key: 'conc_unit',             label: 'Stock Conc. Unit' },
+  DILUTION_FACTOR:       { key: 'dilution_factor',       label: 'Dilution Factor' },
+  AMOUNT:                { key: 'amount',                label: 'Amount', type: 'number' },
+  AMOUNT_UNIT:           { key: 'amount_unit',           label: 'Amount Unit', options: ['uL'] },
+  SUPPLIER:              { key: 'supplier',              label: 'Supplier' },
+  SUPPLIER_CATALOG_NAME: { key: 'supplier_catalog_name', label: 'Supplier Catalog Name' },
+  STORAGE_CONDITIONS:    { key: 'storage_conditions',    label: 'Storage Conditions', options: STORAGE_OPTIONS },
+  QC_LAST_SIX_MONTHS:   { key: 'qc_last_six_months',    label: "QC'd in last 6 months?", options: YES_NO },
+  SDS_AVAILABLE:         { key: 'sds_available',         label: 'SDS Available?', options: YES_NO },
+  HEALTH_HAZARD:         { key: 'health_hazard',         label: 'Health Hazard?', options: YES_NO },
+  ACUTELY_TOXIC:         { key: 'acutely_toxic',         label: 'Acutely Toxic?', options: YES_NO },
 };
 
 // ── Per-screen overrides ───────────────────────────────────────────────────
+// Keyed by FIELDS constant name. row.* references inside validate functions
+// use data keys since they reference the runtime data object directly.
 
 const DMSO_OVERRIDES = {
-  top_dose_unit: { options: ['uM'] },
-  conc: {
+  TOP_DOSE_UNIT: { options: ['uM'] },
+  CONC: {
     validate: (val, row) => {
-      if (!row.top_dose) return;
-      if (Number(val) !== Number(row.top_dose))
-        return `Stock concentration (mM) must equal top dose (uM) — expected ${row.top_dose} mM`;
+      const topDose = row[FIELDS.TOP_DOSE.key];
+      if (!topDose) return;
+      if (Number(val) !== Number(topDose))
+        return `Stock concentration (mM) must equal top dose (uM) — expected ${topDose} mM`;
     },
   },
-  conc_unit: { options: ['mM'] },
+  CONC_UNIT: { options: ['mM'] },
 };
 
 const APS_OVERRIDES = {
-  top_dose_unit: { options: ['uM', 'ug/mL'] },
-  conc: {
+  TOP_DOSE_UNIT: { options: ['uM', 'ug/mL'] },
+  CONC: {
     validate: (val, row) => {
-      if (!row.top_dose) return;
-      const expected = Number(row.top_dose) * 0.25;
+      const topDose = row[FIELDS.TOP_DOSE.key];
+      if (!topDose) return;
+      const expected = Number(topDose) * 0.25;
       if (Math.abs(Number(val) - expected) > 0.001)
-        return `Must equal 250× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
+        return `Must equal 250× top dose (expected ${expected.toFixed(3)} ${row[FIELDS.CONC_UNIT.key] || ''})`;
     },
   },
-  conc_unit: {
+  CONC_UNIT: {
     options: ['mM', 'mg/mL'],
     validate: (val, row) => {
+      const topDoseUnit = row[FIELDS.TOP_DOSE_UNIT.key];
       const pairs = { uM: 'mM', 'ug/mL': 'mg/mL' };
-      if (row.top_dose_unit && pairs[row.top_dose_unit] !== val)
-        return `Must be ${pairs[row.top_dose_unit]} when top dose unit is ${row.top_dose_unit}`;
+      if (topDoseUnit && pairs[topDoseUnit] !== val)
+        return `Must be ${pairs[topDoseUnit]} when top dose unit is ${topDoseUnit}`;
     },
   },
 };
 
 const AIR_OVERRIDES = {
-  top_dose: {
+  TOP_DOSE: {
     validate: (val) =>
       Number(val) > 2 ? 'Max top dose for AIR submissions is 2 ug/mL' : undefined,
   },
-  top_dose_unit: { options: ['ug/mL'] },
-  conc: {
+  TOP_DOSE_UNIT: { options: ['ug/mL'] },
+  CONC: {
     validate: (val, row) => {
-      if (!row.top_dose) return;
-      const expected = Number(row.top_dose) * 0.5;
+      const topDose = row[FIELDS.TOP_DOSE.key];
+      if (!topDose) return;
+      const expected = Number(topDose) * 0.5;
       if (Math.abs(Number(val) - expected) > 0.001)
         return `Must equal 500× top dose (expected ${expected.toFixed(3)} mg/mL)`;
     },
   },
-  conc_unit: { options: ['mg/mL'] },
+  CONC_UNIT: { options: ['mg/mL'] },
 };
 
 // ── Field-group building blocks ────────────────────────────────────────────
-// Screens are composed from these shared groups so changes happen in one place.
 
-const BRD_IDENTITY = ['compound_name', 'full_brd'];
-const AQUEOUS_IDENTITY = ['compound_name', 'molecule_type', 'solvent'];
-const DOSE = ['top_dose', 'top_dose_unit', 'conc', 'conc_unit'];
-const AMOUNT = ['amount', 'amount_unit'];
-const SUPPLIER = ['supplier', 'supplier_catalog_name', 'storage_conditions'];
-const SAFETY = ['qc_last_six_months', 'sds_available', 'health_hazard', 'acutely_toxic'];
+const BRD_IDENTITY    = ['COMPOUND_NAME', 'FULL_BRD'];
+const AQUEOUS_IDENTITY = ['COMPOUND_NAME', 'MOLECULE_TYPE', 'SOLVENT'];
+const DOSE            = ['TOP_DOSE', 'TOP_DOSE_UNIT', 'CONC', 'CONC_UNIT'];
+const AMOUNT          = ['AMOUNT', 'AMOUNT_UNIT'];
+const SUPPLIER        = ['SUPPLIER', 'SUPPLIER_CATALOG_NAME', 'STORAGE_CONDITIONS'];
+const SAFETY          = ['QC_LAST_SIX_MONTHS', 'SDS_AVAILABLE', 'HEALTH_HAZARD', 'ACUTELY_TOXIC'];
 
 const SCREEN_CONFIGS = {
-  MTS: {
-    keys: [...BRD_IDENTITY, ...DOSE, ...AMOUNT, ...SUPPLIER, ...SAFETY],
-    overrides: DMSO_OVERRIDES,
-  },
-  CPS: {
-    keys: [...BRD_IDENTITY, ...DOSE, ...AMOUNT, ...SUPPLIER, ...SAFETY],
-    overrides: DMSO_OVERRIDES,
-  },
-  EPS: {
-    keys: [...BRD_IDENTITY, ...DOSE, 'dilution_factor', ...AMOUNT, ...SUPPLIER, ...SAFETY],
-    overrides: DMSO_OVERRIDES,
-  },
-  APS: {
-    keys: [...AQUEOUS_IDENTITY, ...DOSE, ...AMOUNT, ...SUPPLIER, ...SAFETY],
-    overrides: APS_OVERRIDES,
-  },
-  AIR: {
-    keys: [...AQUEOUS_IDENTITY, ...DOSE, ...AMOUNT, ...SUPPLIER, ...SAFETY],
-    overrides: AIR_OVERRIDES,
-  },
+  MTS: { keys: [...BRD_IDENTITY, ...DOSE, ...AMOUNT, ...SUPPLIER, ...SAFETY], overrides: DMSO_OVERRIDES },
+  CPS: { keys: [...BRD_IDENTITY, ...DOSE, ...AMOUNT, ...SUPPLIER, ...SAFETY], overrides: DMSO_OVERRIDES },
+  EPS: { keys: [...BRD_IDENTITY, ...DOSE, 'DILUTION_FACTOR', ...AMOUNT, ...SUPPLIER, ...SAFETY], overrides: DMSO_OVERRIDES },
+  APS: { keys: [...AQUEOUS_IDENTITY, ...DOSE, ...AMOUNT, ...SUPPLIER, ...SAFETY], overrides: APS_OVERRIDES },
+  AIR: { keys: [...AQUEOUS_IDENTITY, ...DOSE, ...AMOUNT, ...SUPPLIER, ...SAFETY], overrides: AIR_OVERRIDES },
 };
 
 // ── Merge helper ───────────────────────────────────────────────────────────
@@ -130,25 +114,28 @@ const SCREEN_CONFIGS = {
 export function buildScreenFields(screenType) {
   const config = SCREEN_CONFIGS[screenType];
   if (!config) return [];
-  return config.keys.map((key) => ({
-    ...FIELDS[key],
-    key,
-    required: FIELDS[key].required !== false,
-    ...(config.overrides[key] || {}),
-  }));
+  return config.keys.map((name) => {
+    const field = FIELDS[name];
+    return {
+      ...field,
+      required: field.required !== false,
+      ...(config.overrides[name] || {}),
+    };
+  });
 }
 
 // ── Step lifecycle helpers ─────────────────────────────────────────────────
 
 export function getInitialData() {
-  return { rows: [Object.fromEntries(Object.keys(FIELDS).map((k) => [k, '']))] };
+  return { rows: [Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, '']))] };
 }
 
 export function getSummary(data) {
   const row = data.rows[0];
+  const byKey = Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, f]));
   return Object.entries(row)
     .filter(([, v]) => v)
-    .map(([key, value]) => ({ label: FIELDS[key]?.label || key, value }));
+    .map(([key, value]) => ({ label: byKey[key]?.label || key, value }));
 }
 
 export function validate(data, screenType) {
