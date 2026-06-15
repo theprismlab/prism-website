@@ -32,7 +32,7 @@
 
 <script>
   export default {
-    name: 'ApplicationStep',
+    name: 'CollaboratorStep',
     props: {
       data: { type: Object, required: true },
     },

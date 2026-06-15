@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-sm>
+    <app-container>
       <section>
         <prism-page-title>Collaborate with us!</prism-page-title>
         <p class="prism-text-body-1">
@@ -52,7 +52,7 @@
           <a href="mailto:prism@broadinstitute.org" class="text-link">prism@broadinstitute.org</a>.
         </p>
       </section>
-    </container-sm>
+    </app-container>
   </page>
 </template>
 <script>

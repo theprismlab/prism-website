@@ -24,7 +24,7 @@ export default defineConfig({
         configFile: 'src/styles/variables.scss',
       },
     }),
-    Components(),
+    Components({ dirs: ['src/components', 'src/pages'] }),
     Fonts({
       google: {
         families: [

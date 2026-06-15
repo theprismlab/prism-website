@@ -1,68 +1,73 @@
 <template>
   <page class="mt-0 pt-0">
     <HomeHero></HomeHero>
-    <container-sm>
-      <p class="prism-text-h3 text-center">
-        Our lab partners with researchers to reveal clinically important differences in drug
-        behavior by screening over 900 cancer cell lines and correlating the viability results with
-        baseline and functional genomic features
-      </p>
-    </container-sm>
-    <container-sm>
+    <page-section background="tinted" :padding="10">
+      <app-container>
+        <p class="prism-text-h3 text-center mb-0" style="line-height: 2.4rem">
+          Our lab partners with researchers to
+          <span class="text-gradient-blue"
+            >reveal clinically important differences in drug behavior</span
+          >
+          by screening over 900 cancer cell lines and correlating the viability results with
+          baseline and functional genomic features
+        </p>
+      </app-container>
+    </page-section>
+
+    <app-container>
       <p class="prism-text-body-1">
         Cancer cell line models remain essential in drug development, providing a controlled system
         to assess potency and confirm on-target engagement. At a larger scale using PRISM, these
-        models provide power to <span class="text-emphasize">understand heterogeneity</span> in drug
-        response among cell lines harboring the targeted alteration(s), assess
-        <span class="text-emphasize"
+        models provide power to <span class="text-gradient-blue">understand heterogeneity</span> in
+        drug response among cell lines harboring the targeted alteration(s), assess
+        <span class="text-gradient-blue"
           >selectivity relative to those without target alterations, and investigate potential
           biomarkers associated with these responses</span
         >.
       </p>
-    </container-sm>
+    </app-container>
 
-    <page-section background="muted">
-      <container-md>
-        <HomeOverviewCards></HomeOverviewCards>
-      </container-md>
-    </page-section>
+    <app-container wide>
+      <HomeOverviewCards></HomeOverviewCards>
+    </app-container>
 
     <page-section background="gradient" :padding="8">
-      <container-md>
-        <our-portal></our-portal>
-      </container-md>
+      <app-container wide>
+        <HomePortal></HomePortal>
+      </app-container>
     </page-section>
 
-    <container-sm class="my-12">
-      <section-overline>Impact</section-overline>
-      <prism-section-title>Dedicated to advancing oncology research</prism-section-title>
-      <p class="prism-text-body-1">
+    <app-container class="section">
+      <section-overline class="text-center">Impact</section-overline>
+      <prism-section-title class="text-center"
+        >Dedicated to advancing oncology research</prism-section-title
+      >
+      <p class="prism-text-body-1 text-center">
         Working with pharmaceutical and biotech companies and academics to improve the outcome for
         cancer patients worldwide.
       </p>
       <HomeImpactCards></HomeImpactCards>
-    </container-sm>
+    </app-container>
 
-    <container-sm class="my-12">
-      <section-overline>Testimonials</section-overline>
+    <app-container class="section">
+      <section-overline class="text-center">Testimonials</section-overline>
       <HomeTestimonialCards></HomeTestimonialCards>
-    </container-sm>
+    </app-container>
   </page>
 </template>
 <script>
   import SvgIcon from '@jamescoyle/vue-icon';
-  import { mdiHexagonMultiple } from '@mdi/js';
-  import { mdiFileDocumentMultipleOutline } from '@mdi/js';
-  import { mdiAccountGroup } from '@mdi/js';
-  import HomeHero from '../components/sections/HomeHero.vue';
+  import HomeHero from '@/pages/index/HomeHero.vue';
   import { ASSET_BASE } from '@/utils/assets';
-  import HomeOverviewCards from '@/components/sections/HomeOverviewCards.vue';
-  import HomeTestimonialCards from '@/components/sections/HomeTestimonialCards.vue';
-  import HomeImpactCards from '@/components/sections/HomeImpactCards.vue';
+  import HomeOverviewCards from '@/pages/index/HomeOverviewCards.vue';
+  import HomeTestimonialCards from '@/pages/index/HomeTestimonialCards.vue';
+  import HomeImpactCards from '@/pages/index/HomeImpactCards.vue';
+  import HomePortal from '@/pages/index/HomePortal.vue';
   export default {
     components: {
       SvgIcon,
       HomeHero,
+      HomePortal,
       HomeOverviewCards,
       HomeTestimonialCards,
       HomeImpactCards,
@@ -70,42 +75,6 @@
     data() {
       return {
         resizeCounter: 0,
-        ourImpactCards: [
-          {
-            title: '200+',
-            subtitle: 'Academic and industry partners',
-            icon: {
-              path: mdiAccountGroup,
-              color: 'white',
-              backgroundColor: 'var(--v-red-accent-2)',
-              size: 54,
-              borderRadius: '50%',
-            },
-          },
-          {
-            title: '7,000+',
-            subtitle: 'Compounds screened in over 500 cell lines',
-            icon: {
-              path: mdiHexagonMultiple,
-              color: 'white',
-              backgroundColor: 'var(--v-secondary-accent-4)',
-              size: 54,
-              borderRadius: '50%',
-            },
-          },
-          {
-            title: '50+',
-            subtitle: 'Publications in high-impact journals',
-            icon: {
-              path: mdiFileDocumentMultipleOutline,
-              color: 'white',
-              // backgroundColor: "var(--v-teal-accent-4)",
-              backgroundColor: 'var(--v-indigo-accent-2)',
-              size: 54,
-              borderRadius: '50%',
-            },
-          },
-        ],
       };
     },
     created() {
@@ -139,7 +108,13 @@
 </script>
 
 <style scoped lang="scss">
-  .hero-section {
+  .section {
+    margin-top: 64px;
+    margin-bottom: 64px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+.hero-section {
     display: grid;
     height: calc(100dvh - var(--v-layout-top, 64px));
     overflow: hidden;
@@ -147,6 +122,7 @@
       grid-area: 1 / 1;
     }
   }
+
   .hero-heatmap {
     position: relative;
     width: 100%;

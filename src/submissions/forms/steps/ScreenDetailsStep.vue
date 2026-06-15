@@ -1,41 +1,44 @@
 <template>
-  <v-row dense>
-    <v-col cols="12">
-      <v-select
-        v-model="data.screenType"
-        label="Screen Type"
-        :items="['Digital', 'Static', 'Interactive', 'Programmatic']"
-        variant="outlined"
-        density="compact"
-      />
-    </v-col>
-    <v-col cols="12">
-      <v-text-field
-        v-model="data.location"
-        label="Location / Address"
-        variant="outlined"
-        density="compact"
-      />
-    </v-col>
-    <v-col cols="12" sm="6">
-      <v-text-field
-        v-model="data.weeklyImpressions"
-        label="Weekly Impressions (est.)"
-        variant="outlined"
-        density="compact"
-        type="number"
-      />
-    </v-col>
-    <v-col cols="12" sm="6">
-      <v-select
-        v-model="data.audienceCategory"
-        label="Audience Category"
-        :items="['General', 'Commuters', 'Shoppers', 'Sports Fans']"
-        variant="outlined"
-        density="compact"
-      />
-    </v-col>
-  </v-row>
+  <v-table density="compact" class="perturbation-table">
+    <thead>
+      <tr>
+        <th>pert_name</th>
+        <th>pert_dose</th>
+        <th>pert_id</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <v-text-field
+            v-model="data.rows[0].pert_name"
+            variant="plain"
+            density="compact"
+            hide-details
+            single-line
+          />
+        </td>
+        <td>
+          <v-text-field
+            v-model="data.rows[0].pert_dose"
+            variant="plain"
+            density="compact"
+            hide-details
+            single-line
+          />
+        </td>
+        <td>
+          <v-text-field
+            v-model="data.rows[0].pert_id"
+            variant="plain"
+            density="compact"
+            hide-details
+            single-line
+          />
+        </td>
+      </tr>
+    </tbody>
+  </v-table>
 </template>
 
 <script>
@@ -46,3 +49,12 @@
     },
   };
 </script>
+
+<style scoped>
+  .perturbation-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  }
+</style>

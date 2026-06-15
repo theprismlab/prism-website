@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-sm>
+    <app-container>
       <v-row>
         <v-col>
           <prism-page-title>Data Analysis</prism-page-title>
@@ -52,7 +52,7 @@
           </p>
         </v-col>
       </v-row>
-    </container-sm>
+    </app-container>
   </page>
 </template>
 

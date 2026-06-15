@@ -3,11 +3,7 @@
     <screen-selector />
     <div v-if="screen" class="form-stepper pt-4 pb-2 px-4">
       <div v-for="(step, i) in steps" :key="step.id">
-        <div
-          class="d-flex align-start"
-          :class="{ 'step-clickable': canAccess(i) }"
-          @click="handleStepClick(i)"
-        >
+        <div class="d-flex align-start step-clickable" @click="handleStepClick(i)">
           <div class="step-track mr-3">
             <div class="step-circle" :class="circleClass(i)">
               <v-icon v-if="stepStatus(i) === 'completed'" size="13">mdi-check</v-icon>
@@ -56,11 +52,7 @@
       stepStatus(i) {
         return this.formStore.stepStatus(this.screen, i);
       },
-      canAccess(i) {
-        return this.formStore.canAccess(this.screen, i);
-      },
       handleStepClick(i) {
-        if (!this.canAccess(i)) return;
         this.formStore.setOpenPanel(this.screen, i);
       },
       circleClass(i) {
@@ -68,7 +60,7 @@
         return {
           'circle-completed': s === 'completed',
           'circle-current': s === 'current',
-          'circle-locked': s === 'locked',
+          'circle-available': s === 'available',
         };
       },
       connectorClass(i) {
@@ -78,10 +70,8 @@
         };
       },
       labelClass(i) {
-        const s = this.stepStatus(i);
         return {
-          'text-medium-emphasis': s === 'locked',
-          'font-weight-bold': s === 'current',
+          'font-weight-bold': this.stepStatus(i) === 'current',
         };
       },
     },
@@ -117,9 +107,9 @@
     color: white;
   }
 
-  .circle-locked {
+  .circle-available {
     border: 2px solid rgba(var(--v-border-color), var(--v-border-opacity));
-    color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity));
+    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   }
 
   .step-connector {

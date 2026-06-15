@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-sm>
+    <app-container>
       <prism-page-title>Deliverables</prism-page-title>
       <p class="text-body-1">
         We provide a complete analysis of your data via a secure data portal. Data analysis includes
@@ -71,7 +71,7 @@
           to other team members through the Portal.
         </p>
       </section>
-    </container-sm>
+    </app-container>
   </page>
 </template>
 

@@ -15,7 +15,7 @@
    * Composition rule:
    *   <page>
    *     <page-section background="muted">
-   *       <container-md>...content / section-component...</container-md>
+   *       <app-container wide>...content / section-component...</app-container>
    *     </page-section>
    *   </page>
    *

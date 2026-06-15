@@ -1,12 +1,12 @@
 <template>
   <page>
-    <container-md>
+    <app-container wide>
       <prism-page-title>Instructions — {{ this.screen }}</prism-page-title>
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Test Agent Instructions'
       }}</prism-page-title> -->
       <iframe v-if="pdfUrl" :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
-    </container-md>
+    </app-container>
   </page>
 </template>
 

@@ -1,9 +1,9 @@
 <template>
   <page>
-    <container-md>
+    <app-container wide>
       <prism-page-title>View Quote &amp; Upload PO</prism-page-title>
       <p class="prism-text-body-1">Review your quote and upload a purchase order.</p>
-    </container-md>
+    </app-container>
   </page>
 </template>
 
