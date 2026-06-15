@@ -1,9 +1,10 @@
 <template>
   <v-row dense>
     <v-col cols="12" sm="6">
-      <v-text-field
+      <v-select
         v-model="data[F.INSTITUTION_TYPE.key]"
         :label="F.INSTITUTION_TYPE.label"
+        :items="institutionTypeOptions"
         variant="outlined"
         density="compact"
         :error-messages="errors[F.INSTITUTION_TYPE.key]"
@@ -118,8 +119,22 @@
 <script>
   import api from '@/submissions/api.js';
 
-  const isNotDmc = (data) => !!data.institutionType && data.institutionType !== 'dmc';
-  const hasInstitutionName = (data) => isNotDmc(data) && !!data.institutionName;
+  const COLLABORATOR_TYPE_OPTIONS = {
+    DMC: { key: 'DMC', label: 'DepMap Consortium' },
+    BROAD: { key: 'NFP', label: 'Broad Institute' },
+    ACADEMIC: { key: 'ACADEMIC', label: 'Academic Institution' },
+    INDUSTRY: { key: 'INDUSTRY', label: 'Industry' },
+  };
+
+  const INSTITUTION_TYPE_OPTIONS = Object.values(COLLABORATOR_TYPE_OPTIONS).map((o) => ({
+    title: o.label,
+    value: o.key,
+  }));
+
+  const requiresExtendedForm = (data) =>
+    !!data.institutionType && data.institutionType !== COLLABORATOR_TYPE_OPTIONS.DMC.key;
+
+  const hasSelectedInstitution = (data) => requiresExtendedForm(data) && !!data.institutionName;
 
   const FIELDS = {
     INSTITUTION_TYPE: { key: 'institutionType', label: 'Institution Type' },
@@ -131,7 +146,7 @@
     QUOTE_ACKNOWLEDGEMENT: {
       key: 'quoteAcknowledgement',
       label: 'Quote Acknowledgement',
-      showIf: hasInstitutionName,
+      showIf: hasSelectedInstitution,
     },
     COMMERCIAL_USE: { key: 'commerecialUse', label: 'Commercial Use?', showIf: hasInstitutionName },
     COMMERCIAL_USE_ACKNOWLEDGEMENT: {
@@ -142,22 +157,22 @@
     FUNDING_INSTITUTION_NAME: {
       key: 'fundingInstitutionName',
       label: 'Funding Institution Name',
-      showIf: (data) => data.institutionType === 'industry',
+      showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
     },
     FUNDING_INSTITUTION_ADDRESS: {
       key: 'fundingInstitutionAddress',
       label: 'Funding Institution Address',
-      showIf: (data) => data.institutionType === 'industry',
+      showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
     },
     BILLING_CONTACT_NAME: {
       key: 'billingInvoiceContactName',
       label: 'Billing / Invoice Contact Name',
-      showIf: (data) => data.institutionType === 'industry',
+      showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
     },
     BILLING_CONTACT_EMAIL: {
       key: 'billingInvoiceContactEmail',
       label: 'Billing / Invoice Contact Email',
-      showIf: (data) => data.institutionType === 'industry',
+      showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
     },
     COMMENTS: { key: 'comments', label: 'Comments', showIf: hasInstitutionName },
   };
@@ -190,13 +205,21 @@
     data() {
       return {
         F: FIELDS,
-        institutionTypes: ['broad', 'dmc', 'academic', 'industry'],
-        institutionNames: [],
+        institutionTypeOptions: INSTITUTION_TYPE_OPTIONS,
+        allInstitutions: [],
       };
     },
     computed: {
       hasDropdownNames() {
-        return this.data.institutionType === 'broad' || this.data.institutionType === 'dmc';
+        return (
+          this.data.institutionType === COLLABORATOR_TYPE_OPTIONS.DMC.key ||
+          this.data.institutionType === COLLABORATOR_TYPE_OPTIONS.BROAD.key
+        );
+      },
+      institutionNames() {
+        return this.allInstitutions
+          .filter((i) => i.collaboration_type === this.data.institutionType)
+          .map((i) => i.name);
       },
     },
     created() {
@@ -206,7 +229,7 @@
       async loadInstitutionNames() {
         try {
           const institutions = await api.getCollaboratorList(import.meta.env.VITE_API_URL);
-          this.institutionNames = institutions.map((i) => i.name);
+          this.allInstitutions = institutions;
         } catch (error) {
           console.error('Failed to load institution names', error);
         }
