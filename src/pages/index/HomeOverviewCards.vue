@@ -1,118 +1,94 @@
 <template>
-  <v-row justify="space-evenly">
-    <v-col v-for="(card, index) in cards" :key="index" cols="12" xs="12" sm="12" md="4" lg="4">
-      <v-card class="pa-4 fill-height" variant="flat">
-        <v-row no-gutters>
-          <v-col cols="5" xs="5" sm="5" md="12" lg="12" xl="12">
-              <v-img eager style="margin:auto;" :src="card.img" width="100%" max-width="250px"></v-img>
-          </v-col>
-          <v-col>
-            <v-card-item>
-            <h4 class="text-h5 text-black">{{ card.title }}</h4>
-            <p class="text-body-2 mb-2">{{ card.description }}</p>
-            <a class="v-btn v-btn--size-default pa-0" :href="card.action.url" :target="card.action.target">{{ card.action.text }} <v-icon right>mdi-chevron-right</v-icon></a>
-          </v-card-item>
-        </v-col>
-      </v-row>         
-    </v-card>
-  </v-col>
+  <v-row class="overview-cards">
+    <v-col v-for="(card, index) in cards" :key="index" cols="12" md="4">
+      <v-card class="overview-card fill-height" :elevation="0">
+        <div class="overview-card-media">
+          <v-img eager :src="card.img" max-width="200px" class="mx-auto"></v-img>
+        </div>
+        <div class="overview-card-body">
+          <h4 class="overview-card-title">{{ card.title }}</h4>
+          <p class="text-body-2 text-grey-darken-2 mb-4">{{ card.description }}</p>
+          <v-btn
+            variant="text"
+            :href="card.action.url"
+            :target="card.action.target"
+            color="primary"
+            class="px-0"
+            size="small"
+          >
+            {{ card.action.text }}
+            <v-icon end size="16">mdi-arrow-right</v-icon>
+          </v-btn>
+        </div>
+      </v-card>
+    </v-col>
   </v-row>
 </template>
+
 <script>
-import { ASSET_BASE } from '@/utils/assets';
+  import { ASSET_BASE } from '@/utils/assets';
 
-export default {
-    name: "MainVisual",
-    data(){
-      return {
-
-      }
-
-    },
+  export default {
+    name: 'HomeOverviewCards',
     computed: {
-        imgPath() {
-          return ASSET_BASE;
-        },
-        cards() {
-          return [
+      imgPath() {
+        return ASSET_BASE;
+      },
+      cards() {
+        return [
           {
             img: `${this.imgPath}home-cell-lines.png`,
-            title: "900+ genomically diverse barcoded and pooled cell lines",
-            description: "Hematopoietic and solid tumor, covering 80 cancer subtypes",
-            action: {
-              text: 'Learn more',
-              url: '/consortium-screens/cell-line-collection',
-              target: '_self'
-            }
+            title: '900+ genomically diverse barcoded and pooled cell lines',
+            description: 'Hematopoietic and solid tumor, covering 80 cancer subtypes',
+            action: { text: 'Learn more', url: '/consortium-screens/cell-line-collection', target: '_self' },
           },
           {
             img: `${this.imgPath}home-features.png`,
-            title: "150K+ unique baseline genetic and functional genomic features",
-            description: "Features from the Dependency Map are correlated with the PRISM viability profile using univariate and multivariate predictive models",
-             action: {
-              text: 'Learn more',
-              url: 'https://depmap.org/portal/',
-              target: '_blank'
-            }
+            title: '150K+ unique baseline genetic and functional genomic features',
+            description:
+              'Features from the Dependency Map are correlated with the PRISM viability profile using univariate and multivariate predictive models',
+            action: { text: 'Learn more', url: 'https://depmap.org/portal/', target: '_blank' },
           },
           {
             img: `${this.imgPath}home-target.png`,
-            title: "Identify target and patient population of your drug",
-            description: "Confirm hypothesis and establish biomarkers of sensitivity and resistance",
-            action: {
-              text: 'Learn more',
-              url: '/consortium-screens/data-analysis',
-              target: '_self'
-            }
+            title: 'Identify target and patient population of your drug',
+            description: 'Confirm hypothesis and establish biomarkers of sensitivity and resistance',
+            action: { text: 'Learn more', url: '/consortium-screens/data-analysis', target: '_self' },
           },
-        ]
-        }
+        ];
+      },
     },
-    mounted(){
-
-    }
-}
+  };
 </script>
-<style scoped>
-.v-card{
-  background-color: white;
-  border: 1px solid var(--v-grey-lighten-2);
-}
 
-.text-h4 {
-    line-height: 1.4em;
-    font-weight:500;
-}
-.text-body-2{
-  color: var(--v-grey-darken-1)
-}
+<style scoped lang="scss">
+  .overview-cards {
+    padding: 8px 0 32px;
+  }
 
-/* xxl  */
-@media (min-width:  2560px) {
+  .overview-card {
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+  }
 
-}
-/* xl */
-@media (min-width: 1920px) and (max-width: 2560px) {
+  .overview-card-media {
+    background: linear-gradient(180deg, #edf4fb, #f6f9fd);
+    padding: 28px 24px 0;
+    text-align: center;
+  }
 
-}
-/* lg */
-@media (min-width: 1280px) and (max-width: 1920px) {
+  .overview-card-body {
+    padding: 24px 24px 20px;
+  }
 
-}
-/* md */
-@media (min-width: 960px) and (max-width: 1280px) {
-
-
-
-}
-
-/* sm */
-@media (min-width: 600px) and (max-width: 960px) {
-
-}
-/* xs */
-@media (max-width: 600px) {
-
-}
+  .overview-card-title {
+    font-size: var(--h5-size);
+    font-family: 'Archivo Expanded', sans-serif;
+    font-weight: 600;
+    line-height: 1.35em;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+  }
 </style>
-
