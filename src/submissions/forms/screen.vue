@@ -28,6 +28,7 @@
               v-else-if="step.id === 'testAgent'"
               :data="fd.testAgent"
               :errors="stepErrors.testAgent || {}"
+              :screen-type="screenType"
             />
             <acknowledgments-step
               v-else-if="step.id === 'acknowledgments'"
@@ -90,7 +91,12 @@
         return this.formStore.screens[this.screen].formData;
       },
       screenType() {
-        return this.fd?.institution?.institutionType || null;
+        const s = this.screen;
+        if (!s) return null;
+        if (s.startsWith('APS')) return 'APS';
+        if (s.startsWith('AIR')) return 'AIR';
+        if (s.startsWith('EPS')) return 'EPS';
+        return null;
       },
     },
     methods: {

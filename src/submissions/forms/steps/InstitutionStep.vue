@@ -136,6 +136,8 @@
 
   const hasSelectedInstitution = (data) => requiresExtendedForm(data) && !!data.institutionName;
 
+  const hasInstitutionName = (data) => !!data.institutionName;
+
   const FIELDS = {
     INSTITUTION_TYPE: { key: 'institutionType', label: 'Institution Type' },
     INSTITUTION_NAME: {
