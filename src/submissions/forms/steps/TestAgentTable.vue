@@ -14,7 +14,6 @@
               v-if="f.options"
               v-model="row[f.key]"
               :items="f.options"
-              variant="plain"
               density="compact"
               single-line
               :error-messages="errors[i]?.[f.key]"
@@ -22,9 +21,7 @@
             <v-text-field
               v-else
               v-model="row[f.key]"
-              type="text"
               :inputmode="f.inputmode ?? 'text'"
-              variant="plain"
               density="compact"
               single-line
               :error-messages="errors[i]?.[f.key]"
@@ -59,11 +56,11 @@
   export default {
     name: 'TestAgentTable',
     props: {
-      fields:   { type: Array,   required: true },
-      rows:     { type: Array,   required: true },
-      errors:   { type: Array,   default: () => [] },
+      fields: { type: Array, required: true },
+      rows: { type: Array, required: true },
+      errors: { type: Array, default: () => [] },
       multiRow: { type: Boolean, default: false },
-      addLabel: { type: String,  default: 'Add row' },
+      addLabel: { type: String, default: 'Add row' },
     },
     emits: ['add-row', 'remove-row'],
   };
@@ -75,5 +72,6 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   }
 </style>

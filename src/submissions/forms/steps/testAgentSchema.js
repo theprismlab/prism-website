@@ -70,7 +70,7 @@ const FIELDS_BY_KEY = Object.fromEntries(Object.values(FIELDS).map((f) => [f.key
 
 export const SCREEN_CONFIG = {
   MTS: { concMultiplier: 1000, minAmountUL: 150 },
-  CPS: { concMultiplier: 1000, minAmountUL: 150 }, // solo; combo amount = 400 × n (see validateCPS)
+  CPS: { concMultiplier: 1000, minAmountUL: 150, comboAmountPerSlotUL: 400 }, // solo: 150 uL; combo: 400 × n slots
   EPS: { concMultiplier: 1000, minAmountHighDilutionUL: 600, minAmountLowDilutionUL: 720, dilutionThreshold: 3 },
   APS: { concMultiplier: 250, minAmountUL: 1000, unitPairs: { uM: 'mM', 'ug/mL': 'mg/mL' } },
   AIR: { concMultiplier: 500, minAmountUL: 500, maxTopDoseUgML: 2 },
@@ -115,14 +115,15 @@ const SCREENS = {
   },
 
   // DMSO-based. Solo: same rules as MTS. Combo: 400 uL × n combinations.
+  // Keys match getCombinationMapping() in compound-submission-constants.js.
   CPS: {
     combinationFields: [
-      { key: 'drug_a_name',          label: 'Drug A Name' },
-      { key: 'drug_a_top_dose',      label: 'Drug A Top Dose', inputmode: 'decimal', validate: validateNumber },
-      { key: 'drug_a_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
-      { key: 'drug_b_name',          label: 'Drug B Name' },
-      { key: 'drug_b_dose',          label: 'Drug B Dose', inputmode: 'decimal', validate: validateNumber },
-      { key: 'drug_b_dose_unit',     label: 'Drug B Dose Unit', options: ['uM'] },
+      { key: 'druga',               label: 'Drug A Name' },
+      { key: 'druga_top_dose',      label: 'Drug A Top Dose', inputmode: 'decimal', validate: validateNumber },
+      { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
+      { key: 'drugb',               label: 'Drug B Name', required: false },
+      { key: 'drugb_dose',          label: 'Drug B Dose', inputmode: 'decimal', validate: validateNumber, required: false },
+      { key: 'drugb_dose_unit',     label: 'Drug B Dose Unit', options: ['uM'], required: false },
     ],
     fields: [
       FIELDS.COMPOUND_NAME,
@@ -329,7 +330,7 @@ export function validate(data, screenType) {
 
   for (const f of buildScreenFields(screenType)) {
     const val = row[f.key];
-    if (f.required && !val) {
+    if (f.required !== false && !val) {
       errors[f.key] = 'Required';
       continue;
     }
@@ -341,17 +342,55 @@ export function validate(data, screenType) {
 
   const combinationFields = buildCombinationFields(screenType);
   if (combinationFields.length > 0 && data.combinations) {
+    const DRUG_B_KEYS = new Set(['drugb', 'drugb_dose', 'drugb_dose_unit']);
     const combinationErrors = data.combinations.map((comboRow) => {
       const rowErrors = {};
       for (const f of combinationFields) {
-        if (!comboRow[f.key]) rowErrors[f.key] = 'Required';
+        const val = comboRow[f.key];
+        if (DRUG_B_KEYS.has(f.key)) {
+          // Drug B fields are only required when Drug B name is provided
+          if (comboRow.drugb && !val) rowErrors[f.key] = 'Required when Drug B is specified';
+        } else if (f.required !== false && !val) {
+          rowErrors[f.key] = 'Required';
+        }
+        if (f.validate && val) {
+          const msg = f.validate(val, comboRow);
+          if (msg) rowErrors[f.key] = msg;
+        }
       }
       return rowErrors;
     });
     if (combinationErrors.some((e) => Object.keys(e).length > 0)) {
       errors.combinations = combinationErrors;
     }
+
+    // Every unique Drug A must appear in at least one solo row (no Drug B)
+    const allDrugAs = [...new Set(data.combinations.map((r) => r.druga).filter(Boolean))];
+    const soloDrugAs = new Set(
+      data.combinations.filter((r) => !r.drugb).map((r) => r.druga).filter(Boolean),
+    );
+    const missingSolo = allDrugAs.filter((a) => !soloDrugAs.has(a));
+    if (missingSolo.length > 0) {
+      errors.combinations_solo = `Each Drug A must also appear as a solo row (no Drug B): ${missingSolo.join(', ')}`;
+    }
   }
 
-  return { ...errors, ...(SCREEN_VALIDATORS[screenType]?.(row) ?? {}) };
+  const screenErrors = SCREEN_VALIDATORS[screenType]?.(row) ?? {};
+
+  // CPS with combinations: amount must cover 400 uL × number of slots the drug appears in
+  if (screenType === 'CPS' && data.combinations?.length > 0 && row.compound_name) {
+    const { comboAmountPerSlotUL } = SCREEN_CONFIG.CPS;
+    const n = data.combinations
+      .filter((r) => r.druga || r.drugb)
+      .filter((r) => r.druga === row.compound_name || r.drugb === row.compound_name)
+      .length;
+    if (n > 0) {
+      const requiredVolume = n * comboAmountPerSlotUL;
+      if (Number(row.amount) < requiredVolume) {
+        screenErrors.amount = `Minimum ${requiredVolume} uL required (${n} combination slot${n > 1 ? 's' : ''} × ${comboAmountPerSlotUL} uL)`;
+      }
+    }
+  }
+
+  return { ...errors, ...screenErrors };
 }
