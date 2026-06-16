@@ -1,5 +1,5 @@
 <template>
-  <impact-cards :cards="cards" class="mt-12" />
+  <impact-cards :cards="cards" />
 </template>
 
 <script>

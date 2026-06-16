@@ -1,7 +1,7 @@
 <template>
   <page class="mt-0 pt-0">
     <HomeHero></HomeHero>
-    <page-section background="multi-focal-neutral" :padding="20">
+    <page-section background="multi-focal-neutral" :padding="16">
       <app-container>
         <p class="prism-text-h3 text-center mb-0" style="line-height: 2.4rem">
           Our lab partners with researchers to
@@ -13,46 +13,54 @@
         </p>
       </app-container>
     </page-section>
+    <page-section>
+      <app-container>
+        <p class="prism-text-body-1">
+          Cancer cell line models remain essential in drug development, providing a controlled
+          system to assess potency and confirm on-target engagement. At a larger scale using PRISM,
+          these models provide power to
+          <span class="text-gradient-blue">understand heterogeneity</span> in drug response among
+          cell lines harboring the targeted alteration(s), assess
+          <span class="text-gradient-blue"
+            >selectivity relative to those without target alterations, and investigate potential
+            biomarkers associated with these responses</span
+          >.
+        </p>
+      </app-container>
+    </page-section>
 
-    <app-container>
-      <p class="prism-text-body-1">
-        Cancer cell line models remain essential in drug development, providing a controlled system
-        to assess potency and confirm on-target engagement. At a larger scale using PRISM, these
-        models provide power to <span class="text-gradient-blue">understand heterogeneity</span> in
-        drug response among cell lines harboring the targeted alteration(s), assess
-        <span class="text-gradient-blue"
-          >selectivity relative to those without target alterations, and investigate potential
-          biomarkers associated with these responses</span
-        >.
-      </p>
-    </app-container>
+    <page-section>
+      <app-container wide>
+        <HomeOverviewCards></HomeOverviewCards>
+      </app-container>
+    </page-section>
 
-    <app-container wide>
-      <HomeOverviewCards></HomeOverviewCards>
-    </app-container>
-
-    <page-section background="gradient" :padding="8">
+    <page-section background="gradient">
       <app-container wide>
         <HomePortal></HomePortal>
       </app-container>
     </page-section>
 
-    <app-container class="section">
-      <section-overline class="text-center">Impact</section-overline>
-      <prism-section-title class="text-center"
-        >Dedicated to advancing oncology research</prism-section-title
-      >
-      <p class="prism-text-body-1 text-center">
-        Working with pharmaceutical and biotech companies and academics to improve the outcome for
-        cancer patients worldwide.
-      </p>
-      <HomeImpactCards></HomeImpactCards>
-    </app-container>
+    <page-section>
+      <app-container>
+        <section-overline class="text-center">Impact</section-overline>
+        <prism-section-title class="text-center"
+          >Dedicated to advancing oncology research</prism-section-title
+        >
+        <p class="prism-text-body-1 text-center">
+          Working with pharmaceutical and biotech companies and academics to improve the outcome for
+          cancer patients worldwide.
+        </p>
+        <HomeImpactCards></HomeImpactCards>
+      </app-container>
+    </page-section>
 
-    <app-container class="section">
-      <section-overline class="text-center">Testimonials</section-overline>
-      <HomeTestimonialCards></HomeTestimonialCards>
-    </app-container>
+    <page-section>
+      <app-container>
+        <section-overline class="text-center">Testimonials</section-overline>
+        <HomeTestimonialCards></HomeTestimonialCards>
+      </app-container>
+    </page-section>
   </page>
 </template>
 <script>
@@ -106,12 +114,3 @@
     watch: {},
   };
 </script>
-
-<style scoped lang="scss">
-  .section {
-    margin-top: 64px;
-    margin-bottom: 64px;
-    padding-top: 24px;
-    padding-bottom: 24px;
-  }
-</style>

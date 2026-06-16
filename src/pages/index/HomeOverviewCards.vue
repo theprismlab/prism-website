@@ -35,7 +35,11 @@
             img: `${this.imgPath}home-cell-lines.png`,
             title: '900+ genomically diverse barcoded and pooled cell lines',
             description: 'Hematopoietic and solid tumor, covering 80 cancer subtypes',
-            action: { text: 'Learn more', url: '/consortium-screens/cell-line-collection', target: '_self' },
+            action: {
+              text: 'Learn more',
+              url: '/consortium-screens/cell-line-collection',
+              target: '_self',
+            },
           },
           {
             img: `${this.imgPath}home-features.png`,
@@ -47,8 +51,13 @@
           {
             img: `${this.imgPath}home-target.png`,
             title: 'Identify target and patient population of your drug',
-            description: 'Confirm hypothesis and establish biomarkers of sensitivity and resistance',
-            action: { text: 'Learn more', url: '/consortium-screens/data-analysis', target: '_self' },
+            description:
+              'Confirm hypothesis and establish biomarkers of sensitivity and resistance',
+            action: {
+              text: 'Learn more',
+              url: '/consortium-screens/data-analysis',
+              target: '_self',
+            },
           },
         ];
       },
@@ -57,10 +66,6 @@
 </script>
 
 <style scoped lang="scss">
-  .overview-cards {
-    padding: 8px 0 32px;
-  }
-
   .overview-card-link {
     display: block;
     height: 100%;

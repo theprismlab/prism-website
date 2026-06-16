@@ -69,7 +69,6 @@
 <style scoped lang="scss">
   .portal-section {
     position: relative;
-    padding: 16px 0;
   }
 
   /* Decorative background orbs */
@@ -96,7 +95,6 @@
   /* Image */
   .portal-image-wrapper {
     position: relative;
-    padding: 16px 0;
   }
   .portal-image {
     border-radius: 12px;
@@ -105,7 +103,7 @@
 
   /* Content */
   .portal-content {
-    padding: 16px 0 16px 24px;
+    padding-left: 24px;
   }
 
   .portal-overline {
@@ -154,7 +152,7 @@
 
   @media (max-width: 600px) {
     .portal-content {
-      padding: 0 0 24px;
+      padding-left: 0;
     }
   }
 </style>
