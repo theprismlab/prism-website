@@ -21,7 +21,28 @@ p {
   margin-left: auto !important;
   margin-right: auto !important;
 }
-
+.text-rainbow-gradient {
+  // background: linear-gradient(90deg, #f97794, #c471ed, #12c2e9, #43e97b, #f9c74f, #f97794);
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.text-gradient-plasma {
+  background: var(--gradient-plasma);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.text-gradient-cool {
+  background: var(--gradient-cool);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
 .text-gradient-blue {
   // --gradient-start: #376694;
   // --gradient-end: #6088a7;

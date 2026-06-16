@@ -1,11 +1,11 @@
 <template>
   <page class="mt-0 pt-0">
     <HomeHero></HomeHero>
-    <page-section background="tinted" :padding="10">
+    <page-section background="multi-focal-neutral" :padding="10">
       <app-container>
         <p class="prism-text-h3 text-center mb-0" style="line-height: 2.4rem">
           Our lab partners with researchers to
-          <span class="text-gradient-blue"
+          <span class="text-gradient-cool"
             >reveal clinically important differences in drug behavior</span
           >
           by screening over 900 cancer cell lines and correlating the viability results with
@@ -114,7 +114,7 @@
     padding-top: 24px;
     padding-bottom: 24px;
   }
-.hero-section {
+  .hero-section {
     display: grid;
     height: calc(100dvh - var(--v-layout-top, 64px));
     overflow: hidden;

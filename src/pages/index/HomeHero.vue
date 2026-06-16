@@ -1,27 +1,25 @@
 <template>
-  <div>
-    <section class="hero-section">
-      <div class="hero-heatmap">
-        <DynamicSpread />
-      </div>
-      <div class="hero-overlay text-center">
-        <h1 class="text-hero text-h1 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
-        <h2 class="prism-text-h3">
-          Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission
-          driven.
-        </h2>
-      </div>
-    </section>
-  </div>
+  <section class="hero-section">
+    <div class="hero-heatmap">
+      <HeroCanvas />
+    </div>
+    <div class="hero-overlay text-center">
+      <h1 class="text-hero text-h1 pb-4">Pioneering large-scale, cancer therapeutic mapping</h1>
+      <h2 class="prism-text-h3">
+        Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission
+        driven.
+      </h2>
+    </div>
+  </section>
 </template>
 
 <script>
-  import DynamicSpread from '@/visualization/DynamicSpread.vue';
+  import HeroCanvas from './hero/HeroCanvas.vue';
 
   export default {
     name: 'HomeHero',
     components: {
-      DynamicSpread,
+      HeroCanvas,
     },
   };
 </script>
@@ -58,8 +56,7 @@
   // }
   .hero-section {
     display: grid;
-    margin-bottom: 100px;
-    height: calc(100dvh - var(--v-layout-top, 64px));
+    height: calc(60vh - var(--v-layout-top, 64px));
     overflow: hidden;
     > * {
       grid-area: 1 / 1;
