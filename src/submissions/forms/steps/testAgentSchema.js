@@ -310,8 +310,12 @@ export function getInitialCombinationRow(screenType) {
   return Object.fromEntries(buildCombinationFields(screenType).map((f) => [f.key, '']));
 }
 
+export function getInitialRow() {
+  return Object.fromEntries(Object.keys(FIELDS_BY_KEY).map((k) => [k, '']));
+}
+
 export function getInitialData(screenType) {
-  const data = { row: Object.fromEntries(Object.keys(FIELDS_BY_KEY).map((k) => [k, ''])) };
+  const data = { rows: [getInitialRow()] };
   if (buildCombinationFields(screenType).length > 0) {
     data.combinations = [getInitialCombinationRow(screenType)];
   }
@@ -319,47 +323,111 @@ export function getInitialData(screenType) {
 }
 
 export function getSummary(data) {
-  return Object.entries(data.row)
-    .filter(([, v]) => v)
-    .map(([key, value]) => ({ label: FIELDS_BY_KEY[key]?.label ?? key, value }));
+  const rows = data.rows ?? [];
+  const prefix = rows.length > 1;
+  return rows.flatMap((row, i) =>
+    Object.entries(row)
+      .filter(([, v]) => v)
+      .map(([key, value]) => ({
+        label: prefix ? `[Agent ${i + 1}] ${FIELDS_BY_KEY[key]?.label ?? key}` : (FIELDS_BY_KEY[key]?.label ?? key),
+        value,
+      })),
+  );
 }
 
 export function validate(data, screenType) {
-  const { row } = data;
+  const rows = data.rows ?? [];
   const errors = {};
 
-  for (const f of buildScreenFields(screenType)) {
-    const val = row[f.key];
-    if (f.required !== false && !val) {
-      errors[f.key] = 'Required';
-      continue;
+  // Validate each compound row individually
+  const rowErrors = rows.map((row) => {
+    const rErrors = {};
+    for (const f of buildScreenFields(screenType)) {
+      const val = row[f.key];
+      if (f.required !== false && !val) {
+        rErrors[f.key] = 'Required';
+        continue;
+      }
+      if (f.validate && val) {
+        const msg = f.validate(val, row);
+        if (msg) rErrors[f.key] = msg;
+      }
     }
-    if (f.validate && val) {
-      const msg = f.validate(val, row);
-      if (msg) errors[f.key] = msg;
+
+    const screenErrors = SCREEN_VALIDATORS[screenType]?.(row) ?? {};
+
+    // CPS with combinations: amount must cover 400 uL × slots this compound appears in
+    if (screenType === 'CPS' && data.combinations?.length > 0 && row.compound_name) {
+      const { comboAmountPerSlotUL } = SCREEN_CONFIG.CPS;
+      const n = data.combinations
+        .filter((r) => r.druga || r.drugb)
+        .filter((r) => r.druga === row.compound_name || r.drugb === row.compound_name)
+        .length;
+      if (n > 0) {
+        const requiredVolume = n * comboAmountPerSlotUL;
+        if (Number(row.amount) < requiredVolume) {
+          screenErrors.amount = `Minimum ${requiredVolume} uL required (${n} combination slot${n > 1 ? 's' : ''} × ${comboAmountPerSlotUL} uL)`;
+        }
+      }
     }
+
+    return { ...rErrors, ...screenErrors };
+  });
+
+  if (rowErrors.some((e) => Object.keys(e).length > 0)) {
+    errors.rows = rowErrors;
   }
 
+  // Combination validation
   const combinationFields = buildCombinationFields(screenType);
   if (combinationFields.length > 0 && data.combinations) {
+    const compoundNames = rows.map((r) => r.compound_name).filter(Boolean);
     const DRUG_B_KEYS = new Set(['drugb', 'drugb_dose', 'drugb_dose_unit']);
-    const combinationErrors = data.combinations.map((comboRow) => {
-      const rowErrors = {};
+    const seenPairs = new Map();
+
+    const combinationErrors = data.combinations.map((comboRow, i) => {
+      const comboErrors = {};
       for (const f of combinationFields) {
         const val = comboRow[f.key];
         if (DRUG_B_KEYS.has(f.key)) {
-          // Drug B fields are only required when Drug B name is provided
-          if (comboRow.drugb && !val) rowErrors[f.key] = 'Required when Drug B is specified';
+          if (comboRow.drugb && !val) comboErrors[f.key] = 'Required when Drug B is specified';
         } else if (f.required !== false && !val) {
-          rowErrors[f.key] = 'Required';
+          comboErrors[f.key] = 'Required';
         }
         if (f.validate && val) {
           const msg = f.validate(val, comboRow);
-          if (msg) rowErrors[f.key] = msg;
+          if (msg) comboErrors[f.key] = msg;
         }
       }
-      return rowErrors;
+
+      // Drug A must be one of the submitted compound names
+      if (comboRow.druga && compoundNames.length > 0 && !compoundNames.includes(comboRow.druga)) {
+        comboErrors.druga = `Must be one of the submitted test agents: ${compoundNames.join(', ')}`;
+      }
+
+      // Drug B must be one of the submitted compound names
+      if (comboRow.drugb && compoundNames.length > 0 && !compoundNames.includes(comboRow.drugb)) {
+        comboErrors.drugb = `Must be one of the submitted test agents: ${compoundNames.join(', ')}`;
+      }
+
+      // Drug B cannot be the same as Drug A
+      if (comboRow.drugb && comboRow.druga && comboRow.drugb === comboRow.druga) {
+        comboErrors.drugb = 'Drug B cannot be the same as Drug A';
+      }
+
+      // Duplicate (Drug A, Drug B) pair
+      const pairKey = `${comboRow.druga}|${comboRow.drugb ?? ''}`;
+      if (comboRow.druga) {
+        if (seenPairs.has(pairKey)) {
+          comboErrors.druga = comboErrors.druga ?? 'Duplicate combination row';
+        } else {
+          seenPairs.set(pairKey, i);
+        }
+      }
+
+      return comboErrors;
     });
+
     if (combinationErrors.some((e) => Object.keys(e).length > 0)) {
       errors.combinations = combinationErrors;
     }
@@ -375,22 +443,5 @@ export function validate(data, screenType) {
     }
   }
 
-  const screenErrors = SCREEN_VALIDATORS[screenType]?.(row) ?? {};
-
-  // CPS with combinations: amount must cover 400 uL × number of slots the drug appears in
-  if (screenType === 'CPS' && data.combinations?.length > 0 && row.compound_name) {
-    const { comboAmountPerSlotUL } = SCREEN_CONFIG.CPS;
-    const n = data.combinations
-      .filter((r) => r.druga || r.drugb)
-      .filter((r) => r.druga === row.compound_name || r.drugb === row.compound_name)
-      .length;
-    if (n > 0) {
-      const requiredVolume = n * comboAmountPerSlotUL;
-      if (Number(row.amount) < requiredVolume) {
-        screenErrors.amount = `Minimum ${requiredVolume} uL required (${n} combination slot${n > 1 ? 's' : ''} × ${comboAmountPerSlotUL} uL)`;
-      }
-    }
-  }
-
-  return { ...errors, ...screenErrors };
+  return errors;
 }

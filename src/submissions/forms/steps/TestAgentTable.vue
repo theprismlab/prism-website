@@ -17,6 +17,7 @@
               density="compact"
               single-line
               :error-messages="errors[i]?.[f.key]"
+              class="perturbation-table-field"
             />
             <v-text-field
               v-else
@@ -25,6 +26,7 @@
               density="compact"
               single-line
               :error-messages="errors[i]?.[f.key]"
+              class="perturbation-table-field"
             />
           </td>
           <td v-if="multiRow">
@@ -69,9 +71,20 @@
 <style scoped>
   .perturbation-table th {
     font-size: 0.75rem;
-    text-transform: uppercase;
     letter-spacing: 0.05em;
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  }
+  .perturbation-table :deep(td) {
+    padding: 0rem 0rem !important;
+    border-radius: 0 !important;
+    min-width: 100px !important;
+  }
+
+  .perturbation-table {
+    border-radius: 0;
+  }
+  .perturbation-table :deep(.v-field) {
+    border-radius: 0;
   }
 </style>

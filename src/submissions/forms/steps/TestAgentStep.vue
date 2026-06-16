@@ -2,8 +2,12 @@
   <div>
     <test-agent-table
       :fields="screenFields"
-      :rows="[row]"
-      :errors="[fieldErrors]"
+      :rows="rows"
+      :errors="rowErrors"
+      multi-row
+      add-label="Add test agent"
+      @add-row="addCompoundRow"
+      @remove-row="removeCompoundRow"
     />
     <test-agent-table
       v-if="combinationFields.length"
@@ -13,15 +17,20 @@
       multi-row
       add-label="Add combination"
       class="mt-4"
-      @add-row="addRow"
-      @remove-row="removeRow"
+      @add-row="addCombinationRow"
+      @remove-row="removeCombinationRow"
     />
   </div>
 </template>
 
 <script>
   import TestAgentTable from './TestAgentTable.vue';
-  import { buildCombinationFields, buildScreenFields, getInitialCombinationRow } from './testAgentSchema.js';
+  import {
+    buildCombinationFields,
+    buildScreenFields,
+    getInitialCombinationRow,
+    getInitialRow,
+  } from './testAgentSchema.js';
 
   export default {
     name: 'TestAgentStep',
@@ -38,25 +47,30 @@
       combinationFields() {
         return buildCombinationFields(this.screenType);
       },
-      row() {
-        return this.data.row;
+      rows() {
+        return this.data.rows ?? [];
       },
       combinations() {
         return this.data.combinations ?? [];
       },
-      fieldErrors() {
-        const { combinations: _, ...rest } = this.errors;
-        return rest;
+      rowErrors() {
+        return this.errors.rows ?? [];
       },
       combinationErrors() {
         return this.errors.combinations ?? [];
       },
     },
     methods: {
-      addRow() {
+      addCompoundRow() {
+        this.data.rows.push(getInitialRow());
+      },
+      removeCompoundRow(index) {
+        this.data.rows.splice(index, 1);
+      },
+      addCombinationRow() {
         this.data.combinations.push(getInitialCombinationRow(this.screenType));
       },
-      removeRow(index) {
+      removeCombinationRow(index) {
         this.data.combinations.splice(index, 1);
       },
     },
