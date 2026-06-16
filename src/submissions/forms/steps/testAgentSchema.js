@@ -115,6 +115,14 @@ const SCREENS = {
 
   // DMSO-based. Solo: same rules as MTS. Combo: 400 uL × n combinations.
   CPS: {
+    combinationFields: [
+      { key: 'drug_a_name',          label: 'Drug A Name' },
+      { key: 'drug_a_top_dose',      label: 'Drug A Top Dose', type: 'number' },
+      { key: 'drug_a_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
+      { key: 'drug_b_name',          label: 'Drug B Name' },
+      { key: 'drug_b_dose',          label: 'Drug B Dose', type: 'number' },
+      { key: 'drug_b_dose_unit',     label: 'Drug B Dose Unit', options: ['uM'] },
+    ],
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.TOP_DOSE,
@@ -292,8 +300,20 @@ export function buildScreenFields(screenType) {
   return screen.fields.map((f) => ({ required: true, ...f }));
 }
 
-export function getInitialData() {
-  return { row: Object.fromEntries(Object.keys(FIELDS_BY_KEY).map((k) => [k, ''])) };
+export function buildCombinationFields(screenType) {
+  return SCREENS[screenType]?.combinationFields ?? [];
+}
+
+export function getInitialCombinationRow(screenType) {
+  return Object.fromEntries(buildCombinationFields(screenType).map((f) => [f.key, '']));
+}
+
+export function getInitialData(screenType) {
+  const data = { row: Object.fromEntries(Object.keys(FIELDS_BY_KEY).map((k) => [k, ''])) };
+  if (buildCombinationFields(screenType).length > 0) {
+    data.combinations = [getInitialCombinationRow(screenType)];
+  }
+  return data;
 }
 
 export function getSummary(data) {
@@ -315,6 +335,20 @@ export function validate(data, screenType) {
     if (f.validate && val) {
       const msg = f.validate(val, row);
       if (msg) errors[f.key] = msg;
+    }
+  }
+
+  const combinationFields = buildCombinationFields(screenType);
+  if (combinationFields.length > 0 && data.combinations) {
+    const combinationErrors = data.combinations.map((comboRow) => {
+      const rowErrors = {};
+      for (const f of combinationFields) {
+        if (!comboRow[f.key]) rowErrors[f.key] = 'Required';
+      }
+      return rowErrors;
+    });
+    if (combinationErrors.some((e) => Object.keys(e).length > 0)) {
+      errors.combinations = combinationErrors;
     }
   }
 

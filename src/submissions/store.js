@@ -30,7 +30,7 @@ export const useFormProgressStore = defineStore('formProgress', {
           openPanel: 0,
           completed: [],
           formData: Object.fromEntries(
-            FORM_STEPS.map((s) => [s.id, STEP_REGISTRY[s.id].getInitialData()])
+            FORM_STEPS.map((s) => [s.id, STEP_REGISTRY[s.id].getInitialData(screen)])
           ),
         };
       }
