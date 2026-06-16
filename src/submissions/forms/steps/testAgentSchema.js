@@ -11,11 +11,13 @@ const MOLECULE_TYPES = [
   'Antibody Drug Conjugate',
   'Small Molecule',
 ];
-const AMOUNT_UNITS = ['uL']; // only supported unit
+const AMOUNT_UNITS = ['uL'];
 
 // ── Field registry ─────────────────────────────────────────────────────────
 // Canonical definitions: key, label, type, default options.
 // All fields required by default; set required: false to opt out.
+// Validators here are for format/pattern checks only (e.g. BRD regex).
+// Business rule validation (conc, amount) lives in the per-screen validators below.
 
 const FIELDS = {
   COMPOUND_NAME: { key: 'compound_name', label: 'Test Agent Name' },
@@ -32,8 +34,8 @@ const FIELDS = {
   CONC: { key: 'conc', label: 'Stock Concentration', type: 'number' },
   CONC_UNIT: { key: 'conc_unit', label: 'Stock Conc. Unit' },
   DILUTION_FACTOR: { key: 'dilution_factor', label: 'Dilution Factor' },
-  AMOUNT: { key: 'amount', label: 'Amount', type: 'number' },
-  AMOUNT_UNIT: { key: 'amount_unit', label: 'Amount Unit', options: AMOUNT_UNITS },
+  CONC_AMOUNT: { key: 'amount', label: 'Amount', type: 'number' },
+  CONC_AMOUNT_UNIT: { key: 'amount_unit', label: 'Amount Unit', options: AMOUNT_UNITS },
   SUPPLIER: { key: 'supplier', label: 'Supplier' },
   SUPPLIER_CATALOG_NAME: { key: 'supplier_catalog_name', label: 'Supplier Catalog Name' },
   STORAGE_CONDITIONS: {
@@ -54,35 +56,22 @@ const FIELDS = {
 // Keyed by data key for O(1) lookups in getSummary and getInitialData.
 const FIELDS_BY_KEY = Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, f]));
 
-// ── Per-screen validators ──────────────────────────────────────────────────
-// validateConc: stock concentration must equal multiplier× top dose.
-// Unit conversion is baked into the multiplier/1000 ratio
-// (e.g. 1000× uM→mM = ×1.0, 250× uM→mM = ×0.25, 500× ug/mL→mg/mL = ×0.5).
+// ── Screen config ──────────────────────────────────────────────────────────
+// Exported so UI copy, instructions, and tests can reference these values
+// directly without duplicating them.
 
-function validateConc(multiplier) {
-  return (val, row) => {
-    const topDose = row.top_dose;
-    if (!topDose) return;
-    const expected = Number(topDose) * (multiplier / 1000);
-    if (Math.abs(Number(val) - expected) > 0.001)
-      return `Must equal ${multiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  };
-}
+export const SCREEN_CONFIG = {
+  MTS: { concMultiplier: 1000, minAmountUL: 150 },
+  CPS: { concMultiplier: 1000, minAmountUL: 150 }, // solo; combo amount = 400 × n (see validateCPS)
+  EPS: { concMultiplier: 1000, minAmountHighDilutionUL: 600, minAmountLowDilutionUL: 720, dilutionThreshold: 3 },
+  APS: { concMultiplier: 250, minAmountUL: 1000, unitPairs: { uM: 'mM', 'ug/mL': 'mg/mL' } },
+  AIR: { concMultiplier: 500, minAmountUL: 500, maxTopDoseUgML: 2 },
+};
 
-function validateApsConcUnit(val, row) {
-  const pairs = { uM: 'mM', 'ug/mL': 'mg/mL' };
-  const expected = pairs[row.top_dose_unit];
-  if (expected && expected !== val)
-    return `Must be ${expected} when top dose unit is ${row.top_dose_unit}`;
-}
-
-function validateAirTopDose(val) {
-  return Number(val) > 2 ? 'Max top dose for AIR submissions is 2 ug/mL' : undefined;
-}
-
-function minAmount(min) {
-  return (val) => (Number(val) < min ? `Minimum ${min} uL required` : undefined);
-}
+// MTS: concAmountUnit must be uL (microliters)
+// CPS: concAmountUnit must be uL (microliters)
+// EPS: concAmountUnit must be uL (microliters)
+// APS: concAmountUnit must match Top Dose Unit (ug/mL or )
 
 // ── Shared field groups ────────────────────────────────────────────────────
 
@@ -94,123 +83,201 @@ const SAFETY_FIELDS = [
   FIELDS.ACUTELY_TOXIC,
 ];
 
-// ── Per-screen configurations ──────────────────────────────────────────────
-// Each entry is the complete, ordered field list for that screen.
-// - Fields used as-is: reference FIELDS.X directly.
-// - Fields needing screen-specific options or validators: spread FIELDS.X and extend inline.
+// ── Screen field lists ─────────────────────────────────────────────────────
+// Pure structure: field order, options, required overrides.
+// No validators here — business rules live in the per-screen validators below.
 
 const SCREENS = {
-  // ── MTS ──────────────────────────────────────────────────────────────────
   // DMSO-based. Stock = 1000× top dose (N uM assay → N mM stock). Min 150 uL.
   MTS: {
-    concentrationMultiplier: 1000,
-    amountMin: 150,
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.FULL_BRD,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      { ...FIELDS.CONC,          validate: validateConc(1000) },
-      { ...FIELDS.CONC_UNIT,     options: ['mM'] },
-      { ...FIELDS.AMOUNT,        validate: minAmount(150) },
-      FIELDS.AMOUNT_UNIT,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM'] },
+      FIELDS.CONC_AMOUNT,
+      FIELDS.CONC_AMOUNT_UNIT,
       ...SUPPLIER_FIELDS,
       ...SAFETY_FIELDS,
     ],
   },
 
-  // ── CPS ──────────────────────────────────────────────────────────────────
-  // DMSO-based. Stock = 1000× top dose (N uM assay → N mM stock).
-  // Min 150 uL per compound (solo); 400 uL × n combinations per compound (combo flow).
+  // DMSO-based. Solo: same rules as MTS. Combo: 400 uL × n combinations.
   CPS: {
-    concentrationMultiplier: 1000,
-    amountMin: 150,
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.FULL_BRD,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      { ...FIELDS.CONC,          validate: validateConc(1000) },
-      { ...FIELDS.CONC_UNIT,     options: ['mM'] },
-      { ...FIELDS.AMOUNT,        validate: minAmount(150) },
-      FIELDS.AMOUNT_UNIT,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM'] },
+      FIELDS.CONC_AMOUNT,
+      FIELDS.CONC_AMOUNT_UNIT,
       ...SUPPLIER_FIELDS,
       ...SAFETY_FIELDS,
     ],
   },
 
-  // ── EPS ──────────────────────────────────────────────────────────────────
-  // DMSO-based. Stock = 1000× top dose (N uM assay → N mM stock).
-  // Includes dilution factor. Min 600 uL.
+  // DMSO-based. Includes dilution factor. Min 600 uL.
   EPS: {
-    concentrationMultiplier: 1000,
-    amountMin: 600,
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.FULL_BRD,
       FIELDS.TOP_DOSE,
-      { ...FIELDS.TOP_DOSE_UNIT,   options: ['uM'] },
-      { ...FIELDS.CONC,            validate: validateConc(1000) },
-      { ...FIELDS.CONC_UNIT,       options: ['mM'] },
+      { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM'] },
       FIELDS.DILUTION_FACTOR,
-      { ...FIELDS.AMOUNT,          validate: minAmount(600) },
-      FIELDS.AMOUNT_UNIT,
+      FIELDS.CONC_AMOUNT,
+      FIELDS.CONC_AMOUNT_UNIT,
       ...SUPPLIER_FIELDS,
       ...SAFETY_FIELDS,
     ],
   },
 
-  // ── APS ──────────────────────────────────────────────────────────────────
-  // Aqueous. Stock = 250× top dose. Unit pairing: uM→mM, ug/mL→mg/mL. Min 150 uL.
+  // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 150 uL.
   APS: {
-    concentrationMultiplier: 250,
-    amountMin: 150,
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.MOLECULE_TYPE,
       FIELDS.SOLVENT,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM', 'ug/mL'] },
-      { ...FIELDS.CONC,          validate: validateConc(250) },
-      { ...FIELDS.CONC_UNIT,     options: ['mM', 'mg/mL'], validate: validateApsConcUnit },
-      { ...FIELDS.AMOUNT,        validate: minAmount(150) },
-      FIELDS.AMOUNT_UNIT,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM', 'mg/mL'] },
+      FIELDS.CONC_AMOUNT,
+      FIELDS.CONC_AMOUNT_UNIT,
       ...SUPPLIER_FIELDS,
       ...SAFETY_FIELDS,
     ],
   },
 
-  // ── AIR ──────────────────────────────────────────────────────────────────
-  // Aqueous in reagent. Stock = 500× top dose (ug/mL → mg/mL).
-  // Top dose capped at 2 ug/mL. Min 500 uL.
+  // Aqueous in reagent. Top dose capped at 2 ug/mL. Min 500 uL.
   AIR: {
-    concentrationMultiplier: 500,
-    amountMin: 500,
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.MOLECULE_TYPE,
       FIELDS.SOLVENT,
-      { ...FIELDS.TOP_DOSE,      validate: validateAirTopDose },
+      FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['ug/mL'] },
-      { ...FIELDS.CONC,          validate: validateConc(500) },
-      { ...FIELDS.CONC_UNIT,     options: ['mg/mL'] },
-      { ...FIELDS.AMOUNT,        validate: minAmount(500) },
-      FIELDS.AMOUNT_UNIT,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mg/mL'] },
+      FIELDS.CONC_AMOUNT,
+      FIELDS.CONC_AMOUNT_UNIT,
       ...SUPPLIER_FIELDS,
       ...SAFETY_FIELDS,
     ],
   },
 };
 
-// ── Merge helper ───────────────────────────────────────────────────────────
+// ── Per-screen validators ──────────────────────────────────────────────────
+// Each function takes a row and returns { fieldKey: errorMessage }.
+// Call them directly in unit tests with a plain row object.
+
+function validateMTS(row) {
+  const { concMultiplier, minAmountUL } = SCREEN_CONFIG.MTS;
+  const errors = {};
+
+  if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
+
+  if (row.top_dose) {
+    const expected = Number(row.top_dose) * (concMultiplier / 1000);
+    if (Math.abs(Number(row.conc) - expected) > 0.001)
+      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
+  }
+
+  return errors;
+}
+
+// Solo mode uses MTS-equivalent rules. Combo flow will extend this with 400 uL × n logic.
+function validateCPS(row) {
+  const { concMultiplier, minAmountUL } = SCREEN_CONFIG.CPS;
+  const errors = {};
+
+  if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
+
+  if (row.top_dose) {
+    const expected = Number(row.top_dose) * (concMultiplier / 1000);
+    if (Math.abs(Number(row.conc) - expected) > 0.001)
+      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
+  }
+
+  return errors;
+}
+
+function validateEPS(row) {
+  const { concMultiplier, minAmountHighDilutionUL, minAmountLowDilutionUL, dilutionThreshold } =
+    SCREEN_CONFIG.EPS;
+  const errors = {};
+
+  const dilutionFactor = Number(row.dilution_factor) || 0;
+  const minAmount = dilutionFactor >= dilutionThreshold ? minAmountHighDilutionUL : minAmountLowDilutionUL;
+  if (Number(row.amount) < minAmount)
+    errors.amount = `Minimum ${minAmount} uL required (${dilutionFactor >= dilutionThreshold ? `≥${dilutionThreshold}` : `2–${dilutionThreshold}`}-fold dilution)`;
+
+  if (row.top_dose) {
+    const expected = Number(row.top_dose) * (concMultiplier / 1000);
+    if (Math.abs(Number(row.conc) - expected) > 0.001)
+      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
+  }
+
+  return errors;
+}
+
+function validateAPS(row) {
+  const { concMultiplier, minAmountUL, unitPairs } = SCREEN_CONFIG.APS;
+  const errors = {};
+
+  if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
+
+  if (row.top_dose) {
+    const expected = Number(row.top_dose) * (concMultiplier / 1000);
+    if (Math.abs(Number(row.conc) - expected) > 0.001)
+      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
+  }
+
+  const expectedUnit = unitPairs[row.top_dose_unit];
+  if (expectedUnit && expectedUnit !== row.conc_unit)
+    errors.conc_unit = `Must be ${expectedUnit} when top dose unit is ${row.top_dose_unit}`;
+
+  return errors;
+}
+
+function validateAIR(row) {
+  const { concMultiplier, minAmountUL, maxTopDoseUgML } = SCREEN_CONFIG.AIR;
+  const errors = {};
+
+  if (Number(row.top_dose) > maxTopDoseUgML)
+    errors.top_dose = `Max top dose for AIR submissions is ${maxTopDoseUgML} ug/mL`;
+
+  if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
+
+  if (row.top_dose) {
+    const expected = Number(row.top_dose) * (concMultiplier / 1000);
+    if (Math.abs(Number(row.conc) - expected) > 0.001)
+      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
+  }
+
+  return errors;
+}
+
+const SCREEN_VALIDATORS = {
+  MTS: validateMTS,
+  CPS: validateCPS,
+  EPS: validateEPS,
+  APS: validateAPS,
+  AIR: validateAIR,
+};
+
+// ── Step lifecycle helpers ─────────────────────────────────────────────────
 
 export function buildScreenFields(screenType) {
   const screen = SCREENS[screenType];
   if (!screen) return [];
   return screen.fields.map((f) => ({ required: true, ...f }));
 }
-
-// ── Step lifecycle helpers ─────────────────────────────────────────────────
 
 export function getInitialData() {
   return { row: Object.fromEntries(Object.keys(FIELDS_BY_KEY).map((k) => [k, ''])) };
@@ -223,8 +290,9 @@ export function getSummary(data) {
 }
 
 export function validate(data, screenType) {
-  const errors = {};
   const { row } = data;
+  const errors = {};
+
   for (const f of buildScreenFields(screenType)) {
     const val = row[f.key];
     if (f.required && !val) {
@@ -236,5 +304,6 @@ export function validate(data, screenType) {
       if (msg) errors[f.key] = msg;
     }
   }
-  return errors;
+
+  return { ...errors, ...(SCREEN_VALIDATORS[screenType]?.(row) ?? {}) };
 }
