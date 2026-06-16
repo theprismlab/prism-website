@@ -1,6 +1,8 @@
 <template>
   <page class="mt-0 pt-0">
-    <HomeHero></HomeHero>
+    <page-section :padding="0">
+      <HomeHero></HomeHero>
+    </page-section>
     <page-section background="multi-focal-neutral" :padding="16">
       <app-container>
         <p class="prism-text-h3 text-center mb-0" style="line-height: 2.4rem">

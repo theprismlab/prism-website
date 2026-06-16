@@ -11,9 +11,11 @@
       </p>
     </app-container>
 
-      <app-container wide class="mb-8">
-        <cell-line-stats />
-      </app-container>
+      <page-section>
+        <app-container wide>
+          <cell-line-stats />
+        </app-container>
+      </page-section>
 
     <page-section background="muted" :padding="10">
       <app-container>
@@ -32,7 +34,8 @@
       </app-container>
     </page-section>
 
-    <app-container class="my-12">
+    <page-section>
+      <app-container>
       <v-card class="checklist-card" elevation="0">
         <h2 class="prism-text-h3 mb-0">All of our cell lines are:</h2>
         <v-list class="mt-2 checklist-list">
@@ -44,9 +47,11 @@
           </v-list-item>
         </v-list>
       </v-card>
-    </app-container>
+      </app-container>
+    </page-section>
 
-    <app-container class="mt-12 mb-12">
+    <page-section>
+      <app-container>
       <h2 class="prism-text-h3">Cell sets in PRISM screens</h2>
       <p class="prism-text-body-1">
         PRISM’s collection of over 900 cell lines is screened for all standard PRISM experiments and
@@ -78,7 +83,8 @@
         target="_blank"
         prepend-icon="mdi-download"
       >PRISM barcoded cell lines</v-btn>
-    </app-container>
+      </app-container>
+    </page-section>
   </page>
 </template>
 

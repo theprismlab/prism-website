@@ -1,7 +1,7 @@
 <template>
   <section
     :class="['page-section', `page-section--bg-${background}`]"
-    :style="[paddingStyle, marginStyle]"
+    :style="paddingStyle"
   >
     <slot />
   </section>
@@ -32,17 +32,8 @@
       background: { type: String, default: 'default' },
       // Vertical padding (in Vuetify spacing units, e.g. 12 -> py-12)
       padding: { type: [String, Number], default: 8 },
-      // Vertical margin (in Vuetify spacing units, e.g. 12 -> my-12)
-      margin: { type: [String, Number], default: 8 },
     },
     computed: {
-      marginStyle() {
-        const n = Number(this.margin);
-        if (!Number.isFinite(n)) return {};
-        // 1 spacing unit = 4px (matches Vuetify's my-N)
-        const v = `${n * 4}px`;
-        return { marginTop: v, marginBottom: v };
-      },
       paddingStyle() {
         const n = Number(this.padding);
         if (!Number.isFinite(n)) return {};

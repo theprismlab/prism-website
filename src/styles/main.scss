@@ -14,7 +14,10 @@ h5 {
 p {
   margin: 12px 0 24px 0; // not sure is this is needed
 }
-
+.content-section-heading {
+  padding-top: 24px;
+  margin-bottom: 16px;
+}
 .v-container {
   width: 100% !important;
   max-width: var(--container-md-max-width) !important;

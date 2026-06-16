@@ -14,44 +14,41 @@
           submission windows, and costs!
         </p>
       </section>
-      <section class="mt-12 mb-12">
-        <h2 class="prism-text-h3">How to participate in a PRISM screen</h2>
-        <div v-for="(step, index) in steps" :key="index" class="mt-4">
-          <div class="prism-text-body-2">
-            <v-icon class="text-primary-base" style="float: left"
-              >mdi-numeric-{{ index + 1 }}-circle</v-icon
-            >
-            <div style="display: inline-block; width: calc(100% - 40px)">
-              <div v-html="step" class="ml-2"></div>
-            </div>
+
+      <h2 class="prism-text-h3">How to participate in a PRISM screen</h2>
+      <div v-for="(step, index) in steps" :key="index" class="mt-4">
+        <div class="prism-text-body-2">
+          <v-icon class="text-primary-base" style="float: left"
+            >mdi-numeric-{{ index + 1 }}-circle</v-icon
+          >
+          <div style="display: inline-block; width: calc(100% - 40px)">
+            <div v-html="step" class="ml-2"></div>
           </div>
         </div>
-      </section>
-      <section class="mt-12 mb-12">
-        <h2 class="prism-text-h3">Industry Collaborators</h2>
-        <p class="prism-text-body-1">
-          PRISM requires fully-executed collaboration agreements with our pharmaceutical and biotech
-          collaborators in order to screen with us. In general, our agreements address the following
-          three areas:
-        </p>
-        <v-row class="mb-6 mt-6">
-          <v-col cols="12" xs="12" sm="12" md="8">
-            <collaborate-cards></collaborate-cards>
-          </v-col>
-        </v-row>
-        <p class="prism-text-body-1">
-          Please <a href="/contact-us">contact us</a> to receive additional information about our
-          agreements and pricing.
-        </p>
-      </section>
-      <section class="mt-12 mb-12">
-        <h2 class="prism-text-h3">Academic Collaborators</h2>
-        <p class="prism-text-body-1">
-          Collaboration agreements are not a requirement for academic collaborators to participate
-          in our screens. If you would like to sign an agreement, please email our team at
-          <a href="mailto:prism@broadinstitute.org" class="text-link">prism@broadinstitute.org</a>.
-        </p>
-      </section>
+      </div>
+
+      <h2 class="prism-text-h3">Industry Collaborators</h2>
+      <p class="prism-text-body-1">
+        PRISM requires fully-executed collaboration agreements with our pharmaceutical and biotech
+        collaborators in order to screen with us. In general, our agreements address the following
+        three areas:
+      </p>
+      <v-row class="mb-6 mt-6">
+        <v-col cols="12" xs="12" sm="12" md="8">
+          <collaborate-cards></collaborate-cards>
+        </v-col>
+      </v-row>
+      <p class="prism-text-body-1">
+        Please <a href="/contact-us">contact us</a> to receive additional information about our
+        agreements and pricing.
+      </p>
+
+      <h2 class="prism-text-h3">Academic Collaborators</h2>
+      <p class="prism-text-body-1">
+        Collaboration agreements are not a requirement for academic collaborators to participate in
+        our screens. If you would like to sign an agreement, please email our team at
+        <a href="mailto:prism@broadinstitute.org" class="text-link">prism@broadinstitute.org</a>.
+      </p>
     </app-container>
   </page>
 </template>
