@@ -23,7 +23,7 @@
               v-else
               v-model="row[f.key]"
               type="text"
-              :inputmode="f.type === 'number' ? 'decimal' : 'text'"
+              :inputmode="f.inputmode ?? 'text'"
               variant="plain"
               density="compact"
               single-line
