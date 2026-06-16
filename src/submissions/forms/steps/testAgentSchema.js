@@ -51,6 +51,13 @@ const FIELDS = {
   SDS_AVAILABLE: { key: 'sds_available', label: 'SDS Available?', options: YES_NO },
   HEALTH_HAZARD: { key: 'health_hazard', label: 'Health Hazard?', options: YES_NO },
   ACUTELY_TOXIC: { key: 'acutely_toxic', label: 'Acutely Toxic?', options: YES_NO },
+  SMILES: { key: 'smiles', label: 'SMILES', required: false },
+  CANCER_CELL_LINES: {
+    key: 'cancer_cell_lines',
+    label: 'Previously Tested Cancer Cell Lines',
+    required: false,
+  },
+  TARGET_MOA: { key: 'target_moa', label: 'Target/MOA', required: false },
 };
 
 // Keyed by data key for O(1) lookups in getSummary and getInitialData.
@@ -78,6 +85,8 @@ export const SCREEN_CONFIG = {
 const SUPPLIER_FIELDS = [FIELDS.SUPPLIER, FIELDS.SUPPLIER_CATALOG_NAME, FIELDS.STORAGE_CONDITIONS];
 const SAFETY_FIELDS = [
   FIELDS.QC_LAST_SIX_MONTHS,
+  FIELDS.CANCER_CELL_LINES,
+  FIELDS.TARGET_MOA,
   FIELDS.SDS_AVAILABLE,
   FIELDS.HEALTH_HAZARD,
   FIELDS.ACUTELY_TOXIC,
@@ -93,6 +102,7 @@ const SCREENS = {
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.FULL_BRD,
+      FIELDS.SMILES,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
       FIELDS.CONC,
@@ -109,6 +119,7 @@ const SCREENS = {
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.FULL_BRD,
+      FIELDS.SMILES,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
       FIELDS.CONC,
@@ -125,6 +136,7 @@ const SCREENS = {
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.FULL_BRD,
+      FIELDS.SMILES,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
       FIELDS.CONC,
@@ -137,12 +149,13 @@ const SCREENS = {
     ],
   },
 
-  // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 150 uL.
+  // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 1000 uL.
   APS: {
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.MOLECULE_TYPE,
       FIELDS.SOLVENT,
+      FIELDS.SMILES,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM', 'ug/mL'] },
       FIELDS.CONC,
@@ -160,6 +173,7 @@ const SCREENS = {
       FIELDS.COMPOUND_NAME,
       FIELDS.MOLECULE_TYPE,
       FIELDS.SOLVENT,
+      FIELDS.SMILES,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['ug/mL'] },
       FIELDS.CONC,
