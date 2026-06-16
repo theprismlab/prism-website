@@ -1,6 +1,6 @@
 <template>
   <page id="publication-page">
-    <app-container wide>
+    <app-container>
       <prism-page-title>Publications</prism-page-title>
     </app-container>
 

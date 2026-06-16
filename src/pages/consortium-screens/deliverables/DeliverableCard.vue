@@ -43,12 +43,10 @@
 </script>
 <style scoped>
   .deliverable-card {
+    font-family: 'Inter', sans-serif !important;
     border: 1px solid var(--v-secondary-lighten-4);
   }
   .secondary-card {
     border: 1px solid var(--v-secondary-lighten-4);
   }
-  /* .secondary-card >.text-h4  {
-    color: var(--v-secondary-darken-3);
-} */
 </style>
