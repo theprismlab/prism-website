@@ -3,6 +3,7 @@
 // outside the component (e.g. server-side validation, CSV import, review step).
 
 const BRD_REGEX = /^BRD-[AKUMC][0-9]{8}-[0-9]{3}-[0-9]{2}-[0-9]$|^BRD-[AKUM][0-9]{8}$/;
+const validateNumber = (val) => (val !== '' && isNaN(Number(val)) ? 'Must be a number' : undefined);
 const YES_NO = ['Yes', 'No'];
 const STORAGE_OPTIONS = ['Room temperature', '4°C', '-20°C'];
 const MOLECULE_TYPES = [
@@ -29,12 +30,12 @@ const FIELDS = {
   },
   MOLECULE_TYPE: { key: 'molecule_type', label: 'Molecule Type', options: MOLECULE_TYPES },
   SOLVENT: { key: 'solvent', label: 'Solvent' },
-  TOP_DOSE: { key: 'top_dose', label: 'Top Screening Dose', type: 'number' },
+  TOP_DOSE: { key: 'top_dose', label: 'Top Screening Dose', type: 'number', validate: validateNumber },
   TOP_DOSE_UNIT: { key: 'top_dose_unit', label: 'Top Dose Unit' },
-  CONC: { key: 'conc', label: 'Stock Concentration', type: 'number' },
+  CONC: { key: 'conc', label: 'Stock Concentration', type: 'number', validate: validateNumber },
   CONC_UNIT: { key: 'conc_unit', label: 'Stock Conc. Unit' },
-  DILUTION_FACTOR: { key: 'dilution_factor', label: 'Dilution Factor' },
-  CONC_AMOUNT: { key: 'amount', label: 'Amount', type: 'number' },
+  DILUTION_FACTOR: { key: 'dilution_factor', label: 'Dilution Factor', type: 'number', validate: validateNumber },
+  CONC_AMOUNT: { key: 'amount', label: 'Amount', type: 'number', validate: validateNumber },
   CONC_AMOUNT_UNIT: { key: 'amount_unit', label: 'Amount Unit', options: AMOUNT_UNITS },
   SUPPLIER: { key: 'supplier', label: 'Supplier' },
   SUPPLIER_CATALOG_NAME: { key: 'supplier_catalog_name', label: 'Supplier Catalog Name' },
@@ -117,10 +118,10 @@ const SCREENS = {
   CPS: {
     combinationFields: [
       { key: 'drug_a_name',          label: 'Drug A Name' },
-      { key: 'drug_a_top_dose',      label: 'Drug A Top Dose', type: 'number' },
+      { key: 'drug_a_top_dose',      label: 'Drug A Top Dose', type: 'number', validate: validateNumber },
       { key: 'drug_a_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
       { key: 'drug_b_name',          label: 'Drug B Name' },
-      { key: 'drug_b_dose',          label: 'Drug B Dose', type: 'number' },
+      { key: 'drug_b_dose',          label: 'Drug B Dose', type: 'number', validate: validateNumber },
       { key: 'drug_b_dose_unit',     label: 'Drug B Dose Unit', options: ['uM'] },
     ],
     fields: [

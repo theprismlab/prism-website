@@ -22,7 +22,8 @@
             <v-text-field
               v-else
               v-model="row[f.key]"
-              :type="f.type || 'text'"
+              type="text"
+              :inputmode="f.type === 'number' ? 'decimal' : 'text'"
               variant="plain"
               density="compact"
               single-line
