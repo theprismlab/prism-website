@@ -1,7 +1,7 @@
 <template>
   <page class="mt-0 pt-0">
     <HomeHero></HomeHero>
-    <page-section background="multi-focal-neutral" :padding="10">
+    <page-section background="multi-focal-neutral" :padding="20">
       <app-container>
         <p class="prism-text-h3 text-center mb-0" style="line-height: 2.4rem">
           Our lab partners with researchers to
@@ -113,38 +113,5 @@
     margin-bottom: 64px;
     padding-top: 24px;
     padding-bottom: 24px;
-  }
-  .hero-section {
-    display: grid;
-    height: calc(100dvh - var(--v-layout-top, 64px));
-    overflow: hidden;
-    > * {
-      grid-area: 1 / 1;
-    }
-  }
-
-  .hero-heatmap {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-  .hero-overlay {
-    place-self: center;
-    max-width: 1000px;
-    padding: 0 24px;
-    z-index: 1;
-  }
-  .text-hero {
-    text-shadow: 0px 0px 10px rgba(255, 255, 255, 1);
-  }
-  .text-xl {
-    font-size: 4.25rem;
-    line-height: 1.1em;
-  }
-  /* xs */
-  @media (max-width: 600px) {
-    .text-xl {
-      font-size: 3.5rem;
-    }
   }
 </style>
