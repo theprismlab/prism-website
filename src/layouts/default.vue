@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <app-container v-if="$route.meta.breadcrumbs">
-      <breadcrumbs />
+      <!-- <breadcrumbs /> -->
     </app-container>
     <router-view />
   </v-main>

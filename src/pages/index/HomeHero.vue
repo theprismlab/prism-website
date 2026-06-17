@@ -23,13 +23,13 @@
 </script>
 
 <style scoped lang="scss">
+  #hero-section > * {
+    grid-area: 1 / 1;
+  }
   #hero-section {
     display: grid;
     height: calc(95vh - var(--v-layout-top, 64px));
     overflow: hidden;
-    > * {
-      grid-area: 1 / 1;
-    }
     margin: 0px;
   }
 

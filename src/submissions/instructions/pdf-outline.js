@@ -4,8 +4,14 @@ import PdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 pdfjsLib.GlobalWorkerOptions.workerSrc = PdfWorker;
 
 export const PDF_PATHS = {
-  TEST_AGENT: '/pdfs/instructions/Instructions.pdf',
-  SHIPPING: '/pdfs/instructions/Shipping.pdf',
+  TEST_AGENT: {
+    AIR: '/pdfs/instructions/PRISM_AIR_Submission_Information.pdf',
+    APS: '/pdfs/instructions/PRISM_APS_Submission_Information.pdf',
+    MTS: '/pdfs/instructions/PRISM_MTS_Submission_Information.pdf',
+    CPS: '/pdfs/instructions/PRISM_CPS_Submission_Information.pdf',
+    EPS: '/pdfs/instructions/PRISM_EPS_Submission_Information.pdf',
+  },
+  SHIPPING: '/pdfs/instructions/Shipping_Information_for_PRISM_Screens.pdf',
 };
 
 const cache = new Map();
@@ -39,7 +45,6 @@ export function loadPdfOutline(url) {
 
 /** Flatten a nested outline into a single list, depth-first. */
 export function flattenOutline(items) {
-  console.log('Flattening outline', items);
   const out = [];
   for (const item of items) {
     out.push(item);
@@ -59,21 +64,31 @@ async function fetchOutline(url) {
 }
 
 /**
- * Build a reverse map from dest-array signature → named destination string.
- * This lets us resolve explicit array destinations back to `nameddest=` keys
- * rather than falling back to bare page numbers.
+ * Build two lookup structures from the PDF's named destinations:
+ *   byKey  — exact coord key → name (fast exact match)
+ *   byPage — page-ref key → [{y, name}] sorted desc (fuzzy nearest-y match)
+ *
+ * Google Docs sometimes exports outline bookmarks with slightly different
+ * coordinates than the named destinations they conceptually correspond to,
+ * so we need both strategies.
  */
 async function buildNamedDestIndex(pdf) {
-  const index = new Map();
+  const byKey = new Map();
+  const byPage = new Map();
   const dests = await pdf.getDestinations();
-  if (!dests) return index;
+  if (!dests) return { byKey, byPage };
   for (const [name, destArray] of Object.entries(dests)) {
-    if (destArray?.[0]) {
-      const key = destArrayKey(destArray);
-      if (!index.has(key)) index.set(key, name);
-    }
+    if (!destArray?.[0]) continue;
+    const key = destArrayKey(destArray);
+    if (!byKey.has(key)) byKey.set(key, name);
+    const pageKey = `${destArray[0].num}:${destArray[0].gen}`;
+    const y = destArray[3] ?? 0;
+    if (!byPage.has(pageKey)) byPage.set(pageKey, []);
+    byPage.get(pageKey).push({ y, name });
   }
-  return index;
+  // Sort each page's entries descending by y (top of page first in PDF coords).
+  for (const entries of byPage.values()) entries.sort((a, b) => b.y - a.y);
+  return { byKey, byPage };
 }
 
 /** Stable string key for a destination array based on page ref + position. */
@@ -100,27 +115,44 @@ async function buildItems(pdf, nodes, namedDestIndex, level = 0, slugCounts = ne
     const count = slugCounts.get(base) ?? 0;
     slugCounts.set(base, count + 1);
     const slug = count === 0 ? base : `${base}-${count}`;
-    const children = node.items?.length ? await buildItems(pdf, node.items, namedDestIndex, level + 1, slugCounts) : [];
+    const children = node.items?.length
+      ? await buildItems(pdf, node.items, namedDestIndex, level + 1, slugCounts)
+      : [];
     items.push({ title: node.title, slug, level, ...resolved, children });
   }
   return items;
 }
 
 async function resolveDest(pdf, dest, namedDestIndex) {
-  // Named destination -> a string we can pass straight through.
+  // Named destination string — pass straight through.
   if (typeof dest === 'string') {
-    return { key: dest, hash: `nameddest=${encodeURIComponent(dest)}` };
+    const d = dest.trim();
+    return { key: d, hash: `nameddest=${encodeURIComponent(d)}` };
   }
 
-  // Explicit destination array: try reverse-lookup into named destinations first.
   if (!Array.isArray(dest)) return null;
 
-  const name = namedDestIndex.get(destArrayKey(dest));
+  // Exact coordinate match against the named-destination index.
+  const name = namedDestIndex.byKey.get(destArrayKey(dest));
   if (name) {
     return { key: name, hash: `nameddest=${encodeURIComponent(name)}` };
   }
 
-  // Last resort: fall back to page number.
+  // Fuzzy match: find the named destination on the same page whose y is
+  // closest to this bookmark's y. Google Docs sometimes stores outline
+  // bookmarks at slightly different coordinates than the named destinations.
+  const ref = dest[0];
+  const pageKey = `${ref.num}:${ref.gen}`;
+  const pageEntries = namedDestIndex.byPage.get(pageKey);
+  if (pageEntries?.length) {
+    const y = dest[3] ?? 0;
+    const closest = pageEntries.reduce((a, b) =>
+      Math.abs(a.y - y) <= Math.abs(b.y - y) ? a : b,
+    );
+    return { key: closest.name, hash: `nameddest=${encodeURIComponent(closest.name)}` };
+  }
+
+  // Last resort: page number.
   try {
     const pageIndex = await pdf.getPageIndex(dest[0]);
     const pageNumber = pageIndex + 1;

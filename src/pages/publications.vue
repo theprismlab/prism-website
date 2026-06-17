@@ -1,10 +1,8 @@
 <template>
   <page id="publication-page">
-    <app-container>
-      <prism-page-title>Publications</prism-page-title>
-    </app-container>
-
     <app-container wide>
+      <prism-page-title>Publications</prism-page-title>
+
       <h2 class="text-overline">Featured</h2>
       <v-row justify="center" class="mb-12">
         <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">

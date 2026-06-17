@@ -74,7 +74,7 @@
         return this.$route.params.screen;
       },
       testAgentPdf() {
-        return this.screen ? PDF_PATHS.TEST_AGENT : null;
+        return this.screen ? (PDF_PATHS.TEST_AGENT[this.screen.toUpperCase()] ?? null) : null;
       },
       shippingPdf() {
         return this.screen ? PDF_PATHS.SHIPPING : null;

@@ -23,7 +23,7 @@
         return this.$route.params.screen;
       },
       pdfPath() {
-        return this.screen ? PDF_PATHS.TEST_AGENT : null;
+        return this.screen ? PDF_PATHS.TEST_AGENT[this.screen] : null;
       },
       flatPages() {
         return flattenOutline(this.pages);
@@ -34,8 +34,12 @@
       },
       pdfUrl() {
         if (!this.pdfPath) return null;
+        const encoded = this.pdfPath
+          .split('/')
+          .map((s) => encodeURIComponent(s))
+          .join('/');
         const hash = this.currentPage ? this.currentPage.hash : '';
-        return hash ? `${this.pdfPath}#${hash}` : this.pdfPath;
+        return hash ? `${encoded}#${hash}` : encoded;
       },
       iframeKey() {
         return this.currentPage ? this.currentPage.key : 'default';
