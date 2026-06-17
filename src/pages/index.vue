@@ -1,11 +1,12 @@
 <template>
   <page class="mt-0 pt-0">
     <HomeHero></HomeHero>
-    <page-section background="multi-focal-neutral" :padding="16">
+
+    <page-section background="multi-focal-cool" :padding="24">
       <app-container>
         <p class="prism-text-h3 text-center mb-0" style="line-height: 2.4rem">
           Our lab partners with researchers to
-          <span class="text-gradient-cool"
+          <span class="text-gradient-blue"
             >reveal clinically important differences in drug behavior</span
           >
           by screening over 900 cancer cell lines and correlating the viability results with
@@ -13,7 +14,8 @@
         </p>
       </app-container>
     </page-section>
-    <page-section>
+
+    <page-section class="my-12" :padding="0">
       <app-container>
         <p class="prism-text-body-1">
           Cancer cell line models remain essential in drug development, providing a controlled
@@ -27,9 +29,7 @@
           >.
         </p>
       </app-container>
-    </page-section>
 
-    <page-section>
       <app-container wide>
         <HomeOverviewCards></HomeOverviewCards>
       </app-container>

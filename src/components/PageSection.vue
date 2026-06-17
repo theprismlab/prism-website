@@ -1,8 +1,5 @@
 <template>
-  <section
-    :class="['page-section', `page-section--bg-${background}`]"
-    :style="[paddingStyle, marginStyle]"
-  >
+  <section :class="['page-section', `page-section--bg-${background}`]" :style="paddingStyle">
     <slot />
   </section>
 </template>
@@ -32,17 +29,8 @@
       background: { type: String, default: 'default' },
       // Vertical padding (in Vuetify spacing units, e.g. 12 -> py-12)
       padding: { type: [String, Number], default: 8 },
-      // Vertical margin (in Vuetify spacing units, e.g. 12 -> my-12)
-      margin: { type: [String, Number], default: 8 },
     },
     computed: {
-      marginStyle() {
-        const n = Number(this.margin);
-        if (!Number.isFinite(n)) return {};
-        // 1 spacing unit = 4px (matches Vuetify's my-N)
-        const v = `${n * 4}px`;
-        return { marginTop: v, marginBottom: v };
-      },
       paddingStyle() {
         const n = Number(this.padding);
         if (!Number.isFinite(n)) return {};
@@ -57,6 +45,7 @@
 <style scoped>
   .page-section {
     width: 100%;
+    margin: 0 auto;
   }
   .page-section--bg-muted {
     background-color: var(--v-grey-lighten-5);
@@ -82,5 +71,12 @@
       radial-gradient(ellipse at 80% 20%, rgba(205, 215, 220, 0.28) 0%, transparent 50%),
       radial-gradient(ellipse at 50% 90%, rgba(215, 210, 220, 0.22) 0%, transparent 48%),
       radial-gradient(ellipse at 70% 55%, rgba(208, 218, 215, 0.2) 0%, transparent 45%), #fafafa;
+  }
+  .page-section--bg-multi-focal-warm {
+    background:
+      radial-gradient(ellipse at 20% 65%, rgba(255, 205, 190, 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 75% 25%, rgba(255, 220, 200, 0.25) 0%, transparent 45%),
+      radial-gradient(ellipse at 55% 85%, rgba(255, 230, 210, 0.2) 0%, transparent 40%),
+      radial-gradient(ellipse at 70% 50%, rgba(255, 215, 195, 0.18) 0%, transparent 42%), #fff8f5;
   }
 </style>

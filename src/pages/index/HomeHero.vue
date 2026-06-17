@@ -25,11 +25,12 @@
 <style scoped lang="scss">
   #hero-section {
     display: grid;
-    height: calc(85vh - var(--v-layout-top, 64px));
+    height: calc(95vh - var(--v-layout-top, 64px));
     overflow: hidden;
     > * {
       grid-area: 1 / 1;
     }
+    margin: 0px;
   }
 
   .hero-overlay {

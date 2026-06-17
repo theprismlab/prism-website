@@ -23,6 +23,11 @@
     }
   </script>
   <style scoped>
+    .page {
+      padding-top: 32px;
+      padding-bottom: 64px;
+    }
+
       /* xxl  */
     @media (min-width:  2560px) {
 
