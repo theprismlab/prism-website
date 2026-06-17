@@ -41,7 +41,7 @@
       </app-container>
     </page-section>
 
-    <page-section>
+    <page-section class="my-12" :padding="0">
       <app-container>
         <section-overline class="text-center">Impact</section-overline>
         <prism-section-title class="text-center"
@@ -55,10 +55,10 @@
       </app-container>
     </page-section>
 
-    <page-section>
+    <page-section class="my-12" :padding="0">
       <app-container>
         <section-overline class="text-center">Testimonials</section-overline>
-        <HomeTestimonialCards></HomeTestimonialCards>
+        <HomeTestimonialCards class="pt-8"></HomeTestimonialCards>
       </app-container>
     </page-section>
   </page>

@@ -16,11 +16,11 @@
           <h3 class="prism-text-h3 font-weight-bold portal-title">{{ title }}</h3>
           <p class="prism-text-body-1 portal-body">{{ body }}</p>
 
-          <div class="portal-features">
+          <!-- <div class="portal-features">
             <div v-for="feature in features" :key="feature" class="portal-feature-chip">
               <v-icon size="14" class="mr-1">mdi-check-circle-outline</v-icon>{{ feature }}
             </div>
-          </div>
+          </div> -->
 
           <v-btn
             :href="button.link"

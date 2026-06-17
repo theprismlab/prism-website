@@ -1,5 +1,5 @@
 <template>
-  <h2 :class="`text-overline text-${color} font-weight-black mb-4`"><slot></slot></h2>
+  <h2 :class="`text-overline text-${color} font-weight-black mb-0`"><slot></slot></h2>
 </template>
 
 <script>
