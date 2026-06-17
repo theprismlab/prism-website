@@ -30,6 +30,7 @@
     > * {
       grid-area: 1 / 1;
     }
+    margin: 0px;
   }
 
   .hero-overlay {

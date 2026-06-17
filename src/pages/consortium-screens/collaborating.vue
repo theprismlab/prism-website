@@ -15,7 +15,7 @@
 
       <section class="page-section">
         <h2 class="prism-text-h3">How to participate in a PRISM screen</h2>
-        <div v-for="(step, index) in steps" :key="index" class="mt-4">
+        <div v-for="(step, index) in steps" :key="index" class="my-4">
           <v-icon class="text-primary-base" style="float: left"
             >mdi-numeric-{{ index + 1 }}-circle</v-icon
           >

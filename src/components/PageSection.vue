@@ -1,8 +1,5 @@
 <template>
-  <section
-    :class="['page-section', `page-section--bg-${background}`]"
-    :style="paddingStyle"
-  >
+  <section :class="['page-section', `page-section--bg-${background}`]" :style="paddingStyle">
     <slot />
   </section>
 </template>
@@ -48,6 +45,7 @@
 <style scoped>
   .page-section {
     width: 100%;
+    margin: 0 auto;
   }
   .page-section--bg-muted {
     background-color: var(--v-grey-lighten-5);
