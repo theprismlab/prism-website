@@ -14,6 +14,7 @@
               v-if="f.options"
               v-model="row[f.key]"
               :items="f.options"
+              :placeholder="f.placeholder"
               density="compact"
               single-line
               :error-messages="errors[i]?.[f.key]"
@@ -23,6 +24,7 @@
               v-else
               v-model="row[f.key]"
               :inputmode="f.inputmode ?? 'text'"
+              :placeholder="f.placeholder"
               density="compact"
               single-line
               :error-messages="errors[i]?.[f.key]"

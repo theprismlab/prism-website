@@ -2,8 +2,8 @@
 // Pure JS — no Vue dependencies.
 
 export const COLLABORATOR_TYPE_OPTIONS = {
-  DMC:      { key: 'DMC',      label: 'DepMap Consortium' },
-  BROAD:    { key: 'NFP',      label: 'Broad Institute' },
+  DMC: { key: 'DMC', label: 'DepMap Consortium' },
+  BROAD: { key: 'NFP', label: 'Broad Institute' },
   ACADEMIC: { key: 'ACADEMIC', label: 'Academic Institution' },
   INDUSTRY: { key: 'INDUSTRY', label: 'Industry' },
 };
@@ -21,7 +21,11 @@ const hasSelectedInstitution = (data) => requiresExtendedForm(data) && !!data.in
 const hasInstitutionName = (data) => !!data.institutionName;
 
 export const FIELDS = {
-  INSTITUTION_TYPE: { key: 'institutionType', label: 'Institution Type' },
+  INSTITUTION_TYPE: {
+    key: 'institutionType',
+    label: 'Institution Type',
+    placeholder: 'Select an institution type',
+  },
   INSTITUTION_NAME: {
     key: 'institutionName',
     label: 'Institution Name',
@@ -85,7 +89,8 @@ export function validate(data, _screenType) {
   Object.values(FIELDS).forEach((f) => {
     if (!f.showIf || f.showIf(data)) {
       if (!data[f.key]) errors[f.key] = 'Required';
-      else if (EMAIL_FIELDS.has(f.key) && !isValidEmail(data[f.key])) errors[f.key] = 'Invalid email address';
+      else if (EMAIL_FIELDS.has(f.key) && !isValidEmail(data[f.key]))
+        errors[f.key] = 'Invalid email address';
     }
   });
   return errors;

@@ -4,6 +4,7 @@
       <v-select
         v-model="data[F.INSTITUTION_TYPE.key]"
         :label="F.INSTITUTION_TYPE.label"
+        :placeholder="F.INSTITUTION_TYPE.placeholder"
         :items="institutionTypeOptions"
         variant="outlined"
         density="compact"
@@ -16,6 +17,7 @@
         v-if="hasDropdownNames"
         v-model="data[F.INSTITUTION_NAME.key]"
         :label="F.INSTITUTION_NAME.label"
+        :placeholder="F.INSTITUTION_NAME.placeholder"
         :items="institutionNames"
         variant="outlined"
         density="compact"
@@ -25,6 +27,7 @@
         v-else
         v-model="data[F.INSTITUTION_NAME.key]"
         :label="F.INSTITUTION_NAME.label"
+        :placeholder="F.INSTITUTION_NAME.placeholder"
         variant="outlined"
         density="compact"
         :error-messages="errors[F.INSTITUTION_NAME.key]"
@@ -35,6 +38,7 @@
       <v-text-field
         v-model="data[F.QUOTE_ACKNOWLEDGEMENT.key]"
         :label="F.QUOTE_ACKNOWLEDGEMENT.label"
+        :placeholder="F.QUOTE_ACKNOWLEDGEMENT.placeholder"
         variant="outlined"
         density="compact"
         :error-messages="errors[F.QUOTE_ACKNOWLEDGEMENT.key]"
@@ -45,6 +49,7 @@
       <v-select
         v-model="data[F.COMMERCIAL_USE.key]"
         :label="F.COMMERCIAL_USE.label"
+        :placeholder="F.COMMERCIAL_USE.placeholder"
         :items="['Yes', 'No']"
         variant="outlined"
         density="compact"
@@ -56,6 +61,7 @@
       <v-text-field
         v-model="data[F.COMMERCIAL_USE_ACKNOWLEDGEMENT.key]"
         :label="F.COMMERCIAL_USE_ACKNOWLEDGEMENT.label"
+        :placeholder="F.COMMERCIAL_USE_ACKNOWLEDGEMENT.placeholder"
         variant="outlined"
         density="compact"
         :error-messages="errors[F.COMMERCIAL_USE_ACKNOWLEDGEMENT.key]"
@@ -66,6 +72,7 @@
       <v-text-field
         v-model="data[F.FUNDING_INSTITUTION_NAME.key]"
         :label="F.FUNDING_INSTITUTION_NAME.label"
+        :placeholder="F.FUNDING_INSTITUTION_NAME.placeholder"
         variant="outlined"
         density="compact"
         :error-messages="errors[F.FUNDING_INSTITUTION_NAME.key]"
@@ -76,6 +83,7 @@
       <v-text-field
         v-model="data[F.FUNDING_INSTITUTION_ADDRESS.key]"
         :label="F.FUNDING_INSTITUTION_ADDRESS.label"
+        :placeholder="F.FUNDING_INSTITUTION_ADDRESS.placeholder"
         variant="outlined"
         density="compact"
         :error-messages="errors[F.FUNDING_INSTITUTION_ADDRESS.key]"
@@ -86,6 +94,7 @@
       <v-text-field
         v-model="data[F.BILLING_CONTACT_NAME.key]"
         :label="F.BILLING_CONTACT_NAME.label"
+        :placeholder="F.BILLING_CONTACT_NAME.placeholder"
         variant="outlined"
         density="compact"
         :error-messages="errors[F.BILLING_CONTACT_NAME.key]"
@@ -96,6 +105,7 @@
       <v-text-field
         v-model="data[F.BILLING_CONTACT_EMAIL.key]"
         :label="F.BILLING_CONTACT_EMAIL.label"
+        :placeholder="F.BILLING_CONTACT_EMAIL.placeholder"
         variant="outlined"
         density="compact"
         type="email"
@@ -107,6 +117,7 @@
       <v-textarea
         v-model="data[F.COMMENTS.key]"
         :label="F.COMMENTS.label"
+        :placeholder="F.COMMENTS.placeholder"
         variant="outlined"
         density="compact"
         rows="3"
