@@ -140,13 +140,13 @@
     computed: {
       hasDropdownNames() {
         return (
-          this.data[F.INSTITUTION_TYPE.key] === COLLABORATOR_TYPE_OPTIONS.DMC.key ||
-          this.data[F.INSTITUTION_TYPE.key] === COLLABORATOR_TYPE_OPTIONS.BROAD.key
+          this.data[FIELDS.INSTITUTION_TYPE.key] === COLLABORATOR_TYPE_OPTIONS.DMC.key ||
+          this.data[FIELDS.INSTITUTION_TYPE.key] === COLLABORATOR_TYPE_OPTIONS.BROAD.key
         );
       },
       institutionNames() {
         return this.allInstitutions
-          .filter((i) => i.collaboration_type === this.data[F.INSTITUTION_TYPE.key])
+          .filter((i) => i.collaboration_type === this.data[FIELDS.INSTITUTION_TYPE.key])
           .map((i) => i.name);
       },
     },
