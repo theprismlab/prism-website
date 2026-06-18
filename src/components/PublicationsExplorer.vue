@@ -10,7 +10,7 @@
 
               <v-text-field
                 v-model="searchQuery"
-                placeholder="Search titles..."
+                placeholder="Search titles or authors..."
                 prepend-inner-icon="mdi-magnify"
                 clearable
                 hide-details
