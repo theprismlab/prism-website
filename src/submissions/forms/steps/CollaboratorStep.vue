@@ -104,12 +104,19 @@
     return [...simple, ...managers];
   }
 
+  const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
   export function validate(data, _screenType) {
     const errors = {};
     if (!data[FIELDS.YOUR_NAME.key]) errors[FIELDS.YOUR_NAME.key] = 'Required';
     if (!data[FIELDS.YOUR_EMAIL.key]) errors[FIELDS.YOUR_EMAIL.key] = 'Required';
+    else if (!isValidEmail(data[FIELDS.YOUR_EMAIL.key])) errors[FIELDS.YOUR_EMAIL.key] = 'Invalid email address';
     if (!data[FIELDS.INVESTIGATOR_NAME.key]) errors[FIELDS.INVESTIGATOR_NAME.key] = 'Required';
     if (!data[FIELDS.INVESTIGATOR_EMAIL.key]) errors[FIELDS.INVESTIGATOR_EMAIL.key] = 'Required';
+    else if (!isValidEmail(data[FIELDS.INVESTIGATOR_EMAIL.key])) errors[FIELDS.INVESTIGATOR_EMAIL.key] = 'Invalid email address';
+    data[FIELDS.DATA_ACCESS_MANAGERS.key].forEach((m, i) => {
+      if (m.email && !isValidEmail(m.email)) errors[`dataAccessManagers_${i}_email`] = 'Invalid email address';
+    });
     return errors;
   }
 

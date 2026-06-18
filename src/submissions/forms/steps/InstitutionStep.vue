@@ -158,6 +158,7 @@
         try {
           const institutions = await api.getCollaboratorList(import.meta.env.VITE_API_URL);
           this.allInstitutions = institutions;
+          console.log('Loaded institutions:', institutions);
         } catch (error) {
           console.error('Failed to load institution names', error);
         }

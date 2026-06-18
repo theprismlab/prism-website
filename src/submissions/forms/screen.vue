@@ -9,7 +9,10 @@
             <span>{{ step.title }}</span>
             <template #actions>
               <v-chip v-if="isCompleted(i)" color="success" size="x-small" class="mr-1">Done</v-chip>
-              <v-icon v-else>$expand</v-icon>
+              <template v-else>
+                <v-icon color="warning" size="18" class="mr-1">mdi-alert-circle-outline</v-icon>
+                <v-icon>$expand</v-icon>
+              </template>
             </template>
           </v-expansion-panel-title>
 
@@ -34,6 +37,7 @@
               v-else-if="step.id === 'acknowledgments'"
               :data="fd.acknowledgments"
               :errors="stepErrors.acknowledgments || {}"
+              :screen-type="screenType"
             />
             <review-step
               v-else-if="step.id === 'review'"

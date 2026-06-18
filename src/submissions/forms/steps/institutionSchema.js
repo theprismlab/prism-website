@@ -76,10 +76,17 @@ export function getSummary(data) {
     .filter((item) => item.value);
 }
 
+const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+const EMAIL_FIELDS = new Set([FIELDS.BILLING_CONTACT_EMAIL.key]);
+
 export function validate(data, _screenType) {
   const errors = {};
   Object.values(FIELDS).forEach((f) => {
-    if ((!f.showIf || f.showIf(data)) && !data[f.key]) errors[f.key] = 'Required';
+    if (!f.showIf || f.showIf(data)) {
+      if (!data[f.key]) errors[f.key] = 'Required';
+      else if (EMAIL_FIELDS.has(f.key) && !isValidEmail(data[f.key])) errors[f.key] = 'Invalid email address';
+    }
   });
   return errors;
 }
