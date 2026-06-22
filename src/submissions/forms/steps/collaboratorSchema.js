@@ -25,7 +25,7 @@ export const FIELDS = {
     key: 'dataAccessManagers',
     nameLabel: 'Data Access Manager Name',
     emailLabel: 'Data Access Manager Email',
-    hint: institutionalEmailHint,
+    // hint: institutionalEmailHint,
   },
 };
 

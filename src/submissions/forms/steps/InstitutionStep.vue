@@ -1,10 +1,10 @@
 <template>
   <v-row dense>
     <v-col cols="12" sm="6">
-      <h4 class="prism-text-form-label">{{ F.INSTITUTION_TYPE.label }}</h4>
+      <!-- <h4 class="prism-text-form-label">{{ F.INSTITUTION_TYPE.label }}</h4> -->
       <v-select
         v-model="data[F.INSTITUTION_TYPE.key]"
-        :placeholder="F.INSTITUTION_TYPE.placeholder"
+        :label="F.INSTITUTION_TYPE.label"
         :items="institutionTypeOptions"
         variant="outlined"
         :error-messages="errors[F.INSTITUTION_TYPE.key]"
@@ -13,11 +13,11 @@
     </v-col>
 
     <v-col v-if="show(F.INSTITUTION_NAME)" cols="12" sm="6">
-      <h4 class="prism-text-form-label">{{ F.INSTITUTION_NAME.label }}</h4>
+      <!-- <h4 class="prism-text-form-label">{{ F.INSTITUTION_NAME.label }}</h4> -->
       <v-select
         v-if="hasDropdownNames"
         v-model="data[F.INSTITUTION_NAME.key]"
-        :placeholder="F.INSTITUTION_NAME.placeholder"
+        :label="F.INSTITUTION_NAME.label"
         :items="institutionNames"
         variant="outlined"
         :error-messages="errors[F.INSTITUTION_NAME.key]"
@@ -25,7 +25,7 @@
       <v-text-field
         v-else
         v-model="data[F.INSTITUTION_NAME.key]"
-        :placeholder="F.INSTITUTION_NAME.placeholder"
+        :label="F.INSTITUTION_NAME.label"
         variant="outlined"
         :error-messages="errors[F.INSTITUTION_NAME.key]"
       />
@@ -84,19 +84,19 @@
       <h3 class="prism-text-form-group-label">Funding Institution</h3>
     </v-col>
     <v-col v-if="show(F.FUNDING_INSTITUTION_NAME)" cols="12" sm="6">
-      <h4 class="prism-text-form-label">{{ F.FUNDING_INSTITUTION_NAME.label }}</h4>
+      <!-- <h4 class="prism-text-form-label">{{ F.FUNDING_INSTITUTION_NAME.label }}</h4> -->
       <v-text-field
         v-model="data[F.FUNDING_INSTITUTION_NAME.key]"
-        :placeholder="F.FUNDING_INSTITUTION_NAME.placeholder"
+        :label="F.FUNDING_INSTITUTION_NAME.label"
         variant="outlined"
         :error-messages="errors[F.FUNDING_INSTITUTION_NAME.key]"
       />
     </v-col>
     <v-col v-if="show(F.FUNDING_INSTITUTION_ADDRESS)" cols="12" sm="6">
-      <h4 class="prism-text-form-label">{{ F.FUNDING_INSTITUTION_ADDRESS.label }}</h4>
+      <!-- <h4 class="prism-text-form-label">{{ F.FUNDING_INSTITUTION_ADDRESS.label }}</h4> -->
       <v-text-field
         v-model="data[F.FUNDING_INSTITUTION_ADDRESS.key]"
-        :placeholder="F.FUNDING_INSTITUTION_ADDRESS.placeholder"
+        :label="F.FUNDING_INSTITUTION_ADDRESS.label"
         variant="outlined"
         :error-messages="errors[F.FUNDING_INSTITUTION_ADDRESS.key]"
       />
@@ -110,19 +110,19 @@
       </p>
     </v-col>
     <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12" sm="6">
-      <h4 class="prism-text-form-label">{{ F.BILLING_CONTACT_NAME.label }}</h4>
+      <!-- <h4 class="prism-text-form-label">{{ F.BILLING_CONTACT_NAME.label }}</h4> -->
       <v-text-field
         v-model="data[F.BILLING_CONTACT_NAME.key]"
-        :placeholder="F.BILLING_CONTACT_NAME.placeholder"
+        :label="F.BILLING_CONTACT_NAME.label"
         variant="outlined"
         :error-messages="errors[F.BILLING_CONTACT_NAME.key]"
       />
     </v-col>
     <v-col v-if="show(F.BILLING_CONTACT_EMAIL)" cols="12" sm="6">
-      <h4 class="prism-text-form-label">{{ F.BILLING_CONTACT_EMAIL.label }}</h4>
+      <!-- <h4 class="prism-text-form-label">{{ F.BILLING_CONTACT_EMAIL.label }}</h4> -->
       <v-text-field
         v-model="data[F.BILLING_CONTACT_EMAIL.key]"
-        :placeholder="F.BILLING_CONTACT_EMAIL.placeholder"
+        :label="F.BILLING_CONTACT_EMAIL.label"
         type="email"
         variant="outlined"
         :error-messages="errors[F.BILLING_CONTACT_EMAIL.key]"
@@ -130,10 +130,12 @@
     </v-col>
 
     <v-col v-if="show(F.COMMENTS)" cols="12">
-      <h4 class="prism-text-form-label">{{ F.COMMENTS.label }}</h4>
+      <!-- <h4 class="prism-text-form-label">{{ F.COMMENTS.label }}</h4> -->
       <v-textarea
         v-model="data[F.COMMENTS.key]"
-        :placeholder="F.COMMENTS.placeholder"
+        :label="F.COMMENTS.label"
+        :hint="F.COMMENTS.hint"
+        persistent-hint
         rows="3"
         variant="outlined"
         auto-grow

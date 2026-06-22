@@ -22,7 +22,6 @@ export const FIELDS = {
   INSTITUTION_TYPE: {
     key: 'institutionType',
     label: 'Institution Type',
-    placeholder: 'Select an institution type',
   },
   INSTITUTION_NAME: {
     key: 'institutionName',
@@ -69,7 +68,7 @@ export const FIELDS = {
   COMMENTS: {
     key: 'comments',
     label: 'Comments',
-    placeholder: 'For example, requests to receive invoices earlier due to funding deadlines',
+    hint: 'For example, requests to receive invoices earlier due to funding deadlines',
     showIf: requiresExtendedForm,
   },
 };

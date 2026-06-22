@@ -2,9 +2,8 @@
   <div>
     <template v-for="(sectionItems, sectionTitle) in groupedFields" :key="sectionTitle">
       <h3 class="prism-text-form-group-label">{{ sectionTitle }}</h3>
-      <v-divider class="mb-3" />
       <div v-for="f in sectionItems" :key="f.key" class="mb-4">
-        <p class="text-body-2 mb-1" v-html="descriptionHtml(f)" />
+        <p class="prism-text-form-body" v-html="descriptionHtml(f)" />
         <v-checkbox
           v-model="data[f.key]"
           :label="f.label"
