@@ -11,11 +11,13 @@ import './lib/prism.css';
 
 // Components
 import App from './App.vue';
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
 
 // Composables
 import { createApp } from 'vue';
 
 const app = createApp(App);
+app.component('Breadcrumbs', Breadcrumbs);
 app.use(Prism);
 registerPlugins(app);
 

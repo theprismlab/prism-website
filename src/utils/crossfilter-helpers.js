@@ -21,8 +21,11 @@ export default class CrossfilterManager {
     Object.keys(this.filters).forEach(field => {
       this.dimensions[field] = this.cf.dimension(d => d[field]);
     });
-    // Create search dimension for title searching
-    this.dimensions['search'] = this.cf.dimension(d => d.title);
+    // Create search dimension for title and author searching
+    this.dimensions['search'] = this.cf.dimension(d => {
+      const authorStr = Array.isArray(d.author) ? d.author.join(' ') : (d.author || '');
+      return `${d.title || ''} ${authorStr}`.toLowerCase();
+    });
   }
 
   // Set the active values for a filter and update all options
@@ -53,10 +56,10 @@ export default class CrossfilterManager {
       }
     });
     
-    // Apply search filter to title
+    // Apply search filter to title and author
     if (this.searchQuery) {
-      this.dimensions['search'].filter(title =>
-        title.toLowerCase().includes(this.searchQuery.toLowerCase())
+      this.dimensions['search'].filter(text =>
+        text.includes(this.searchQuery.toLowerCase())
       );
     } else {
       this.dimensions['search'].filterAll();

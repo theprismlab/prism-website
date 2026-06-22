@@ -1,17 +1,17 @@
 <template>
   <page>
-    <container-md>
+    <app-container wide>
       <prism-page-title>Instructions — {{ this.screen }}</prism-page-title>
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Test Agent Instructions'
       }}</prism-page-title> -->
       <iframe v-if="pdfUrl" :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
-    </container-md>
+    </app-container>
   </page>
 </template>
 
 <script>
-  import { loadPdfOutline, flattenOutline } from './pdf-outline';
+  import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
 
   export default {
     name: 'TestAgentInstructions',
@@ -23,7 +23,7 @@
         return this.$route.params.screen;
       },
       pdfPath() {
-        return this.screen ? `/pdfs/instructions/Instructions.pdf` : null;
+        return this.screen ? PDF_PATHS.TEST_AGENT[this.screen] : null;
       },
       flatPages() {
         return flattenOutline(this.pages);
@@ -34,8 +34,12 @@
       },
       pdfUrl() {
         if (!this.pdfPath) return null;
+        const encoded = this.pdfPath
+          .split('/')
+          .map((s) => encodeURIComponent(s))
+          .join('/');
         const hash = this.currentPage ? this.currentPage.hash : '';
-        return hash ? `${this.pdfPath}#${hash}` : this.pdfPath;
+        return hash ? `${encoded}#${hash}` : encoded;
       },
       iframeKey() {
         return this.currentPage ? this.currentPage.key : 'default';

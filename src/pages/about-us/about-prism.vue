@@ -1,6 +1,6 @@
 <template>
   <page>
-    <container-sm>
+    <app-container>
       <prism-page-title>About PRISM</prism-page-title>
       <section>
         <p class="prism-text-body-1">
@@ -26,7 +26,7 @@
           publications.
         </p>
       </section>
-    </container-sm>
+    </app-container>
   </page>
 </template>
 <script>

@@ -8,27 +8,41 @@
     :order="1"
   >
     <v-list density="comfortable" nav>
-      <v-list-subheader>Submissions</v-list-subheader>
+      <!-- <v-list-subheader v-if="!isSubSection">Submissions</v-list-subheader> -->
       <v-list-item
         v-for="item in items"
         :key="item.id"
         :to="item.route"
-        :title="item.title"
+        :title="isSubSection ? undefined : item.title"
         :prepend-icon="item.icon"
         :active="isItemActive(item)"
         active-class="active-menu-item"
+        lines="one"
       />
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script>
+  import { useFormProgressStore } from './store';
+
   export default {
     name: 'SubmissionsDrawer',
+    setup() {
+      return { formStore: useFormProgressStore() };
+    },
     data() {
       return {
         drawer: true,
       };
+    },
+    watch: {
+      '$route.params.screen': {
+        immediate: true,
+        handler(screen) {
+          this.formStore.setLastScreen(screen);
+        },
+      },
     },
     methods: {
       isItemActive(item) {
@@ -38,7 +52,7 @@
     },
     computed: {
       screen() {
-        return this.$route.params.screen;
+        return this.$route.params.screen || this.formStore.lastScreen;
       },
       isSubSection() {
         const path = this.$route.path;
@@ -52,7 +66,8 @@
             id: 'screens',
             title: 'Screens',
             route: '/submissions',
-            icon: 'mdi-flask-outline',
+            // icon: 'mdi-flask-outline',
+            icon: 'mdi-layers-outline',
             activePrefix: null,
           },
           {
@@ -68,14 +83,14 @@
             id: 'forms',
             title: 'Forms',
             route: this.screen ? `/submissions/forms/${this.screen}` : '/submissions/forms',
-            icon: 'mdi-file-document-arrow-right-outline',
+            icon: 'mdi-file-document-outline',
             activePrefix: '/submissions/forms',
           },
           {
             id: 'quote-po',
             title: 'View Quote & Upload PO',
             route: '/submissions/quote-and-po',
-            icon: 'mdi-currency-usd',
+            icon: 'mdi-invoice-import-outline',
             activePrefix: null,
           },
         ];

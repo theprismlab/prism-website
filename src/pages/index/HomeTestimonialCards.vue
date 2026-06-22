@@ -1,5 +1,5 @@
 <template>
-  <v-row class="mt-6 mb-6">
+  <v-row>
     <v-col
       v-for="(card, index) in testimonialCards"
       :key="index"
@@ -11,7 +11,7 @@
       xl="6"
     >
       <v-card
-        class="pa-6 px-10 fill-height justify-start mb-2"
+        class="pa-6 px-10 fill-height justify-start"
         variant="tonal"
         color="secondary-lighten-3"
       >
