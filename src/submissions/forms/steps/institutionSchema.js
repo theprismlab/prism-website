@@ -66,7 +66,12 @@ export const FIELDS = {
     label: 'Billing / Invoice Contact Email',
     showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
   },
-  COMMENTS: { key: 'comments', label: 'Comments', showIf: requiresExtendedForm },
+  COMMENTS: {
+    key: 'comments',
+    label: 'Additional comments',
+    placeholder: 'For example, requests to receive invoices earlier due to funding deadlines',
+    showIf: requiresExtendedForm,
+  },
 };
 
 export function getInitialData() {
@@ -90,7 +95,8 @@ export function validate(data, _screenType) {
   const errors = {};
   Object.values(FIELDS).forEach((f) => {
     if (f.showIf && !f.showIf(data)) return;
-    const err = required(data[f.key]) || (EMAIL_FIELDS.has(f.key) ? validEmail(data[f.key]) : undefined);
+    const err =
+      required(data[f.key]) || (EMAIL_FIELDS.has(f.key) ? validEmail(data[f.key]) : undefined);
     if (err) errors[f.key] = err;
   });
   return errors;

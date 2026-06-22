@@ -1,13 +1,12 @@
 <template>
   <v-row dense>
-    <v-col cols="12" sm="6">
+    <v-col cols="12" sm="12">
       <v-select
         v-model="data[F.INSTITUTION_TYPE.key]"
         :label="F.INSTITUTION_TYPE.label"
         :placeholder="F.INSTITUTION_TYPE.placeholder"
         :items="institutionTypeOptions"
         variant="outlined"
-        density="compact"
         :error-messages="errors[F.INSTITUTION_TYPE.key]"
         @update:model-value="onTypeChange"
       />
@@ -21,7 +20,6 @@
         :placeholder="F.INSTITUTION_NAME.placeholder"
         :items="institutionNames"
         variant="outlined"
-        density="compact"
         :error-messages="errors[F.INSTITUTION_NAME.key]"
       />
       <v-text-field
@@ -30,7 +28,6 @@
         :label="F.INSTITUTION_NAME.label"
         :placeholder="F.INSTITUTION_NAME.placeholder"
         variant="outlined"
-        density="compact"
         :error-messages="errors[F.INSTITUTION_NAME.key]"
       />
     </v-col>
@@ -48,7 +45,6 @@
         label="I acknowledge and agree."
         :error-messages="errors[F.QUOTE_ACKNOWLEDGEMENT.key]"
         hide-details="auto"
-        density="compact"
       />
     </v-col>
 
@@ -82,17 +78,17 @@
         label="I acknowledge and agree."
         :error-messages="errors[F.COMMERCIAL_USE_ACKNOWLEDGEMENT.key]"
         hide-details="auto"
-        density="compact"
       />
     </v-col>
-
+    <v-col v-if="show(F.FUNDING_INSTITUTION_NAME)" cols="12" sm="12">
+      <h3 class="text-subtitle-2 font-weight-bold mb-1">Funding Institution</h3>
+    </v-col>
     <v-col v-if="show(F.FUNDING_INSTITUTION_NAME)" cols="12" sm="6">
       <v-text-field
         v-model="data[F.FUNDING_INSTITUTION_NAME.key]"
         :label="F.FUNDING_INSTITUTION_NAME.label"
         :placeholder="F.FUNDING_INSTITUTION_NAME.placeholder"
         variant="outlined"
-        density="compact"
         :error-messages="errors[F.FUNDING_INSTITUTION_NAME.key]"
       />
     </v-col>
@@ -102,19 +98,24 @@
         v-model="data[F.FUNDING_INSTITUTION_ADDRESS.key]"
         :label="F.FUNDING_INSTITUTION_ADDRESS.label"
         :placeholder="F.FUNDING_INSTITUTION_ADDRESS.placeholder"
-        variant="outlined"
-        density="compact"
         :error-messages="errors[F.FUNDING_INSTITUTION_ADDRESS.key]"
+        variant="outlined"
       />
     </v-col>
 
+    <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12" sm="12">
+      <h3 class="text-subtitle-2 font-weight-bold mb-1">Billing / Invoicing Contact</h3>
+      <p class="text-body-2 mb-2">
+        Please include the appropriate contact at the funding institution to ensure that funding is
+        received for the quote provided for your submission and to ensure payment of the invoice.
+      </p>
+    </v-col>
     <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12" sm="6">
       <v-text-field
         v-model="data[F.BILLING_CONTACT_NAME.key]"
         :label="F.BILLING_CONTACT_NAME.label"
         :placeholder="F.BILLING_CONTACT_NAME.placeholder"
         variant="outlined"
-        density="compact"
         :error-messages="errors[F.BILLING_CONTACT_NAME.key]"
       />
     </v-col>
@@ -124,9 +125,8 @@
         v-model="data[F.BILLING_CONTACT_EMAIL.key]"
         :label="F.BILLING_CONTACT_EMAIL.label"
         :placeholder="F.BILLING_CONTACT_EMAIL.placeholder"
-        variant="outlined"
-        density="compact"
         type="email"
+        variant="outlined"
         :error-messages="errors[F.BILLING_CONTACT_EMAIL.key]"
       />
     </v-col>
@@ -136,9 +136,8 @@
         v-model="data[F.COMMENTS.key]"
         :label="F.COMMENTS.label"
         :placeholder="F.COMMENTS.placeholder"
-        variant="outlined"
-        density="compact"
         rows="3"
+        variant="outlined"
         auto-grow
       />
     </v-col>
