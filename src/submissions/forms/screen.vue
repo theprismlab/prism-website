@@ -80,7 +80,7 @@
       return { formStore: useFormProgressStore() };
     },
     data() {
-      return { steps: FORM_STEPS, stepErrors: {} };
+      return { steps: FORM_STEPS, attemptedSteps: {} };
     },
     computed: {
       screen() {
@@ -104,6 +104,17 @@
         if (s.startsWith('CPS')) return 'CPS';
         return null;
       },
+      stepErrors() {
+        if (!this.fd) return {};
+        return Object.fromEntries(
+          this.steps.map((step, i) => [
+            step.id,
+            this.attemptedSteps[i]
+              ? STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType)
+              : {},
+          ])
+        );
+      },
       stepValidity() {
         if (!this.fd) return {};
         return Object.fromEntries(
@@ -116,6 +127,9 @@
       },
     },
     watch: {
+      screen() {
+        this.attemptedSteps = {};
+      },
       fd: {
         deep: true,
         handler() {
@@ -148,13 +162,8 @@
         }
       },
       completeStep(i) {
-        const step = this.steps[i];
-        const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
-        if (Object.keys(errors).length > 0) {
-          this.stepErrors = { ...this.stepErrors, [step.id]: errors };
-          return;
-        }
-        this.stepErrors = { ...this.stepErrors, [step.id]: {} };
+        this.attemptedSteps = { ...this.attemptedSteps, [i]: true };
+        if (!this.stepValidity[this.steps[i].id]) return;
         this.formStore.completeStep(this.screen, i);
       },
     },
