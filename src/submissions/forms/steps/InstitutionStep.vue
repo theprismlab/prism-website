@@ -9,6 +9,7 @@
         variant="outlined"
         density="compact"
         :error-messages="errors[F.INSTITUTION_TYPE.key]"
+        @update:model-value="onTypeChange"
       />
     </v-col>
 
@@ -161,14 +162,6 @@
           .map((i) => i.name);
       },
     },
-    watch: {
-      'data.institutionType'(newVal, oldVal) {
-        if (!oldVal) return;
-        Object.values(FIELDS).forEach((f) => {
-          if (f.key !== FIELDS.INSTITUTION_TYPE.key) this.data[f.key] = '';
-        });
-      },
-    },
     created() {
       this.loadInstitutionNames();
     },
@@ -181,6 +174,11 @@
         } catch (error) {
           console.error('Failed to load institution names', error);
         }
+      },
+      onTypeChange() {
+        Object.values(FIELDS).forEach((f) => {
+          if (f.key !== FIELDS.INSTITUTION_TYPE.key) this.data[f.key] = '';
+        });
       },
       show(field) {
         return !field.showIf || field.showIf(this.data);

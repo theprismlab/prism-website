@@ -18,10 +18,6 @@ export const INSTITUTION_TYPE_OPTIONS = Object.values(COLLABORATOR_TYPE_OPTIONS)
 const requiresExtendedForm = (data) =>
   !!data.institutionType && data.institutionType !== COLLABORATOR_TYPE_OPTIONS.DMC.key;
 
-const hasSelectedInstitution = (data) => requiresExtendedForm(data) && !!data.institutionName;
-
-const hasInstitutionName = (data) => !!data.institutionName;
-
 export const FIELDS = {
   INSTITUTION_TYPE: {
     key: 'institutionType',
@@ -36,12 +32,12 @@ export const FIELDS = {
   QUOTE_ACKNOWLEDGEMENT: {
     key: 'quoteAcknowledgement',
     label: 'Quote Acknowledgement',
-    showIf: hasSelectedInstitution,
+    showIf: requiresExtendedForm,
   },
   COMMERCIAL_USE: {
     key: 'commercialUse',
     label: 'Commercial Use?',
-    showIf: hasInstitutionName,
+    showIf: requiresExtendedForm,
   },
   COMMERCIAL_USE_ACKNOWLEDGEMENT: {
     key: 'commercialUseAcknowledgement',
@@ -68,7 +64,7 @@ export const FIELDS = {
     label: 'Billing / Invoice Contact Email',
     showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
   },
-  COMMENTS: { key: 'comments', label: 'Comments', showIf: hasInstitutionName },
+  COMMENTS: { key: 'comments', label: 'Comments', showIf: requiresExtendedForm },
 };
 
 export function getInitialData() {
