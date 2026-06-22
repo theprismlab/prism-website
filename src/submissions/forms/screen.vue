@@ -105,9 +105,30 @@
         return null;
       },
     },
+    watch: {
+      fd: {
+        deep: true,
+        handler() {
+          if (!this.screen || !this.fd) return;
+          this.steps.forEach((step, i) => {
+            const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
+            const hasErrors = Object.keys(errors).length > 0;
+            const status = this.formStore.stepStatus(this.screen, i);
+            if (hasErrors && status === 'completed') {
+              this.formStore.uncompleteStep(this.screen, i);
+            } else if (!hasErrors && status !== 'completed') {
+              this.formStore.markStepValid(this.screen, i);
+            }
+          });
+        },
+      },
+    },
     methods: {
       isCompleted(i) {
-        return this.formStore.stepStatus(this.screen, i) === 'completed';
+        if (!this.fd) return false;
+        const step = this.steps[i];
+        const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
+        return Object.keys(errors).length === 0;
       },
       iconColor(i) {
         const s = this.formStore.stepStatus(this.screen, i);

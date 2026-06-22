@@ -49,5 +49,15 @@ export const useFormProgressStore = defineStore('formProgress', {
     setLastScreen(screen) {
       if (screen) this.lastScreen = screen;
     },
+    uncompleteStep(screen, index) {
+      const s = this.screens[screen];
+      if (!s) return;
+      s.completed = s.completed.filter((i) => i !== index);
+    },
+    markStepValid(screen, index) {
+      this._ensure(screen);
+      const s = this.screens[screen];
+      if (!s.completed.includes(index)) s.completed.push(index);
+    },
   },
 });
