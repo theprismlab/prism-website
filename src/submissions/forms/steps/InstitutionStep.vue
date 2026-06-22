@@ -161,6 +161,14 @@
           .map((i) => i.name);
       },
     },
+    watch: {
+      'data.institutionType'(newVal, oldVal) {
+        if (!oldVal) return;
+        Object.values(FIELDS).forEach((f) => {
+          if (f.key !== FIELDS.INSTITUTION_TYPE.key) this.data[f.key] = '';
+        });
+      },
+    },
     created() {
       this.loadInstitutionNames();
     },
