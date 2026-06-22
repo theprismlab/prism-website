@@ -39,6 +39,26 @@ Steps are defined in `store.js` as `FORM_STEPS` (ordered array) and wired up in 
 | `acknowledgments`| Acknowledgments  | `acknowledgementsSchema.js`  |
 | `review`         | Review & Submit  | `reviewSchema.js`            |
 
+The review step behaves differently from the others — it owns its own Submit button and does not use the shared Continue button rendered by `screen.vue`.
+
+## Review & Submit step
+
+`ReviewStep.vue` renders a summary of all previous steps, a confirmation checkbox, and a Submit button.
+
+**Flow:**
+1. User reads the summary tables (pulled from each step's `getSummary`).
+2. User checks "I have reviewed my submission and confirm it is correct." — this sets `data.reviewed = true`, which causes the live-validation watcher to mark the step Done.
+3. User clicks Submit. The button is disabled until the checkbox is checked.
+4. `submitForm()` fires the API call (see placeholder below) and shows a `v-dialog` with the success or error message returned by the API.
+
+**Adding the real API call** — find the `TODO` comment in `ReviewStep.vue`:
+```js
+// TODO: replace with real API call, e.g.:
+// const result = await ApiClasses.postSubmission(apiURL, this.formData);
+await new Promise((resolve) => setTimeout(resolve, 800)); // placeholder
+```
+Replace the placeholder with the actual call. `this.formData` contains the complete form payload (`collaborator`, `institution`, `testAgent`, `acknowledgments`, `review`). On success set `dialogSuccess = true` and a message; on catch set `dialogSuccess = false` and the error message — the dialog handles both cases.
+
 ## Schema pattern
 
 Every schema module exports three functions consumed by `STEP_REGISTRY`:
