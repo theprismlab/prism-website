@@ -1,15 +1,14 @@
 // Review step schema.
-// The review step is read-only (summarises other steps) so there is no form
-// data to initialise or validate — the step is always considered complete.
 
 export function getInitialData() {
-  return {};
+  return { reviewed: false };
 }
 
 export function getSummary() {
   return [];
 }
 
-export function validate() {
+export function validate(data) {
+  if (!data.reviewed) return { reviewed: 'Required' };
   return {};
 }

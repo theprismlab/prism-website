@@ -46,10 +46,8 @@
               :errors="stepErrors.review || {}"
             />
 
-            <div class="d-flex justify-end mt-4">
-              <v-btn color="primary" @click="completeStep(i)">
-                {{ i === steps.length - 1 ? 'Submit' : 'Continue' }}
-              </v-btn>
+            <div v-if="step.id !== 'review'" class="d-flex justify-end mt-4">
+              <v-btn color="primary" @click="completeStep(i)">Continue</v-btn>
             </div>
           </v-expansion-panel-text>
         </v-expansion-panel>
