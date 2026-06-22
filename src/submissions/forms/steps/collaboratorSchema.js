@@ -1,23 +1,31 @@
 // Collaborator step field schema.
 // Pure JS — no Vue dependencies.
 
-import { required, validEmail } from './validationHelpers';
+import {
+  required,
+  validEmail,
+  institutionalEmail,
+  institutionalEmailHint,
+} from './validationHelpers';
 
 export const FIELDS = {
   YOUR_NAME: { key: 'yourName', label: 'Your Name' },
   YOUR_EMAIL: {
     key: 'yourEmail',
     label: 'Your Email (institutional email, no personal emails)',
+    hint: institutionalEmailHint,
   },
   INVESTIGATOR_NAME: { key: 'investigatorName', label: 'Investigator Name' },
   INVESTIGATOR_EMAIL: {
     key: 'investigatorEmail',
     label: 'Investigator Email (institutional email, no personal emails)',
+    hint: institutionalEmailHint,
   },
   DATA_ACCESS_MANAGERS: {
     key: 'dataAccessManagers',
     nameLabel: 'Data Access Manager Name',
     emailLabel: 'Data Access Manager Email',
+    hint: institutionalEmailHint,
   },
 };
 
@@ -65,9 +73,9 @@ export function validate(data) {
   };
 
   err(FIELDS.YOUR_NAME.key, required);
-  err(FIELDS.YOUR_EMAIL.key, required, validEmail);
+  err(FIELDS.YOUR_EMAIL.key, required, validEmail, institutionalEmail);
   err(FIELDS.INVESTIGATOR_NAME.key, required);
-  err(FIELDS.INVESTIGATOR_EMAIL.key, required, validEmail);
+  err(FIELDS.INVESTIGATOR_EMAIL.key, required, validEmail, institutionalEmail);
 
   (data[FIELDS.DATA_ACCESS_MANAGERS.key] || []).forEach((m, i) => {
     const hasName = !!m.name;

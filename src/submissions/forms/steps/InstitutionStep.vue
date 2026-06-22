@@ -1,9 +1,9 @@
 <template>
   <v-row dense>
-    <v-col cols="12" sm="12">
+    <v-col cols="12" sm="6">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.INSTITUTION_TYPE.label }}</label>
       <v-select
         v-model="data[F.INSTITUTION_TYPE.key]"
-        :label="F.INSTITUTION_TYPE.label"
         :placeholder="F.INSTITUTION_TYPE.placeholder"
         :items="institutionTypeOptions"
         variant="outlined"
@@ -13,10 +13,10 @@
     </v-col>
 
     <v-col v-if="show(F.INSTITUTION_NAME)" cols="12" sm="6">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.INSTITUTION_NAME.label }}</label>
       <v-select
         v-if="hasDropdownNames"
         v-model="data[F.INSTITUTION_NAME.key]"
-        :label="F.INSTITUTION_NAME.label"
         :placeholder="F.INSTITUTION_NAME.placeholder"
         :items="institutionNames"
         variant="outlined"
@@ -25,7 +25,6 @@
       <v-text-field
         v-else
         v-model="data[F.INSTITUTION_NAME.key]"
-        :label="F.INSTITUTION_NAME.label"
         :placeholder="F.INSTITUTION_NAME.placeholder"
         variant="outlined"
         :error-messages="errors[F.INSTITUTION_NAME.key]"
@@ -80,30 +79,30 @@
         hide-details="auto"
       />
     </v-col>
-    <v-col v-if="show(F.FUNDING_INSTITUTION_NAME)" cols="12" sm="12">
+
+    <v-col v-if="show(F.FUNDING_INSTITUTION_NAME)" cols="12">
       <h3 class="text-subtitle-2 font-weight-bold mb-1">Funding Institution</h3>
     </v-col>
     <v-col v-if="show(F.FUNDING_INSTITUTION_NAME)" cols="12" sm="6">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.FUNDING_INSTITUTION_NAME.label }}</label>
       <v-text-field
         v-model="data[F.FUNDING_INSTITUTION_NAME.key]"
-        :label="F.FUNDING_INSTITUTION_NAME.label"
         :placeholder="F.FUNDING_INSTITUTION_NAME.placeholder"
         variant="outlined"
         :error-messages="errors[F.FUNDING_INSTITUTION_NAME.key]"
       />
     </v-col>
-
     <v-col v-if="show(F.FUNDING_INSTITUTION_ADDRESS)" cols="12" sm="6">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.FUNDING_INSTITUTION_ADDRESS.label }}</label>
       <v-text-field
         v-model="data[F.FUNDING_INSTITUTION_ADDRESS.key]"
-        :label="F.FUNDING_INSTITUTION_ADDRESS.label"
         :placeholder="F.FUNDING_INSTITUTION_ADDRESS.placeholder"
-        :error-messages="errors[F.FUNDING_INSTITUTION_ADDRESS.key]"
         variant="outlined"
+        :error-messages="errors[F.FUNDING_INSTITUTION_ADDRESS.key]"
       />
     </v-col>
 
-    <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12" sm="12">
+    <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12">
       <h3 class="text-subtitle-2 font-weight-bold mb-1">Billing / Invoicing Contact</h3>
       <p class="text-body-2 mb-2">
         Please include the appropriate contact at the funding institution to ensure that funding is
@@ -111,19 +110,18 @@
       </p>
     </v-col>
     <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12" sm="6">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.BILLING_CONTACT_NAME.label }}</label>
       <v-text-field
         v-model="data[F.BILLING_CONTACT_NAME.key]"
-        :label="F.BILLING_CONTACT_NAME.label"
         :placeholder="F.BILLING_CONTACT_NAME.placeholder"
         variant="outlined"
         :error-messages="errors[F.BILLING_CONTACT_NAME.key]"
       />
     </v-col>
-
     <v-col v-if="show(F.BILLING_CONTACT_EMAIL)" cols="12" sm="6">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.BILLING_CONTACT_EMAIL.label }}</label>
       <v-text-field
         v-model="data[F.BILLING_CONTACT_EMAIL.key]"
-        :label="F.BILLING_CONTACT_EMAIL.label"
         :placeholder="F.BILLING_CONTACT_EMAIL.placeholder"
         type="email"
         variant="outlined"
@@ -132,9 +130,9 @@
     </v-col>
 
     <v-col v-if="show(F.COMMENTS)" cols="12">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.COMMENTS.label }}</label>
       <v-textarea
         v-model="data[F.COMMENTS.key]"
-        :label="F.COMMENTS.label"
         :placeholder="F.COMMENTS.placeholder"
         rows="3"
         variant="outlined"

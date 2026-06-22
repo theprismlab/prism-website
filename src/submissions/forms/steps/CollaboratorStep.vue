@@ -4,23 +4,22 @@
       <h3 class="text-subtitle-2 font-weight-bold mb-1">Your information</h3>
     </v-col>
     <v-col cols="12" sm="5">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.YOUR_NAME.label }}</label>
       <v-text-field
         v-model="data[F.YOUR_NAME.key]"
-        :label="F.YOUR_NAME.label"
-        :placeholder="F.YOUR_NAME.placeholder"
         variant="outlined"
-        density="compact"
+        hide-details="auto"
         :error-messages="errors[F.YOUR_NAME.key]"
       />
     </v-col>
     <v-col cols="12" sm="7">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.YOUR_EMAIL.label }}</label>
       <v-text-field
         v-model="data[F.YOUR_EMAIL.key]"
-        :label="F.YOUR_EMAIL.label"
-        :placeholder="F.YOUR_EMAIL.placeholder"
         variant="outlined"
-        density="compact"
         type="email"
+        :hint="F.YOUR_EMAIL.hint"
+        persistent-hint
         :error-messages="errors[F.YOUR_EMAIL.key]"
       />
     </v-col>
@@ -30,23 +29,22 @@
       <h3 class="text-subtitle-2 font-weight-bold mb-1">Investigator information</h3>
     </v-col>
     <v-col cols="12" sm="5">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.INVESTIGATOR_NAME.label }}</label>
       <v-text-field
         v-model="data[F.INVESTIGATOR_NAME.key]"
-        :label="F.INVESTIGATOR_NAME.label"
-        :placeholder="F.INVESTIGATOR_NAME.placeholder"
         variant="outlined"
-        density="compact"
+        hide-details="auto"
         :error-messages="errors[F.INVESTIGATOR_NAME.key]"
       />
     </v-col>
     <v-col cols="12" sm="7">
+      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.INVESTIGATOR_EMAIL.label }}</label>
       <v-text-field
         v-model="data[F.INVESTIGATOR_EMAIL.key]"
-        :label="F.INVESTIGATOR_EMAIL.label"
-        :placeholder="F.INVESTIGATOR_EMAIL.placeholder"
         variant="outlined"
-        density="compact"
         type="email"
+        :hint="F.INVESTIGATOR_EMAIL.hint"
+        persistent-hint
         :error-messages="errors[F.INVESTIGATOR_EMAIL.key]"
       />
     </v-col>
@@ -56,25 +54,30 @@
       <h3 class="text-subtitle-2 font-weight-bold mb-1">Data Access Managers</h3>
     </v-col>
     <v-col cols="12">
+      <v-row dense class="mb-1">
+        <v-col cols="12" sm="5">
+          <label class="text-body-2 font-weight-medium">{{ F.DATA_ACCESS_MANAGERS.nameLabel }}</label>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <label class="text-body-2 font-weight-medium">{{ F.DATA_ACCESS_MANAGERS.emailLabel }}</label>
+        </v-col>
+      </v-row>
       <v-row v-for="(manager, i) in data[F.DATA_ACCESS_MANAGERS.key]" :key="i" dense align="start">
         <v-col cols="12" sm="5">
           <v-text-field
             v-model="manager.name"
-            :label="i === 0 ? F.DATA_ACCESS_MANAGERS.nameLabel : ''"
-            :placeholder="i > 0 ? 'Data Access Manager Name' : ''"
             variant="outlined"
-            density="compact"
+            hide-details="auto"
             :error-messages="errors[`dataAccessManagers_${i}_name`]"
           />
         </v-col>
         <v-col cols="12" sm="6">
           <v-text-field
             v-model="manager.email"
-            :label="i === 0 ? F.DATA_ACCESS_MANAGERS.emailLabel : ''"
-            :placeholder="i > 0 ? 'Data Access Manager Email' : ''"
             variant="outlined"
-            density="compact"
             type="email"
+            :hint="F.DATA_ACCESS_MANAGERS.hint"
+            persistent-hint
             :error-messages="errors[`dataAccessManagers_${i}_email`]"
           />
         </v-col>
@@ -82,7 +85,6 @@
           <v-btn
             icon="mdi-delete-outline"
             variant="text"
-            density="compact"
             color="medium-emphasis"
             :aria-label="`Remove manager ${i + 1}`"
             @click="removeManager(i)"
