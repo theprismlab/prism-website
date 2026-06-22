@@ -1,6 +1,8 @@
 // Institution step field schema and per-screen rules.
 // Pure JS — no Vue dependencies.
 
+import { required, validEmail } from './validationHelpers';
+
 export const COLLABORATOR_TYPE_OPTIONS = {
   DMC: { key: 'DMC', label: 'DepMap Consortium' },
   BROAD: { key: 'NFP', label: 'Broad Institute' },
@@ -80,18 +82,14 @@ export function getSummary(data) {
     .filter((item) => item.value);
 }
 
-const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-
 const EMAIL_FIELDS = new Set([FIELDS.BILLING_CONTACT_EMAIL.key]);
 
 export function validate(data, _screenType) {
   const errors = {};
   Object.values(FIELDS).forEach((f) => {
-    if (!f.showIf || f.showIf(data)) {
-      if (!data[f.key]) errors[f.key] = 'Required';
-      else if (EMAIL_FIELDS.has(f.key) && !isValidEmail(data[f.key]))
-        errors[f.key] = 'Invalid email address';
-    }
+    if (f.showIf && !f.showIf(data)) return;
+    const err = required(data[f.key]) || (EMAIL_FIELDS.has(f.key) ? validEmail(data[f.key]) : undefined);
+    if (err) errors[f.key] = err;
   });
   return errors;
 }

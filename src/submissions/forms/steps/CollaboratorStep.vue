@@ -89,73 +89,7 @@
 </template>
 
 <script>
-  const FIELDS = {
-    YOUR_NAME: { key: 'yourName', label: 'Your Name' },
-    YOUR_EMAIL: {
-      key: 'yourEmail',
-      label: 'Your Email (institutional email, no personal emails)',
-    },
-    INVESTIGATOR_NAME: {
-      key: 'investigatorName',
-      label: 'Investigator Name',
-    },
-    INVESTIGATOR_EMAIL: {
-      key: 'investigatorEmail',
-      label: 'Investigator Email (institutional email, no personal emails)',
-    },
-    DATA_ACCESS_MANAGERS: {
-      key: 'dataAccessManagers',
-      nameLabel: 'Data Access Manager Name',
-      emailLabel: 'Data Access Manager Email',
-    },
-  };
-
-  export function getInitialData() {
-    return {
-      [FIELDS.YOUR_NAME.key]: '',
-      [FIELDS.YOUR_EMAIL.key]: '',
-      [FIELDS.INVESTIGATOR_NAME.key]: '',
-      [FIELDS.INVESTIGATOR_EMAIL.key]: '',
-      [FIELDS.DATA_ACCESS_MANAGERS.key]: [{ name: '', email: '' }],
-    };
-  }
-
-  export function getSummary(data) {
-    const simple = [
-      FIELDS.YOUR_NAME,
-      FIELDS.YOUR_EMAIL,
-      FIELDS.INVESTIGATOR_NAME,
-      FIELDS.INVESTIGATOR_EMAIL,
-    ]
-      .map((f) => ({ label: f.label, value: data[f.key] }))
-      .filter((item) => item.value);
-    const managers = (data[FIELDS.DATA_ACCESS_MANAGERS.key] || [])
-      .filter((m) => m.name || m.email)
-      .map((m, i) => ({
-        label: `Data Access Manager ${i + 1}`,
-        value: [m.name, m.email].filter(Boolean).join(', '),
-      }));
-    return [...simple, ...managers];
-  }
-
-  const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-
-  export function validate(data, _screenType) {
-    const errors = {};
-    if (!data[FIELDS.YOUR_NAME.key]) errors[FIELDS.YOUR_NAME.key] = 'Required';
-    if (!data[FIELDS.YOUR_EMAIL.key]) errors[FIELDS.YOUR_EMAIL.key] = 'Required';
-    else if (!isValidEmail(data[FIELDS.YOUR_EMAIL.key]))
-      errors[FIELDS.YOUR_EMAIL.key] = 'Invalid email address';
-    if (!data[FIELDS.INVESTIGATOR_NAME.key]) errors[FIELDS.INVESTIGATOR_NAME.key] = 'Required';
-    if (!data[FIELDS.INVESTIGATOR_EMAIL.key]) errors[FIELDS.INVESTIGATOR_EMAIL.key] = 'Required';
-    else if (!isValidEmail(data[FIELDS.INVESTIGATOR_EMAIL.key]))
-      errors[FIELDS.INVESTIGATOR_EMAIL.key] = 'Invalid email address';
-    data[FIELDS.DATA_ACCESS_MANAGERS.key].forEach((m, i) => {
-      if (m.email && !isValidEmail(m.email))
-        errors[`dataAccessManagers_${i}_email`] = 'Invalid email address';
-    });
-    return errors;
-  }
+  import { FIELDS } from './collaboratorSchema';
 
   export default {
     name: 'CollaboratorStep',

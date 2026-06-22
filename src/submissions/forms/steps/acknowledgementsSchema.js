@@ -1,6 +1,8 @@
 // Acknowledgements step field schema and per-screen rules.
 // Pure JS — no Vue dependencies.
 
+import { required } from './validationHelpers';
+
 const FIELDS = {
   TEST_AGENT_REQ_1: {
     key: 'acknowledgement1',
@@ -91,7 +93,8 @@ export function getSummary(data) {
 export function validate(data, screenType) {
   const errors = {};
   for (const f of buildScreenFields(screenType)) {
-    if (!data[f.key]) errors[f.key] = 'Required';
+    const err = required(data[f.key]);
+    if (err) errors[f.key] = err;
   }
   return errors;
 }

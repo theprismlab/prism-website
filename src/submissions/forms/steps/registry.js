@@ -2,7 +2,7 @@ import {
   getInitialData as collaboratorInit,
   getSummary as collaboratorSummary,
   validate as collaboratorValidate,
-} from './CollaboratorStep.vue';
+} from './collaboratorSchema.js';
 import {
   getInitialData as institutionInit,
   getSummary as institutionSummary,
@@ -18,7 +18,10 @@ import {
   getSummary as acknowledgementsSummary,
   validate as acknowledgementsValidate,
 } from './acknowledgementsSchema.js';
-import { getInitialData as reviewInit, validate as reviewValidate } from './ReviewStep.vue';
+import {
+  getInitialData as reviewInit,
+  validate as reviewValidate,
+} from './reviewSchema.js';
 
 export const STEP_REGISTRY = {
   collaborator: {

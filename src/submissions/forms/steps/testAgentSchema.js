@@ -2,8 +2,9 @@
 // Pure JS — no Vue dependencies — so it can be unit-tested and reused
 // outside the component (e.g. server-side validation, CSV import, review step).
 
+import { validNumber } from './validationHelpers';
+
 const BRD_REGEX = /^BRD-[AKUMC][0-9]{8}-[0-9]{3}-[0-9]{2}-[0-9]$|^BRD-[AKUM][0-9]{8}$/;
-const validateNumber = (val) => (val !== '' && isNaN(Number(val)) ? 'Must be a number' : undefined);
 const YES_NO = ['Yes', 'No'];
 const STORAGE_OPTIONS = ['Room temperature', '4°C', '-20°C'];
 const MOLECULE_TYPES = [
@@ -30,12 +31,12 @@ const FIELDS = {
   },
   MOLECULE_TYPE: { key: 'molecule_type', label: 'Molecule Type', options: MOLECULE_TYPES },
   SOLVENT: { key: 'solvent', label: 'Solvent' },
-  TOP_DOSE: { key: 'top_dose', label: 'Top Screening Dose', inputmode: 'decimal', validate: validateNumber },
+  TOP_DOSE: { key: 'top_dose', label: 'Top Screening Dose', inputmode: 'decimal', validate: validNumber },
   TOP_DOSE_UNIT: { key: 'top_dose_unit', label: 'Top Dose Unit' },
-  CONC: { key: 'conc', label: 'Stock Concentration', inputmode: 'decimal', validate: validateNumber },
+  CONC: { key: 'conc', label: 'Stock Concentration', inputmode: 'decimal', validate: validNumber },
   CONC_UNIT: { key: 'conc_unit', label: 'Stock Conc. Unit' },
-  DILUTION_FACTOR: { key: 'dilution_factor', label: 'Dilution Factor', inputmode: 'decimal', validate: validateNumber },
-  CONC_AMOUNT: { key: 'amount', label: 'Amount', inputmode: 'decimal', validate: validateNumber },
+  DILUTION_FACTOR: { key: 'dilution_factor', label: 'Dilution Factor', inputmode: 'decimal', validate: validNumber },
+  CONC_AMOUNT: { key: 'amount', label: 'Amount', inputmode: 'decimal', validate: validNumber },
   CONC_AMOUNT_UNIT: { key: 'amount_unit', label: 'Amount Unit', options: AMOUNT_UNITS },
   SUPPLIER: { key: 'supplier', label: 'Supplier' },
   SUPPLIER_CATALOG_NAME: { key: 'supplier_catalog_name', label: 'Supplier Catalog Name' },
@@ -119,10 +120,10 @@ const SCREENS = {
   CPS: {
     combinationFields: [
       { key: 'druga',               label: 'Drug A Name' },
-      { key: 'druga_top_dose',      label: 'Drug A Top Dose', inputmode: 'decimal', validate: validateNumber },
+      { key: 'druga_top_dose',      label: 'Drug A Top Dose', inputmode: 'decimal', validate: validNumber },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
       { key: 'drugb',               label: 'Drug B Name', required: false },
-      { key: 'drugb_dose',          label: 'Drug B Dose', inputmode: 'decimal', validate: validateNumber, required: false },
+      { key: 'drugb_dose',          label: 'Drug B Dose', inputmode: 'decimal', validate: validNumber, required: false },
       { key: 'drugb_dose_unit',     label: 'Drug B Dose Unit', options: ['uM'], required: false },
     ],
     fields: [

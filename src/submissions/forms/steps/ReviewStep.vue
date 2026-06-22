@@ -23,14 +23,6 @@
   import { FORM_STEPS } from '@/submissions/store';
   import { STEP_REGISTRY } from './registry';
 
-  export function getInitialData() {
-    return { confirmed: false };
-  }
-
-  export function validate(_data, _screenType) {
-    return {};
-  }
-
   export default {
     name: 'ReviewStep',
     props: {
