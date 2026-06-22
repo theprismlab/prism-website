@@ -104,6 +104,16 @@
         if (s.startsWith('CPS')) return 'CPS';
         return null;
       },
+      stepValidity() {
+        if (!this.fd) return {};
+        return Object.fromEntries(
+          this.steps.map((step) => [
+            step.id,
+            Object.keys(STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType))
+              .length === 0,
+          ])
+        );
+      },
     },
     watch: {
       fd: {
@@ -125,15 +135,11 @@
     },
     methods: {
       isCompleted(i) {
-        if (!this.fd) return false;
-        const step = this.steps[i];
-        const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
-        return Object.keys(errors).length === 0;
+        return this.stepValidity[this.steps[i].id] ?? false;
       },
       iconColor(i) {
-        const s = this.formStore.stepStatus(this.screen, i);
-        if (s === 'completed') return 'success';
-        if (s === 'current') return 'primary';
+        if (this.isCompleted(i)) return 'success';
+        if (this.formStore.stepStatus(this.screen, i) === 'current') return 'primary';
         return undefined;
       },
       onPanelChange(val) {
