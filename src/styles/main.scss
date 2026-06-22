@@ -85,6 +85,20 @@ li {
   margin-bottom: 0.65em;
   padding-left: 6px;
 }
+.prism-text-form-group-label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--base-color-gray--900);
+  line-height: 1.75rem;
+  letter-spacing: 0.0892857143em;
+}
+.prism-text-form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--base-color-gray--900);
+  line-height: 1.25rem;
+  letter-spacing: 0.0892857143em;
+}
 
 // xxl
 @media (min-width: 2560px) {

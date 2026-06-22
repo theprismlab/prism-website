@@ -1,7 +1,7 @@
 <template>
   <v-row dense>
     <v-col cols="12" sm="6">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.INSTITUTION_TYPE.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.INSTITUTION_TYPE.label }}</h4>
       <v-select
         v-model="data[F.INSTITUTION_TYPE.key]"
         :placeholder="F.INSTITUTION_TYPE.placeholder"
@@ -13,7 +13,7 @@
     </v-col>
 
     <v-col v-if="show(F.INSTITUTION_NAME)" cols="12" sm="6">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.INSTITUTION_NAME.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.INSTITUTION_NAME.label }}</h4>
       <v-select
         v-if="hasDropdownNames"
         v-model="data[F.INSTITUTION_NAME.key]"
@@ -32,7 +32,7 @@
     </v-col>
 
     <v-col v-if="show(F.QUOTE_ACKNOWLEDGEMENT)" cols="12">
-      <h3 class="text-subtitle-2 font-weight-bold mb-1">Quote acknowledgement</h3>
+      <h3 class="prism-text-form-group-label">Quote acknowledgement</h3>
       <p class="text-body-2 mb-2">
         A quote based on the number of test agents being submitted for PRISM screen will be sent to
         you following submission of this form. The quote will need to be funded by a purchase order
@@ -48,7 +48,7 @@
     </v-col>
 
     <v-col v-if="show(F.COMMERCIAL_USE)" cols="12">
-      <h3 class="text-subtitle-2 font-weight-bold mb-1">Commercial use</h3>
+      <h3 class="prism-text-form-group-label">Commercial use</h3>
       <p class="text-body-2 mb-2">
         Are these submissions being submitted for commercial/industry use, on behalf of a
         commercial/industry partner, or in collaboration with a commercial/industry partner?
@@ -65,7 +65,7 @@
     </v-col>
 
     <v-col v-if="show(F.COMMERCIAL_USE_ACKNOWLEDGEMENT)" cols="12">
-      <h3 class="text-subtitle-2 font-weight-bold mb-1">Commercial use acknowledgement</h3>
+      <h3 class="prism-text-form-group-label">Commercial use acknowledgement</h3>
       <p class="text-body-2 mb-2">
         PRISM screen submissions submitted by academics/non-profits receive subsidized pricing and
         thus, results are for academic/research purposes only. Collaborators wanting to use the
@@ -81,10 +81,10 @@
     </v-col>
 
     <v-col v-if="show(F.FUNDING_INSTITUTION_NAME)" cols="12">
-      <h3 class="text-subtitle-2 font-weight-bold mb-1">Funding Institution</h3>
+      <h3 class="prism-text-form-group-label">Funding Institution</h3>
     </v-col>
     <v-col v-if="show(F.FUNDING_INSTITUTION_NAME)" cols="12" sm="6">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.FUNDING_INSTITUTION_NAME.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.FUNDING_INSTITUTION_NAME.label }}</h4>
       <v-text-field
         v-model="data[F.FUNDING_INSTITUTION_NAME.key]"
         :placeholder="F.FUNDING_INSTITUTION_NAME.placeholder"
@@ -93,7 +93,7 @@
       />
     </v-col>
     <v-col v-if="show(F.FUNDING_INSTITUTION_ADDRESS)" cols="12" sm="6">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.FUNDING_INSTITUTION_ADDRESS.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.FUNDING_INSTITUTION_ADDRESS.label }}</h4>
       <v-text-field
         v-model="data[F.FUNDING_INSTITUTION_ADDRESS.key]"
         :placeholder="F.FUNDING_INSTITUTION_ADDRESS.placeholder"
@@ -103,14 +103,14 @@
     </v-col>
 
     <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12">
-      <h3 class="text-subtitle-2 font-weight-bold mb-1">Billing / Invoicing Contact</h3>
+      <h3 class="prism-text-form-group-label">Billing / Invoicing Contact</h3>
       <p class="text-body-2 mb-2">
         Please include the appropriate contact at the funding institution to ensure that funding is
         received for the quote provided for your submission and to ensure payment of the invoice.
       </p>
     </v-col>
     <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12" sm="6">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.BILLING_CONTACT_NAME.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.BILLING_CONTACT_NAME.label }}</h4>
       <v-text-field
         v-model="data[F.BILLING_CONTACT_NAME.key]"
         :placeholder="F.BILLING_CONTACT_NAME.placeholder"
@@ -119,7 +119,7 @@
       />
     </v-col>
     <v-col v-if="show(F.BILLING_CONTACT_EMAIL)" cols="12" sm="6">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.BILLING_CONTACT_EMAIL.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.BILLING_CONTACT_EMAIL.label }}</h4>
       <v-text-field
         v-model="data[F.BILLING_CONTACT_EMAIL.key]"
         :placeholder="F.BILLING_CONTACT_EMAIL.placeholder"
@@ -130,7 +130,7 @@
     </v-col>
 
     <v-col v-if="show(F.COMMENTS)" cols="12">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.COMMENTS.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.COMMENTS.label }}</h4>
       <v-textarea
         v-model="data[F.COMMENTS.key]"
         :placeholder="F.COMMENTS.placeholder"

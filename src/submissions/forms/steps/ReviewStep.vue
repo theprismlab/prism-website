@@ -1,9 +1,7 @@
 <template>
   <div>
     <div v-for="step in summarySteps" :key="step.id" class="mb-5">
-      <div class="text-subtitle-2 font-weight-bold text-medium-emphasis mb-2 text-uppercase">
-        {{ step.title }}
-      </div>
+      <h3 class="prism-text-form-group-label">{{ step.title }}</h3>
       <v-table density="compact">
         <tbody>
           <tr v-for="item in stepSummary(step.id)" :key="item.label">

@@ -68,7 +68,7 @@ export const FIELDS = {
   },
   COMMENTS: {
     key: 'comments',
-    label: 'Additional comments',
+    label: 'Comments',
     placeholder: 'For example, requests to receive invoices earlier due to funding deadlines',
     showIf: requiresExtendedForm,
   },

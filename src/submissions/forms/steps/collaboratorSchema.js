@@ -12,13 +12,13 @@ export const FIELDS = {
   YOUR_NAME: { key: 'yourName', label: 'Your Name' },
   YOUR_EMAIL: {
     key: 'yourEmail',
-    label: 'Your Email (institutional email, no personal emails)',
+    label: 'Your Email',
     hint: institutionalEmailHint,
   },
   INVESTIGATOR_NAME: { key: 'investigatorName', label: 'Investigator Name' },
   INVESTIGATOR_EMAIL: {
     key: 'investigatorEmail',
-    label: 'Investigator Email (institutional email, no personal emails)',
+    label: 'Investigator Email',
     hint: institutionalEmailHint,
   },
   DATA_ACCESS_MANAGERS: {

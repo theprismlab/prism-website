@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-for="(sectionItems, sectionTitle) in groupedFields" :key="sectionTitle">
-      <p class="text-subtitle-2 font-weight-bold mt-6 mb-1">{{ sectionTitle }}</p>
+      <h3 class="prism-text-form-group-label">{{ sectionTitle }}</h3>
       <v-divider class="mb-3" />
       <div v-for="f in sectionItems" :key="f.key" class="mb-4">
         <p class="text-body-2 mb-1" v-html="descriptionHtml(f)" />

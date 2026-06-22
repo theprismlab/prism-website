@@ -1,10 +1,10 @@
 <template>
   <v-row dense>
     <v-col cols="12">
-      <h3 class="text-subtitle-2 font-weight-bold mb-1">Your information</h3>
+      <h3 class="prism-text-form-group-label">Your information</h3>
     </v-col>
     <v-col cols="12" sm="5">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.YOUR_NAME.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.YOUR_NAME.label }}</h4>
       <v-text-field
         v-model="data[F.YOUR_NAME.key]"
         variant="outlined"
@@ -13,7 +13,7 @@
       />
     </v-col>
     <v-col cols="12" sm="7">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.YOUR_EMAIL.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.YOUR_EMAIL.label }}</h4>
       <v-text-field
         v-model="data[F.YOUR_EMAIL.key]"
         variant="outlined"
@@ -26,10 +26,10 @@
   </v-row>
   <v-row dense>
     <v-col cols="12">
-      <h3 class="text-subtitle-2 font-weight-bold mb-1">Investigator information</h3>
+      <h3 class="prism-text-form-group-label">Investigator information</h3>
     </v-col>
     <v-col cols="12" sm="5">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.INVESTIGATOR_NAME.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.INVESTIGATOR_NAME.label }}</h4>
       <v-text-field
         v-model="data[F.INVESTIGATOR_NAME.key]"
         variant="outlined"
@@ -38,7 +38,8 @@
       />
     </v-col>
     <v-col cols="12" sm="7">
-      <label class="text-body-2 font-weight-medium d-block mb-1">{{ F.INVESTIGATOR_EMAIL.label }}</label>
+      <h4 class="prism-text-form-label">{{ F.INVESTIGATOR_EMAIL.label }}</h4>
+
       <v-text-field
         v-model="data[F.INVESTIGATOR_EMAIL.key]"
         variant="outlined"
@@ -51,15 +52,19 @@
   </v-row>
   <v-row dense>
     <v-col cols="12">
-      <h3 class="text-subtitle-2 font-weight-bold mb-1">Data Access Managers</h3>
+      <h3 class="prism-text-form-group-label">Data Access Managers</h3>
     </v-col>
     <v-col cols="12">
       <v-row dense class="mb-1">
         <v-col cols="12" sm="5">
-          <label class="text-body-2 font-weight-medium">{{ F.DATA_ACCESS_MANAGERS.nameLabel }}</label>
+          <h4 class="prism-text-form-label">{{
+            F.DATA_ACCESS_MANAGERS.nameLabel
+          }}</h4>
         </v-col>
         <v-col cols="12" sm="6">
-          <label class="text-body-2 font-weight-medium">{{ F.DATA_ACCESS_MANAGERS.emailLabel }}</label>
+          <h4 class="prism-text-form-label">{{
+            F.DATA_ACCESS_MANAGERS.emailLabel
+          }}</h4>
         </v-col>
       </v-row>
       <v-row v-for="(manager, i) in data[F.DATA_ACCESS_MANAGERS.key]" :key="i" dense align="start">
