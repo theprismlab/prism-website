@@ -12,6 +12,7 @@ export const FORM_STEPS = [
 export const useFormProgressStore = defineStore('formProgress', {
   state: () => ({
     screens: {},
+    lastScreen: null,
   }),
   getters: {
     stepStatus: (state) => (screen, index) => {
@@ -44,6 +45,9 @@ export const useFormProgressStore = defineStore('formProgress', {
     setOpenPanel(screen, index) {
       this._ensure(screen);
       this.screens[screen].openPanel = index;
+    },
+    setLastScreen(screen) {
+      if (screen) this.lastScreen = screen;
     },
   },
 });

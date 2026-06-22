@@ -24,12 +24,25 @@
 </template>
 
 <script>
+  import { useFormProgressStore } from './store';
+
   export default {
     name: 'SubmissionsDrawer',
+    setup() {
+      return { formStore: useFormProgressStore() };
+    },
     data() {
       return {
         drawer: true,
       };
+    },
+    watch: {
+      '$route.params.screen': {
+        immediate: true,
+        handler(screen) {
+          this.formStore.setLastScreen(screen);
+        },
+      },
     },
     methods: {
       isItemActive(item) {
@@ -39,7 +52,7 @@
     },
     computed: {
       screen() {
-        return this.$route.params.screen;
+        return this.$route.params.screen || this.formStore.lastScreen;
       },
       isSubSection() {
         const path = this.$route.path;
