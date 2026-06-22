@@ -46,7 +46,7 @@
     <v-list v-if="screen" density="comfortable" nav>
       <v-list-item
         id="form-btn"
-        :to="`/submissions/forms/${screen}`"
+        :to="`/submission-hub/forms/${screen}`"
         title="Start Form"
         append-icon="mdi-arrow-right"
         exact
@@ -84,14 +84,14 @@
           {
             id: 'test-agent',
             title: 'Test Agent Instructions',
-            route: `/submissions/instructions/${this.screen}/test-agent`,
+            route: `/submission-hub/instructions/${this.screen}/test-agent`,
             icon: 'mdi-flask-outline',
             pages: this.testAgentPages,
           },
           {
             id: 'shipping',
             title: 'Shipping Instructions',
-            route: `/submissions/instructions/${this.screen}/shipping`,
+            route: `/submission-hub/instructions/${this.screen}/shipping`,
             icon: 'mdi-truck-outline',
             pages: this.shippingPages,
           },

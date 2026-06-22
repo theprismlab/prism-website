@@ -20,10 +20,10 @@
     components: { SubmissionsDrawer, InstructionsSubDrawer, FormsSubDrawer },
     computed: {
       isInstructions() {
-        return this.$route.path.startsWith('/submissions/instructions');
+        return this.$route.path.startsWith('/submission-hub/instructions');
       },
       isForms() {
-        return this.$route.path.startsWith('/submissions/forms');
+        return this.$route.path.startsWith('/submission-hub/forms');
       },
     },
   };

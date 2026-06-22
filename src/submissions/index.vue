@@ -1,10 +1,11 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>Submissions</prism-page-title>
+      <prism-page-title>Submission Hub</prism-page-title>
       <p class="prism-text-body-1">
-        Welcome to the PRISM submission portal. Here you can find information about upcoming
-        submission windows and submit your screen proposal when the window is open.
+        [BLURB NEEDED] Welcome to the PRISM Submission Hub. Here, you can explore upcoming screens,
+        access detailed instructions, and submit your test agents to participateeee in our
+        consortium screens.
       </p>
       <v-data-table
         :headers="headers"
@@ -21,26 +22,34 @@
       </v-data-table>
     </app-container>
 
-    <v-navigation-drawer v-model="drawerOpen" location="right" width="320" :order="2" floating>
-      <h3>How to participate in a PRISM screen</h3>
-      <v-list lines="two" class="pa-2">
-        <v-list-item
-          prepend-icon="mdi-numeric-1-circle-outline"
-          title="Choose a screen"
-          subtitle="Browse the schedule and select a screen that fits your research goals."
-        />
-        <v-list-item
-          prepend-icon="mdi-numeric-2-circle-outline"
-          title="Submit your proposal"
-          subtitle="Complete the submission form during the open window for your chosen screen."
-        />
-        <v-list-item
-          prepend-icon="mdi-numeric-3-circle-outline"
-          title="Receive your data"
-          subtitle="After the screen runs, processed data will be delivered by the estimated date."
-        />
-      </v-list>
-      <v-divider />
+    <v-navigation-drawer
+      v-model="drawerOpen"
+      location="right"
+      width="320"
+      :order="2"
+      floating
+      id="submission-hub__navigation-drawer-right"
+    >
+      <div class="pa-6">
+        <h3>How to participate in a PRISM screen</h3>
+        <v-list lines="two" class="pa-0">
+          <v-list-item
+            prepend-icon="mdi-numeric-1-circle-outline"
+            title="Choose a screen"
+            subtitle="Browse the schedule and select a screen that fits your research goals."
+          />
+          <v-list-item
+            prepend-icon="mdi-numeric-2-circle-outline"
+            title="Submit your proposal"
+            subtitle="Complete the submission form during the open window for your chosen screen."
+          />
+          <v-list-item
+            prepend-icon="mdi-numeric-3-circle-outline"
+            title="Receive your data"
+            subtitle="After the screen runs, processed data will be delivered by the estimated date."
+          />
+        </v-list>
+      </div>
     </v-navigation-drawer>
 
     <v-btn
@@ -115,4 +124,10 @@
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+  #submission-hub__navigation-drawer-right {
+    top: 64px;
+    height: calc(100% - 64px);
+    background-color: #f4f4f4;
+  }
+</style>

@@ -678,7 +678,7 @@ const G = { marketing: "", portal: "/portal" }, $ = [
     { title: "Data Analysis", route: "/consortium-screens/data-analysis", id: "data-analysis", site: "marketing" },
     { title: "Deliverables", route: "/consortium-screens/deliverables", id: "deliverables", site: "marketing" },
     { title: "Collaborating", route: "/consortium-screens/collaborating", id: "collaborating", site: "marketing" },
-    { title: "Submissions", route: "/submissions", id: "submissions", matchPrefix: !0, site: "marketing" }
+    { title: "Submissions", route: "/submission-hub", id: "submissions", matchPrefix: !0, site: "marketing" }
   ] },
   { title: "Contact us", route: "/contact-us", id: "contact-us", site: "marketing" },
   { title: "Portal", route: "/portal", id: "portal", matchPrefix: !0, site: "portal", excludeRoutes: ["/portal/log-in"] }
