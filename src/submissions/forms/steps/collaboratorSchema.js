@@ -4,7 +4,7 @@
 import {
   required,
   validEmail,
-  institutionalEmail,
+  // institutionalEmail,
   institutionalEmailHint,
 } from './validationHelpers';
 
@@ -25,7 +25,6 @@ export const FIELDS = {
     key: 'dataAccessManagers',
     nameLabel: 'Data Access Manager Name',
     emailLabel: 'Data Access Manager Email',
-    // hint: institutionalEmailHint,
   },
 };
 
@@ -73,9 +72,9 @@ export function validate(data) {
   };
 
   err(FIELDS.YOUR_NAME.key, required);
-  err(FIELDS.YOUR_EMAIL.key, required, validEmail, institutionalEmail);
+  err(FIELDS.YOUR_EMAIL.key, required, validEmail);
   err(FIELDS.INVESTIGATOR_NAME.key, required);
-  err(FIELDS.INVESTIGATOR_EMAIL.key, required, validEmail, institutionalEmail);
+  err(FIELDS.INVESTIGATOR_EMAIL.key, required, validEmail);
 
   (data[FIELDS.DATA_ACCESS_MANAGERS.key] || []).forEach((m, i) => {
     const hasName = !!m.name;

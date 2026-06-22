@@ -57,7 +57,7 @@
 
 <script>
   import ScreenSelector from '../ScreenSelector.vue';
-  import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
+  import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline.js';
 
   export default {
     name: 'InstructionsSubDrawer',

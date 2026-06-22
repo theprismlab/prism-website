@@ -105,8 +105,8 @@
     <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12">
       <h3 class="prism-text-form-group-label">Billing / Invoicing Contact</h3>
       <p class="prism-text-form-body">
-        Please include the appropriate contact at the funding institution to ensure that funding is
-        received for the quote provided for your submission and to ensure payment of the invoice.
+        Please include the appropriate contact at the funding institution to ensure payment of the
+        invoice.
       </p>
     </v-col>
     <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12" sm="6">

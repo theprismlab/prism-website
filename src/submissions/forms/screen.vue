@@ -8,7 +8,9 @@
             <v-icon :color="iconColor(i)" class="mr-2" size="20">{{ step.icon }}</v-icon>
             <span>{{ step.title }}</span>
             <template #actions>
-              <v-chip v-if="isCompleted(i)" color="success" size="x-small" class="mr-1">Done</v-chip>
+              <v-chip v-if="isCompleted(i)" color="success" size="x-small" class="mr-1"
+                >Done</v-chip
+              >
               <template v-else>
                 <v-icon color="warning" size="18" class="mr-1">mdi-alert-circle-outline</v-icon>
                 <v-icon>$expand</v-icon>
@@ -110,7 +112,7 @@
             this.attemptedSteps[i]
               ? STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType)
               : {},
-          ])
+          ]),
         );
       },
       stepValidity() {
@@ -120,7 +122,7 @@
             step.id,
             Object.keys(STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType))
               .length === 0,
-          ])
+          ]),
         );
       },
     },
