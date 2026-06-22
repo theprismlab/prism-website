@@ -70,8 +70,17 @@ export function validate(data) {
   err(FIELDS.INVESTIGATOR_EMAIL.key, required, validEmail);
 
   (data[FIELDS.DATA_ACCESS_MANAGERS.key] || []).forEach((m, i) => {
-    const e = validEmail(m.email);
-    if (e) errors[`dataAccessManagers_${i}_email`] = e;
+    const hasName = !!m.name;
+    const hasEmail = !!m.email;
+    if (hasName || hasEmail) {
+      if (!hasName) errors[`dataAccessManagers_${i}_name`] = 'Required';
+      if (!hasEmail) {
+        errors[`dataAccessManagers_${i}_email`] = 'Required';
+      } else {
+        const e = validEmail(m.email);
+        if (e) errors[`dataAccessManagers_${i}_email`] = e;
+      }
+    }
   });
 
   return errors;
