@@ -33,7 +33,7 @@
 
     <v-col v-if="show(F.QUOTE_ACKNOWLEDGEMENT)" cols="12">
       <h3 class="prism-text-form-group-label">Quote acknowledgement</h3>
-      <p class="text-body-2 mb-2">
+      <p class="prism-text-form-body">
         A quote based on the number of test agents being submitted for PRISM screen will be sent to
         you following submission of this form. The quote will need to be funded by a purchase order
         before accepting your test agents for PRISM screening and clearing your group for shipment
@@ -49,7 +49,7 @@
 
     <v-col v-if="show(F.COMMERCIAL_USE)" cols="12">
       <h3 class="prism-text-form-group-label">Commercial use</h3>
-      <p class="text-body-2 mb-2">
+      <p class="prism-text-form-body">
         Are these submissions being submitted for commercial/industry use, on behalf of a
         commercial/industry partner, or in collaboration with a commercial/industry partner?
       </p>
@@ -66,7 +66,7 @@
 
     <v-col v-if="show(F.COMMERCIAL_USE_ACKNOWLEDGEMENT)" cols="12">
       <h3 class="prism-text-form-group-label">Commercial use acknowledgement</h3>
-      <p class="text-body-2 mb-2">
+      <p class="prism-text-form-body">
         PRISM screen submissions submitted by academics/non-profits receive subsidized pricing and
         thus, results are for academic/research purposes only. Collaborators wanting to use the
         results from this screen submission for commercial/industry will either be charged the
@@ -104,7 +104,7 @@
 
     <v-col v-if="show(F.BILLING_CONTACT_NAME)" cols="12">
       <h3 class="prism-text-form-group-label">Billing / Invoicing Contact</h3>
-      <p class="text-body-2 mb-2">
+      <p class="prism-text-form-body">
         Please include the appropriate contact at the funding institution to ensure that funding is
         received for the quote provided for your submission and to ensure payment of the invoice.
       </p>
