@@ -32,6 +32,7 @@ export const FIELDS = {
   QUOTE_ACKNOWLEDGEMENT: {
     key: 'quoteAcknowledgement',
     label: 'Quote Acknowledgement',
+    default: false,
     showIf: requiresExtendedForm,
   },
   COMMERCIAL_USE: {
@@ -42,6 +43,7 @@ export const FIELDS = {
   COMMERCIAL_USE_ACKNOWLEDGEMENT: {
     key: 'commercialUseAcknowledgement',
     label: 'Commercial Use Acknowledgement',
+    default: false,
     showIf: (data) => data.commercialUse === 'Yes',
   },
   FUNDING_INSTITUTION_NAME: {
@@ -68,13 +70,17 @@ export const FIELDS = {
 };
 
 export function getInitialData() {
-  return Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, '']));
+  return Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, f.default ?? '']));
 }
 
 export function getSummary(data) {
   return Object.values(FIELDS)
     .filter((f) => !f.showIf || f.showIf(data))
-    .map((f) => ({ label: f.label, value: data[f.key] }))
+    .map((f) => {
+      const raw = data[f.key];
+      const value = raw === true ? 'Confirmed' : raw === false ? null : raw;
+      return { label: f.label, value };
+    })
     .filter((item) => item.value);
 }
 

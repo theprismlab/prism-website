@@ -57,7 +57,10 @@ export function validate(data) {
   const err = (key, ...validators) => {
     for (const v of validators) {
       const msg = v(data[key]);
-      if (msg) { errors[key] = msg; return; }
+      if (msg) {
+        errors[key] = msg;
+        return;
+      }
     }
   };
 

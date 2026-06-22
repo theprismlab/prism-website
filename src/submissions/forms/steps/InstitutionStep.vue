@@ -35,37 +35,54 @@
       />
     </v-col>
 
-    <v-col v-if="show(F.QUOTE_ACKNOWLEDGEMENT)" cols="12" sm="6">
-      <v-text-field
+    <v-col v-if="show(F.QUOTE_ACKNOWLEDGEMENT)" cols="12">
+      <div class="text-subtitle-2 font-weight-bold mb-1">Quote acknowledgement</div>
+      <p class="text-body-2 mb-2">
+        A quote based on the number of test agents being submitted for PRISM screen will be sent to
+        you following submission of this form. The quote will need to be funded by a purchase order
+        before accepting your test agents for PRISM screening and clearing your group for shipment
+        to our lab.
+      </p>
+      <v-checkbox
         v-model="data[F.QUOTE_ACKNOWLEDGEMENT.key]"
-        :label="F.QUOTE_ACKNOWLEDGEMENT.label"
-        :placeholder="F.QUOTE_ACKNOWLEDGEMENT.placeholder"
-        variant="outlined"
-        density="compact"
+        label="I acknowledge and agree."
         :error-messages="errors[F.QUOTE_ACKNOWLEDGEMENT.key]"
+        hide-details="auto"
+        density="compact"
       />
     </v-col>
 
-    <v-col v-if="show(F.COMMERCIAL_USE)" cols="12" sm="6">
-      <v-select
+    <v-col v-if="show(F.COMMERCIAL_USE)" cols="12">
+      <div class="text-subtitle-2 font-weight-bold mb-1">Commercial use</div>
+      <p class="text-body-2 mb-2">
+        Are these submissions being submitted for commercial/industry use, on behalf of a
+        commercial/industry partner, or in collaboration with a commercial/industry partner?
+      </p>
+      <v-radio-group
         v-model="data[F.COMMERCIAL_USE.key]"
-        :label="F.COMMERCIAL_USE.label"
-        :placeholder="F.COMMERCIAL_USE.placeholder"
-        :items="['Yes', 'No']"
-        variant="outlined"
-        density="compact"
         :error-messages="errors[F.COMMERCIAL_USE.key]"
-      />
+        hide-details="auto"
+        inline
+      >
+        <v-radio label="Yes" value="Yes" />
+        <v-radio label="No" value="No" />
+      </v-radio-group>
     </v-col>
 
     <v-col v-if="show(F.COMMERCIAL_USE_ACKNOWLEDGEMENT)" cols="12">
-      <v-text-field
+      <div class="text-subtitle-2 font-weight-bold mb-1">Commercial use acknowledgement</div>
+      <p class="text-body-2 mb-2">
+        PRISM screen submissions submitted by academics/non-profits receive subsidized pricing and
+        thus, results are for academic/research purposes only. Collaborators wanting to use the
+        results from this screen submission for commercial/industry will either be charged the
+        standard industry rate or will need to purchase a license from the Broad Institute.
+      </p>
+      <v-checkbox
         v-model="data[F.COMMERCIAL_USE_ACKNOWLEDGEMENT.key]"
-        :label="F.COMMERCIAL_USE_ACKNOWLEDGEMENT.label"
-        :placeholder="F.COMMERCIAL_USE_ACKNOWLEDGEMENT.placeholder"
-        variant="outlined"
-        density="compact"
+        label="I acknowledge and agree."
         :error-messages="errors[F.COMMERCIAL_USE_ACKNOWLEDGEMENT.key]"
+        hide-details="auto"
+        density="compact"
       />
     </v-col>
 
