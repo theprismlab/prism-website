@@ -36,7 +36,7 @@
     </v-col>
 
     <v-col v-if="show(F.QUOTE_ACKNOWLEDGEMENT)" cols="12">
-      <div class="text-subtitle-2 font-weight-bold mb-1">Quote acknowledgement</div>
+      <h3 class="text-subtitle-2 font-weight-bold mb-1">Quote acknowledgement</h3>
       <p class="text-body-2 mb-2">
         A quote based on the number of test agents being submitted for PRISM screen will be sent to
         you following submission of this form. The quote will need to be funded by a purchase order
@@ -53,7 +53,7 @@
     </v-col>
 
     <v-col v-if="show(F.COMMERCIAL_USE)" cols="12">
-      <div class="text-subtitle-2 font-weight-bold mb-1">Commercial use</div>
+      <h3 class="text-subtitle-2 font-weight-bold mb-1">Commercial use</h3>
       <p class="text-body-2 mb-2">
         Are these submissions being submitted for commercial/industry use, on behalf of a
         commercial/industry partner, or in collaboration with a commercial/industry partner?
@@ -70,7 +70,7 @@
     </v-col>
 
     <v-col v-if="show(F.COMMERCIAL_USE_ACKNOWLEDGEMENT)" cols="12">
-      <div class="text-subtitle-2 font-weight-bold mb-1">Commercial use acknowledgement</div>
+      <h3 class="text-subtitle-2 font-weight-bold mb-1">Commercial use acknowledgement</h3>
       <p class="text-body-2 mb-2">
         PRISM screen submissions submitted by academics/non-profits receive subsidized pricing and
         thus, results are for academic/research purposes only. Collaborators wanting to use the

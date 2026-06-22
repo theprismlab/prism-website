@@ -1,7 +1,7 @@
 <template>
   <v-row dense>
     <v-col cols="12">
-      <h3 class="prism-text-h4">Your information</h3>
+      <h3 class="text-subtitle-2 font-weight-bold mb-1">Your information</h3>
     </v-col>
     <v-col cols="12" sm="5">
       <v-text-field
@@ -27,7 +27,7 @@
   </v-row>
   <v-row dense>
     <v-col cols="12">
-      <h3 class="prism-text-h4">Investigator information</h3>
+      <h3 class="text-subtitle-2 font-weight-bold mb-1">Investigator information</h3>
     </v-col>
     <v-col cols="12" sm="5">
       <v-text-field
@@ -51,9 +51,9 @@
       />
     </v-col>
   </v-row>
-  <v-row>
+  <v-row dense>
     <v-col cols="12">
-      <h3>Data Access Managers</h3>
+      <h3 class="text-subtitle-2 font-weight-bold mb-1">Data Access Managers</h3>
     </v-col>
     <v-col cols="12">
       <v-row v-for="(manager, i) in data[F.DATA_ACCESS_MANAGERS.key]" :key="i" dense align="start">
