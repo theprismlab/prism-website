@@ -31,22 +31,19 @@
       id="submission-hub__navigation-drawer-right"
     >
       <div class="pa-6">
-        <h3>How to participate in a PRISM screen</h3>
-        <v-list lines="two" class="pa-0">
+        <h3 class="prism-text-h4">How to participate in a PRISM screen</h3>
+        <v-list class="pa-0 mt-4" nav>
           <v-list-item
             prepend-icon="mdi-numeric-1-circle-outline"
-            title="Choose a screen"
-            subtitle="Browse the schedule and select a screen that fits your research goals."
+            title="Complete a submission form"
           />
           <v-list-item
             prepend-icon="mdi-numeric-2-circle-outline"
-            title="Submit your proposal"
-            subtitle="Complete the submission form during the open window for your chosen screen."
+            title="Provide funding to your quote (if applicable)"
           />
           <v-list-item
             prepend-icon="mdi-numeric-3-circle-outline"
-            title="Receive your data"
-            subtitle="After the screen runs, processed data will be delivered by the estimated date."
+            title="Ship your compounds to our lab"
           />
         </v-list>
       </div>
@@ -124,10 +121,16 @@
   };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   #submission-hub__navigation-drawer-right {
     top: 64px;
     height: calc(100% - 64px);
     background-color: #f4f4f4;
+  }
+  .v-list-item__prepend {
+    width: 32px !important;
+  }
+  .v-list-item__prepend > .v-icon > .v-list-item__spacer {
+    width: 0px !important;
   }
 </style>
