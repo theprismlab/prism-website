@@ -36,7 +36,16 @@
 
     <page-section>
       <app-container>
-        <v-card class="checklist-card" elevation="0">
+        <h2 class="prism-text-h3 mb-0">All of our cell lines are:</h2>
+        <v-list class="mt-2 checklist-list">
+          <v-list-item v-for="item in checklist" :key="item">
+            <template v-slot:prepend>
+              <v-icon class="text-success-accent-4 mr-1">mdi-check-circle-outline</v-icon>
+            </template>
+            <v-list-item-title class="text-wrap">{{ item }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <!-- <v-card class="checklist-card" elevation="0">
           <h2 class="prism-text-h3 mb-0">All of our cell lines are:</h2>
           <v-list class="mt-2 checklist-list">
             <v-list-item v-for="item in checklist" :key="item">
@@ -46,7 +55,7 @@
               <v-list-item-title class="text-wrap">{{ item }}</v-list-item-title>
             </v-list-item>
           </v-list>
-        </v-card>
+        </v-card> -->
       </app-container>
     </page-section>
 
@@ -78,7 +87,8 @@
 
         <v-btn
           variant="outlined"
-          color="primary"
+          color="primary-base"
+          rounded
           href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx"
           target="_blank"
           prepend-icon="mdi-download"
