@@ -30,7 +30,11 @@
 
             <template #item.status="{ item }">
               <v-chip
-                :to="computedStatus(item) === 'OPEN' ? `/submission-hub/forms/${item.screen}` : undefined"
+                :to="
+                  computedStatus(item) === 'OPEN'
+                    ? `/submission-hub/forms/${item.screen}`
+                    : undefined
+                "
                 :color="statusMeta(computedStatus(item)).color"
                 size="small"
                 variant="flat"
@@ -40,7 +44,7 @@
               </v-chip>
             </template>
 
-            <template #item.window_status="{ item }">
+            <!-- <template #item.window_status="{ item }">
               <v-progress-circular
                 v-if="windowStore.loading"
                 size="16"
@@ -48,11 +52,17 @@
                 indeterminate
                 color="grey"
               />
-              <span v-else-if="windowStore.statuses[item.screen]?.status">
-                {{ windowStore.statuses[item.screen].status }}
-              </span>
+              <template v-else-if="windowStore.statuses[item.screen]">
+                <div>{{ windowStore.statuses[item.screen].status }}</div>
+                <div
+                  v-if="windowStore.statuses[item.screen].message"
+                  class="text-caption text-medium-emphasis mt-1"
+                >
+                  {{ windowStore.statuses[item.screen].message }}
+                </div>
+              </template>
               <span v-else class="text-grey-lighten-1">—</span>
-            </template>
+            </template> -->
           </v-data-table>
         </div>
 
@@ -135,7 +145,7 @@
           { title: 'Timepoint', key: 'time_point', sortable: false },
           { title: 'Submission Window', key: 'submission_window', sortable: false },
           { title: 'Screen Status', key: 'status', sortable: false },
-          { title: 'API Status', key: 'window_status', sortable: false },
+          // { title: 'API Status', key: 'window_status', sortable: false },
           { title: 'Estimated Data Delivery', key: 'data_delivery_date', sortable: false },
         ],
         schedule: [
@@ -206,6 +216,7 @@
     },
     mounted() {
       this.windowStore.load(import.meta.env.VITE_API_URL);
+      console.log('windowStore', this.windowStore);
     },
     methods: {
       statusMeta,
@@ -222,10 +233,15 @@
       formatWindow(item) {
         const start = new Date(item.window_start + 'T00:00:00Z');
         const end = new Date(item.window_end + 'T00:00:00Z');
-        const startStr = start.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
-        const endStr = start.getMonth() === end.getMonth()
-          ? end.toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' })
-          : end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+        const startStr = start.toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          timeZone: 'UTC',
+        });
+        const endStr =
+          start.getMonth() === end.getMonth()
+            ? end.toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' })
+            : end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
         return `${startStr} – ${endStr}`;
       },
     },

@@ -3,21 +3,6 @@
     <app-container wide>
       <prism-page-title>Forms — {{ screen }}</prism-page-title>
 
-      <v-alert
-        v-if="windowStatus && windowStatus !== 'OPEN'"
-        :type="windowStatus === 'CLOSED' ? 'error' : 'warning'"
-        variant="tonal"
-        class="mb-4"
-        :icon="windowStatus === 'CLOSED' ? 'mdi-lock-outline' : 'mdi-clock-outline'"
-      >
-        <template #title>
-          {{
-            windowStatus === 'CLOSED' ? 'Submission window closed' : 'Submission window not yet open'
-          }}
-        </template>
-        {{ windowMessage || defaultWindowMessage }}
-      </v-alert>
-
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
@@ -77,8 +62,6 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { STEP_REGISTRY } from './steps/registry';
-  import { normalizeStatus } from '@/submissions/status-utils.js';
-  import { useWindowStatusStore } from '@/submissions/window-status-store.js';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
   import TestAgentStep from './steps/TestAgentStep.vue';
@@ -95,7 +78,7 @@
       ReviewStep,
     },
     setup() {
-      return { formStore: useFormProgressStore(), windowStore: useWindowStatusStore() };
+      return { formStore: useFormProgressStore() };
     },
     data() {
       return { steps: FORM_STEPS, attemptedSteps: {} };
@@ -133,18 +116,6 @@
           ]),
         );
       },
-      windowStatus() {
-        return normalizeStatus(this.windowStore.statuses[this.screenType]?.status);
-      },
-      windowMessage() {
-        return this.windowStore.statuses[this.screenType]?.message || '';
-      },
-      defaultWindowMessage() {
-        if (this.windowStatus === 'CLOSED') {
-          return `The submission window for ${this.screenType || 'this screen'} is currently closed. Please check the Submission Hub for upcoming windows.`;
-        }
-        return `The submission window for ${this.screenType || 'this screen'} is not yet open.`;
-      },
       stepValidity() {
         if (!this.fd) return {};
         return Object.fromEntries(
@@ -155,9 +126,6 @@
           ]),
         );
       },
-    },
-    mounted() {
-      this.windowStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
       screen() {

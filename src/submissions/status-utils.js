@@ -1,7 +1,8 @@
 export const STATUS_META = {
   OPEN: {
     key: 'open',
-    label: 'Accepting Submissions',
+    // label: 'Accepting Submissions',
+    label: 'Open Window',
     color: 'teal-accent-4',
     dotColor: '#00BFA5',
   },
@@ -25,15 +26,13 @@ export const STATUS_META = {
   },
 };
 
-export function normalizeStatus(status) {
-  const s = (status || '').toUpperCase();
-  if (s === 'OPEN' || s === 'ACTIVE') return 'OPEN';
-  if (s === 'ACTIVE - WINDOW CLOSED' || s === 'IN-PROGRESS' || s === 'IN PROGRESS') return 'IN-PROGRESS';
-  if (s === 'CLOSED' || s === 'COMPLETE') return 'CLOSED';
-  if (s === 'SCHEDULED') return 'SCHEDULED';
-  return null;
-}
-
 export function statusMeta(status) {
-  return STATUS_META[status] ?? { key: 'default', label: status ?? '', color: 'default', dotColor: '#BDBDBD' };
+  return (
+    STATUS_META[status] ?? {
+      key: 'default',
+      label: status ?? '',
+      color: 'default',
+      dotColor: '#BDBDBD',
+    }
+  );
 }
