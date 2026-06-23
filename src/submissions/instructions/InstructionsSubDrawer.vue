@@ -8,9 +8,14 @@
     :mobile="false"
     :order="2"
   >
-    <div v-if="$vuetify.display.xs" class="d-flex justify-end pa-1">
-      <v-btn icon="mdi-chevron-left" variant="text" size="small" @click="drawerOpen = false" />
-    </div>
+    <v-btn
+      v-if="$vuetify.display.xs"
+      icon="mdi-chevron-left"
+      variant="text"
+      size="small"
+      :style="{ position: 'sticky', top: '8px', float: 'right', zIndex: 1 }"
+      @click="drawerOpen = false"
+    />
     <screen-selector />
     <v-list
       v-if="screen"
@@ -67,11 +72,9 @@
   <v-btn
     v-if="$vuetify.display.xs && !drawerOpen"
     icon="mdi-chevron-right"
-    position="fixed"
-    location="left center"
-    :style="{ left: '56px', zIndex: 1006 }"
     variant="tonal"
     size="small"
+    :style="{ position: 'fixed', left: '56px', top: '72px', zIndex: 1006 }"
     @click="drawerOpen = true"
   />
 </template>
