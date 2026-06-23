@@ -25,7 +25,6 @@
 </template>
 
 <script>
-  import { useDisplay } from 'vuetify';
   import { useFormProgressStore } from './store';
 
   export default {
@@ -33,7 +32,6 @@
     setup() {
       return {
         formStore: useFormProgressStore(),
-        display: useDisplay(),
       };
     },
     data() {
@@ -67,8 +65,7 @@
         );
       },
       rail() {
-        // Collapse to rail (icons only) on mobile or when inside a sub-section
-        return this.isSubSection || this.display.mobile;
+        return this.$vuetify.display.xs || this.isSubSection;
       },
       items() {
         return [
