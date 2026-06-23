@@ -24,16 +24,19 @@
             class="mt-4"
             id="submission-hub__schedule-table"
           >
+            <template #item.submission_window="{ item }">
+              {{ formatWindow(item) }}
+            </template>
+
             <template #item.status="{ item }">
               <v-chip
-                v-if="item.status"
-                :to="item.status === 'OPEN' ? `/submission-hub/forms/${item.screen}` : undefined"
-                :color="statusMeta(item.status).color"
+                :to="computedStatus(item) === 'OPEN' ? `/submission-hub/forms/${item.screen}` : undefined"
+                :color="statusMeta(computedStatus(item)).color"
                 size="small"
                 variant="flat"
-                :append-icon="item.status === 'OPEN' ? 'mdi-arrow-top-right' : ''"
+                :append-icon="computedStatus(item) === 'OPEN' ? 'mdi-arrow-top-right' : ''"
               >
-                {{ statusMeta(item.status).label }}
+                {{ statusMeta(computedStatus(item)).label }}
               </v-chip>
             </template>
 
@@ -135,62 +138,61 @@
           { title: 'API Status', key: 'window_status', sortable: false },
           { title: 'Estimated Data Delivery', key: 'data_delivery_date', sortable: false },
         ],
-        // TODO: replace with API data
         schedule: [
           {
             screen: 'EPS',
             screen_name: 'EPS008',
             time_point: ASSAYS.EPS.time_point,
-            submission_window: 'June 15 – 26',
-            status: 'IN-PROGRESS',
+            window_start: '2026-06-15',
+            window_end: '2026-06-26',
             data_delivery_date: 'November 2026',
           },
           {
             screen: 'MTS',
             screen_name: 'MTS033',
             time_point: ASSAYS.MTS.time_point,
-            submission_window: 'July 13 – 24',
-            status: 'OPEN',
+            window_start: '2026-07-13',
+            window_end: '2026-07-24',
             data_delivery_date: 'November 2026',
           },
           {
             screen: 'MTS',
             screen_name: 'MTS034',
             time_point: ASSAYS.MTS.time_point,
-            submission_window: 'September 7 – 18',
-            status: 'SCHEDULED',
+            window_start: '2026-09-07',
+            window_end: '2026-09-18',
             data_delivery_date: 'January 2027',
           },
           {
             screen: 'CPS',
             screen_name: 'CPS017',
             time_point: ASSAYS.CPS.time_point,
-            submission_window: 'September 7 – 18',
-            status: 'SCHEDULED',
+            window_start: '2026-09-07',
+            window_end: '2026-09-18',
             data_delivery_date: 'January 2027',
           },
           {
             screen: 'APS',
             screen_name: 'APS009',
             time_point: ASSAYS.APS.time_point,
-            submission_window: 'September 7 – 18',
-            status: 'SCHEDULED',
+            window_start: '2026-09-07',
+            window_end: '2026-09-18',
             data_delivery_date: 'January 2027',
           },
           {
             screen: 'AIR',
             screen_name: 'AIR003',
             time_point: ASSAYS.AIR.time_point,
-            submission_window: 'September 7 – 18',
-            status: 'SCHEDULED',
+            window_start: '2026-09-07',
+            window_end: '2026-09-18',
             data_delivery_date: 'January 2027',
           },
           {
             screen: 'EPS',
             screen_name: 'EPS009 (PR1000)',
             time_point: ASSAYS.EPS.time_point,
-            submission_window: 'November 2 – 13',
-            status: 'SCHEDULED',
+            window_start: '2026-11-02',
+            window_end: '2026-11-13',
             data_delivery_date: 'April 2027',
           },
         ],
@@ -207,6 +209,25 @@
     },
     methods: {
       statusMeta,
+      todayET() {
+        // Returns 'YYYY-MM-DD' in US Eastern Time for lexicographic date comparison
+        return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+      },
+      computedStatus(item) {
+        const today = this.todayET();
+        if (today < item.window_start) return 'SCHEDULED';
+        if (today <= item.window_end) return 'OPEN';
+        return 'IN-PROGRESS';
+      },
+      formatWindow(item) {
+        const start = new Date(item.window_start + 'T00:00:00Z');
+        const end = new Date(item.window_end + 'T00:00:00Z');
+        const startStr = start.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+        const endStr = start.getMonth() === end.getMonth()
+          ? end.toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' })
+          : end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+        return `${startStr} – ${endStr}`;
+      },
     },
   };
 </script>
