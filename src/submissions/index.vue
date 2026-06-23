@@ -1,112 +1,157 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>Submission Hub</prism-page-title>
-      <p class="prism-text-body-1">
-        [BLURB NEEDED] Welcome to the PRISM Submission Hub. Here, you can explore upcoming screens,
-        access detailed instructions, and submit your test agents to participateeee in our
-        consortium screens.
-      </p>
-      <v-data-table
-        :headers="headers"
-        :items="schedule"
-        :items-per-page="-1"
-        hide-default-footer
-        class="mt-4"
-        id="submission-hub__schedule-table"
-      >
-        <template #item.status="{ item }">
-          <v-chip v-if="item.status" :color="statusColor(item.status)" size="small" variant="flat">
-            {{ item.status }}
-          </v-chip>
-        </template>
-      </v-data-table>
-    </app-container>
-
-    <v-navigation-drawer
-      v-model="drawerOpen"
-      location="right"
-      width="340"
-      :order="2"
-      floating
-      id="submission-hub__navigation-drawer-right"
-    >
-      <button class="drawer-collapse-btn" aria-label="Collapse drawer" @click="drawerOpen = false">
-        <v-icon size="20">mdi-chevron-right</v-icon>
-      </button>
-
-      <section class="drawer-section">
-        <div class="drawer-section__eyebrow">Get started</div>
-        <h3 class="drawer-section__title">How to participate in a PRISM screen</h3>
-
-        <v-timeline
-          class="drawer-steps"
-          direction="vertical"
-          side="end"
-          align="start"
-          density="compact"
-          truncate-line="both"
-          line-color="grey-lighten-2"
-        >
-          <v-timeline-item
-            v-for="(step, i) in participationSteps"
-            :key="i"
-            dot-color="teal-accent-4"
-            size="small"
-            :icon="`mdi-numeric-${i + 1}`"
-            icon-color="white"
-            fill-dot
+      <div class="hub-layout">
+        <div class="hub-layout__main">
+          <prism-page-title>Submission Hub</prism-page-title>
+          <p class="prism-text-body-1">
+            [BLURB NEEDED] Welcome to the PRISM Submission Hub. Here, you can explore upcoming
+            screens, access detailed instructions, and submit your test agents to participate in our
+            consortium screens.
+          </p>
+          <v-data-table
+            :headers="headers"
+            :items="schedule"
+            :items-per-page="-1"
+            hide-default-footer
+            class="mt-4"
+            id="submission-hub__schedule-table"
           >
-            <div class="drawer-steps__text">{{ step }}</div>
-          </v-timeline-item>
-        </v-timeline>
+            <template #item.status="{ item }">
+              <v-chip
+                v-if="item.status"
+                :color="statusColor(item.status)"
+                size="small"
+                variant="flat"
+              >
+                {{ item.status }}
+              </v-chip>
+            </template>
+          </v-data-table>
 
-        <v-btn
-          to="/consortium-screens/collaborating"
-          append-icon="mdi-arrow-right"
-          variant="outlined"
-          color="primary"
-          class="drawer-cta"
-          rounded
-          block
-          >Learn about collaborating</v-btn
-        >
-      </section>
+          <!-- xs: sidebar content flows below the table -->
+          <template v-if="$vuetify.display.xs">
+            <v-divider class="mt-8 mb-6" />
+            <div class="hub-content">
+              <section class="hub-section">
+                <div class="hub-section__eyebrow">Get started</div>
+                <h3 class="hub-section__title">How to participate in a PRISM screen</h3>
+                <v-timeline
+                  class="hub-steps"
+                  direction="vertical"
+                  side="end"
+                  align="start"
+                  density="compact"
+                  truncate-line="both"
+                  line-color="grey-lighten-2"
+                >
+                  <v-timeline-item
+                    v-for="(step, i) in participationSteps"
+                    :key="i"
+                    dot-color="teal-accent-4"
+                    size="small"
+                    :icon="`mdi-numeric-${i + 1}`"
+                    icon-color="white"
+                    fill-dot
+                  >
+                    <div class="hub-steps__text">{{ step }}</div>
+                  </v-timeline-item>
+                </v-timeline>
+                <v-btn
+                  to="/consortium-screens/collaborating"
+                  append-icon="mdi-arrow-right"
+                  variant="outlined"
+                  color="primary"
+                  class="hub-cta"
+                  rounded
+                  block
+                  >Learn about collaborating</v-btn
+                >
+              </section>
 
-      <section class="drawer-section mt-4">
-        <!-- <div class="drawer-section__eyebrow">Cheat sheet</div> -->
-        <h3 class="drawer-section__title">Screen — Test Agents</h3>
+              <section class="hub-section mt-6">
+                <h3 class="hub-section__title">Screen — Test Agents</h3>
+                <ul class="hub-assays">
+                  <li v-for="key in Object.keys(assays)" :key="key" class="hub-assays__item">
+                    <div class="hub-assays__name">{{ key }}</div>
+                    <div class="hub-assays__agents">{{ assays[key].test_agents }}</div>
+                  </li>
+                </ul>
+                <v-btn
+                  to="/consortium-screens/assays"
+                  append-icon="mdi-arrow-right"
+                  variant="outlined"
+                  color="primary"
+                  class="hub-cta"
+                  rounded
+                  block
+                  >More about assays</v-btn
+                >
+              </section>
+            </div>
+          </template>
+        </div>
 
-        <ul class="drawer-assays">
-          <li v-for="key in Object.keys(assays)" :key="key" class="drawer-assays__item">
-            <div class="drawer-assays__name">{{ key }}</div>
-            <div class="drawer-assays__agents">{{ assays[key].test_agents }}</div>
-          </li>
-        </ul>
+        <!-- Desktop sticky sidebar -->
+        <aside v-if="!$vuetify.display.xs" class="hub-layout__sidebar hub-content">
+          <section class="hub-section">
+            <div class="hub-section__eyebrow">Get started</div>
+            <h3 class="hub-section__title">How to participate in a PRISM screen</h3>
+            <v-timeline
+              class="hub-steps"
+              direction="vertical"
+              side="end"
+              align="start"
+              density="compact"
+              truncate-line="both"
+              line-color="grey-lighten-2"
+            >
+              <v-timeline-item
+                v-for="(step, i) in participationSteps"
+                :key="i"
+                dot-color="teal-accent-4"
+                size="small"
+                :icon="`mdi-numeric-${i + 1}`"
+                icon-color="white"
+                fill-dot
+              >
+                <div class="hub-steps__text">{{ step }}</div>
+              </v-timeline-item>
+            </v-timeline>
+            <v-btn
+              to="/consortium-screens/collaborating"
+              append-icon="mdi-arrow-right"
+              variant="outlined"
+              color="primary"
+              class="hub-cta"
+              rounded
+              block
+              >Learn about collaborating</v-btn
+            >
+          </section>
 
-        <v-btn
-          to="/consortium-screens/assays"
-          append-icon="mdi-arrow-right"
-          variant="outlined"
-          color="primary"
-          class="drawer-cta"
-          rounded
-          block
-          >More about assays</v-btn
-        >
-      </section>
-    </v-navigation-drawer>
-
-    <v-btn
-      v-if="!drawerOpen"
-      icon="mdi-chevron-left"
-      position="fixed"
-      location="right center"
-      :style="{ right: '0' }"
-      variant="tonal"
-      size="small"
-      @click="drawerOpen = true"
-    />
+          <section class="hub-section mt-4">
+            <h3 class="hub-section__title">Screen — Test Agents</h3>
+            <ul class="hub-assays">
+              <li v-for="key in Object.keys(assays)" :key="key" class="hub-assays__item">
+                <div class="hub-assays__name">{{ key }}</div>
+                <div class="hub-assays__agents">{{ assays[key].test_agents }}</div>
+              </li>
+            </ul>
+            <v-btn
+              to="/consortium-screens/assays"
+              append-icon="mdi-arrow-right"
+              variant="outlined"
+              color="primary"
+              class="hub-cta"
+              rounded
+              block
+              >More about assays</v-btn
+            >
+          </section>
+        </aside>
+      </div>
+    </app-container>
   </page>
 </template>
 
@@ -116,7 +161,6 @@
     name: 'SubmissionsOverview',
     data() {
       return {
-        drawerOpen: true,
         headers: [
           { title: 'Screen Name', key: 'screen', sortable: false },
           { title: 'Timepoint', key: 'time_point', sortable: false },
@@ -143,7 +187,7 @@
           {
             screen: 'MTS034, CPS017, APS009, AIR003',
             time_point: '5 day',
-            submission_window: 'September 7  18 2026',
+            submission_window: 'September 7 – 18 2026',
             status: null,
             data_delivery_date: 'January 2027',
           },
@@ -173,48 +217,36 @@
 </script>
 
 <style>
-  #submission-hub__navigation-drawer-right {
-    top: 64px;
-    height: calc(100% - 64px);
-    background-color: #fafafa;
-    border-left: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.04);
-  }
-
-  #submission-hub__navigation-drawer-right .v-navigation-drawer__content {
-    padding: 8px 24px 32px;
-    scrollbar-width: thin;
-  }
-
-  /* Collapse button — small, subtle, top-right inside drawer */
-  #submission-hub__navigation-drawer-right .drawer-collapse-btn {
-    position: sticky;
-    top: 0;
-    margin-left: auto;
+  /* ── Two-column layout ──────────────────────────────────────────── */
+  .hub-layout {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    color: rgba(0, 0, 0, 0.55);
-    background: transparent;
-    transition:
-      background 0.15s ease,
-      color 0.15s ease;
-    z-index: 1;
-  }
-  #submission-hub__navigation-drawer-right .drawer-collapse-btn:hover {
-    background: rgba(0, 0, 0, 0.06);
-    color: rgba(0, 0, 0, 0.85);
+    gap: 40px;
+    align-items: flex-start;
   }
 
-  /* Section layout */
-  #submission-hub__navigation-drawer-right .drawer-section {
-    padding: 8px 0 4px;
+  .hub-layout__main {
+    flex: 1;
+    min-width: 0;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-section__eyebrow {
+  .hub-layout__sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 80px;
+    background-color: #fafafa;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+    padding: 16px 20px 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  /* ── Shared content styles ──────────────────────────────────────── */
+  .hub-content .hub-section {
+    padding: 4px 0;
+  }
+
+  .hub-content .hub-section__eyebrow {
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.12em;
@@ -223,7 +255,7 @@
     margin-bottom: 6px;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-section__title {
+  .hub-content .hub-section__title {
     font-size: 1.05rem;
     font-weight: 600;
     line-height: 1.35;
@@ -231,33 +263,26 @@
     margin: 0 0 16px;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-divider {
-    margin: 24px -24px;
-    opacity: 0.7;
-  }
-
-  /* Timeline steps */
-  #submission-hub__navigation-drawer-right .drawer-steps {
+  .hub-content .hub-steps {
     margin: 0 4px 20px;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-steps.v-timeline--vertical.v-timeline {
+  .hub-content .hub-steps.v-timeline--vertical.v-timeline {
     grid-row-gap: 8px;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-steps .v-timeline-item__body {
+  .hub-content .hub-steps .v-timeline-item__body {
     padding-inline-start: 12px;
     padding-block: 2px;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-steps__text {
+  .hub-content .hub-steps__text {
     font-size: 0.875rem;
     line-height: 1.4;
     color: rgba(0, 0, 0, 0.78);
   }
 
-  /* Assays list */
-  #submission-hub__navigation-drawer-right .drawer-assays {
+  .hub-content .hub-assays {
     list-style: none;
     padding: 0;
     margin: 0 0 20px;
@@ -266,32 +291,32 @@
     gap: 2px;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-assays__item {
-    padding: 0px 12px;
+  .hub-content .hub-assays__item {
+    padding: 0 12px;
     border-radius: 8px;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-assays__name {
+  .hub-content .hub-assays__name {
     font-size: 0.875rem;
     font-weight: 600;
     color: rgba(0, 0, 0, 0.87);
     letter-spacing: 0.02em;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-assays__agents {
+  .hub-content .hub-assays__agents {
     font-size: 0.8rem;
     line-height: 1.4;
     color: rgba(0, 0, 0, 0.6);
     margin-top: 2px;
   }
 
-  /* CTA buttons */
-  #submission-hub__navigation-drawer-right .drawer-cta {
+  .hub-content .hub-cta {
     text-transform: none;
     letter-spacing: 0.01em;
     font-weight: 500;
   }
 
+  /* ── Schedule table ─────────────────────────────────────────────── */
   #submission-hub__schedule-table {
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 6px;
@@ -300,7 +325,6 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
-  /* Header row */
   #submission-hub__schedule-table thead,
   #submission-hub__schedule-table .v-data-table__thead {
     background: rgba(0, 0, 0, 0.015);
@@ -314,16 +338,13 @@
   #submission-hub__schedule-table .v-data-table__th {
     font-size: 0.75rem !important;
     font-weight: 600 !important;
-
     letter-spacing: 0.06em;
     color: rgba(0, 0, 0, 0.6) !important;
     height: 48px !important;
-
     vertical-align: middle !important;
     background: rgba(0, 0, 0, 0.015);
   }
 
-  /* Body cells */
   #submission-hub__schedule-table tbody td,
   #submission-hub__schedule-table .v-data-table__td {
     font-size: 0.875rem;
@@ -332,20 +353,17 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
   }
 
-  /* First column emphasis */
   #submission-hub__schedule-table tbody td:first-child,
   #submission-hub__schedule-table .v-data-table__td:first-child {
     font-weight: 600;
     color: rgba(0, 0, 0, 0.9);
   }
 
-  /* Zebra striping */
   #submission-hub__schedule-table tbody tr:nth-child(even) > td,
   #submission-hub__schedule-table tbody tr:nth-child(even) > .v-data-table__td {
     background: rgba(0, 0, 0, 0.015);
   }
 
-  /* Strip the last row's bottom border so it sits flush with the rounded container */
   #submission-hub__schedule-table tbody tr:last-child > td,
   #submission-hub__schedule-table tbody tr:last-child > .v-data-table__td {
     border-bottom: 0 !important;
