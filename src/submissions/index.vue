@@ -29,71 +29,9 @@
             </template>
           </v-data-table>
 
-          <!-- xs: sidebar content flows below the table -->
-          <template v-if="$vuetify.display.xs">
-            <v-divider class="mt-8 mb-6" />
-            <div class="hub-content">
-              <section class="hub-section">
-                <div class="hub-section__eyebrow">Get started</div>
-                <h3 class="hub-section__title">How to participate in a PRISM screen</h3>
-                <v-timeline
-                  class="hub-steps"
-                  direction="vertical"
-                  side="end"
-                  align="start"
-                  density="compact"
-                  truncate-line="both"
-                  line-color="grey-lighten-2"
-                >
-                  <v-timeline-item
-                    v-for="(step, i) in participationSteps"
-                    :key="i"
-                    dot-color="teal-accent-4"
-                    size="small"
-                    :icon="`mdi-numeric-${i + 1}`"
-                    icon-color="white"
-                    fill-dot
-                  >
-                    <div class="hub-steps__text">{{ step }}</div>
-                  </v-timeline-item>
-                </v-timeline>
-                <v-btn
-                  to="/consortium-screens/collaborating"
-                  append-icon="mdi-arrow-right"
-                  variant="outlined"
-                  color="primary"
-                  class="hub-cta"
-                  rounded
-                  block
-                  >Learn about collaborating</v-btn
-                >
-              </section>
-
-              <section class="hub-section mt-6">
-                <h3 class="hub-section__title">Screen — Test Agents</h3>
-                <ul class="hub-assays">
-                  <li v-for="key in Object.keys(assays)" :key="key" class="hub-assays__item">
-                    <div class="hub-assays__name">{{ key }}</div>
-                    <div class="hub-assays__agents">{{ assays[key].test_agents }}</div>
-                  </li>
-                </ul>
-                <v-btn
-                  to="/consortium-screens/assays"
-                  append-icon="mdi-arrow-right"
-                  variant="outlined"
-                  color="primary"
-                  class="hub-cta"
-                  rounded
-                  block
-                  >More about assays</v-btn
-                >
-              </section>
-            </div>
-          </template>
         </div>
 
-        <!-- Desktop sticky sidebar -->
-        <aside v-if="!$vuetify.display.xs" class="hub-layout__sidebar hub-content">
+        <aside class="hub-layout__sidebar hub-content">
           <section class="hub-section">
             <div class="hub-section__eyebrow">Get started</div>
             <h3 class="hub-section__title">How to participate in a PRISM screen</h3>
@@ -239,6 +177,23 @@
     border-radius: 8px;
     padding: 16px 20px 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  @media (max-width: 599px) {
+    .hub-layout {
+      flex-direction: column;
+    }
+
+    .hub-layout__sidebar {
+      width: 100%;
+      position: static;
+      background: none;
+      border: none;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 0;
+      padding: 32px 0 0;
+      box-shadow: none;
+    }
   }
 
   /* ── Shared content styles ──────────────────────────────────────── */
