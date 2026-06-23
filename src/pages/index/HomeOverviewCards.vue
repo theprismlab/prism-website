@@ -104,7 +104,7 @@
   .overview-card-title {
     font-size: var(--h5-size);
     font-family: 'Archivo', sans-serif;
-    font-stretch: expanded;
+    font-variation-settings: "wdth" 125;
     font-weight: 600;
     line-height: 1.35em;
     color: #1a1a1a;

@@ -72,7 +72,7 @@
     font-weight: 700;
     line-height: 1;
     font-family: 'Archivo', sans-serif;
-    font-stretch: expanded;
+    font-variation-settings: "wdth" 125;
     letter-spacing: -0.02em;
     margin: 0;
   }
