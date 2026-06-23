@@ -1,5 +1,5 @@
-import { openBlock as a, createElementBlock as i, normalizeClass as p, renderSlot as v, normalizeStyle as W, createElementVNode as s, toDisplayString as f, resolveComponent as D, createBlock as _, resolveDynamicComponent as H, mergeProps as C, withCtx as k, Fragment as h, renderList as y, createTextVNode as A, createCommentVNode as u, createVNode as F, Transition as J, withModifiers as R } from "vue";
-const bt = {
+import { openBlock as a, createElementBlock as i, normalizeClass as p, renderSlot as v, normalizeStyle as W, createElementVNode as s, toDisplayString as f, resolveComponent as D, createBlock as _, resolveDynamicComponent as H, mergeProps as C, withCtx as k, Fragment as b, renderList as y, createTextVNode as A, createCommentVNode as u, createVNode as F, Transition as J, withModifiers as R } from "vue";
+const ht = {
   red: {
     base: "#f44336",
     50: "#ffebee",
@@ -552,7 +552,7 @@ const bt = {
     transparent: "transparent"
   }
 };
-const b = (e, t) => {
+const h = (e, t) => {
   const n = e.__vccOpts || e;
   for (const [o, d] of t)
     n[o] = d;
@@ -606,7 +606,7 @@ function z(e, t, n, o, d, l) {
     v(e.$slots, "default", {}, void 0, !0)
   ], 10, U);
 }
-const w = /* @__PURE__ */ b(Q, [["render", z], ["__scopeId", "data-v-8e95ccfa"]]);
+const w = /* @__PURE__ */ h(Q, [["render", z], ["__scopeId", "data-v-8e95ccfa"]]);
 w.install = function(t) {
   t.component(w.name, w);
 };
@@ -649,7 +649,7 @@ function Y(e, t, n, o, d, l) {
     ])
   ], 6);
 }
-const S = /* @__PURE__ */ b(j, [["render", Y], ["__scopeId", "data-v-ffdf902f"]]);
+const S = /* @__PURE__ */ h(j, [["render", Y], ["__scopeId", "data-v-ffdf902f"]]);
 S.install = function(t) {
   t.component(S.name, S);
 };
@@ -678,7 +678,7 @@ const G = { marketing: "", portal: "/portal" }, $ = [
     { title: "Data Analysis", route: "/consortium-screens/data-analysis", id: "data-analysis", site: "marketing" },
     { title: "Deliverables", route: "/consortium-screens/deliverables", id: "deliverables", site: "marketing" },
     { title: "Collaborating", route: "/consortium-screens/collaborating", id: "collaborating", site: "marketing" },
-    { title: "Submissions", route: "/submission-hub", id: "submissions", matchPrefix: !0, site: "marketing" }
+    { title: "Submission Hub", route: "/submission-hub", id: "submission-hub", matchPrefix: !0, site: "marketing" }
   ] },
   { title: "Contact us", route: "/contact-us", id: "contact-us", site: "marketing" },
   { title: "Portal", route: "/portal", id: "portal", matchPrefix: !0, site: "portal", excludeRoutes: ["/portal/log-in"] }
@@ -803,7 +803,7 @@ const ae = {
   key: 0,
   class: "prism-nav-drawer",
   "aria-label": "Mobile navigation"
-}, he = ["href"], be = ["href", "onClick"], ve = ["onClick"], me = {
+}, be = ["href"], he = ["href", "onClick"], ve = ["onClick"], me = {
   key: 0,
   class: "prism-nav-drawer__children"
 }, Ae = ["href"], ke = ["href", "onClick"], _e = { class: "prism-nav-drawer__actions" }, ye = {
@@ -841,7 +841,7 @@ function we(e, t, n, o, d, l) {
           s("span", null, null, -1)
         ])], 8, le),
         s("nav", de, [
-          (a(!0), i(h, null, y(l.resolvedItems, (r, m) => (a(), i("div", {
+          (a(!0), i(b, null, y(l.resolvedItems, (r, m) => (a(), i("div", {
             key: m,
             class: p(["prism-app-bar__nav-item", { "prism-app-bar__nav-item--has-children": r.children && r.children.length }])
           }, [
@@ -881,7 +881,7 @@ function we(e, t, n, o, d, l) {
               _: 2
             }, 1032, ["to", "class"])),
             r.children && r.children.length ? (a(), i("div", ce, [
-              (a(!0), i(h, null, y(r.children, (c) => (a(), i(h, null, [
+              (a(!0), i(b, null, y(r.children, (c) => (a(), i(b, null, [
                 c.external ? (a(), i("a", {
                   key: `ext-${c.id}`,
                   href: c.route,
@@ -922,23 +922,23 @@ function we(e, t, n, o, d, l) {
     F(J, { name: "prism-drawer-slide" }, {
       default: k(() => [
         d.drawerOpen ? (a(), i("nav", ge, [
-          (a(!0), i(h, null, y(l.resolvedItems, (r, m) => (a(), i("div", {
+          (a(!0), i(b, null, y(l.resolvedItems, (r, m) => (a(), i("div", {
             key: m,
             class: "prism-nav-drawer__item"
           }, [
-            !r.children || r.children.length === 0 ? (a(), i(h, { key: 0 }, [
+            !r.children || r.children.length === 0 ? (a(), i(b, { key: 0 }, [
               r.external ? (a(), i("a", {
                 key: `ext-${r.id}`,
                 href: r.route,
                 class: p(["prism-nav-drawer__link", { "is-active": e.$route && e.$route.path === r.route }]),
                 onClick: t[2] || (t[2] = (c) => d.drawerOpen = !1)
-              }, f(r.title), 11, he)) : (a(), i("a", {
+              }, f(r.title), 11, be)) : (a(), i("a", {
                 key: r.id,
                 href: r.route,
                 class: p(["prism-nav-drawer__link", { "is-active": e.$route && e.$route.path === r.route }]),
                 onClick: R((c) => l.navigateTo(r.route), ["prevent"])
-              }, f(r.title), 11, be))
-            ], 64)) : (a(), i(h, { key: 1 }, [
+              }, f(r.title), 11, he))
+            ], 64)) : (a(), i(b, { key: 1 }, [
               s("button", {
                 class: p([
                   "prism-nav-drawer__group-btn",
@@ -964,7 +964,7 @@ function we(e, t, n, o, d, l) {
                 ], -1))
               ], 10, ve),
               d.openGroups.includes(m) ? (a(), i("div", me, [
-                (a(!0), i(h, null, y(r.children, (c) => (a(), i(h, null, [
+                (a(!0), i(b, null, y(r.children, (c) => (a(), i(b, null, [
                   c.external ? (a(), i("a", {
                     key: `ext-${c.id}`,
                     href: c.route,
@@ -1000,7 +1000,7 @@ function we(e, t, n, o, d, l) {
     })
   ]);
 }
-const I = /* @__PURE__ */ b(ae, [["render", we], ["__scopeId", "data-v-e00d66cb"]]);
+const I = /* @__PURE__ */ h(ae, [["render", we], ["__scopeId", "data-v-3b7383d4"]]);
 I.install = function(t) {
   t.component(I.name, I);
 };
@@ -1132,7 +1132,7 @@ function Le(e, t, n, o, d, l) {
     ])])) : u("", !0)
   ], 2)) : u("", !0);
 }
-const P = /* @__PURE__ */ b(Se, [["render", Le], ["__scopeId", "data-v-8d5eb52d"]]);
+const P = /* @__PURE__ */ h(Se, [["render", Le], ["__scopeId", "data-v-8d5eb52d"]]);
 P.install = function(t) {
   t.component(P.name, P);
 };
@@ -1204,7 +1204,7 @@ function Je(e, t, n, o, d, l) {
     ])
   ], 2);
 }
-const O = /* @__PURE__ */ b(He, [["render", Je], ["__scopeId", "data-v-46e54712"]]);
+const O = /* @__PURE__ */ h(He, [["render", Je], ["__scopeId", "data-v-46e54712"]]);
 O.install = function(t) {
   t.component(O.name, O);
 };
@@ -1240,7 +1240,7 @@ function Ye(e, t, n, o, d, l) {
   return a(), i("ol", {
     class: p(["prism-timeline", `prism-timeline--${n.variant}`])
   }, [
-    (a(!0), i(h, null, y(n.steps, (g, r) => (a(), i("li", {
+    (a(!0), i(b, null, y(n.steps, (g, r) => (a(), i("li", {
       key: r,
       class: p(["prism-timeline__step", { "prism-timeline__step--active": r === n.activeStep, "prism-timeline__step--completed": r < n.activeStep }])
     }, [
@@ -1272,7 +1272,7 @@ function Ye(e, t, n, o, d, l) {
     ], 2))), 128))
   ], 2);
 }
-const x = /* @__PURE__ */ b(Qe, [["render", Ye], ["__scopeId", "data-v-6d8972d2"]]);
+const x = /* @__PURE__ */ h(Qe, [["render", Ye], ["__scopeId", "data-v-6d8972d2"]]);
 x.install = function(t) {
   t.component(x.name, x);
 };
@@ -1310,7 +1310,7 @@ function rt(e, t, n, o, d, l) {
     "aria-label": "Side navigation"
   }, [
     s("ul", Ge, [
-      (a(!0), i(h, null, y(n.items, (r, m) => (a(), i("li", {
+      (a(!0), i(b, null, y(n.items, (r, m) => (a(), i("li", {
         key: m,
         class: "prism-app-nav-drawer__item"
       }, [
@@ -1346,7 +1346,7 @@ function rt(e, t, n, o, d, l) {
     ])
   ], 38);
 }
-const B = /* @__PURE__ */ b(Ze, [["render", rt], ["__scopeId", "data-v-b4c93d9a"]]);
+const B = /* @__PURE__ */ h(Ze, [["render", rt], ["__scopeId", "data-v-b4c93d9a"]]);
 B.install = function(t) {
   t.component(B.name, B);
 };
@@ -1361,7 +1361,7 @@ function lt(e, t, n, o, d, l) {
     v(e.$slots, "default")
   ]);
 }
-const N = /* @__PURE__ */ b(it, [["render", lt]]);
+const N = /* @__PURE__ */ h(it, [["render", lt]]);
 N.install = function(t) {
   t.component(N.name, N);
 };
@@ -1373,7 +1373,7 @@ function ct(e, t, n, o, d, l) {
     v(e.$slots, "default")
   ]);
 }
-const K = /* @__PURE__ */ b(dt, [["render", ct]]);
+const K = /* @__PURE__ */ h(dt, [["render", ct]]);
 K.install = function(t) {
   t.component(K.name, K);
 };
@@ -1385,7 +1385,7 @@ function ut(e, t, n, o, d, l) {
     v(e.$slots, "default")
   ]);
 }
-const L = /* @__PURE__ */ b(ot, [["render", ut]]);
+const L = /* @__PURE__ */ h(ot, [["render", ut]]);
 L.install = function(t) {
   t.component(L.name, L);
 };
@@ -1405,6 +1405,6 @@ export {
   O as PrismSplitSection,
   L as PrismSubSectionTitle,
   x as PrismTimeline,
-  bt as colors,
+  ht as colors,
   vt as default
 };

@@ -14,7 +14,6 @@
       />
     </v-col>
     <v-col cols="12" sm="7">
-      <!-- <h4 class="prism-text-form-label">{{ F.YOUR_EMAIL.label }}</h4> -->
       <v-text-field
         v-model="data[F.YOUR_EMAIL.key]"
         :label="F.YOUR_EMAIL.label"
@@ -31,7 +30,6 @@
       <h3 class="prism-text-form-group-label">Investigator information</h3>
     </v-col>
     <v-col cols="12" sm="5">
-      <!-- <h4 class="prism-text-form-label">{{ F.INVESTIGATOR_NAME.label }}</h4> -->
       <v-text-field
         v-model="data[F.INVESTIGATOR_NAME.key]"
         :label="F.INVESTIGATOR_NAME.label"
@@ -41,7 +39,6 @@
       />
     </v-col>
     <v-col cols="12" sm="7">
-      <!-- <h4 class="prism-text-form-label">{{ F.INVESTIGATOR_EMAIL.label }}</h4> -->
       <v-text-field
         v-model="data[F.INVESTIGATOR_EMAIL.key]"
         :label="F.INVESTIGATOR_EMAIL.label"
@@ -63,14 +60,6 @@
       </p>
     </v-col>
     <v-col cols="12">
-      <!-- <v-row dense class="mb-1">
-        <v-col cols="12" sm="5">
-          <h4 class="prism-text-form-label">{{ F.DATA_ACCESS_MANAGERS.nameLabel }}</h4>
-        </v-col>
-        <v-col cols="12" sm="6">
-          <h4 class="prism-text-form-label">{{ F.DATA_ACCESS_MANAGERS.emailLabel }}</h4>
-        </v-col>
-      </v-row> -->
       <v-row v-for="(manager, i) in data[F.DATA_ACCESS_MANAGERS.key]" :key="i" dense align="start">
         <v-col cols="12" sm="5">
           <v-text-field
