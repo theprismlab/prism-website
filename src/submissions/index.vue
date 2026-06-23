@@ -9,6 +9,8 @@
             screens, access detailed instructions, and submit your test agents to participate in our
             consortium screens.
           </p>
+
+          <h2 class="prism-text-h3">Screening Schedule 2026</h2>
           <v-data-table
             :headers="headers"
             :items="schedule"
@@ -28,7 +30,6 @@
               </v-chip>
             </template>
           </v-data-table>
-
         </div>
 
         <aside class="hub-layout__sidebar hub-content">
@@ -110,31 +111,51 @@
         schedule: [
           {
             screen: 'EPS008',
-            time_point: '10 day',
-            submission_window: 'June 15 – 26 2026',
-            status: null,
+            time_point: ASSAYS.EPS.time_point,
+            submission_window: 'June 15 – 26',
+            status: 'IN-PROGRESS',
             data_delivery_date: 'November 2026',
           },
           {
             screen: 'MTS033',
-            time_point: '5 day',
-            submission_window: 'July 13 – 24 2026',
-            status: null,
+            time_point: ASSAYS.MTS.time_point,
+            submission_window: 'July 13 – 24',
+            status: 'OPEN',
             data_delivery_date: 'November 2026',
           },
           {
-            screen: 'MTS034, CPS017, APS009, AIR003',
-            time_point: '5 day',
-            submission_window: 'September 7 – 18 2026',
-            status: null,
+            screen: 'MTS034',
+            time_point: ASSAYS.MTS.time_point,
+            submission_window: 'September 7 – 18',
+            status: 'SCHEDULED',
+            data_delivery_date: 'January 2027',
+          },
+          {
+            screen: 'CPS017',
+            time_point: ASSAYS.CPS.time_point,
+            submission_window: 'September 7 – 18',
+            status: 'SCHEDULED',
+            data_delivery_date: 'January 2027',
+          },
+          {
+            screen: 'APS009',
+            time_point: ASSAYS.APS.time_point,
+            submission_window: 'September 7 – 18',
+            status: 'SCHEDULED',
+            data_delivery_date: 'January 2027',
+          },
+          {
+            screen: 'AIR003',
+            time_point: ASSAYS.AIR.time_point,
+            submission_window: 'September 7 – 18',
+            status: 'SCHEDULED',
             data_delivery_date: 'January 2027',
           },
           {
             screen: 'EPS009 (PR1000)',
-            time_point: '10 day',
-            test_agents: 'Single agent, DMSO only',
-            submission_window: 'November 2 – 13 2026',
-            status: null,
+            time_point: ASSAYS.EPS.time_point,
+            submission_window: 'November 2 – 13',
+            status: 'SCHEDULED',
             data_delivery_date: 'April 2027',
           },
         ],
@@ -148,7 +169,14 @@
     },
     methods: {
       statusColor(status) {
-        return { open: 'success', 'in-progress': 'warning', closed: 'error' }[status] ?? 'default';
+        return (
+          {
+            OPEN: 'teal-accent-4',
+            'IN-PROGRESS': 'yellow-darken-2',
+            CLOSED: 'red-accent-4',
+            SCHEDULED: 'grey-lighten-2',
+          }[status] ?? 'default'
+        );
       },
     },
   };
