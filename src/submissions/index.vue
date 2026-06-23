@@ -114,6 +114,7 @@
 <script>
   import { ASSAYS } from '@/utils/assays';
   import { fetchSubmissionMessage } from './submissions-page-api.js';
+  import { normalizeStatus, statusMeta as getStatusMeta } from './status-utils.js';
 
   export default {
     name: 'SubmissionsOverview',
@@ -218,30 +219,12 @@
         if (!this.useApiStatus) return item.status;
         const live = this.liveStatuses[item.screen];
         if (!live?.status) return item.status;
-        return this.normalizeWindowStatus(live.status) ?? item.status;
-      },
-      normalizeWindowStatus(status) {
-        const s = (status || '').toUpperCase();
-        if (s === 'OPEN' || s === 'ACTIVE') return 'OPEN';
-        if (s === 'ACTIVE - WINDOW CLOSED' || s === 'IN-PROGRESS' || s === 'IN PROGRESS')
-          return 'IN-PROGRESS';
-        if (s === 'CLOSE' || s === 'COMPLETE') return 'CLOSED';
-        if (s === 'SCHEDULED') return 'SCHEDULED';
-        return null;
+        return normalizeStatus(live.status) ?? item.status;
       },
       statusMeta(status, screen) {
-        const map = {
-          OPEN: {
-            key: 'open',
-            label: 'Accepting Submissions',
-            color: 'teal-accent-4',
-            to: screen ? `/submission-hub/forms/${screen}` : undefined,
-          },
-          'IN-PROGRESS': { key: 'in-progress', label: 'In Progress', color: 'yellow-darken-2' },
-          CLOSED: { key: 'closed', label: 'Closed', color: 'red-accent-4' },
-          SCHEDULED: { key: 'scheduled', label: 'Scheduled', color: 'grey-lighten-2' },
-        };
-        return map[status] ?? { key: 'default', label: status, color: 'default' };
+        const meta = getStatusMeta(status);
+        if (status === 'OPEN' && screen) return { ...meta, to: `/submission-hub/forms/${screen}` };
+        return meta;
       },
     },
   };

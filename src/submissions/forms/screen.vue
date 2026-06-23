@@ -78,6 +78,7 @@
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { STEP_REGISTRY } from './steps/registry';
   import { fetchSubmissionMessage } from '@/submissions/submissions-page-api.js';
+  import { normalizeStatus } from '@/submissions/status-utils.js';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
   import TestAgentStep from './steps/TestAgentStep.vue';
@@ -189,7 +190,7 @@
           const messages = await fetchSubmissionMessage(this.apiUrl, this.screenType);
           const msg = Array.isArray(messages) ? messages[0] : messages;
           if (msg) {
-            this.windowStatus = this.normalizeWindowStatus(msg.status);
+            this.windowStatus = normalizeStatus(msg.status);
             this.windowMessage = msg.message || '';
           } else {
             this.windowStatus = null;
@@ -198,14 +199,6 @@
         } catch (e) {
           console.error('Failed to load window status', e);
         }
-      },
-      normalizeWindowStatus(status) {
-        const s = (status || '').toUpperCase();
-        if (s === 'OPEN' || s === 'ACTIVE') return 'OPEN';
-        if (s === 'ACTIVE - WINDOW CLOSED' || s === 'IN-PROGRESS' || s === 'IN PROGRESS') return 'IN-PROGRESS';
-        if (s === 'CLOSED' || s === 'COMPLETE') return 'CLOSED';
-        if (s === 'SCHEDULED') return 'SCHEDULED';
-        return null;
       },
       isCompleted(i) {
         return this.stepValidity[this.steps[i].id] ?? false;
