@@ -13,6 +13,7 @@
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
+              :to="item.route"
               :prepend-icon="item.icon"
               :title="item.title"
               :active="isGroupActive(item)"
@@ -21,7 +22,7 @@
           </template>
 
           <v-list-item
-            v-for="pageDef in flattenOutline(item.pages)"
+            v-for="pageDef in flattenOutline(item.pages).slice(1)"
             :key="pageDef.key"
             :to="{ path: item.route, query: { dest: pageDef.slug } }"
             :title="pageDef.title"
@@ -129,8 +130,7 @@
       },
       isPageActive(item, pageDef) {
         if (!this.$route.path.endsWith(item.id)) return false;
-        const current = this.$route.query.dest;
-        return current === pageDef.slug || (!current && pageDef === flattenOutline(item.pages)[0]);
+        return this.$route.query.dest === pageDef.slug;
       },
     },
   };
