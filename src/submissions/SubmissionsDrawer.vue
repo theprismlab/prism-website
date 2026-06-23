@@ -9,7 +9,6 @@
     :order="1"
   >
     <v-list density="comfortable" nav>
-      <!-- <v-list-subheader v-if="!isSubSection">Submissions</v-list-subheader> -->
       <v-list-item
         v-for="item in items"
         :key="item.id"
@@ -73,9 +72,7 @@
             id: 'overview',
             title: 'Overview',
             route: '/submission-hub/overview',
-            // icon: 'mdi-flask-outline',
             icon: 'mdi-layers-outline',
-            activePrefix: null,
           },
           {
             id: 'instructions',
@@ -98,12 +95,9 @@
             title: 'View Quote & Upload PO',
             route: '/submission-hub/quote-and-po',
             icon: 'mdi-invoice-import-outline',
-            activePrefix: null,
           },
         ];
       },
     },
   };
 </script>
-
-<style scoped></style>

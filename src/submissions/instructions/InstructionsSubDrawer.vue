@@ -1,5 +1,11 @@
 <template>
-  <v-navigation-drawer app location="left" width="220" :order="2">
+  <v-navigation-drawer
+    app
+    location="left"
+    :width="$vuetify.display.xs ? 160 : 220"
+    :mobile="false"
+    :order="2"
+  >
     <screen-selector />
     <v-list
       v-if="screen"
@@ -8,7 +14,6 @@
       nav
       @update:opened="openedGroups = $event"
     >
-      <v-list-subheader>Instructions</v-list-subheader>
       <template v-for="item in items" :key="item.id">
         <v-list-group v-if="item.pages && item.pages.length" :value="item.id">
           <template #activator="{ props }">

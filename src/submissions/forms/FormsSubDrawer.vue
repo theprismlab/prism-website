@@ -1,5 +1,11 @@
 <template>
-  <v-navigation-drawer app location="left" width="220" :order="2">
+  <v-navigation-drawer
+    app
+    location="left"
+    :width="$vuetify.display.xs ? 160 : 220"
+    :mobile="false"
+    :order="2"
+  >
     <screen-selector />
     <div v-if="screen" class="form-stepper pt-4 pb-2 px-4">
       <div v-for="(step, i) in steps" :key="step.id">
