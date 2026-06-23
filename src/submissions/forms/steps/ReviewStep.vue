@@ -25,12 +25,7 @@
     />
 
     <div class="d-flex justify-end mt-4">
-      <v-btn
-        color="primary"
-        :disabled="!data.reviewed"
-        :loading="submitting"
-        @click="submitForm"
-      >
+      <v-btn color="primary" :disabled="!data.reviewed" :loading="submitting" @click="submitForm">
         Submit
       </v-btn>
     </div>
@@ -83,10 +78,14 @@
           // const result = await ApiClasses.postSubmission(apiURL, this.formData);
           await new Promise((resolve) => setTimeout(resolve, 800)); // placeholder
           this.dialogSuccess = true;
-          this.dialogMessage = 'Your submission has been received. You will be contacted with next steps.';
+          this.dialogMessage =
+            'Your submission has been received. You will be contacted with next steps.';
         } catch (err) {
           this.dialogSuccess = false;
-          this.dialogMessage = err?.response?.data?.message || err?.message || 'An unexpected error occurred. Please try again.';
+          this.dialogMessage =
+            err?.response?.data?.message ||
+            err?.message ||
+            'An unexpected error occurred. Please try again.';
         } finally {
           this.submitting = false;
           this.showDialog = true;

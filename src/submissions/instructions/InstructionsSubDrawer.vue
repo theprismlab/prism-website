@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer app location="left" width="220" :order="2">
+  <sub-drawer title="Contents">
     <screen-selector />
     <v-list
       v-if="screen"
@@ -8,12 +8,12 @@
       nav
       @update:opened="openedGroups = $event"
     >
-      <v-list-subheader>Instructions</v-list-subheader>
       <template v-for="item in items" :key="item.id">
         <v-list-group v-if="item.pages && item.pages.length" :value="item.id">
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
+              :to="item.route"
               :prepend-icon="item.icon"
               :title="item.title"
               :active="isGroupActive(item)"
@@ -22,7 +22,7 @@
           </template>
 
           <v-list-item
-            v-for="pageDef in flattenOutline(item.pages)"
+            v-for="pageDef in flattenOutline(item.pages).slice(1)"
             :key="pageDef.key"
             :to="{ path: item.route, query: { dest: pageDef.slug } }"
             :title="pageDef.title"
@@ -46,22 +46,23 @@
     <v-list v-if="screen" density="comfortable" nav>
       <v-list-item
         id="form-btn"
-        :to="`/submissions/forms/${screen}`"
+        :to="`/submission-hub/forms/${screen}`"
         title="Start Form"
         append-icon="mdi-arrow-right"
         exact
       />
     </v-list>
-  </v-navigation-drawer>
+  </sub-drawer>
 </template>
 
 <script>
+  import SubDrawer from '../SubDrawer.vue';
   import ScreenSelector from '../ScreenSelector.vue';
-  import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
+  import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline.js';
 
   export default {
     name: 'InstructionsSubDrawer',
-    components: { ScreenSelector },
+    components: { SubDrawer, ScreenSelector },
     data() {
       return {
         openedGroups: ['test-agent'],
@@ -84,14 +85,14 @@
           {
             id: 'test-agent',
             title: 'Test Agent Instructions',
-            route: `/submissions/instructions/${this.screen}/test-agent`,
+            route: `/submission-hub/instructions/${this.screen}/test-agent`,
             icon: 'mdi-flask-outline',
             pages: this.testAgentPages,
           },
           {
             id: 'shipping',
             title: 'Shipping Instructions',
-            route: `/submissions/instructions/${this.screen}/shipping`,
+            route: `/submission-hub/instructions/${this.screen}/shipping`,
             icon: 'mdi-truck-outline',
             pages: this.shippingPages,
           },
@@ -129,8 +130,7 @@
       },
       isPageActive(item, pageDef) {
         if (!this.$route.path.endsWith(item.id)) return false;
-        const current = this.$route.query.dest;
-        return current === pageDef.slug || (!current && pageDef === flattenOutline(item.pages)[0]);
+        return this.$route.query.dest === pageDef.slug;
       },
     },
   };
@@ -153,9 +153,6 @@
     padding-left: 8px;
     padding-right: 8px;
   }
-  /* .v-list-item--active {
-    color: var(--v-primary-base);
-  } */
   .v-list-item--active > * > * {
     font-weight: bold !important;
   }
@@ -169,7 +166,4 @@
   .outline-level-2 > * {
     padding-left: 32px !important;
   }
-  /* .v-list-group--open:has(.v-list-item--active) {
-    background-color: rgba(var(--v-theme-primary), 0.08);
-  } */
 </style>

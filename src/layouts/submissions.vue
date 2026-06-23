@@ -3,9 +3,9 @@
   <InstructionsSubDrawer v-if="isInstructions" />
   <FormsSubDrawer v-if="isForms" />
   <v-main>
-    <app-container wide v-if="$route.meta.breadcrumbs">
-      <!-- <breadcrumbs /> -->
-    </app-container>
+    <!-- <app-container wide v-if="$route.meta.breadcrumbs">
+      <breadcrumbs />
+    </app-container> -->
     <router-view />
   </v-main>
 </template>
@@ -20,10 +20,10 @@
     components: { SubmissionsDrawer, InstructionsSubDrawer, FormsSubDrawer },
     computed: {
       isInstructions() {
-        return this.$route.path.startsWith('/submissions/instructions');
+        return this.$route.path.startsWith('/submission-hub/instructions');
       },
       isForms() {
-        return this.$route.path.startsWith('/submissions/forms');
+        return this.$route.path.startsWith('/submission-hub/forms');
       },
     },
   };

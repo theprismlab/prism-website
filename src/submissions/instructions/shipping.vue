@@ -23,12 +23,11 @@
         return this.$route.params.screen;
       },
       flatPages() {
-        console.log('Flattening pages', this.pages);
         return flattenOutline(this.pages);
       },
       currentPage() {
         const dest = this.$route.query.dest;
-        return this.flatPages.find((p) => p.slug === dest) || this.flatPages[0] || null;
+        return this.flatPages.find((p) => p.slug === dest) || null;
       },
       pdfUrl() {
         const hash = this.currentPage ? this.currentPage.hash : '';

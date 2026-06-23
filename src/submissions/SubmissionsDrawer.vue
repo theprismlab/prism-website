@@ -1,19 +1,19 @@
 <template>
   <v-navigation-drawer
     v-model="drawer"
-    :rail="isSubSection"
+    :rail="rail"
+    :mobile="false"
     app
     location="left"
     width="260"
     :order="1"
   >
     <v-list density="comfortable" nav>
-      <!-- <v-list-subheader v-if="!isSubSection">Submissions</v-list-subheader> -->
       <v-list-item
         v-for="item in items"
         :key="item.id"
         :to="item.route"
-        :title="isSubSection ? undefined : item.title"
+        :title="rail ? undefined : item.title"
         :prepend-icon="item.icon"
         :active="isItemActive(item)"
         active-class="active-menu-item"
@@ -29,7 +29,9 @@
   export default {
     name: 'SubmissionsDrawer',
     setup() {
-      return { formStore: useFormProgressStore() };
+      return {
+        formStore: useFormProgressStore(),
+      };
     },
     data() {
       return {
@@ -57,46 +59,45 @@
       isSubSection() {
         const path = this.$route.path;
         return (
-          path.startsWith('/submissions/instructions') || path.startsWith('/submissions/forms')
+          path.startsWith('/submission-hub/instructions') ||
+          path.startsWith('/submission-hub/forms')
         );
+      },
+      rail() {
+        return this.$vuetify.display.xs || this.isSubSection;
       },
       items() {
         return [
           {
-            id: 'screens',
-            title: 'Screens',
-            route: '/submissions',
-            // icon: 'mdi-flask-outline',
+            id: 'overview',
+            title: 'Overview',
+            route: '/submission-hub/overview',
             icon: 'mdi-layers-outline',
-            activePrefix: null,
           },
           {
             id: 'instructions',
             title: 'Instructions',
             route: this.screen
-              ? `/submissions/instructions/${this.screen}`
-              : '/submissions/instructions',
+              ? `/submission-hub/instructions/${this.screen}`
+              : '/submission-hub/instructions',
             icon: 'mdi-information-variant-box-outline',
-            activePrefix: '/submissions/instructions',
+            activePrefix: '/submission-hub/instructions',
           },
           {
             id: 'forms',
             title: 'Forms',
-            route: this.screen ? `/submissions/forms/${this.screen}` : '/submissions/forms',
+            route: this.screen ? `/submission-hub/forms/${this.screen}` : '/submission-hub/forms',
             icon: 'mdi-file-document-outline',
-            activePrefix: '/submissions/forms',
+            activePrefix: '/submission-hub/forms',
           },
           {
             id: 'quote-po',
             title: 'View Quote & Upload PO',
-            route: '/submissions/quote-and-po',
+            route: '/submission-hub/quote-and-po',
             icon: 'mdi-invoice-import-outline',
-            activePrefix: null,
           },
         ];
       },
     },
   };
 </script>
-
-<style scoped></style>

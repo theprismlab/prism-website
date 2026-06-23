@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer app location="left" width="220" :order="2">
+  <sub-drawer title="Steps">
     <screen-selector />
     <div v-if="screen" class="form-stepper pt-4 pb-2 px-4">
       <div v-for="(step, i) in steps" :key="step.id">
@@ -27,21 +27,30 @@
         />
       </v-list>
     </div>
-  </v-navigation-drawer>
+  </sub-drawer>
 </template>
 
 <script>
+  import SubDrawer from '../SubDrawer.vue';
   import ScreenSelector from '../ScreenSelector.vue';
-  import { FORM_STEPS, useFormProgressStore } from '../store';
+  import { FORM_STEPS, useFormProgressStore } from '../store.js';
 
   export default {
     name: 'FormsSubDrawer',
-    components: { ScreenSelector },
+    components: { SubDrawer, ScreenSelector },
     setup() {
       return { formStore: useFormProgressStore() };
     },
     data() {
       return { steps: FORM_STEPS };
+    },
+    watch: {
+      '$route.params.screen': {
+        immediate: true,
+        handler(screen) {
+          this.formStore.setLastScreen(screen);
+        },
+      },
     },
     computed: {
       screen() {

@@ -1,7 +1,7 @@
 import { _ } from 'vue-underscore';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
-import * as api from './api';
+import { postSubmission, findScreen, fetchSubmissionMessage } from './api';
 
 export default class CompoundSubmissionConstants {
   static STATUS_NEW = 'NEW';
@@ -1862,12 +1862,12 @@ export default class CompoundSubmissionConstants {
   static async submitForms(response, apiURL) {
     const payload = CompoundSubmissionConstants.createPayload(response);
 
-    return await api.postSubmission(apiURL, payload);
+    return await postSubmission(apiURL, payload);
   }
 
   static async validateScreen(apiURL, screen, screenType) {
     try {
-      const foundRecord = await api.findScreen(apiURL, screen);
+      const foundRecord = await findScreen(apiURL, screen);
       if (foundRecord && foundRecord.name === screen && foundRecord.screen_type) {
         return;
       }
@@ -1956,6 +1956,6 @@ export default class CompoundSubmissionConstants {
    * @return {Promise<*>}
    */
   static async submissionMessage(api_url, submission_type) {
-    return await api.fetchSubmissionMessage(api_url, submission_type);
+    return await fetchSubmissionMessage(api_url, submission_type);
   }
 }

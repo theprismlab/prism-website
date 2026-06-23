@@ -8,7 +8,7 @@ const FIELDS = {
     key: 'acknowledgement1',
     section: 'Test agent requirements',
     description:
-      'You have carefully reviewed the <a href="/submissions/instructions/{screenType}/test-agent" target="_blank" rel="noopener noreferrer">Screen Information & Test Agent Requirements</a> to ensure your test agents are being submitted at the proper volume and stock concentration and compatible with the selected screen type.',
+      'You have carefully reviewed the <a href="/submission-hub/instructions/{screenType}/test-agent" target="_blank" rel="noopener noreferrer">Screen Information & Test Agent Requirements</a> to ensure your test agents are being submitted at the proper volume and stock concentration and compatible with the selected screen type.',
     label: 'I acknowledge and agree.',
     default: false,
   },
@@ -32,7 +32,7 @@ const FIELDS = {
     key: 'acknowledgement4',
     section: 'Test agent shipping',
     description:
-      `International shipments MUST go through the Broad Institute's Customs Broker and should be shipped at least 1 week before the submission deadline. Review the <a href="/submissions/instructions/{screenType}/shipping" target="_blank" rel="noopener noreferrer">Shipping Information</a> for additional instructions and information.`,
+      `International shipments MUST go through the Broad Institute's Customs Broker and should be shipped at least 1 week before the submission deadline. Review the <a href="/submission-hub/instructions/{screenType}/shipping" target="_blank" rel="noopener noreferrer">Shipping Information</a> for additional instructions and information.`,
     label: 'I acknowledge and agree.',
     default: false,
   },

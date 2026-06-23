@@ -114,7 +114,7 @@ const routes = [
 
   // ─── Submissions layout ───────────────────────────────────────────────────
   {
-    path: '/submissions',
+    path: '/submission-hub/overview',
     component: () => import('@/submissions/index.vue'),
     meta: {
       layout: submissionsLayout,
@@ -122,76 +122,76 @@ const routes = [
     },
   },
   {
-    path: '/submissions/quote-and-po',
+    path: '/submission-hub/quote-and-po',
     component: () => import('@/submissions/quote-and-po.vue'),
     meta: {
       layout: submissionsLayout,
       breadcrumbs: () => [
-        { title: 'Submissions', to: '/submissions', disabled: true },
+        { title: 'Submissions', to: '/submission-hub', disabled: true },
         { title: 'View Quote & Upload PO', disabled: true },
       ],
     },
   },
 
   {
-    path: '/submissions/instructions',
+    path: '/submission-hub/instructions',
     component: () => import('@/submissions/instructions/index.vue'),
     meta: {
       layout: submissionsLayout,
       breadcrumbs: () => [
-        { title: 'Submissions', to: '/submissions', disabled: true },
+        { title: 'Submissions', to: '/submission-hub', disabled: true },
         { title: 'Instructions', disabled: true },
       ],
     },
   },
   {
-    path: '/submissions/instructions/:screen',
-    redirect: (to) => `/submissions/instructions/${to.params.screen}/test-agent`,
+    path: '/submission-hub/instructions/:screen',
+    redirect: (to) => `/submission-hub/instructions/${to.params.screen}/test-agent`,
   },
   {
-    path: '/submissions/instructions/:screen/test-agent',
+    path: '/submission-hub/instructions/:screen/test-agent',
     component: () => import('@/submissions/instructions/test-agent.vue'),
     meta: {
       layout: submissionsLayout,
       breadcrumbs: (route) => [
-        { title: 'Submissions', to: '/submissions', disabled: true },
-        { title: 'Instructions', to: '/submissions/instructions', disabled: true },
+        { title: 'Submissions', to: '/submission-hub', disabled: true },
+        { title: 'Instructions', to: '/submission-hub/instructions', disabled: true },
         { title: `${route.params.screen} — Test Agent`, disabled: true },
       ],
     },
   },
   {
-    path: '/submissions/instructions/:screen/shipping',
+    path: '/submission-hub/instructions/:screen/shipping',
     component: () => import('@/submissions/instructions/shipping.vue'),
     meta: {
       layout: submissionsLayout,
       breadcrumbs: (route) => [
-        { title: 'Submissions', to: '/submissions', disabled: true },
-        { title: 'Instructions', to: '/submissions/instructions', disabled: true },
+        { title: 'Submissions', to: '/submission-hub', disabled: true },
+        { title: 'Instructions', to: '/submission-hub/instructions', disabled: true },
         { title: `${route.params.screen} — Shipping`, disabled: true },
       ],
     },
   },
 
   {
-    path: '/submissions/forms',
+    path: '/submission-hub/forms',
     component: () => import('@/submissions/forms/index.vue'),
     meta: {
       layout: submissionsLayout,
       breadcrumbs: () => [
-        { title: 'Submissions', to: '/submissions', disabled: true },
+        { title: 'Submissions', to: '/submission-hub', disabled: true },
         { title: 'Forms', disabled: true },
       ],
     },
   },
   {
-    path: '/submissions/forms/:screen',
+    path: '/submission-hub/forms/:screen',
     component: () => import('@/submissions/forms/screen.vue'),
     meta: {
       layout: submissionsLayout,
       breadcrumbs: (route) => [
-        { title: 'Submissions', to: '/submissions', disabled: true },
-        { title: 'Forms', to: '/submissions/forms', disabled: true },
+        { title: 'Submissions', to: '/submission-hub', disabled: true },
+        { title: 'Forms', to: '/submission-hub/forms', disabled: true },
         { title: route.params.screen, disabled: true },
       ],
     },
@@ -199,6 +199,9 @@ const routes = [
 ];
 
 const redirects = [
+  { path: '/submissions', redirect: '/submission-hub/overview' },
+  { path: '/submissions/:pathMatch(.*)*', redirect: (to) => `/submission-hub/${[].concat(to.params.pathMatch).join('/')}` },
+  { path: '/submission-hub', redirect: '/submission-hub/overview' },
   { path: '/research/white-papers', redirect: '/publications' },
   { path: '/research/conference-abstracts', redirect: '/publications' },
   { path: '/research/publications', redirect: '/publications' },

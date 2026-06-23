@@ -18,6 +18,10 @@ export const INSTITUTION_TYPE_OPTIONS = Object.values(COLLABORATOR_TYPE_OPTIONS)
 const requiresExtendedForm = (data) =>
   !!data.institutionType && data.institutionType !== COLLABORATOR_TYPE_OPTIONS.DMC.key;
 
+const isAcademicOrBroad = (data) =>
+  data.institutionType === COLLABORATOR_TYPE_OPTIONS.BROAD.key ||
+  data.institutionType === COLLABORATOR_TYPE_OPTIONS.ACADEMIC.key;
+
 export const FIELDS = {
   INSTITUTION_TYPE: {
     key: 'institutionType',
@@ -32,12 +36,12 @@ export const FIELDS = {
     key: 'quoteAcknowledgement',
     label: 'Quote Acknowledgement',
     default: false,
-    showIf: requiresExtendedForm,
+    showIf: isAcademicOrBroad,
   },
   COMMERCIAL_USE: {
     key: 'commercialUse',
     label: 'Commercial Use?',
-    showIf: requiresExtendedForm,
+    showIf: isAcademicOrBroad,
   },
   COMMERCIAL_USE_ACKNOWLEDGEMENT: {
     key: 'commercialUseAcknowledgement',
@@ -48,22 +52,22 @@ export const FIELDS = {
   FUNDING_INSTITUTION_NAME: {
     key: 'fundingInstitutionName',
     label: 'Funding Institution Name',
-    showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
+    showIf: requiresExtendedForm,
   },
   FUNDING_INSTITUTION_ADDRESS: {
     key: 'fundingInstitutionAddress',
     label: 'Funding Institution Address',
-    showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
+    showIf: requiresExtendedForm,
   },
   BILLING_CONTACT_NAME: {
     key: 'billingInvoiceContactName',
     label: 'Billing / Invoice Contact Name',
-    showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
+    showIf: requiresExtendedForm,
   },
   BILLING_CONTACT_EMAIL: {
     key: 'billingInvoiceContactEmail',
     label: 'Billing / Invoice Contact Email',
-    showIf: (data) => data.institutionType === COLLABORATOR_TYPE_OPTIONS.INDUSTRY.key,
+    showIf: requiresExtendedForm,
   },
   COMMENTS: {
     key: 'comments',
