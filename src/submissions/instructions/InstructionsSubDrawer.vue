@@ -3,19 +3,19 @@
     v-model="drawerOpen"
     app
     location="left"
-    :width="$vuetify.display.xs ? 220 : 220"
+    :width="$vuetify.display.xs ? 280 : 220"
     :temporary="$vuetify.display.xs"
     :mobile="false"
     :order="2"
   >
-    <v-btn
-      v-if="$vuetify.display.xs"
-      icon="mdi-chevron-left"
-      variant="text"
-      size="small"
-      :style="{ position: 'sticky', top: '8px', float: 'right', zIndex: 1 }"
-      @click="drawerOpen = false"
-    />
+    <template v-if="$vuetify.display.xs">
+      <div class="d-flex align-center justify-space-between px-3 py-2">
+        <span class="text-body-2 font-weight-medium">Contents</span>
+        <v-btn icon="mdi-close" variant="text" size="small" density="compact" @click="drawerOpen = false" />
+      </div>
+      <v-divider />
+    </template>
+
     <screen-selector />
     <v-list
       v-if="screen"
@@ -69,14 +69,13 @@
     </v-list>
   </v-navigation-drawer>
 
-  <v-btn
+  <button
     v-if="$vuetify.display.xs && !drawerOpen"
-    icon="mdi-chevron-right"
-    variant="tonal"
-    size="small"
-    :style="{ position: 'fixed', left: '56px', top: '72px', zIndex: 1006 }"
+    class="subdrawer-tab"
     @click="drawerOpen = true"
-  />
+  >
+    <v-icon size="16">mdi-chevron-right</v-icon>
+  </button>
 </template>
 
 <script>
@@ -94,7 +93,9 @@
         shippingPages: [],
       };
     },
-    mounted() {},
+    created() {
+      if (this.$vuetify.display.xs) this.drawerOpen = false;
+    },
     computed: {
       screen() {
         return this.$route.params.screen;
@@ -139,12 +140,18 @@
       },
       '$route.path': {
         handler(path) {
+          if (this.$vuetify.display.xs) this.drawerOpen = false;
           if (path.includes('/shipping') && !this.openedGroups.includes('shipping')) {
             this.openedGroups = [...this.openedGroups, 'shipping'];
           }
           if (path.includes('/test-agent') && !this.openedGroups.includes('test-agent')) {
             this.openedGroups = [...this.openedGroups, 'test-agent'];
           }
+        },
+      },
+      '$route.query.dest': {
+        handler() {
+          if (this.$vuetify.display.xs) this.drawerOpen = false;
         },
       },
     },
@@ -163,6 +170,27 @@
 </script>
 
 <style scoped>
+  .subdrawer-tab {
+    position: fixed;
+    left: 56px;
+    top: 80px;
+    z-index: 1006;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 48px;
+    border: none;
+    border-radius: 0 10px 10px 0;
+    background-color: rgba(var(--v-theme-surface-variant), 0.15);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .subdrawer-tab:hover {
+    background-color: rgba(var(--v-theme-surface-variant), 0.3);
+  }
+
   #form-btn {
     padding-left: 24px;
     padding-right: 16px;
@@ -179,9 +207,6 @@
     padding-left: 8px;
     padding-right: 8px;
   }
-  /* .v-list-item--active {
-    color: var(--v-primary-base);
-  } */
   .v-list-item--active > * > * {
     font-weight: bold !important;
   }
@@ -195,7 +220,4 @@
   .outline-level-2 > * {
     padding-left: 32px !important;
   }
-  /* .v-list-group--open:has(.v-list-item--active) {
-    background-color: rgba(var(--v-theme-primary), 0.08);
-  } */
 </style>

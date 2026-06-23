@@ -3,19 +3,19 @@
     v-model="drawerOpen"
     app
     location="left"
-    :width="$vuetify.display.xs ? 220 : 220"
+    :width="$vuetify.display.xs ? 280 : 220"
     :temporary="$vuetify.display.xs"
     :mobile="false"
     :order="2"
   >
-    <v-btn
-      v-if="$vuetify.display.xs"
-      icon="mdi-chevron-left"
-      variant="text"
-      size="small"
-      :style="{ position: 'sticky', top: '8px', float: 'right', zIndex: 1 }"
-      @click="drawerOpen = false"
-    />
+    <template v-if="$vuetify.display.xs">
+      <div class="d-flex align-center justify-space-between px-3 py-2">
+        <span class="text-body-2 font-weight-medium">Steps</span>
+        <v-btn icon="mdi-close" variant="text" size="small" density="compact" @click="drawerOpen = false" />
+      </div>
+      <v-divider />
+    </template>
+
     <screen-selector />
     <div v-if="screen" class="form-stepper pt-4 pb-2 px-4">
       <div v-for="(step, i) in steps" :key="step.id">
@@ -45,14 +45,13 @@
     </div>
   </v-navigation-drawer>
 
-  <v-btn
+  <button
     v-if="$vuetify.display.xs && !drawerOpen"
-    icon="mdi-chevron-right"
-    variant="tonal"
-    size="small"
-    :style="{ position: 'fixed', left: '56px', top: '72px', zIndex: 1006 }"
+    class="subdrawer-tab"
     @click="drawerOpen = true"
-  />
+  >
+    <v-icon size="16">mdi-chevron-right</v-icon>
+  </button>
 </template>
 
 <script>
@@ -67,6 +66,22 @@
     },
     data() {
       return { steps: FORM_STEPS, drawerOpen: true };
+    },
+    created() {
+      if (this.$vuetify.display.xs) this.drawerOpen = false;
+    },
+    watch: {
+      '$route.params.screen': {
+        immediate: true,
+        handler(screen) {
+          this.formStore.setLastScreen(screen);
+        },
+      },
+      '$route.path': {
+        handler() {
+          if (this.$vuetify.display.xs) this.drawerOpen = false;
+        },
+      },
     },
     computed: {
       screen() {
@@ -104,6 +119,27 @@
 </script>
 
 <style scoped>
+  .subdrawer-tab {
+    position: fixed;
+    left: 56px;
+    top: 80px;
+    z-index: 1006;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 48px;
+    border: none;
+    border-radius: 0 10px 10px 0;
+    background-color: rgba(var(--v-theme-surface-variant), 0.15);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .subdrawer-tab:hover {
+    background-color: rgba(var(--v-theme-surface-variant), 0.3);
+  }
+
   .step-track {
     display: flex;
     flex-direction: column;
