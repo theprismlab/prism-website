@@ -57,7 +57,8 @@
       isSubSection() {
         const path = this.$route.path;
         return (
-          path.startsWith('/submission-hub/instructions') || path.startsWith('/submission-hub/forms')
+          path.startsWith('/submission-hub/instructions') ||
+          path.startsWith('/submission-hub/forms')
         );
       },
       items() {
