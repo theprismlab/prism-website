@@ -1,11 +1,16 @@
 <template>
   <v-navigation-drawer
+    v-model="drawerOpen"
     app
     location="left"
-    :width="$vuetify.display.xs ? 160 : 220"
+    :width="$vuetify.display.xs ? 220 : 220"
+    :temporary="$vuetify.display.xs"
     :mobile="false"
     :order="2"
   >
+    <div v-if="$vuetify.display.xs" class="d-flex justify-end pa-1">
+      <v-btn icon="mdi-chevron-left" variant="text" size="small" @click="drawerOpen = false" />
+    </div>
     <screen-selector />
     <div v-if="screen" class="form-stepper pt-4 pb-2 px-4">
       <div v-for="(step, i) in steps" :key="step.id">
@@ -34,6 +39,17 @@
       </v-list>
     </div>
   </v-navigation-drawer>
+
+  <v-btn
+    v-if="$vuetify.display.xs && !drawerOpen"
+    icon="mdi-chevron-right"
+    position="fixed"
+    location="left center"
+    :style="{ left: '56px', zIndex: 1006 }"
+    variant="tonal"
+    size="small"
+    @click="drawerOpen = true"
+  />
 </template>
 
 <script>
@@ -47,7 +63,7 @@
       return { formStore: useFormProgressStore() };
     },
     data() {
-      return { steps: FORM_STEPS };
+      return { steps: FORM_STEPS, drawerOpen: true };
     },
     computed: {
       screen() {

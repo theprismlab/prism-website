@@ -1,11 +1,16 @@
 <template>
   <v-navigation-drawer
+    v-model="drawerOpen"
     app
     location="left"
-    :width="$vuetify.display.xs ? 160 : 220"
+    :width="$vuetify.display.xs ? 220 : 220"
+    :temporary="$vuetify.display.xs"
     :mobile="false"
     :order="2"
   >
+    <div v-if="$vuetify.display.xs" class="d-flex justify-end pa-1">
+      <v-btn icon="mdi-chevron-left" variant="text" size="small" @click="drawerOpen = false" />
+    </div>
     <screen-selector />
     <v-list
       v-if="screen"
@@ -58,6 +63,17 @@
       />
     </v-list>
   </v-navigation-drawer>
+
+  <v-btn
+    v-if="$vuetify.display.xs && !drawerOpen"
+    icon="mdi-chevron-right"
+    position="fixed"
+    location="left center"
+    :style="{ left: '56px', zIndex: 1006 }"
+    variant="tonal"
+    size="small"
+    @click="drawerOpen = true"
+  />
 </template>
 
 <script>
@@ -69,11 +85,13 @@
     components: { ScreenSelector },
     data() {
       return {
+        drawerOpen: true,
         openedGroups: ['test-agent'],
         testAgentPages: [],
         shippingPages: [],
       };
     },
+    mounted() {},
     computed: {
       screen() {
         return this.$route.params.screen;
