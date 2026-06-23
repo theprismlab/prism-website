@@ -103,7 +103,8 @@
 
   .overview-card-title {
     font-size: var(--h5-size);
-    font-family: 'Archivo Expanded', sans-serif;
+    font-family: 'Archivo', sans-serif;
+    font-stretch: expanded;
     font-weight: 600;
     line-height: 1.35em;
     color: #1a1a1a;
