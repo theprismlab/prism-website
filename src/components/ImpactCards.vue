@@ -71,7 +71,8 @@
     font-size: 3rem;
     font-weight: 700;
     line-height: 1;
-    font-family: 'Archivo Expanded', sans-serif;
+    font-family: 'Archivo', sans-serif;
+    font-stretch: expanded;
     letter-spacing: -0.02em;
     margin: 0;
   }
