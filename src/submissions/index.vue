@@ -13,6 +13,7 @@
         :items-per-page="-1"
         hide-default-footer
         class="mt-4"
+        id="submission-hub__schedule-table"
       >
         <template #item.status="{ item }">
           <v-chip v-if="item.status" :color="statusColor(item.status)" size="small" variant="flat">
@@ -38,20 +39,27 @@
         <div class="drawer-section__eyebrow">Get started</div>
         <h3 class="drawer-section__title">How to participate in a PRISM screen</h3>
 
-        <ol class="drawer-steps">
-          <li class="drawer-steps__item">
-            <span class="drawer-steps__num">1</span>
-            <span class="drawer-steps__text">Complete a submission form</span>
-          </li>
-          <li class="drawer-steps__item">
-            <span class="drawer-steps__num">2</span>
-            <span class="drawer-steps__text">Provide funding to your quote (if applicable)</span>
-          </li>
-          <li class="drawer-steps__item">
-            <span class="drawer-steps__num">3</span>
-            <span class="drawer-steps__text">Ship your compounds to our lab</span>
-          </li>
-        </ol>
+        <v-timeline
+          class="drawer-steps"
+          direction="vertical"
+          side="end"
+          align="start"
+          density="compact"
+          truncate-line="both"
+          line-color="grey-lighten-2"
+        >
+          <v-timeline-item
+            v-for="(step, i) in participationSteps"
+            :key="i"
+            dot-color="teal-accent-4"
+            size="small"
+            :icon="`mdi-numeric-${i + 1}`"
+            icon-color="white"
+            fill-dot
+          >
+            <div class="drawer-steps__text">{{ step }}</div>
+          </v-timeline-item>
+        </v-timeline>
 
         <v-btn
           to="/consortium-screens/collaborating"
@@ -65,10 +73,8 @@
         >
       </section>
 
-      <v-divider class="drawer-divider" />
-
-      <section class="drawer-section">
-        <div class="drawer-section__eyebrow">Screens</div>
+      <section class="drawer-section mt-4">
+        <!-- <div class="drawer-section__eyebrow">Cheat sheet</div> -->
         <h3 class="drawer-section__title">Screen — Test Agents</h3>
 
         <ul class="drawer-assays">
@@ -151,6 +157,11 @@
           },
         ],
         assays: ASSAYS,
+        participationSteps: [
+          'Complete a submission form',
+          'Provide funding to your quote (if applicable)',
+          'Ship your compounds to our lab',
+        ],
       };
     },
     methods: {
@@ -225,39 +236,18 @@
     opacity: 0.7;
   }
 
-  /* Numbered steps */
+  /* Timeline steps */
   #submission-hub__navigation-drawer-right .drawer-steps {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    margin: 0 4px 20px;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-steps__item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 10px 12px;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 8px;
+  #submission-hub__navigation-drawer-right .drawer-steps.v-timeline--vertical.v-timeline {
+    grid-row-gap: 8px;
   }
 
-  #submission-hub__navigation-drawer-right .drawer-steps__num {
-    flex: 0 0 24px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #fff;
-    background: var(--v-primary-base, #1976d2);
-    margin-top: 1px;
+  #submission-hub__navigation-drawer-right .drawer-steps .v-timeline-item__body {
+    padding-inline-start: 12px;
+    padding-block: 2px;
   }
 
   #submission-hub__navigation-drawer-right .drawer-steps__text {
@@ -277,7 +267,7 @@
   }
 
   #submission-hub__navigation-drawer-right .drawer-assays__item {
-    padding: 10px 12px;
+    padding: 0px 12px;
     border-radius: 8px;
   }
 
@@ -300,5 +290,64 @@
     text-transform: none;
     letter-spacing: 0.01em;
     font-weight: 500;
+  }
+
+  #submission-hub__schedule-table {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Header row */
+  #submission-hub__schedule-table thead,
+  #submission-hub__schedule-table .v-data-table__thead {
+    background: rgba(0, 0, 0, 0.015);
+  }
+
+  #submission-hub__schedule-table thead tr {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+  }
+
+  #submission-hub__schedule-table thead th,
+  #submission-hub__schedule-table .v-data-table__th {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+
+    letter-spacing: 0.06em;
+    color: rgba(0, 0, 0, 0.6) !important;
+    height: 48px !important;
+
+    vertical-align: middle !important;
+    background: rgba(0, 0, 0, 0.015);
+  }
+
+  /* Body cells */
+  #submission-hub__schedule-table tbody td,
+  #submission-hub__schedule-table .v-data-table__td {
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.82);
+    height: 56px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* First column emphasis */
+  #submission-hub__schedule-table tbody td:first-child,
+  #submission-hub__schedule-table .v-data-table__td:first-child {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.9);
+  }
+
+  /* Zebra striping */
+  #submission-hub__schedule-table tbody tr:nth-child(even) > td,
+  #submission-hub__schedule-table tbody tr:nth-child(even) > .v-data-table__td {
+    background: rgba(0, 0, 0, 0.015);
+  }
+
+  /* Strip the last row's bottom border so it sits flush with the rounded container */
+  #submission-hub__schedule-table tbody tr:last-child > td,
+  #submission-hub__schedule-table tbody tr:last-child > .v-data-table__td {
+    border-bottom: 0 !important;
   }
 </style>
