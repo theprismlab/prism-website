@@ -77,8 +77,8 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { STEP_REGISTRY } from './steps/registry';
-  import { fetchSubmissionMessage } from '@/submissions/submissions-page-api.js';
   import { normalizeStatus } from '@/submissions/status-utils.js';
+  import { useWindowStatusStore } from '@/submissions/window-status-store.js';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
   import TestAgentStep from './steps/TestAgentStep.vue';
@@ -95,16 +95,10 @@
       ReviewStep,
     },
     setup() {
-      return { formStore: useFormProgressStore() };
+      return { formStore: useFormProgressStore(), windowStore: useWindowStatusStore() };
     },
     data() {
-      return {
-        steps: FORM_STEPS,
-        attemptedSteps: {},
-        windowStatus: null,
-        windowMessage: '',
-        apiUrl: import.meta.env.VITE_API_URL,
-      };
+      return { steps: FORM_STEPS, attemptedSteps: {} };
     },
     computed: {
       screen() {
@@ -139,6 +133,12 @@
           ]),
         );
       },
+      windowStatus() {
+        return normalizeStatus(this.windowStore.statuses[this.screenType]?.status);
+      },
+      windowMessage() {
+        return this.windowStore.statuses[this.screenType]?.message || '';
+      },
       defaultWindowMessage() {
         if (this.windowStatus === 'CLOSED') {
           return `The submission window for ${this.screenType || 'this screen'} is currently closed. Please check the Submission Hub for upcoming windows.`;
@@ -156,13 +156,10 @@
         );
       },
     },
-    async mounted() {
-      await this.fetchWindowStatus();
+    mounted() {
+      this.windowStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
-      screenType(val, old) {
-        if (val !== old) this.fetchWindowStatus();
-      },
       screen() {
         this.attemptedSteps = {};
       },
@@ -184,22 +181,6 @@
       },
     },
     methods: {
-      async fetchWindowStatus() {
-        if (!this.screenType) return;
-        try {
-          const messages = await fetchSubmissionMessage(this.apiUrl, this.screenType);
-          const msg = Array.isArray(messages) ? messages[0] : messages;
-          if (msg) {
-            this.windowStatus = normalizeStatus(msg.status);
-            this.windowMessage = msg.message || '';
-          } else {
-            this.windowStatus = null;
-            this.windowMessage = '';
-          }
-        } catch (e) {
-          console.error('Failed to load window status', e);
-        }
-      },
       isCompleted(i) {
         return this.stepValidity[this.steps[i].id] ?? false;
       },

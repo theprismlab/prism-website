@@ -23,47 +23,42 @@
 </template>
 
 <script>
-  import { fetchSubmissionMessage } from './submissions-page-api.js';
   import { normalizeStatus, statusMeta, SCREEN_STATUSES } from './status-utils.js';
+  import { useWindowStatusStore } from './window-status-store.js';
 
   export default {
     name: 'ScreenSelector',
+    setup() {
+      return { windowStore: useWindowStatusStore() };
+    },
     data() {
       return {
         screens: ['MTS', 'CPS', 'APS', 'EPS', 'AIR'],
         menuOpen: false,
         useApiStatus: false, // flip to true when API is ready
-        apiUrl: import.meta.env.VITE_API_URL,
-        apiStatuses: {},
       };
     },
     computed: {
       currentStatuses() {
-        return this.useApiStatus ? this.apiStatuses : SCREEN_STATUSES;
+        if (!this.useApiStatus) return SCREEN_STATUSES;
+        return Object.fromEntries(
+          Object.entries(this.windowStore.statuses).map(([type, msg]) => [
+            type,
+            normalizeStatus(msg.status),
+          ]),
+        );
       },
     },
-    async mounted() {
+    mounted() {
       if (!this.$route.params.screen) {
         this.$nextTick(() => {
           this.menuOpen = true;
         });
       }
-      if (this.useApiStatus) await this.fetchStatuses();
+      if (this.useApiStatus) this.windowStore.load(import.meta.env.VITE_API_URL);
     },
     methods: {
       statusMeta,
-      async fetchStatuses() {
-        try {
-          const messages = await fetchSubmissionMessage(this.apiUrl);
-          const map = {};
-          for (const msg of messages || []) {
-            if (msg.submission_type) map[msg.submission_type] = normalizeStatus(msg.status);
-          }
-          this.apiStatuses = map;
-        } catch (e) {
-          console.error('ScreenSelector: failed to load statuses', e);
-        }
-      },
       onScreenChange(screen) {
         const segments = this.$route.path.split('/');
         const screenIndex = segments.indexOf(this.$route.params.screen);

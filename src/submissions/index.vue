@@ -39,14 +39,14 @@
 
             <template #item.window_status="{ item }">
               <v-progress-circular
-                v-if="statusesLoading"
+                v-if="windowStore.loading"
                 size="16"
                 width="2"
                 indeterminate
                 color="grey"
               />
-              <span v-else-if="liveStatuses[item.screen]?.status">
-                {{ liveStatuses[item.screen].status }}
+              <span v-else-if="windowStore.statuses[item.screen]?.status">
+                {{ windowStore.statuses[item.screen].status }}
               </span>
               <span v-else class="text-grey-lighten-1">—</span>
             </template>
@@ -117,16 +117,16 @@
 
 <script>
   import { ASSAYS } from '@/utils/assays';
-  import { fetchSubmissionMessage } from './submissions-page-api.js';
   import { statusMeta } from './status-utils.js';
+  import { useWindowStatusStore } from './window-status-store.js';
 
   export default {
     name: 'SubmissionsOverview',
+    setup() {
+      return { windowStore: useWindowStatusStore() };
+    },
     data() {
       return {
-        apiUrl: import.meta.env.VITE_API_URL,
-        liveStatuses: {},
-        statusesLoading: false,
         headers: [
           { title: 'Screen Name', key: 'screen_name', sortable: false },
           { title: 'Timepoint', key: 'time_point', sortable: false },
@@ -202,20 +202,8 @@
         ],
       };
     },
-    async mounted() {
-      this.statusesLoading = true;
-      try {
-        const messages = await fetchSubmissionMessage(this.apiUrl);
-        const map = {};
-        for (const msg of messages || []) {
-          if (msg.submission_type) map[msg.submission_type] = msg;
-        }
-        this.liveStatuses = map;
-      } catch (e) {
-        console.error('Failed to load window statuses', e);
-      } finally {
-        this.statusesLoading = false;
-      }
+    mounted() {
+      this.windowStore.load(import.meta.env.VITE_API_URL);
     },
     methods: {
       statusMeta,
