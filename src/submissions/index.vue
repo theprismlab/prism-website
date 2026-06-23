@@ -120,6 +120,7 @@
     data() {
       return {
         apiUrl: import.meta.env.VITE_API_URL,
+        useApiStatus: false, // flip to true when API is ready
         liveStatuses: {},
         statusesLoading: false,
         headers: [
@@ -214,6 +215,7 @@
     },
     methods: {
       effectiveStatus(item) {
+        if (!this.useApiStatus) return item.status;
         const live = this.liveStatuses[item.screen];
         if (!live?.status) return item.status;
         return this.normalizeWindowStatus(live.status) ?? item.status;
