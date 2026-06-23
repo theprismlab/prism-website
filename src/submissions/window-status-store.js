@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { fetchSubmissionMessage } from './submissions-page-api.js';
+import { fetchSubmissionMessage } from './api.js';
 
 export const useWindowStatusStore = defineStore('windowStatus', {
   state: () => ({

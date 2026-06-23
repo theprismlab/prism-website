@@ -145,7 +145,7 @@
 </template>
 
 <script>
-  import api from '@/submissions/api.js';
+  import { getCollaboratorList } from '@/submissions/api.js';
   import {
     FIELDS,
     COLLABORATOR_TYPE_OPTIONS,
@@ -184,7 +184,7 @@
     methods: {
       async loadInstitutionNames() {
         try {
-          const institutions = await api.getCollaboratorList(import.meta.env.VITE_API_URL);
+          const institutions = await getCollaboratorList(import.meta.env.VITE_API_URL);
           this.allInstitutions = institutions;
           console.log('Loaded institutions:', institutions);
         } catch (error) {
