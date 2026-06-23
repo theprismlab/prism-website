@@ -22,11 +22,12 @@
             <template #item.status="{ item }">
               <v-chip
                 v-if="item.status"
-                :color="statusColor(item.status)"
+                :color="statusMeta(item.status).color"
+                :data-status="statusMeta(item.status).key"
                 size="small"
                 variant="flat"
               >
-                {{ item.status }}
+                {{ statusMeta(item.status).label }}
               </v-chip>
             </template>
           </v-data-table>
@@ -168,15 +169,14 @@
       };
     },
     methods: {
-      statusColor(status) {
-        return (
-          {
-            OPEN: 'teal-accent-4',
-            'IN-PROGRESS': 'yellow-darken-2',
-            CLOSED: 'red-accent-4',
-            SCHEDULED: 'grey-lighten-2',
-          }[status] ?? 'default'
-        );
+      statusMeta(status) {
+        const map = {
+          OPEN: { key: 'open', label: 'Open', color: 'teal-accent-4' },
+          'IN-PROGRESS': { key: 'in-progress', label: 'In Progress', color: 'yellow-darken-2' },
+          CLOSED: { key: 'closed', label: 'Closed', color: 'red-accent-4' },
+          SCHEDULED: { key: 'scheduled', label: 'Scheduled', color: 'grey-lighten-2' },
+        };
+        return map[status] ?? { key: 'default', label: status, color: 'default' };
       },
     },
   };
