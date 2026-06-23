@@ -25,56 +25,70 @@
     <v-navigation-drawer
       v-model="drawerOpen"
       location="right"
-      width="320"
+      width="340"
       :order="2"
       floating
       id="submission-hub__navigation-drawer-right"
     >
-      <h3 class="prism-text-h6">How to participate in a PRISM screen</h3>
-      <v-list nav>
-        <v-list-item
-          lines="ten"
-          prepend-icon="mdi-numeric-1-circle-outline"
-          title="Complete a submission form"
-        />
-        <v-list-item
-          lines="ten"
-          prepend-icon="mdi-numeric-2-circle-outline"
-          title="Provide funding to your quote (if applicable)"
-        />
-        <v-list-item
-          lines="ten"
-          prepend-icon="mdi-numeric-3-circle-outline"
-          title="Ship your compounds to our lab"
-        />
-      </v-list>
-      <v-btn
-        to="/consortium-screens/collaborating"
-        append-icon="mdi-arrow-right"
-        variant="outlined"
-        class="mt-4"
-        rounded
-        >Learn about collaborating</v-btn
-      >
+      <button class="drawer-collapse-btn" aria-label="Collapse drawer" @click="drawerOpen = false">
+        <v-icon size="20">mdi-chevron-right</v-icon>
+      </button>
 
-      <h3 class="prism-text-h6 mt-6">Screen - Test Agents</h3>
-      <v-list nav>
-        <v-list-item
-          v-for="key in Object.keys(assays)"
-          :key="key"
-          :title="key"
-          lines="ten"
-          :subtitle="assays[key].test_agents"
-        />
-      </v-list>
-      <v-btn
-        to="/consortium-screens/assays"
-        append-icon="mdi-arrow-right"
-        variant="outlined"
-        class="mt-4"
-        rounded
-        >More about assays</v-btn
-      >
+      <section class="drawer-section">
+        <div class="drawer-section__eyebrow">Get started</div>
+        <h3 class="drawer-section__title">How to participate in a PRISM screen</h3>
+
+        <ol class="drawer-steps">
+          <li class="drawer-steps__item">
+            <span class="drawer-steps__num">1</span>
+            <span class="drawer-steps__text">Complete a submission form</span>
+          </li>
+          <li class="drawer-steps__item">
+            <span class="drawer-steps__num">2</span>
+            <span class="drawer-steps__text">Provide funding to your quote (if applicable)</span>
+          </li>
+          <li class="drawer-steps__item">
+            <span class="drawer-steps__num">3</span>
+            <span class="drawer-steps__text">Ship your compounds to our lab</span>
+          </li>
+        </ol>
+
+        <v-btn
+          to="/consortium-screens/collaborating"
+          append-icon="mdi-arrow-right"
+          variant="outlined"
+          color="primary"
+          class="drawer-cta"
+          rounded
+          block
+          >Learn about collaborating</v-btn
+        >
+      </section>
+
+      <v-divider class="drawer-divider" />
+
+      <section class="drawer-section">
+        <div class="drawer-section__eyebrow">Screens</div>
+        <h3 class="drawer-section__title">Screen — Test Agents</h3>
+
+        <ul class="drawer-assays">
+          <li v-for="key in Object.keys(assays)" :key="key" class="drawer-assays__item">
+            <div class="drawer-assays__name">{{ key }}</div>
+            <div class="drawer-assays__agents">{{ assays[key].test_agents }}</div>
+          </li>
+        </ul>
+
+        <v-btn
+          to="/consortium-screens/assays"
+          append-icon="mdi-arrow-right"
+          variant="outlined"
+          color="primary"
+          class="drawer-cta"
+          rounded
+          block
+          >More about assays</v-btn
+        >
+      </section>
     </v-navigation-drawer>
 
     <v-btn
@@ -149,15 +163,142 @@
 
 <style>
   #submission-hub__navigation-drawer-right {
-    padding: 24px;
     top: 64px;
     height: calc(100% - 64px);
-    background-color: #f4f4f4;
+    background-color: #fafafa;
+    border-left: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.04);
   }
-  #submission-hub__navigation-drawer-right > * > * .v-list-item__prepend {
-    width: 32px !important;
+
+  #submission-hub__navigation-drawer-right .v-navigation-drawer__content {
+    padding: 8px 24px 32px;
+    scrollbar-width: thin;
   }
-  .v-list-item__prepend > .v-icon > .v-list-item__spacer {
-    width: 0px !important;
+
+  /* Collapse button — small, subtle, top-right inside drawer */
+  #submission-hub__navigation-drawer-right .drawer-collapse-btn {
+    position: sticky;
+    top: 0;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    color: rgba(0, 0, 0, 0.55);
+    background: transparent;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+    z-index: 1;
+  }
+  #submission-hub__navigation-drawer-right .drawer-collapse-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  /* Section layout */
+  #submission-hub__navigation-drawer-right .drawer-section {
+    padding: 8px 0 4px;
+  }
+
+  #submission-hub__navigation-drawer-right .drawer-section__eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--v-primary-darken-1, #1976d2);
+    margin-bottom: 6px;
+  }
+
+  #submission-hub__navigation-drawer-right .drawer-section__title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: rgba(0, 0, 0, 0.87);
+    margin: 0 0 16px;
+  }
+
+  #submission-hub__navigation-drawer-right .drawer-divider {
+    margin: 24px -24px;
+    opacity: 0.7;
+  }
+
+  /* Numbered steps */
+  #submission-hub__navigation-drawer-right .drawer-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #submission-hub__navigation-drawer-right .drawer-steps__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+  }
+
+  #submission-hub__navigation-drawer-right .drawer-steps__num {
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--v-primary-base, #1976d2);
+    margin-top: 1px;
+  }
+
+  #submission-hub__navigation-drawer-right .drawer-steps__text {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.78);
+  }
+
+  /* Assays list */
+  #submission-hub__navigation-drawer-right .drawer-assays {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  #submission-hub__navigation-drawer-right .drawer-assays__item {
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+
+  #submission-hub__navigation-drawer-right .drawer-assays__name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.87);
+    letter-spacing: 0.02em;
+  }
+
+  #submission-hub__navigation-drawer-right .drawer-assays__agents {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: 2px;
+  }
+
+  /* CTA buttons */
+  #submission-hub__navigation-drawer-right .drawer-cta {
+    text-transform: none;
+    letter-spacing: 0.01em;
+    font-weight: 500;
   }
 </style>
