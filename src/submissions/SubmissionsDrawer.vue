@@ -1,7 +1,8 @@
 <template>
   <v-navigation-drawer
     v-model="drawer"
-    :rail="isSubSection"
+    :rail="rail"
+    :mobile="false"
     app
     location="left"
     width="260"
@@ -13,7 +14,7 @@
         v-for="item in items"
         :key="item.id"
         :to="item.route"
-        :title="isSubSection ? undefined : item.title"
+        :title="rail ? undefined : item.title"
         :prepend-icon="item.icon"
         :active="isItemActive(item)"
         active-class="active-menu-item"
@@ -24,12 +25,16 @@
 </template>
 
 <script>
+  import { useDisplay } from 'vuetify';
   import { useFormProgressStore } from './store';
 
   export default {
     name: 'SubmissionsDrawer',
     setup() {
-      return { formStore: useFormProgressStore() };
+      return {
+        formStore: useFormProgressStore(),
+        display: useDisplay(),
+      };
     },
     data() {
       return {
@@ -60,6 +65,10 @@
           path.startsWith('/submission-hub/instructions') ||
           path.startsWith('/submission-hub/forms')
         );
+      },
+      rail() {
+        // Collapse to rail (icons only) on mobile or when inside a sub-section
+        return this.isSubSection || this.display.mobile;
       },
       items() {
         return [
