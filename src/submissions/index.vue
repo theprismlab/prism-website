@@ -7,7 +7,12 @@
           <p class="prism-text-body-1">
             [BLURB NEEDED] Welcome to the PRISM Submission Hub. Here, you can explore upcoming
             screens, access detailed instructions, and submit your test agents to participate in our
-            consortium screens.
+            consortium screens.<br /><br />
+            <!-- The next PRISM screens will be in July 2026 for DMSO-soluble single agents only (MTS)
+            and Fall 2026 for DMSO-soluble single agents and combinations, as well as single aqueous
+            test agents. Data delivery for the current screens (MTS032, CPS016, APS008, and AIR002)
+            is planned for September 2026.
+            <br /><br /> -->
           </p>
 
           <h2 class="prism-text-h3">Screening Schedule 2026</h2>
@@ -22,12 +27,14 @@
             <template #item.status="{ item }">
               <v-chip
                 v-if="item.status"
-                :color="statusMeta(item.status).color"
-                :data-status="statusMeta(item.status).key"
+                :to="statusMeta(item.status, item.screen).to"
+                :color="statusMeta(item.status, item.screen).color"
+                :data-status="statusMeta(item.status, item.screen).key"
                 size="small"
                 variant="flat"
+                :append-icon="statusMeta(item.status, item.screen).to ? 'mdi-arrow-top-right' : ''"
               >
-                {{ statusMeta(item.status).label }}
+                {{ statusMeta(item.status, item.screen).label }}
               </v-chip>
             </template>
           </v-data-table>
@@ -102,7 +109,7 @@
     data() {
       return {
         headers: [
-          { title: 'Screen Name', key: 'screen', sortable: false },
+          { title: 'Screen Name', key: 'screen_name', sortable: false },
           { title: 'Timepoint', key: 'time_point', sortable: false },
           { title: 'Submission Window', key: 'submission_window', sortable: false },
           { title: 'Status', key: 'status', sortable: false },
@@ -111,49 +118,56 @@
         // TODO: replace with API data
         schedule: [
           {
-            screen: 'EPS008',
+            screen: 'EPS',
+            screen_name: 'EPS008',
             time_point: ASSAYS.EPS.time_point,
             submission_window: 'June 15 – 26',
             status: 'IN-PROGRESS',
             data_delivery_date: 'November 2026',
           },
           {
-            screen: 'MTS033',
+            screen: 'MTS',
+            screen_name: 'MTS033',
             time_point: ASSAYS.MTS.time_point,
             submission_window: 'July 13 – 24',
             status: 'OPEN',
             data_delivery_date: 'November 2026',
           },
           {
-            screen: 'MTS034',
+            screen: 'MTS',
+            screen_name: 'MTS034',
             time_point: ASSAYS.MTS.time_point,
             submission_window: 'September 7 – 18',
             status: 'SCHEDULED',
             data_delivery_date: 'January 2027',
           },
           {
-            screen: 'CPS017',
+            screen: 'CPS',
+            screen_name: 'CPS017',
             time_point: ASSAYS.CPS.time_point,
             submission_window: 'September 7 – 18',
             status: 'SCHEDULED',
             data_delivery_date: 'January 2027',
           },
           {
-            screen: 'APS009',
+            screen: 'APS',
+            screen_name: 'APS009',
             time_point: ASSAYS.APS.time_point,
             submission_window: 'September 7 – 18',
             status: 'SCHEDULED',
             data_delivery_date: 'January 2027',
           },
           {
-            screen: 'AIR003',
+            screen: 'AIR',
+            screen_name: 'AIR003',
             time_point: ASSAYS.AIR.time_point,
             submission_window: 'September 7 – 18',
             status: 'SCHEDULED',
             data_delivery_date: 'January 2027',
           },
           {
-            screen: 'EPS009 (PR1000)',
+            screen: 'EPS',
+            screen_name: 'EPS009 (PR1000)',
             time_point: ASSAYS.EPS.time_point,
             submission_window: 'November 2 – 13',
             status: 'SCHEDULED',
@@ -169,9 +183,14 @@
       };
     },
     methods: {
-      statusMeta(status) {
+      statusMeta(status, screen) {
         const map = {
-          OPEN: { key: 'open', label: 'Open', color: 'teal-accent-4' },
+          OPEN: {
+            key: 'open',
+            label: 'Accepting Submissions',
+            color: 'teal-accent-4',
+            to: screen ? `/submission-hub/forms/${screen}` : undefined,
+          },
           'IN-PROGRESS': { key: 'in-progress', label: 'In Progress', color: 'yellow-darken-2' },
           CLOSED: { key: 'closed', label: 'Closed', color: 'red-accent-4' },
           SCHEDULED: { key: 'scheduled', label: 'Scheduled', color: 'grey-lighten-2' },
