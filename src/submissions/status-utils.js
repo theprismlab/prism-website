@@ -25,6 +25,15 @@ export const STATUS_META = {
   },
 };
 
+// Hardcoded current status per screen type — update as screens open/close
+export const SCREEN_STATUSES = {
+  MTS: 'OPEN',
+  EPS: 'IN-PROGRESS',
+  CPS: 'SCHEDULED',
+  APS: 'SCHEDULED',
+  AIR: 'SCHEDULED',
+};
+
 export function normalizeStatus(status) {
   const s = (status || '').toUpperCase();
   if (s === 'OPEN' || s === 'ACTIVE') return 'OPEN';

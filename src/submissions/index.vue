@@ -25,6 +25,19 @@
             id="submission-hub__schedule-table"
           >
             <template #item.status="{ item }">
+              <v-chip
+                v-if="item.status"
+                :to="item.status === 'OPEN' ? `/submission-hub/forms/${item.screen}` : undefined"
+                :color="statusMeta(item.status).color"
+                size="small"
+                variant="flat"
+                :append-icon="item.status === 'OPEN' ? 'mdi-arrow-top-right' : ''"
+              >
+                {{ statusMeta(item.status).label }}
+              </v-chip>
+            </template>
+
+            <template #item.window_status="{ item }">
               <v-progress-circular
                 v-if="statusesLoading"
                 size="16"
@@ -32,19 +45,10 @@
                 indeterminate
                 color="grey"
               />
-              <v-chip
-                v-else-if="effectiveStatus(item)"
-                :to="statusMeta(effectiveStatus(item), item.screen).to"
-                :color="statusMeta(effectiveStatus(item), item.screen).color"
-                :data-status="statusMeta(effectiveStatus(item), item.screen).key"
-                size="small"
-                variant="flat"
-                :append-icon="
-                  statusMeta(effectiveStatus(item), item.screen).to ? 'mdi-arrow-top-right' : ''
-                "
-              >
-                {{ statusMeta(effectiveStatus(item), item.screen).label }}
-              </v-chip>
+              <span v-else-if="liveStatuses[item.screen]?.status">
+                {{ liveStatuses[item.screen].status }}
+              </span>
+              <span v-else class="text-grey-lighten-1">—</span>
             </template>
           </v-data-table>
         </div>
@@ -114,21 +118,21 @@
 <script>
   import { ASSAYS } from '@/utils/assays';
   import { fetchSubmissionMessage } from './submissions-page-api.js';
-  import { normalizeStatus, statusMeta as getStatusMeta } from './status-utils.js';
+  import { statusMeta } from './status-utils.js';
 
   export default {
     name: 'SubmissionsOverview',
     data() {
       return {
         apiUrl: import.meta.env.VITE_API_URL,
-        useApiStatus: false, // flip to true when API is ready
         liveStatuses: {},
         statusesLoading: false,
         headers: [
           { title: 'Screen Name', key: 'screen_name', sortable: false },
           { title: 'Timepoint', key: 'time_point', sortable: false },
           { title: 'Submission Window', key: 'submission_window', sortable: false },
-          { title: 'Status', key: 'status', sortable: false },
+          { title: 'Screen Status', key: 'status', sortable: false },
+          { title: 'API Status', key: 'window_status', sortable: false },
           { title: 'Estimated Data Delivery', key: 'data_delivery_date', sortable: false },
         ],
         // TODO: replace with API data
@@ -207,7 +211,6 @@
           if (msg.submission_type) map[msg.submission_type] = msg;
         }
         this.liveStatuses = map;
-        console.log('Fetched live submission statuses', this.liveStatuses);
       } catch (e) {
         console.error('Failed to load window statuses', e);
       } finally {
@@ -215,17 +218,7 @@
       }
     },
     methods: {
-      effectiveStatus(item) {
-        if (!this.useApiStatus) return item.status;
-        const live = this.liveStatuses[item.screen];
-        if (!live?.status) return item.status;
-        return normalizeStatus(live.status) ?? item.status;
-      },
-      statusMeta(status, screen) {
-        const meta = getStatusMeta(status);
-        if (status === 'OPEN' && screen) return { ...meta, to: `/submission-hub/forms/${screen}` };
-        return meta;
-      },
+      statusMeta,
     },
   };
 </script>

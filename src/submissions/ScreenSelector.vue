@@ -24,7 +24,7 @@
 
 <script>
   import { fetchSubmissionMessage } from './submissions-page-api.js';
-  import { normalizeStatus, statusMeta } from './status-utils.js';
+  import { normalizeStatus, statusMeta, SCREEN_STATUSES } from './status-utils.js';
 
   export default {
     name: 'ScreenSelector',
@@ -35,19 +35,11 @@
         useApiStatus: false, // flip to true when API is ready
         apiUrl: import.meta.env.VITE_API_URL,
         apiStatuses: {},
-        // Hardcoded fallback — update as screens open/close
-        hardcodedStatuses: {
-          MTS: 'OPEN',
-          EPS: 'IN-PROGRESS',
-          CPS: 'SCHEDULED',
-          APS: 'SCHEDULED',
-          AIR: 'SCHEDULED',
-        },
       };
     },
     computed: {
       currentStatuses() {
-        return this.useApiStatus ? this.apiStatuses : this.hardcodedStatuses;
+        return this.useApiStatus ? this.apiStatuses : SCREEN_STATUSES;
       },
     },
     async mounted() {
