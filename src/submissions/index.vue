@@ -25,16 +25,25 @@
             id="submission-hub__schedule-table"
           >
             <template #item.status="{ item }">
+              <v-progress-circular
+                v-if="statusesLoading"
+                size="16"
+                width="2"
+                indeterminate
+                color="grey"
+              />
               <v-chip
-                v-if="item.status"
-                :to="statusMeta(item.status, item.screen).to"
-                :color="statusMeta(item.status, item.screen).color"
-                :data-status="statusMeta(item.status, item.screen).key"
+                v-else-if="effectiveStatus(item)"
+                :to="statusMeta(effectiveStatus(item), item.screen).to"
+                :color="statusMeta(effectiveStatus(item), item.screen).color"
+                :data-status="statusMeta(effectiveStatus(item), item.screen).key"
                 size="small"
                 variant="flat"
-                :append-icon="statusMeta(item.status, item.screen).to ? 'mdi-arrow-top-right' : ''"
+                :append-icon="
+                  statusMeta(effectiveStatus(item), item.screen).to ? 'mdi-arrow-top-right' : ''
+                "
               >
-                {{ statusMeta(item.status, item.screen).label }}
+                {{ statusMeta(effectiveStatus(item), item.screen).label }}
               </v-chip>
             </template>
           </v-data-table>
@@ -104,10 +113,15 @@
 
 <script>
   import { ASSAYS } from '@/utils/assays';
+  import { fetchSubmissionMessage } from './submissions-page-api.js';
+
   export default {
     name: 'SubmissionsOverview',
     data() {
       return {
+        apiUrl: import.meta.env.VITE_API_URL,
+        liveStatuses: {},
+        statusesLoading: false,
         headers: [
           { title: 'Screen Name', key: 'screen_name', sortable: false },
           { title: 'Timepoint', key: 'time_point', sortable: false },
@@ -182,7 +196,37 @@
         ],
       };
     },
+    async mounted() {
+      this.statusesLoading = true;
+      try {
+        const messages = await fetchSubmissionMessage(this.apiUrl);
+        const map = {};
+        for (const msg of messages || []) {
+          if (msg.submission_type) map[msg.submission_type] = msg;
+        }
+        this.liveStatuses = map;
+        console.log('Fetched live submission statuses', this.liveStatuses);
+      } catch (e) {
+        console.error('Failed to load window statuses', e);
+      } finally {
+        this.statusesLoading = false;
+      }
+    },
     methods: {
+      effectiveStatus(item) {
+        const live = this.liveStatuses[item.screen];
+        if (!live?.status) return item.status;
+        return this.normalizeWindowStatus(live.status) ?? item.status;
+      },
+      normalizeWindowStatus(status) {
+        const s = (status || '').toUpperCase();
+        if (s === 'OPEN' || s === 'ACTIVE') return 'OPEN';
+        if (s === 'ACTIVE - WINDOW CLOSED' || s === 'IN-PROGRESS' || s === 'IN PROGRESS')
+          return 'IN-PROGRESS';
+        if (s === 'CLOSE' || s === 'COMPLETE') return 'CLOSED';
+        if (s === 'SCHEDULED') return 'SCHEDULED';
+        return null;
+      },
       statusMeta(status, screen) {
         const map = {
           OPEN: {

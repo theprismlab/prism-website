@@ -2,6 +2,22 @@
   <page>
     <app-container wide>
       <prism-page-title>Forms — {{ screen }}</prism-page-title>
+
+      <v-alert
+        v-if="windowStatus && windowStatus !== 'OPEN'"
+        :type="windowStatus === 'CLOSED' ? 'error' : 'warning'"
+        variant="tonal"
+        class="mb-4"
+        :icon="windowStatus === 'CLOSED' ? 'mdi-lock-outline' : 'mdi-clock-outline'"
+      >
+        <template #title>
+          {{
+            windowStatus === 'CLOSED' ? 'Submission window closed' : 'Submission window not yet open'
+          }}
+        </template>
+        {{ windowMessage || defaultWindowMessage }}
+      </v-alert>
+
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
@@ -61,6 +77,7 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { STEP_REGISTRY } from './steps/registry';
+  import { fetchSubmissionMessage } from '@/submissions/submissions-page-api.js';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
   import TestAgentStep from './steps/TestAgentStep.vue';
@@ -80,7 +97,13 @@
       return { formStore: useFormProgressStore() };
     },
     data() {
-      return { steps: FORM_STEPS, attemptedSteps: {} };
+      return {
+        steps: FORM_STEPS,
+        attemptedSteps: {},
+        windowStatus: null,
+        windowMessage: '',
+        apiUrl: import.meta.env.VITE_API_URL,
+      };
     },
     computed: {
       screen() {
@@ -115,6 +138,12 @@
           ]),
         );
       },
+      defaultWindowMessage() {
+        if (this.windowStatus === 'CLOSED') {
+          return `The submission window for ${this.screenType || 'this screen'} is currently closed. Please check the Submission Hub for upcoming windows.`;
+        }
+        return `The submission window for ${this.screenType || 'this screen'} is not yet open.`;
+      },
       stepValidity() {
         if (!this.fd) return {};
         return Object.fromEntries(
@@ -126,7 +155,13 @@
         );
       },
     },
+    async mounted() {
+      await this.fetchWindowStatus();
+    },
     watch: {
+      screenType(val, old) {
+        if (val !== old) this.fetchWindowStatus();
+      },
       screen() {
         this.attemptedSteps = {};
       },
@@ -148,6 +183,30 @@
       },
     },
     methods: {
+      async fetchWindowStatus() {
+        if (!this.screenType) return;
+        try {
+          const messages = await fetchSubmissionMessage(this.apiUrl, this.screenType);
+          const msg = Array.isArray(messages) ? messages[0] : messages;
+          if (msg) {
+            this.windowStatus = this.normalizeWindowStatus(msg.status);
+            this.windowMessage = msg.message || '';
+          } else {
+            this.windowStatus = null;
+            this.windowMessage = '';
+          }
+        } catch (e) {
+          console.error('Failed to load window status', e);
+        }
+      },
+      normalizeWindowStatus(status) {
+        const s = (status || '').toUpperCase();
+        if (s === 'OPEN' || s === 'ACTIVE') return 'OPEN';
+        if (s === 'ACTIVE - WINDOW CLOSED' || s === 'IN-PROGRESS' || s === 'IN PROGRESS') return 'IN-PROGRESS';
+        if (s === 'CLOSED' || s === 'COMPLETE') return 'CLOSED';
+        if (s === 'SCHEDULED') return 'SCHEDULED';
+        return null;
+      },
       isCompleted(i) {
         return this.stepValidity[this.steps[i].id] ?? false;
       },
