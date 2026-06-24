@@ -11,7 +11,7 @@
             </div>
             <div v-if="i < steps.length - 1" class="step-connector" :class="connectorClass(i)" />
           </div>
-          <span class="step-label text-body-2 pt-1" :class="labelClass(i)">
+          <span class="step-label prism-text-body-2 pt-1" :class="labelClass(i)">
             {{ step.title }}
           </span>
         </div>
