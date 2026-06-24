@@ -72,7 +72,7 @@ const FIELDS_BY_KEY = Object.fromEntries(Object.values(FIELDS).map((f) => [f.key
 export const SCREEN_CONFIG = {
   MTS: { concMultiplier: 1000, minAmountUL: 150 },
   CPS: { concMultiplier: 1000, minAmountUL: 150, comboAmountPerSlotUL: 400 }, // solo: 150 uL; combo: 400 × n slots
-  EPS: { concMultiplier: 1000, minAmountHighDilutionUL: 600, minAmountLowDilutionUL: 720, dilutionThreshold: 3 },
+  EPS: { concMultiplier: 1000, minDilutionFactor: 2, minAmountHighDilutionUL: 600, minAmountLowDilutionUL: 720, dilutionThreshold: 3 },
   APS: { concMultiplier: 250, minAmountUL: 1000, unitPairs: { uM: 'mM', 'ug/mL': 'mg/mL' } },
   AIR: { concMultiplier: 500, minAmountUL: 500, maxTopDoseUgML: 2 },
 };
@@ -81,17 +81,6 @@ export const SCREEN_CONFIG = {
 // CPS: concAmountUnit must be uL (microliters)
 // EPS: concAmountUnit must be uL (microliters)
 // APS: concAmountUnit must match Top Dose Unit (ug/mL or )
-
-// ── Shared field groups ────────────────────────────────────────────────────
-
-const SUPPLIER_FIELDS = [FIELDS.SUPPLIER, FIELDS.SUPPLIER_CATALOG_NAME, FIELDS.STORAGE_CONDITIONS];
-const SAFETY_FIELDS = [
-  FIELDS.QC_LAST_SIX_MONTHS,
-  FIELDS.SDS_AVAILABLE,
-  FIELDS.HEALTH_HAZARD,
-  FIELDS.ACUTELY_TOXIC,
-];
-const OPTIONAL_FIELDS = [FIELDS.SMILES, FIELDS.CANCER_CELL_LINES, FIELDS.TARGET_MOA];
 
 // ── Screen field lists ─────────────────────────────────────────────────────
 // Pure structure: field order, options, required overrides.
@@ -104,14 +93,12 @@ const SCREENS = {
       FIELDS.COMPOUND_NAME,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM'] },
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      FIELDS.FULL_BRD,
-      ...OPTIONAL_FIELDS,
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM'] },
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 
@@ -119,10 +106,10 @@ const SCREENS = {
   // Keys match getCombinationMapping() in compound-submission-constants.js.
   CPS: {
     combinationFields: [
-      { key: 'druga',               label: 'Drug A Name' },
+      { key: 'druga',               label: 'Drug A Compound Name' },
       { key: 'druga_top_dose',      label: 'Drug A Top Dose', inputmode: 'decimal', validate: validNumber },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
-      { key: 'drugb',               label: 'Drug B Name', required: false },
+      { key: 'drugb',               label: 'Drug B Compound Name', required: false },
       { key: 'drugb_dose',          label: 'Drug B Dose', inputmode: 'decimal', validate: validNumber, required: false },
       { key: 'drugb_dose_unit',     label: 'Drug B Dose Unit', options: ['uM'], required: false },
     ],
@@ -130,68 +117,62 @@ const SCREENS = {
       FIELDS.COMPOUND_NAME,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM'] },
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      FIELDS.FULL_BRD,
-      ...OPTIONAL_FIELDS,
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM'] },
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 
-  // DMSO-based. Includes dilution factor. Min 600 uL.
+  // DMSO-based. Includes dilution factor (min 2). Amount: 2 to <3 → 720 uL, 3+× → 600 uL.
   EPS: {
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM'] },
       FIELDS.DILUTION_FACTOR,
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      FIELDS.FULL_BRD,
-      ...OPTIONAL_FIELDS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM'] },
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 
-  // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 1000 uL.
+  // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 1000 uL. Stock = top dose / 4.
   APS: {
     fields: [
       FIELDS.COMPOUND_NAME,
-      FIELDS.MOLECULE_TYPE,
-      FIELDS.SOLVENT,
+      { ...FIELDS.MOLECULE_TYPE, options: ['Antibody', 'Aqueous Small Molecule', 'Antibody Drug Conjugate (ADC)', 'Other'] },
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM', 'ug/mL'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM', 'mg/mL'] },
+      FIELDS.SOLVENT,
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      ...OPTIONAL_FIELDS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM', 'mg/mL'] },
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 
-  // Aqueous in reagent. Top dose capped at 2 ug/mL. Min 500 uL.
+  // Aqueous in reagent. Antibody only. Top dose capped at 2 ug/mL. Min 500 uL. Stock = top dose / 2.
   AIR: {
     fields: [
       FIELDS.COMPOUND_NAME,
-      FIELDS.MOLECULE_TYPE,
-      FIELDS.SOLVENT,
+      { ...FIELDS.MOLECULE_TYPE, options: ['Antibody'] },
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['ug/mL'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mg/mL'] },
+      FIELDS.SOLVENT,
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      ...OPTIONAL_FIELDS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mg/mL'] },
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 };
@@ -232,11 +213,14 @@ function validateCPS(row) {
 }
 
 function validateEPS(row) {
-  const { concMultiplier, minAmountHighDilutionUL, minAmountLowDilutionUL, dilutionThreshold } =
+  const { concMultiplier, minDilutionFactor, minAmountHighDilutionUL, minAmountLowDilutionUL, dilutionThreshold } =
     SCREEN_CONFIG.EPS;
   const errors = {};
 
   const dilutionFactor = Number(row.dilution_factor) || 0;
+  if (row.dilution_factor && dilutionFactor < minDilutionFactor)
+    errors.dilution_factor = `Minimum dilution factor is ${minDilutionFactor}`;
+
   const minAmount = dilutionFactor >= dilutionThreshold ? minAmountHighDilutionUL : minAmountLowDilutionUL;
   if (Number(row.amount) < minAmount)
     errors.amount = `Minimum ${minAmount} uL required (${dilutionFactor >= dilutionThreshold ? `≥${dilutionThreshold}` : `2–${dilutionThreshold}`}-fold dilution)`;
@@ -297,10 +281,41 @@ const SCREEN_VALIDATORS = {
 
 // ── Step lifecycle helpers ─────────────────────────────────────────────────
 
+function buildTooltips(screenType) {
+  const cfg = SCREEN_CONFIG[screenType];
+  if (!cfg) return {};
+  const tooltips = {};
+  const divisor = 1000 / cfg.concMultiplier;
+
+  if (cfg.maxTopDoseUgML !== undefined)
+    tooltips.top_dose = `Maximum ${cfg.maxTopDoseUgML} ug/mL`;
+
+  if (screenType === 'EPS') {
+    tooltips.dilution_factor = `Minimum ${cfg.minDilutionFactor}`;
+    tooltips.amount = `Dilution factor ${cfg.minDilutionFactor} to <${cfg.dilutionThreshold}: minimum ${cfg.minAmountLowDilutionUL} uL. Dilution factor ${cfg.dilutionThreshold}+: minimum ${cfg.minAmountHighDilutionUL} uL`;
+  } else if (screenType === 'CPS') {
+    tooltips.amount = `Minimum ${cfg.minAmountUL} uL solo. If in combinations: ${cfg.comboAmountPerSlotUL} uL × number of combination slots`;
+  } else if (cfg.minAmountUL !== undefined) {
+    tooltips.amount = `Minimum ${cfg.minAmountUL} uL required`;
+  }
+
+  const exampleTopDose = screenType === 'AIR' ? 1 : 10;
+  const divisorText = divisor === 1 ? 'numerically' : `÷ ${divisor}`;
+  const topUnit = screenType === 'AIR' ? 'ug/mL' : 'uM';
+  const stockUnit = screenType === 'AIR' ? 'mg/mL' : 'mM';
+  tooltips.conc = `Must equal Top Screening Dose ${divisorText} (e.g. ${exampleTopDose} ${topUnit} → ${exampleTopDose / divisor} ${stockUnit} stock)`;
+
+  if (cfg.unitPairs)
+    tooltips.conc_unit = `Must pair with Top Dose Unit: ${Object.entries(cfg.unitPairs).map(([k, v]) => `${k} → ${v}`).join(', ')}`;
+
+  return tooltips;
+}
+
 export function buildScreenFields(screenType) {
   const screen = SCREENS[screenType];
   if (!screen) return [];
-  return screen.fields.map((f) => ({ required: true, ...f }));
+  const tooltips = buildTooltips(screenType);
+  return screen.fields.map((f) => ({ required: true, ...f, tooltip: tooltips[f.key] }));
 }
 
 export function buildCombinationFields(screenType) {

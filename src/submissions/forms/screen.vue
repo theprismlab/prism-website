@@ -35,6 +35,7 @@
               :data="fd.testAgent"
               :errors="stepErrors.testAgent || {}"
               :screen-type="screenType"
+              :submitted="attemptedSteps[i] ?? 0"
             />
             <acknowledgments-step
               v-else-if="step.id === 'acknowledgments'"
@@ -163,7 +164,7 @@
         }
       },
       completeStep(i) {
-        this.attemptedSteps = { ...this.attemptedSteps, [i]: true };
+        this.attemptedSteps = { ...this.attemptedSteps, [i]: (this.attemptedSteps[i] ?? 0) + 1 };
         if (!this.stepValidity[this.steps[i].id]) return;
         this.formStore.completeStep(this.screen, i);
       },

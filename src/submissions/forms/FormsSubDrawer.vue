@@ -11,7 +11,7 @@
             </div>
             <div v-if="i < steps.length - 1" class="step-connector" :class="connectorClass(i)" />
           </div>
-          <span class="step-label text-body-2 pt-1" :class="labelClass(i)">
+          <span class="step-label prism-text-body-2 pt-1" :class="labelClass(i)">
             {{ step.title }}
           </span>
         </div>
@@ -20,6 +20,7 @@
     <div v-if="screen">
       <v-list density="comfortable" nav>
         <v-list-item
+          id="instructions-btn"
           :to="`/submissions/instructions/${screen}`"
           title="Back to Instructions"
           prepend-icon="mdi-arrow-left"
@@ -88,6 +89,14 @@
 </script>
 
 <style scoped>
+  #instructions-btn {
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    color: black;
+    border-radius: 50px;
+    border: 1px solid black;
+  }
   .step-track {
     display: flex;
     flex-direction: column;
