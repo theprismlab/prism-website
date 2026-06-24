@@ -63,7 +63,12 @@
     />
 
     <div class="d-flex justify-end mt-4">
-      <v-btn color="primary" :disabled="!data.reviewed || !allStepsValid" :loading="submitting" @click="submitForm">
+      <v-btn
+        color="primary"
+        :disabled="!data.reviewed || !allStepsValid"
+        :loading="submitting"
+        @click="submitForm"
+      >
         Submit
       </v-btn>
     </div>
@@ -109,7 +114,8 @@
         return Object.fromEntries(
           this.summarySteps.map((step) => [
             step.id,
-            Object.keys(STEP_REGISTRY[step.id].validate(this.formData[step.id], this.screenType)).length === 0,
+            Object.keys(STEP_REGISTRY[step.id].validate(this.formData[step.id], this.screenType))
+              .length === 0,
           ]),
         );
       },
@@ -158,13 +164,15 @@
   .label-col {
     width: 40%;
     font-size: 0.8rem;
+    white-space: normal;
+    overflow-wrap: break-word;
   }
   .agent-table th {
     font-size: 0.7rem;
-    white-space: nowrap;
+    white-space: normal;
   }
   .agent-table td {
     font-size: 0.8rem;
-    white-space: nowrap;
+    white-space: normal;
   }
 </style>
