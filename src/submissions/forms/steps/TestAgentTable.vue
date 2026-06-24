@@ -24,26 +24,39 @@
       <tbody>
         <tr v-for="(row, i) in rows" :key="i">
           <td v-for="f in fields" :key="f.key">
-            <v-select
-              v-if="f.options"
-              v-model="row[f.key]"
-              :items="f.options"
-              :placeholder="f.placeholder"
-              density="compact"
-              single-line
-              :error-messages="errors[i]?.[f.key]"
-              class="perturbation-table-field"
-            />
-            <v-text-field
-              v-else
-              v-model="row[f.key]"
-              :inputmode="f.inputmode ?? 'text'"
-              :placeholder="f.placeholder"
-              density="compact"
-              single-line
-              :error-messages="errors[i]?.[f.key]"
-              class="perturbation-table-field"
-            />
+            <v-tooltip
+              :disabled="!errors[i]?.[f.key]"
+              :text="errors[i]?.[f.key] || ''"
+              location="bottom"
+              max-width="220"
+            >
+              <template #activator="{ props: errorProps }">
+                <v-select
+                  v-if="f.options"
+                  v-bind="errorProps"
+                  v-model="row[f.key]"
+                  :items="f.options"
+                  :placeholder="f.placeholder"
+                  density="compact"
+                  single-line
+                  hide-details
+                  :error="!!(errors[i]?.[f.key])"
+                  class="perturbation-table-field"
+                />
+                <v-text-field
+                  v-else
+                  v-bind="errorProps"
+                  v-model="row[f.key]"
+                  :inputmode="f.inputmode ?? 'text'"
+                  :placeholder="f.placeholder"
+                  density="compact"
+                  single-line
+                  hide-details
+                  :error="!!(errors[i]?.[f.key])"
+                  class="perturbation-table-field"
+                />
+              </template>
+            </v-tooltip>
           </td>
           <td v-if="multiRow">
             <v-btn
@@ -85,36 +98,50 @@
 </script>
 
 <style scoped>
-  .perturbation-table > ** {
-    font-size: 0.75em !important;
-  }
   .perturbation-table th {
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    padding: 0 4px !important;
+    white-space: nowrap;
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   }
   .th-inner {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
   }
   .th-info-icon {
     opacity: 0.5;
+    flex-shrink: 0;
   }
   .th-info-icon:hover {
     opacity: 1;
   }
   .perturbation-table :deep(td) {
-    padding: 0rem 0rem !important;
+    padding: 0 !important;
     border-radius: 0 !important;
-    min-width: 100px !important;
+    min-width: 80px !important;
+    vertical-align: middle;
   }
-
+  .perturbation-table :deep(th) {
+    vertical-align: middle;
+  }
   .perturbation-table {
     border-radius: 0;
   }
   .perturbation-table :deep(.v-field) {
     border-radius: 0;
+    font-size: 0.75rem;
+    --v-field-input-min-height: 32px;
+  }
+  .perturbation-table :deep(.v-field__input) {
+    font-size: 0.75rem;
+    padding-inline: 8px;
+    min-height: 32px;
+    align-items: center;
+  }
+  .perturbation-table :deep(input) {
+    font-size: 0.75rem;
   }
 </style>
