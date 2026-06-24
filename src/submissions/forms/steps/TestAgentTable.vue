@@ -35,7 +35,7 @@
                 hide-details
                 :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
-                @blur="touch(row, f.key)"
+                @blur="touch(row)"
               />
               <v-text-field
                 v-else
@@ -47,7 +47,7 @@
                 hide-details
                 :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
-                @blur="touch(row, f.key)"
+                @blur="touch(row)"
               />
             </td>
             <td v-if="multiRow">
@@ -96,26 +96,20 @@
     emits: ['add-row', 'remove-row'],
     watch: {
       submitted(val) {
-        if (val) this.rows.forEach(row => this.fields.forEach(f => this.touch(row, f.key)));
+        if (val) this.rows.forEach(row => this.touched.add(row));
       },
     },
     data() {
       return {
-        // Keyed by row object reference so indices don't matter when rows are added/removed.
-        touched: new Map(),
+        touched: new Set(),
       };
     },
     methods: {
-      touch(row, fieldKey) {
-        const prev = this.touched.get(row) ?? new Set();
-        // Always set a new Set so Vue's reactive Map tracks the mutation.
-        this.touched.set(row, new Set([...prev, fieldKey]));
-      },
-      isTouched(row, fieldKey) {
-        return this.touched.get(row)?.has(fieldKey) ?? false;
+      touch(row) {
+        this.touched.add(row);
       },
       hasError(row, i, fieldKey) {
-        return this.isTouched(row, fieldKey) && !!this.errors[i]?.[fieldKey];
+        return this.touched.has(row) && !!this.errors[i]?.[fieldKey];
       },
     },
   };
