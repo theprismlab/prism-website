@@ -35,7 +35,6 @@
                 hide-details
                 :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
-                @blur="touch(row)"
               />
               <v-text-field
                 v-else
@@ -47,7 +46,6 @@
                 hide-details
                 :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
-                @blur="touch(row)"
               />
             </td>
             <td v-if="multiRow">
@@ -94,22 +92,23 @@
       submitted: { type: Boolean, default: false },
     },
     emits: ['add-row', 'remove-row'],
+    data() {
+      return { submittedRows: [] };
+    },
     watch: {
       submitted(val) {
-        if (val) this.rows.forEach(row => this.touched.add(row));
+        if (val) this.rows.forEach(r => {
+          if (!this.submittedRows.includes(r)) this.submittedRows.push(r);
+        });
       },
-    },
-    data() {
-      return {
-        touched: new Set(),
-      };
     },
     methods: {
-      touch(row) {
-        this.touched.add(row);
-      },
       hasError(row, i, fieldKey) {
-        return this.touched.has(row) && !!this.errors[i]?.[fieldKey];
+        if (!this.submitted) return false;
+        const wasPresent = this.submittedRows.includes(row);
+        const hasSomeValue = Object.values(row).some(v => !!v);
+        if (!wasPresent && !hasSomeValue) return false;
+        return !!this.errors[i]?.[fieldKey];
       },
     },
   };
