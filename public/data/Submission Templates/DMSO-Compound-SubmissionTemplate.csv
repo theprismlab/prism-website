@@ -1,0 +1,18 @@
+Test Agent Name,Top Screening Dose,Top Screening Dose unit,Amount,Units,Storage Conditions,Stock Concentration,Stock Concentration Units,Is this test agent known to be an environmental or health hazard?
+"Text:
+No validation needed","Number:
+No validation needed","Dropdown:
+uM","Number: 
+
+A.) if MTS - 150 or more
+
+B.) if CPS - 400 or more / slot
+e.g. 800uL required for treatment agent + 400uL required for anchor agent for one combination","Dropdown:
+uL","Dropdown:
+Room temperature
+4°
+-20°","Number: 
+Same number as column C - ""Top Screening Dose""","Dropdown:
+mM","Dropdown:
+Yes
+No"

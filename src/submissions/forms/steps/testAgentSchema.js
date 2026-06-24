@@ -82,17 +82,6 @@ export const SCREEN_CONFIG = {
 // EPS: concAmountUnit must be uL (microliters)
 // APS: concAmountUnit must match Top Dose Unit (ug/mL or )
 
-// ── Shared field groups ────────────────────────────────────────────────────
-
-const SUPPLIER_FIELDS = [FIELDS.SUPPLIER, FIELDS.SUPPLIER_CATALOG_NAME, FIELDS.STORAGE_CONDITIONS];
-const SAFETY_FIELDS = [
-  FIELDS.QC_LAST_SIX_MONTHS,
-  FIELDS.SDS_AVAILABLE,
-  FIELDS.HEALTH_HAZARD,
-  FIELDS.ACUTELY_TOXIC,
-];
-const OPTIONAL_FIELDS = [FIELDS.SMILES, FIELDS.CANCER_CELL_LINES, FIELDS.TARGET_MOA];
-
 // ── Screen field lists ─────────────────────────────────────────────────────
 // Pure structure: field order, options, required overrides.
 // No validators here — business rules live in the per-screen validators below.
@@ -104,14 +93,12 @@ const SCREENS = {
       FIELDS.COMPOUND_NAME,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM'] },
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      FIELDS.FULL_BRD,
-      ...OPTIONAL_FIELDS,
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM'] },
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 
@@ -119,10 +106,10 @@ const SCREENS = {
   // Keys match getCombinationMapping() in compound-submission-constants.js.
   CPS: {
     combinationFields: [
-      { key: 'druga',               label: 'Drug A Name' },
+      { key: 'druga',               label: 'Drug A Compound Name' },
       { key: 'druga_top_dose',      label: 'Drug A Top Dose', inputmode: 'decimal', validate: validNumber },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
-      { key: 'drugb',               label: 'Drug B Name', required: false },
+      { key: 'drugb',               label: 'Drug B Compound Name', required: false },
       { key: 'drugb_dose',          label: 'Drug B Dose', inputmode: 'decimal', validate: validNumber, required: false },
       { key: 'drugb_dose_unit',     label: 'Drug B Dose Unit', options: ['uM'], required: false },
     ],
@@ -130,68 +117,62 @@ const SCREENS = {
       FIELDS.COMPOUND_NAME,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM'] },
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      FIELDS.FULL_BRD,
-      ...OPTIONAL_FIELDS,
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM'] },
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 
-  // DMSO-based. Includes dilution factor. Min 600 uL.
+  // DMSO-based. Includes dilution factor (min 2). Amount: 2–2.9× → 720 uL, 3+× → 600 uL.
   EPS: {
     fields: [
       FIELDS.COMPOUND_NAME,
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM'] },
       FIELDS.DILUTION_FACTOR,
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      FIELDS.FULL_BRD,
-      ...OPTIONAL_FIELDS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM'] },
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 
-  // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 1000 uL.
+  // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 1000 uL. Stock = top dose / 4.
   APS: {
     fields: [
       FIELDS.COMPOUND_NAME,
-      FIELDS.MOLECULE_TYPE,
-      FIELDS.SOLVENT,
+      { ...FIELDS.MOLECULE_TYPE, options: ['Antibody', 'Aqueous Small Molecule', 'Antibody Drug Conjugate (ADC)', 'Other'] },
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM', 'ug/mL'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM', 'mg/mL'] },
+      FIELDS.SOLVENT,
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      ...OPTIONAL_FIELDS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mM', 'mg/mL'] },
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 
-  // Aqueous in reagent. Top dose capped at 2 ug/mL. Min 500 uL.
+  // Aqueous in reagent. Antibody only. Top dose capped at 2 ug/mL. Min 500 uL. Stock = top dose / 2.
   AIR: {
     fields: [
       FIELDS.COMPOUND_NAME,
-      FIELDS.MOLECULE_TYPE,
-      FIELDS.SOLVENT,
+      { ...FIELDS.MOLECULE_TYPE, options: ['Antibody'] },
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['ug/mL'] },
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mg/mL'] },
+      FIELDS.SOLVENT,
       FIELDS.CONC_AMOUNT,
       FIELDS.CONC_AMOUNT_UNIT,
-      ...SUPPLIER_FIELDS,
-      ...SAFETY_FIELDS,
-      ...OPTIONAL_FIELDS,
+      FIELDS.CONC,
+      { ...FIELDS.CONC_UNIT, options: ['mg/mL'] },
+      FIELDS.STORAGE_CONDITIONS,
+      FIELDS.HEALTH_HAZARD,
     ],
   },
 };
@@ -237,6 +218,9 @@ function validateEPS(row) {
   const errors = {};
 
   const dilutionFactor = Number(row.dilution_factor) || 0;
+  if (row.dilution_factor && dilutionFactor < 2)
+    errors.dilution_factor = 'Minimum dilution factor is 2';
+
   const minAmount = dilutionFactor >= dilutionThreshold ? minAmountHighDilutionUL : minAmountLowDilutionUL;
   if (Number(row.amount) < minAmount)
     errors.amount = `Minimum ${minAmount} uL required (${dilutionFactor >= dilutionThreshold ? `≥${dilutionThreshold}` : `2–${dilutionThreshold}`}-fold dilution)`;
