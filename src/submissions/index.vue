@@ -24,10 +24,6 @@
             class="mt-4"
             id="submission-hub__schedule-table"
           >
-            <template #item.submission_window="{ item }">
-              {{ item.windowDates }}
-            </template>
-
             <template #item.status="{ item }">
               <v-chip
                 :to="item.status === 'OPEN' ? `/submission-hub/forms/${item.screen_type}` : undefined"
@@ -39,26 +35,6 @@
                 {{ item.statusMeta.label }}
               </v-chip>
             </template>
-
-            <!-- <template #item.window_status="{ item }">
-              <v-progress-circular
-                v-if="windowStore.loading"
-                size="16"
-                width="2"
-                indeterminate
-                color="grey"
-              />
-              <template v-else-if="windowStore.statuses[item.screen_type]">
-                <div>{{ windowStore.statuses[item.screen_type].status }}</div>
-                <div
-                  v-if="windowStore.statuses[item.screen_type].message"
-                  class="text-caption text-medium-emphasis mt-1"
-                >
-                  {{ windowStore.statuses[item.screen_type].message }}
-                </div>
-              </template>
-              <span v-else class="text-grey-lighten-1">—</span>
-            </template> -->
           </v-data-table>
         </div>
 
@@ -126,24 +102,13 @@
 
 <script>
   import { ASSAYS } from '@/utils/assays';
-  import { enrichedSchedule } from './schedule.js';
-  import { useWindowStatusStore } from './window-status-store.js';
+  import { enrichedSchedule, FIELD_LABELS, TABLE_FIELD_KEYS } from './schedule.js';
 
   export default {
     name: 'SubmissionsOverview',
-    setup() {
-      return { windowStore: useWindowStatusStore() };
-    },
     data() {
       return {
-        headers: [
-          { title: 'Screen Name', key: 'screen_name', sortable: false },
-          { title: 'Timepoint', key: 'time_point', sortable: false },
-          { title: 'Submission Window', key: 'submission_window', sortable: false },
-          { title: 'Screen Status', key: 'status', sortable: false },
-          // { title: 'API Status', key: 'window_status', sortable: false },
-          { title: 'Estimated Data Delivery', key: 'data_delivery_date', sortable: false },
-        ],
+        headers: TABLE_FIELD_KEYS.map((key) => ({ title: FIELD_LABELS[key], key, sortable: false })),
         schedule: enrichedSchedule(),
         assays: ASSAYS,
         participationSteps: [
@@ -153,11 +118,6 @@
         ],
       };
     },
-    mounted() {
-      this.windowStore.load(import.meta.env.VITE_API_URL);
-      console.log('windowStore', this.windowStore);
-    },
-    methods: {},
   };
 </script>
 

@@ -74,7 +74,11 @@ export function computedStatus(item) {
 export function formatWindow(item) {
   const start = new Date(item.window_start + 'T00:00:00Z');
   const end = new Date(item.window_end + 'T00:00:00Z');
-  const startStr = start.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+  const startStr = start.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
   const endStr =
     start.getMonth() === end.getMonth()
       ? end.toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' })
@@ -96,11 +100,12 @@ export function enrichEntry(item) {
 // Returns a fully display-ready object for a given screen type (soonest open/scheduled entry),
 // or null if no qualifying entry exists.
 export function resolveScreenDisplay(screenType) {
-  const entry = SCHEDULE.filter((item) => {
-    if (item.screen_type !== screenType) return false;
-    const status = computedStatus(item);
-    return status === 'OPEN' || status === 'SCHEDULED';
-  }).sort((a, b) => a.window_start.localeCompare(b.window_start))[0] ?? null;
+  const entry =
+    SCHEDULE.filter((item) => {
+      if (item.screen_type !== screenType) return false;
+      const status = computedStatus(item);
+      return status === 'OPEN' || status === 'SCHEDULED';
+    }).sort((a, b) => a.window_start.localeCompare(b.window_start))[0] ?? null;
 
   if (!entry) return null;
 
@@ -116,3 +121,32 @@ export function resolveScreenDisplay(screenType) {
 export function enrichedSchedule() {
   return SCHEDULE.map(enrichEntry);
 }
+
+export const FIELD_LABELS = {
+  screen_name: 'Screen Name',
+  screen_type: 'Screen Type',
+  time_point: 'Timepoint',
+  testAgents: 'Test Agents',
+  windowDates: 'Submission Window',
+  status: 'Screen Status',
+  data_delivery_date: 'Estimated Data Delivery',
+};
+
+// Fields rendered in the hub schedule table (status needs a custom chip slot).
+export const TABLE_FIELD_KEYS = [
+  'screen_name',
+  'time_point',
+  'windowDates',
+  'status',
+  'data_delivery_date',
+];
+
+// Fields rendered in the form page meta bar.
+export const META_FIELD_KEYS = [
+  'screen_name',
+  'time_point',
+  'testAgents',
+  'windowDates',
+  'status',
+  'data_delivery_date',
+];

@@ -8,18 +8,16 @@
       <div v-if="screenMeta.length" class="screen-meta mb-4">
         <div v-for="item in screenMeta" :key="item.label" class="screen-meta__item">
           <span class="screen-meta__label">{{ item.label }}</span>
-          <span class="screen-meta__value">{{ item.value }}</span>
+          <v-chip
+            v-if="item.key === 'status'"
+            :color="screenDisplay.statusMeta.color"
+            size="small"
+            variant="flat"
+            class="screen-meta__chip"
+          >{{ screenDisplay.statusMeta.label }}</v-chip>
+          <span v-else class="screen-meta__value">{{ item.value }}</span>
         </div>
       </div>
-
-      <v-chip
-        v-if="screenDisplay?.statusMeta"
-        :color="screenDisplay.statusMeta.color"
-        size="small"
-        variant="flat"
-        class="mb-4"
-        >{{ screenDisplay.statusMeta.label }}</v-chip
-      >
 
       <v-alert
         v-if="apiStatus?.message"
@@ -88,7 +86,7 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
-  import { resolveScreenDisplay } from '@/submissions/schedule.js';
+  import { resolveScreenDisplay, FIELD_LABELS, META_FIELD_KEYS } from '@/submissions/schedule.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
@@ -121,12 +119,9 @@
       screenMeta() {
         const d = this.screenDisplay;
         if (!d) return [];
-        return [
-          { label: 'Screen Type', value: this.screenType },
-          d.testAgents ? { label: 'Test Agents', value: d.testAgents } : null,
-          { label: 'Submission Window', value: d.windowDates },
-          { label: 'Data Delivery', value: d.data_delivery_date },
-        ].filter(Boolean);
+        return META_FIELD_KEYS
+          .map((key) => d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null)
+          .filter(Boolean);
       },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;
@@ -227,5 +222,8 @@
   .screen-meta__value {
     font-size: 0.875rem;
     color: rgba(var(--v-theme-on-surface), 0.87);
+  }
+  .screen-meta__chip {
+    margin-top: 2px;
   }
 </style>
