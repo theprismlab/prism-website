@@ -3,7 +3,16 @@
     <v-table density="compact" class="perturbation-table">
       <thead>
         <tr>
-          <th v-for="f in fields" :key="f.key">{{ f.label }}</th>
+          <th v-for="f in fields" :key="f.key">
+            <span class="th-inner">
+              {{ f.label }}
+              <v-tooltip v-if="f.tooltip" :text="f.tooltip" location="top" max-width="260">
+                <template #activator="{ props }">
+                  <v-icon v-bind="props" size="x-small" icon="mdi-information-outline" class="th-info-icon" />
+                </template>
+              </v-tooltip>
+            </span>
+          </th>
           <th v-if="multiRow" />
         </tr>
       </thead>
@@ -76,6 +85,17 @@
     letter-spacing: 0.05em;
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  }
+  .th-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .th-info-icon {
+    opacity: 0.5;
+  }
+  .th-info-icon:hover {
+    opacity: 1;
   }
   .perturbation-table :deep(td) {
     padding: 0rem 0rem !important;
