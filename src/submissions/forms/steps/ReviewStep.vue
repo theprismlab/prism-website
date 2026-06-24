@@ -5,7 +5,41 @@
         {{ step.title }}
         <v-icon v-if="!stepValidity[step.id]" color="warning" size="18">mdi-alert-circle</v-icon>
       </h3>
-      <v-table density="compact">
+
+      <!-- Test Agent: columnar table per agent row -->
+      <template v-if="step.id === 'testAgent'">
+        <v-table v-if="agentFields.length" density="compact" class="agent-table">
+          <thead>
+            <tr>
+              <th v-for="f in agentFields" :key="f.key">{{ f.label }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, i) in formData.testAgent.rows" :key="i">
+              <td v-for="f in agentFields" :key="f.key">{{ row[f.key] || '—' }}</td>
+            </tr>
+          </tbody>
+        </v-table>
+
+        <template v-if="combinationFields.length && formData.testAgent.combinations?.length">
+          <p class="text-medium-emphasis text-caption mt-3 mb-1">Combinations</p>
+          <v-table density="compact" class="agent-table">
+            <thead>
+              <tr>
+                <th v-for="f in combinationFields" :key="f.key">{{ f.label }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, i) in formData.testAgent.combinations" :key="i">
+                <td v-for="f in combinationFields" :key="f.key">{{ row[f.key] || '—' }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+        </template>
+      </template>
+
+      <!-- All other steps: label / value table -->
+      <v-table v-else density="compact">
         <tbody>
           <tr v-for="item in stepSummary(step.id)" :key="item.label">
             <td class="label-col text-medium-emphasis">{{ item.label }}</td>
@@ -54,6 +88,7 @@
 <script>
   import { FORM_STEPS } from '@/submissions/store';
   import { STEP_REGISTRY } from './registry';
+  import { buildScreenFields, buildCombinationFields } from './testAgentSchema.js';
 
   export default {
     name: 'ReviewStep',
@@ -64,6 +99,12 @@
       screenType: { type: String, default: null },
     },
     computed: {
+      agentFields() {
+        return buildScreenFields(this.screenType);
+      },
+      combinationFields() {
+        return buildCombinationFields(this.screenType);
+      },
       stepValidity() {
         return Object.fromEntries(
           this.summarySteps.map((step) => [
@@ -117,5 +158,13 @@
   .label-col {
     width: 40%;
     font-size: 0.8rem;
+  }
+  .agent-table th {
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+  .agent-table td {
+    font-size: 0.8rem;
+    white-space: nowrap;
   }
 </style>
