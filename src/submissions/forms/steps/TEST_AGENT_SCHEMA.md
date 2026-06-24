@@ -14,7 +14,9 @@ Field lists were updated to match the official submission CSV templates. For all
 - **Column order**: Amount and Amount Unit now appear before Stock Concentration and Stock Concentration Unit
 - **Kept**: Storage Conditions and Health Hazard (environmental/health hazard question)
 
-AIR molecule type was narrowed to Antibody only. APS molecule type options were updated to match the template (added "ADC", replaced "Small Molecule" with "Other"). EPS gained a minimum dilution factor of 2.
+AIR molecule type was narrowed to Antibody only. APS molecule type options were updated to match the template (added "ADC", replaced "Small Molecule" with "Other"). EPS gained a minimum dilution factor of 2, now stored as `minDilutionFactor` in `SCREEN_CONFIG`.
+
+Column headers with validation rules now show an info icon (ⓘ) with a tooltip describing the requirement. Tooltip text is derived at runtime from `SCREEN_CONFIG` by `buildTooltips()` — the same constants used by the per-screen validators — so thresholds only need to be updated in one place.
 
 ---
 
@@ -95,7 +97,7 @@ Additional combination validation:
 **Validation rules**
 - Dilution Factor: minimum **2**
 - Amount: depends on the dilution factor
-  - Dilution factor **2–2.9**: minimum **720 uL**
+  - Dilution factor **2 to <3**: minimum **720 uL**
   - Dilution factor **3 or higher**: minimum **600 uL**
 - Stock Concentration: must equal Top Screening Dose numerically (same 1000× logic as MTS/CPS).
 
