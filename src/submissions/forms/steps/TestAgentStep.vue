@@ -4,6 +4,7 @@
       :fields="screenFields"
       :rows="rows"
       :errors="rowErrors"
+      :submitted="submitted"
       multi-row
       add-label="Add test agent"
       @add-row="addCompoundRow"
@@ -14,6 +15,7 @@
       :fields="combinationFields"
       :rows="combinations"
       :errors="combinationErrors"
+      :submitted="submitted"
       multi-row
       add-label="Add combination"
       class="mt-4"
@@ -39,6 +41,7 @@
       data:       { type: Object, required: true },
       errors:     { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
+      submitted:  { type: Boolean, default: false },
     },
     computed: {
       screenFields() {

@@ -33,8 +33,9 @@
                 density="compact"
                 single-line
                 hide-details
-                :error="!isRowPristine(row) && !!errors[i]?.[f.key]"
+                :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
+                @blur="touch(row, f.key)"
               />
               <v-text-field
                 v-else
@@ -44,8 +45,9 @@
                 density="compact"
                 single-line
                 hide-details
-                :error="!isRowPristine(row) && !!errors[i]?.[f.key]"
+                :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
+                @blur="touch(row, f.key)"
               />
             </td>
             <td v-if="multiRow">
@@ -58,9 +60,9 @@
               />
             </td>
           </tr>
-          <tr v-if="!isRowPristine(row) && errors[i] && Object.keys(errors[i]).length" class="error-row">
+          <tr v-if="fields.some(f => hasError(row, i, f.key))" class="error-row">
             <td v-for="f in fields" :key="f.key" class="error-cell">
-              <span v-if="errors[i][f.key]" class="field-error">{{ errors[i][f.key] }}</span>
+              <span v-if="hasError(row, i, f.key)" class="field-error">{{ errors[i][f.key] }}</span>
             </td>
             <td v-if="multiRow" class="error-cell" />
           </tr>
@@ -89,11 +91,26 @@
       errors: { type: Array, default: () => [] },
       multiRow: { type: Boolean, default: false },
       addLabel: { type: String, default: 'Add row' },
+      submitted: { type: Boolean, default: false },
     },
     emits: ['add-row', 'remove-row'],
+    data() {
+      return {
+        // Keyed by row object reference so indices don't matter when rows are added/removed.
+        touched: new Map(),
+      };
+    },
     methods: {
-      isRowPristine(row) {
-        return Object.values(row).every((v) => !v);
+      touch(row, fieldKey) {
+        const prev = this.touched.get(row) ?? new Set();
+        // Always set a new Set so Vue's reactive Map tracks the mutation.
+        this.touched.set(row, new Set([...prev, fieldKey]));
+      },
+      isTouched(row, fieldKey) {
+        return this.touched.get(row)?.has(fieldKey) ?? false;
+      },
+      hasError(row, i, fieldKey) {
+        return (this.submitted || this.isTouched(row, fieldKey)) && !!this.errors[i]?.[fieldKey];
       },
     },
   };

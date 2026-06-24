@@ -35,6 +35,7 @@
               :data="fd.testAgent"
               :errors="stepErrors.testAgent || {}"
               :screen-type="screenType"
+              :submitted="!!attemptedSteps[i]"
             />
             <acknowledgments-step
               v-else-if="step.id === 'acknowledgments'"
