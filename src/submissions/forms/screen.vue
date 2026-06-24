@@ -1,7 +1,7 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>Forms — {{ screen }}</prism-page-title>
+      <prism-page-title>{{ screenName ?? screen }}</prism-page-title>
 
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
@@ -61,6 +61,7 @@
 
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
+  import { ASSAYS } from '@/utils/assays';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
@@ -104,6 +105,9 @@
         if (s.startsWith('MTS')) return 'MTS';
         if (s.startsWith('CPS')) return 'CPS';
         return null;
+      },
+      screenName() {
+        return ASSAYS[this.screenType]?.screen_full ?? this.screenType;
       },
       stepErrors() {
         if (!this.fd) return {};
