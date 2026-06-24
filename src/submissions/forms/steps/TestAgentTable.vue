@@ -22,52 +22,49 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, i) in rows" :key="i">
-          <td v-for="f in fields" :key="f.key">
-            <v-tooltip
-              :disabled="!errors[i]?.[f.key]"
-              :text="errors[i]?.[f.key] || ''"
-              location="bottom"
-              max-width="220"
-            >
-              <template #activator="{ props: errorProps }">
-                <v-select
-                  v-if="f.options"
-                  v-bind="errorProps"
-                  v-model="row[f.key]"
-                  :items="f.options"
-                  :placeholder="f.placeholder"
-                  density="compact"
-                  single-line
-                  hide-details
-                  :error="!!(errors[i]?.[f.key])"
-                  class="perturbation-table-field"
-                />
-                <v-text-field
-                  v-else
-                  v-bind="errorProps"
-                  v-model="row[f.key]"
-                  :inputmode="f.inputmode ?? 'text'"
-                  :placeholder="f.placeholder"
-                  density="compact"
-                  single-line
-                  hide-details
-                  :error="!!(errors[i]?.[f.key])"
-                  class="perturbation-table-field"
-                />
-              </template>
-            </v-tooltip>
-          </td>
-          <td v-if="multiRow">
-            <v-btn
-              icon="mdi-delete-outline"
-              size="small"
-              variant="text"
-              :disabled="rows.length === 1"
-              @click="$emit('remove-row', i)"
-            />
-          </td>
-        </tr>
+        <template v-for="(row, i) in rows" :key="i">
+          <tr>
+            <td v-for="f in fields" :key="f.key">
+              <v-select
+                v-if="f.options"
+                v-model="row[f.key]"
+                :items="f.options"
+                :placeholder="f.placeholder"
+                density="compact"
+                single-line
+                hide-details
+                :error="!!errors[i]?.[f.key]"
+                class="perturbation-table-field"
+              />
+              <v-text-field
+                v-else
+                v-model="row[f.key]"
+                :inputmode="f.inputmode ?? 'text'"
+                :placeholder="f.placeholder"
+                density="compact"
+                single-line
+                hide-details
+                :error="!!errors[i]?.[f.key]"
+                class="perturbation-table-field"
+              />
+            </td>
+            <td v-if="multiRow">
+              <v-btn
+                icon="mdi-delete-outline"
+                size="small"
+                variant="text"
+                :disabled="rows.length === 1"
+                @click="$emit('remove-row', i)"
+              />
+            </td>
+          </tr>
+          <tr v-if="errors[i] && Object.keys(errors[i]).length" class="error-row">
+            <td v-for="f in fields" :key="f.key" class="error-cell">
+              <span v-if="errors[i][f.key]" class="field-error">{{ errors[i][f.key] }}</span>
+            </td>
+            <td v-if="multiRow" class="error-cell" />
+          </tr>
+        </template>
       </tbody>
     </v-table>
     <v-btn
@@ -126,6 +123,20 @@
   }
   .perturbation-table :deep(th) {
     vertical-align: middle;
+  }
+  .error-row td {
+    min-width: 80px !important;
+    padding: 2px 6px 4px !important;
+    border-radius: 0 !important;
+    vertical-align: top !important;
+    height: 18px;
+  }
+  .field-error {
+    font-size: 0.65rem;
+    color: rgb(var(--v-theme-error));
+    white-space: normal;
+    display: block;
+    max-width: 140px;
   }
   .perturbation-table {
     border-radius: 0;
