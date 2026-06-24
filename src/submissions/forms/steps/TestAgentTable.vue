@@ -8,7 +8,12 @@
               {{ f.label }}
               <v-tooltip v-if="f.tooltip" :text="f.tooltip" location="top" max-width="260">
                 <template #activator="{ props }">
-                  <v-icon v-bind="props" size="x-small" icon="mdi-information-outline" class="th-info-icon" />
+                  <v-icon
+                    v-bind="props"
+                    size="x-small"
+                    icon="mdi-information-outline"
+                    class="th-info-icon"
+                  />
                 </template>
               </v-tooltip>
             </span>
@@ -80,6 +85,9 @@
 </script>
 
 <style scoped>
+  .perturbation-table > ** {
+    font-size: 0.75em !important;
+  }
   .perturbation-table th {
     font-size: 0.75rem;
     letter-spacing: 0.05em;
