@@ -46,13 +46,9 @@
           class="ack-group mb-3"
         >
           <p class="ack-section-label text-medium-emphasis mb-1">{{ section }}</p>
-          <div
-            v-for="item in items"
-            :key="item.label"
-            class="d-flex align-start ga-2 mb-2"
-          >
-            <v-icon color="success" size="16" class="mt-1 flex-shrink-0">mdi-check-circle</v-icon>
-            <span class="text-body-2">{{ item.label }}</span>
+          <div v-for="item in items" :key="item.label" class="ack-item mb-2">
+            <p class="text-body-2 mb-0">{{ item.label }}</p>
+            <p class="text-caption text-success font-weight-medium mb-0">Confirmed</p>
           </div>
         </div>
         <p v-if="stepSummary(step.id).length === 0" class="text-medium-emphasis font-italic text-body-2">
