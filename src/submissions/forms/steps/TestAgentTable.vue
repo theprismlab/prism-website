@@ -33,7 +33,7 @@
                 density="compact"
                 single-line
                 hide-details
-                :error="!!errors[i]?.[f.key]"
+                :error="!isRowPristine(row) && !!errors[i]?.[f.key]"
                 class="perturbation-table-field"
               />
               <v-text-field
@@ -44,7 +44,7 @@
                 density="compact"
                 single-line
                 hide-details
-                :error="!!errors[i]?.[f.key]"
+                :error="!isRowPristine(row) && !!errors[i]?.[f.key]"
                 class="perturbation-table-field"
               />
             </td>
@@ -58,7 +58,7 @@
               />
             </td>
           </tr>
-          <tr v-if="errors[i] && Object.keys(errors[i]).length" class="error-row">
+          <tr v-if="!isRowPristine(row) && errors[i] && Object.keys(errors[i]).length" class="error-row">
             <td v-for="f in fields" :key="f.key" class="error-cell">
               <span v-if="errors[i][f.key]" class="field-error">{{ errors[i][f.key] }}</span>
             </td>
@@ -91,6 +91,11 @@
       addLabel: { type: String, default: 'Add row' },
     },
     emits: ['add-row', 'remove-row'],
+    methods: {
+      isRowPristine(row) {
+        return Object.values(row).every((v) => !v);
+      },
+    },
   };
 </script>
 
@@ -99,7 +104,7 @@
     font-size: 0.65rem;
     letter-spacing: 0.04em;
     padding: 0 4px !important;
-    white-space: nowrap;
+    white-space: normal;
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   }
