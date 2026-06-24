@@ -2,8 +2,16 @@
   <page>
     <app-container wide>
       <prism-page-title>
-        {{ screenName ?? screenType }}<template v-if="screenFullName"> — {{ screenFullName }}</template>
+        {{ screenName }} - Form
+        <!-- {{ screenName ?? screenType }}<template v-if="screenFullName"> — {{ screenFullName }}</template> -->
       </prism-page-title>
+
+      <div v-if="screenMeta.length" class="screen-meta mb-4">
+        <div v-for="item in screenMeta" :key="item.label" class="screen-meta__item">
+          <span class="screen-meta__label">{{ item.label }}</span>
+          <span class="screen-meta__value">{{ item.value }}</span>
+        </div>
+      </div>
 
       <v-chip
         v-if="screenStatus"
@@ -11,7 +19,8 @@
         size="small"
         variant="flat"
         class="mb-4"
-      >{{ screenStatus.label }}</v-chip>
+        >{{ screenStatus.label }}</v-chip
+      >
 
       <v-alert
         v-if="apiStatus?.message"
@@ -19,7 +28,8 @@
         variant="tonal"
         density="compact"
         class="mb-4"
-      >{{ apiStatus.message }}</v-alert>
+        >{{ apiStatus.message }}</v-alert
+      >
 
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
@@ -80,7 +90,7 @@
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
   import { ASSAYS } from '@/utils/assays';
-  import { resolveScreenEntry, computedStatus } from '@/submissions/schedule.js';
+  import { resolveScreenEntry, computedStatus, formatWindow } from '@/submissions/schedule.js';
   import { statusMeta } from '@/submissions/status-utils.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
@@ -116,6 +126,16 @@
       },
       screenFullName() {
         return ASSAYS[this.screenType]?.screen_full ?? null;
+      },
+      screenMeta() {
+        if (!this.resolvedEntry) return [];
+        const assay = ASSAYS[this.screenType];
+        return [
+          { label: 'Screen Type', value: this.screenType },
+          assay?.test_agents ? { label: 'Test Agents', value: assay.test_agents } : null,
+          { label: 'Submission Window', value: formatWindow(this.resolvedEntry) },
+          { label: 'Data Delivery', value: this.resolvedEntry.data_delivery_date },
+        ].filter(Boolean);
       },
       screenStatus() {
         return this.resolvedEntry ? statusMeta(computedStatus(this.resolvedEntry)) : null;
@@ -194,3 +214,30 @@
     },
   };
 </script>
+
+<style scoped>
+  .screen-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 32px;
+    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+    padding: 10px 0;
+  }
+  .screen-meta__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .screen-meta__label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  }
+  .screen-meta__value {
+    font-size: 0.875rem;
+    color: rgba(var(--v-theme-on-surface), 0.87);
+  }
+</style>

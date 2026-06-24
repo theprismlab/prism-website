@@ -71,6 +71,17 @@ export function computedStatus(item) {
   return 'IN-PROGRESS';
 }
 
+export function formatWindow(item) {
+  const start = new Date(item.window_start + 'T00:00:00Z');
+  const end = new Date(item.window_end + 'T00:00:00Z');
+  const startStr = start.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+  const endStr =
+    start.getMonth() === end.getMonth()
+      ? end.toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' })
+      : end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+  return `${startStr} – ${endStr}`;
+}
+
 // Returns the OPEN or SCHEDULED entry for a screen type with the soonest window_start,
 // or null if no such entry exists.
 export function resolveScreenEntry(screenType) {

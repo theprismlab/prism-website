@@ -130,7 +130,7 @@
 
 <script>
   import { ASSAYS } from '@/utils/assays';
-  import { SCHEDULE, computedStatus } from './schedule.js';
+  import { SCHEDULE, computedStatus, formatWindow } from './schedule.js';
   import { statusMeta } from './status-utils.js';
   import { useWindowStatusStore } from './window-status-store.js';
 
@@ -165,20 +165,7 @@
     methods: {
       statusMeta,
       computedStatus,
-      formatWindow(item) {
-        const start = new Date(item.window_start + 'T00:00:00Z');
-        const end = new Date(item.window_end + 'T00:00:00Z');
-        const startStr = start.toLocaleDateString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          timeZone: 'UTC',
-        });
-        const endStr =
-          start.getMonth() === end.getMonth()
-            ? end.toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' })
-            : end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
-        return `${startStr} – ${endStr}`;
-      },
+      formatWindow,
     },
   };
 </script>
