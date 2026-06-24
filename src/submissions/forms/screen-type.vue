@@ -5,6 +5,14 @@
         {{ screenName ?? screenType }}<template v-if="screenFullName"> — {{ screenFullName }}</template>
       </prism-page-title>
 
+      <v-chip
+        v-if="screenStatus"
+        :color="screenStatus.color"
+        size="small"
+        variant="flat"
+        class="mb-4"
+      >{{ screenStatus.label }}</v-chip>
+
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
@@ -63,7 +71,8 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { ASSAYS } from '@/utils/assays';
-  import { resolveScreenEntry } from '@/submissions/schedule.js';
+  import { resolveScreenEntry, computedStatus } from '@/submissions/schedule.js';
+  import { statusMeta } from '@/submissions/status-utils.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
@@ -98,6 +107,9 @@
       },
       screenFullName() {
         return ASSAYS[this.screenType]?.screen_full ?? null;
+      },
+      screenStatus() {
+        return this.resolvedEntry ? statusMeta(computedStatus(this.resolvedEntry)) : null;
       },
       openPanel() {
         return this.screenType ? this.formStore.openPanel(this.screenType) : 0;
