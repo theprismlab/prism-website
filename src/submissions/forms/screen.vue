@@ -9,13 +9,10 @@
             <v-icon :color="iconColor(i)" class="mr-2" size="20">{{ step.icon }}</v-icon>
             <span>{{ step.title }}</span>
             <template #actions>
-              <v-chip v-if="isCompleted(i)" color="success" size="x-small" class="mr-1"
-                >Done</v-chip
+              <v-icon v-if="isCompleted(i)" color="success" size="24" class="mr-1"
+                >mdi-check-circle</v-icon
               >
-              <template v-else>
-                <v-icon color="warning" size="18" class="mr-1">mdi-alert-circle-outline</v-icon>
-                <v-icon>$expand</v-icon>
-              </template>
+              <v-icon v-else>$expand</v-icon>
             </template>
           </v-expansion-panel-title>
 
