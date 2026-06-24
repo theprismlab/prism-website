@@ -39,10 +39,10 @@
       };
     },
     watch: {
-      '$route.params.screen': {
+      '$route.params.screenType': {
         immediate: true,
         handler(screen) {
-          this.formStore.setLastScreen(screen);
+          this.formStore.setLastScreenType(screen);
         },
       },
     },
@@ -53,8 +53,8 @@
       },
     },
     computed: {
-      screen() {
-        return this.$route.params.screen || this.formStore.lastScreen;
+      screenType() {
+        return this.$route.params.screenType || this.formStore.lastScreenType;
       },
       isSubSection() {
         const path = this.$route.path;
@@ -77,8 +77,8 @@
           {
             id: 'instructions',
             title: 'Instructions',
-            route: this.screen
-              ? `/submission-hub/instructions/${this.screen}`
+            route: this.screenType
+              ? `/submission-hub/instructions/${this.screenType}`
               : '/submission-hub/instructions',
             icon: 'mdi-information-variant-box-outline',
             activePrefix: '/submission-hub/instructions',
@@ -86,7 +86,7 @@
           {
             id: 'forms',
             title: 'Forms',
-            route: this.screen ? `/submission-hub/forms/${this.screen}` : '/submission-hub/forms',
+            route: this.screenType ? `/submission-hub/forms/${this.screenType}` : '/submission-hub/forms',
             icon: 'mdi-file-document-outline',
             activePrefix: '/submission-hub/forms',
           },

@@ -1,7 +1,7 @@
 <template>
   <sub-drawer title="Steps">
     <screen-selector />
-    <div v-if="screen" class="form-stepper pt-4 pb-2 px-4">
+    <div v-if="screenType" class="form-stepper pt-4 pb-2 px-4">
       <div v-for="(step, i) in steps" :key="step.id">
         <div class="d-flex align-start step-clickable" @click="handleStepClick(i)">
           <div class="step-track mr-3">
@@ -17,11 +17,11 @@
         </div>
       </div>
     </div>
-    <div v-if="screen">
+    <div v-if="screenType">
       <v-list density="comfortable" nav>
         <v-list-item
           id="instructions-btn"
-          :to="`/submissions/instructions/${screen}`"
+          :to="`/submissions/instructions/${screenType}`"
           title="Back to Instructions"
           prepend-icon="mdi-arrow-left"
           exact
@@ -46,24 +46,24 @@
       return { steps: FORM_STEPS };
     },
     watch: {
-      '$route.params.screen': {
+      '$route.params.screenType': {
         immediate: true,
         handler(screen) {
-          this.formStore.setLastScreen(screen);
+          this.formStore.setLastScreenType(screen);
         },
       },
     },
     computed: {
-      screen() {
-        return this.$route.params.screen;
+      screenType() {
+        return this.$route.params.screenType;
       },
     },
     methods: {
       stepStatus(i) {
-        return this.formStore.stepStatus(this.screen, i);
+        return this.formStore.stepStatus(this.screenType, i);
       },
       handleStepClick(i) {
-        this.formStore.setOpenPanel(this.screen, i);
+        this.formStore.setOpenPanel(this.screenType, i);
       },
       circleClass(i) {
         const s = this.stepStatus(i);

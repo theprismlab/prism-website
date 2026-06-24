@@ -1,12 +1,11 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>{{ screenName ?? screen }}</prism-page-title>
+      <prism-page-title>{{ screenName ?? screenType }}</prism-page-title>
 
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
-            <!-- <v-icon :color="iconColor(i)" class="mr-2" size="28">{{ step.icon }}</v-icon> -->
             <v-icon class="mr-2" size="28">{{ step.icon }}</v-icon>
             <span>{{ step.title }}</span>
             <template #actions>
@@ -85,29 +84,19 @@
       return { steps: FORM_STEPS, attemptedSteps: {} };
     },
     computed: {
-      screen() {
-        return this.$route.params.screen;
-      },
-      openPanel() {
-        return this.screen ? this.formStore.openPanel(this.screen) : 0;
-      },
-      fd() {
-        if (!this.screen) return null;
-        this.formStore._ensure(this.screen);
-        return this.formStore.screens[this.screen].formData;
-      },
       screenType() {
-        const s = this.screen;
-        if (!s) return null;
-        if (s.startsWith('APS')) return 'APS';
-        if (s.startsWith('AIR')) return 'AIR';
-        if (s.startsWith('EPS')) return 'EPS';
-        if (s.startsWith('MTS')) return 'MTS';
-        if (s.startsWith('CPS')) return 'CPS';
-        return null;
+        return this.$route.params.screenType ?? null;
       },
       screenName() {
-        return ASSAYS[this.screenType]?.screen_full ?? this.screenType;
+        return ASSAYS[this.screenType]?.screen_full ?? null;
+      },
+      openPanel() {
+        return this.screenType ? this.formStore.openPanel(this.screenType) : 0;
+      },
+      fd() {
+        if (!this.screenType) return null;
+        this.formStore._ensure(this.screenType);
+        return this.formStore.screenTypes[this.screenType].formData;
       },
       stepErrors() {
         if (!this.fd) return {};
@@ -132,21 +121,21 @@
       },
     },
     watch: {
-      screen() {
+      screenType() {
         this.attemptedSteps = {};
       },
       fd: {
         deep: true,
         handler() {
-          if (!this.screen || !this.fd) return;
+          if (!this.screenType || !this.fd) return;
           this.steps.forEach((step, i) => {
             const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
             const hasErrors = Object.keys(errors).length > 0;
-            const status = this.formStore.stepStatus(this.screen, i);
+            const status = this.formStore.stepStatus(this.screenType, i);
             if (hasErrors && status === 'completed') {
-              this.formStore.uncompleteStep(this.screen, i);
+              this.formStore.uncompleteStep(this.screenType, i);
             } else if (!hasErrors && status !== 'completed') {
-              this.formStore.markStepValid(this.screen, i);
+              this.formStore.markStepValid(this.screenType, i);
             }
           });
         },
@@ -156,20 +145,15 @@
       isCompleted(i) {
         return this.stepValidity[this.steps[i].id] ?? false;
       },
-      iconColor(i) {
-        if (this.isCompleted(i)) return 'teal-accent-4';
-        if (this.formStore.stepStatus(this.screen, i) === 'current') return 'primary';
-        return undefined;
-      },
       onPanelChange(val) {
-        if (this.screen && val !== undefined) {
-          this.formStore.setOpenPanel(this.screen, val);
+        if (this.screenType && val !== undefined) {
+          this.formStore.setOpenPanel(this.screenType, val);
         }
       },
       completeStep(i) {
         this.attemptedSteps = { ...this.attemptedSteps, [i]: (this.attemptedSteps[i] ?? 0) + 1 };
         if (!this.stepValidity[this.steps[i].id]) return;
-        this.formStore.completeStep(this.screen, i);
+        this.formStore.completeStep(this.screenType, i);
       },
     },
   };

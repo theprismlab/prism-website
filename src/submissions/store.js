@@ -11,52 +11,52 @@ export const FORM_STEPS = [
 
 export const useFormProgressStore = defineStore('formProgress', {
   state: () => ({
-    screens: {},
-    lastScreen: null,
+    screenTypes: {},
+    lastScreenType: null,
   }),
   getters: {
-    stepStatus: (state) => (screen, index) => {
-      const s = state.screens[screen];
+    stepStatus: (state) => (screenType, index) => {
+      const s = state.screenTypes[screenType];
       if (!s) return index === 0 ? 'current' : 'available';
       if (s.completed.includes(index)) return 'completed';
       if (s.openPanel === index) return 'current';
       return 'available';
     },
-    openPanel: (state) => (screen) => state.screens[screen]?.openPanel ?? 0,
+    openPanel: (state) => (screenType) => state.screenTypes[screenType]?.openPanel ?? 0,
   },
   actions: {
-    _ensure(screen) {
-      if (!this.screens[screen]) {
-        this.screens[screen] = {
+    _ensure(screenType) {
+      if (!this.screenTypes[screenType]) {
+        this.screenTypes[screenType] = {
           openPanel: 0,
           completed: [],
           formData: Object.fromEntries(
-            FORM_STEPS.map((s) => [s.id, STEP_REGISTRY[s.id].getInitialData(screen)])
+            FORM_STEPS.map((s) => [s.id, STEP_REGISTRY[s.id].getInitialData(screenType)])
           ),
         };
       }
     },
-    completeStep(screen, index) {
-      this._ensure(screen);
-      const s = this.screens[screen];
+    completeStep(screenType, index) {
+      this._ensure(screenType);
+      const s = this.screenTypes[screenType];
       if (!s.completed.includes(index)) s.completed.push(index);
       if (index + 1 < FORM_STEPS.length) s.openPanel = index + 1;
     },
-    setOpenPanel(screen, index) {
-      this._ensure(screen);
-      this.screens[screen].openPanel = index;
+    setOpenPanel(screenType, index) {
+      this._ensure(screenType);
+      this.screenTypes[screenType].openPanel = index;
     },
-    setLastScreen(screen) {
-      if (screen) this.lastScreen = screen;
+    setLastScreenType(screenType) {
+      if (screenType) this.lastScreenType = screenType;
     },
-    uncompleteStep(screen, index) {
-      const s = this.screens[screen];
+    uncompleteStep(screenType, index) {
+      const s = this.screenTypes[screenType];
       if (!s) return;
       s.completed = s.completed.filter((i) => i !== index);
     },
-    markStepValid(screen, index) {
-      this._ensure(screen);
-      const s = this.screens[screen];
+    markStepValid(screenType, index) {
+      this._ensure(screenType);
+      const s = this.screenTypes[screenType];
       if (!s.completed.includes(index)) s.completed.push(index);
     },
   },

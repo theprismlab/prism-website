@@ -145,30 +145,30 @@ const routes = [
     },
   },
   {
-    path: '/submission-hub/instructions/:screen',
-    redirect: (to) => `/submission-hub/instructions/${to.params.screen}/test-agent`,
+    path: '/submission-hub/instructions/:screenType',
+    redirect: (to) => `/submission-hub/instructions/${to.params.screenType}/test-agent`,
   },
   {
-    path: '/submission-hub/instructions/:screen/test-agent',
+    path: '/submission-hub/instructions/:screenType/test-agent',
     component: () => import('@/submissions/instructions/test-agent.vue'),
     meta: {
       layout: submissionsLayout,
       breadcrumbs: (route) => [
         { title: 'Submissions', to: '/submission-hub', disabled: true },
         { title: 'Instructions', to: '/submission-hub/instructions', disabled: true },
-        { title: `${route.params.screen} — Test Agent`, disabled: true },
+        { title: `${route.params.screenType} — Test Agent`, disabled: true },
       ],
     },
   },
   {
-    path: '/submission-hub/instructions/:screen/shipping',
+    path: '/submission-hub/instructions/:screenType/shipping',
     component: () => import('@/submissions/instructions/shipping.vue'),
     meta: {
       layout: submissionsLayout,
       breadcrumbs: (route) => [
         { title: 'Submissions', to: '/submission-hub', disabled: true },
         { title: 'Instructions', to: '/submission-hub/instructions', disabled: true },
-        { title: `${route.params.screen} — Shipping`, disabled: true },
+        { title: `${route.params.screenType} — Shipping`, disabled: true },
       ],
     },
   },
@@ -185,14 +185,14 @@ const routes = [
     },
   },
   {
-    path: '/submission-hub/forms/:screen',
-    component: () => import('@/submissions/forms/screen.vue'),
+    path: '/submission-hub/forms/:screenType',
+    component: () => import('@/submissions/forms/screen-type.vue'),
     meta: {
       layout: submissionsLayout,
       breadcrumbs: (route) => [
         { title: 'Submissions', to: '/submission-hub', disabled: true },
         { title: 'Forms', to: '/submission-hub/forms', disabled: true },
-        { title: route.params.screen, disabled: true },
+        { title: route.params.screenType, disabled: true },
       ],
     },
   },

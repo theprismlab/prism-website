@@ -1,8 +1,8 @@
 <template>
   <v-select
-    :model-value="$route.params.screen"
+    :model-value="$route.params.screenType"
     :items="screens"
-    :placeholder="$route.params.screen ? undefined : 'Select screen'"
+    :placeholder="$route.params.screenType ? undefined : 'Select screen'"
     hide-details
     v-model:menu="menuOpen"
     @update:model-value="onScreenChange"
@@ -19,7 +19,7 @@
       };
     },
     mounted() {
-      if (!this.$route.params.screen) {
+      if (!this.$route.params.screenType) {
         this.$nextTick(() => {
           this.menuOpen = true;
         });
@@ -28,7 +28,7 @@
     methods: {
       onScreenChange(screen) {
         const segments = this.$route.path.split('/');
-        const screenIndex = segments.indexOf(this.$route.params.screen);
+        const screenIndex = segments.indexOf(this.$route.params.screenType);
         if (screenIndex !== -1) {
           segments[screenIndex] = screen;
           this.$router.push(segments.join('/'));

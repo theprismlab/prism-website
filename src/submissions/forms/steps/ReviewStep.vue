@@ -184,6 +184,10 @@
           this.showDialog = true;
         }
       },
+      parseResponseForApi() {
+        let parsedData = {};
+        parsedData.compoundInfo = {};
+      },
     },
   };
 </script>
