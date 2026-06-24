@@ -16,7 +16,7 @@ const FIELDS = {
     key: 'acknowledgement2',
     section: 'Test agent requirements',
     description:
-      'All test agents must be solubilized in either 100% DMSO for MTS and CPS screens or 100% aqueous solution for APS and AIR screens. We do not QC compounds before the PRISM assay. The collaborator is responsible for QC\'ing test agents ahead of submission.',
+      "All test agents must be solubilized in either 100% DMSO for MTS and CPS screens or 100% aqueous solution for APS and AIR screens. We do not QC compounds before the PRISM assay. The collaborator is responsible for QC'ing test agents ahead of submission.",
     label: 'I acknowledge and agree.',
     default: false,
   },
@@ -31,8 +31,7 @@ const FIELDS = {
   SHIPPING_2: {
     key: 'acknowledgement4',
     section: 'Test agent shipping',
-    description:
-      `International shipments MUST go through the Broad Institute's Customs Broker and should be shipped at least 1 week before the submission deadline. Review the <a href="/submission-hub/instructions/{screenType}/shipping" target="_blank" rel="noopener noreferrer">Shipping Information</a> for additional instructions and information.`,
+    description: `International shipments MUST go through the Broad Institute's Customs Broker and should be shipped at least 1 week before the submission deadline. Review the <a href="/submission-hub/instructions/{screenType}/shipping" target="_blank" rel="noopener noreferrer">Shipping Information</a> for additional instructions and information.`,
     label: 'I acknowledge and agree.',
     default: false,
   },
@@ -86,7 +85,11 @@ export function getInitialData() {
 
 export function getSummary(data) {
   return Object.values(FIELDS)
-    .map((f) => ({ label: f.section + ': ' + f.description.slice(0, 60) + '…', value: data[f.key] ? 'Confirmed' : null }))
+    .map((f) => ({
+      section: f.section,
+      label: f.description.replace(/<[^>]+>/g, ''),
+      value: data[f.key] ? 'Confirmed' : null,
+    }))
     .filter((item) => item.value);
 }
 

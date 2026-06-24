@@ -2,7 +2,7 @@
   <sub-drawer title="Contents">
     <screen-selector />
     <v-list
-      v-if="screen"
+      v-if="screenType"
       :opened="openedGroups"
       density="comfortable"
       nav
@@ -55,7 +55,7 @@
       >
     </div> -->
 
-    <v-list v-if="screen" density="comfortable" nav>
+    <v-list v-if="screenType" density="comfortable" nav>
       <v-list-item
         id="form-btn"
         :to="`/submission-hub/forms/${screen}`"
@@ -83,28 +83,28 @@
       };
     },
     computed: {
-      screen() {
-        return this.$route.params.screen;
+      screenType() {
+        return this.$route.params.screenType;
       },
       testAgentPdf() {
-        return this.screen ? (PDF_PATHS.TEST_AGENT[this.screen.toUpperCase()] ?? null) : null;
+        return this.screenType ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null) : null;
       },
       shippingPdf() {
-        return this.screen ? PDF_PATHS.SHIPPING : null;
+        return this.screenType ? PDF_PATHS.SHIPPING : null;
       },
       items() {
         return [
           {
             id: 'test-agent',
             title: 'Test Agent Instructions',
-            route: `/submission-hub/instructions/${this.screen}/test-agent`,
+            route: `/submission-hub/instructions/${this.screenType}/test-agent`,
             icon: 'mdi-flask-outline',
             pages: this.testAgentPages,
           },
           {
             id: 'shipping',
             title: 'Shipping Instructions',
-            route: `/submission-hub/instructions/${this.screen}/shipping`,
+            route: `/submission-hub/instructions/${this.screenType}/shipping`,
             icon: 'mdi-truck-outline',
             pages: this.shippingPages,
           },

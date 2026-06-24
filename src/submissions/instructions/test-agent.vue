@@ -1,7 +1,7 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>Instructions — {{ this.screen }}</prism-page-title>
+      <prism-page-title>Instructions — {{ this.screenType }}</prism-page-title>
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Test Agent Instructions'
       }}</prism-page-title> -->
@@ -19,11 +19,11 @@
       return { pages: [] };
     },
     computed: {
-      screen() {
-        return this.$route.params.screen;
+      screenType() {
+        return this.$route.params.screenType;
       },
       pdfPath() {
-        return this.screen ? PDF_PATHS.TEST_AGENT[this.screen] : null;
+        return this.screenType ? PDF_PATHS.TEST_AGENT[this.screenType] : null;
       },
       flatPages() {
         return flattenOutline(this.pages);

@@ -1,7 +1,7 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>Instructions — {{ this.screen }}</prism-page-title>
+      <prism-page-title>Instructions — {{ this.screenType }}</prism-page-title>
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Shipping Instructions'
       }}</prism-page-title> -->
@@ -19,8 +19,8 @@
       return { pages: [] };
     },
     computed: {
-      screen() {
-        return this.$route.params.screen;
+      screenType() {
+        return this.$route.params.screenType;
       },
       flatPages() {
         return flattenOutline(this.pages);

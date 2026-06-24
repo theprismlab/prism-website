@@ -24,45 +24,17 @@
             class="mt-4"
             id="submission-hub__schedule-table"
           >
-            <template #item.submission_window="{ item }">
-              {{ formatWindow(item) }}
-            </template>
-
             <template #item.status="{ item }">
               <v-chip
-                :to="
-                  computedStatus(item) === 'OPEN'
-                    ? `/submission-hub/forms/${item.screen}`
-                    : undefined
-                "
-                :color="statusMeta(computedStatus(item)).color"
+                :to="item.status === 'OPEN' ? `/submission-hub/forms/${item.screen_type}` : undefined"
+                :color="item.statusMeta.color"
                 size="small"
                 variant="flat"
-                :append-icon="computedStatus(item) === 'OPEN' ? 'mdi-arrow-top-right' : ''"
+                :append-icon="item.status === 'OPEN' ? 'mdi-arrow-top-right' : ''"
               >
-                {{ statusMeta(computedStatus(item)).label }}
+                {{ item.statusMeta.label }}
               </v-chip>
             </template>
-
-            <!-- <template #item.window_status="{ item }">
-              <v-progress-circular
-                v-if="windowStore.loading"
-                size="16"
-                width="2"
-                indeterminate
-                color="grey"
-              />
-              <template v-else-if="windowStore.statuses[item.screen]">
-                <div>{{ windowStore.statuses[item.screen].status }}</div>
-                <div
-                  v-if="windowStore.statuses[item.screen].message"
-                  class="text-caption text-medium-emphasis mt-1"
-                >
-                  {{ windowStore.statuses[item.screen].message }}
-                </div>
-              </template>
-              <span v-else class="text-grey-lighten-1">—</span>
-            </template> -->
           </v-data-table>
         </div>
 
@@ -130,82 +102,14 @@
 
 <script>
   import { ASSAYS } from '@/utils/assays';
-  import { statusMeta } from './status-utils.js';
-  import { useWindowStatusStore } from './window-status-store.js';
+  import { enrichedSchedule, FIELD_LABELS, TABLE_FIELD_KEYS } from './schedule.js';
 
   export default {
     name: 'SubmissionsOverview',
-    setup() {
-      return { windowStore: useWindowStatusStore() };
-    },
     data() {
       return {
-        headers: [
-          { title: 'Screen Name', key: 'screen_name', sortable: false },
-          { title: 'Timepoint', key: 'time_point', sortable: false },
-          { title: 'Submission Window', key: 'submission_window', sortable: false },
-          { title: 'Screen Status', key: 'status', sortable: false },
-          // { title: 'API Status', key: 'window_status', sortable: false },
-          { title: 'Estimated Data Delivery', key: 'data_delivery_date', sortable: false },
-        ],
-        schedule: [
-          {
-            screen: 'EPS',
-            screen_name: 'EPS008',
-            time_point: ASSAYS.EPS.time_point,
-            window_start: '2026-06-15',
-            window_end: '2026-06-26',
-            data_delivery_date: 'November 2026',
-          },
-          {
-            screen: 'MTS',
-            screen_name: 'MTS033',
-            time_point: ASSAYS.MTS.time_point,
-            window_start: '2026-07-13',
-            window_end: '2026-07-24',
-            data_delivery_date: 'November 2026',
-          },
-          {
-            screen: 'MTS',
-            screen_name: 'MTS034',
-            time_point: ASSAYS.MTS.time_point,
-            window_start: '2026-09-07',
-            window_end: '2026-09-18',
-            data_delivery_date: 'January 2027',
-          },
-          {
-            screen: 'CPS',
-            screen_name: 'CPS017',
-            time_point: ASSAYS.CPS.time_point,
-            window_start: '2026-09-07',
-            window_end: '2026-09-18',
-            data_delivery_date: 'January 2027',
-          },
-          {
-            screen: 'APS',
-            screen_name: 'APS009',
-            time_point: ASSAYS.APS.time_point,
-            window_start: '2026-09-07',
-            window_end: '2026-09-18',
-            data_delivery_date: 'January 2027',
-          },
-          {
-            screen: 'AIR',
-            screen_name: 'AIR003',
-            time_point: ASSAYS.AIR.time_point,
-            window_start: '2026-09-07',
-            window_end: '2026-09-18',
-            data_delivery_date: 'January 2027',
-          },
-          {
-            screen: 'EPS',
-            screen_name: 'EPS009 (PR1000)',
-            time_point: ASSAYS.EPS.time_point,
-            window_start: '2026-11-02',
-            window_end: '2026-11-13',
-            data_delivery_date: 'April 2027',
-          },
-        ],
+        headers: TABLE_FIELD_KEYS.map((key) => ({ title: FIELD_LABELS[key], key, sortable: false })),
+        schedule: enrichedSchedule(),
         assays: ASSAYS,
         participationSteps: [
           'Complete a submission form',
@@ -213,37 +117,6 @@
           'Ship your compounds to our lab',
         ],
       };
-    },
-    mounted() {
-      this.windowStore.load(import.meta.env.VITE_API_URL);
-      console.log('windowStore', this.windowStore);
-    },
-    methods: {
-      statusMeta,
-      todayET() {
-        // Returns 'YYYY-MM-DD' in US Eastern Time for lexicographic date comparison
-        return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-      },
-      computedStatus(item) {
-        const today = this.todayET();
-        if (today < item.window_start) return 'SCHEDULED';
-        if (today <= item.window_end) return 'OPEN';
-        return 'IN-PROGRESS';
-      },
-      formatWindow(item) {
-        const start = new Date(item.window_start + 'T00:00:00Z');
-        const end = new Date(item.window_end + 'T00:00:00Z');
-        const startStr = start.toLocaleDateString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          timeZone: 'UTC',
-        });
-        const endStr =
-          start.getMonth() === end.getMonth()
-            ? end.toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' })
-            : end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
-        return `${startStr} – ${endStr}`;
-      },
     },
   };
 </script>
