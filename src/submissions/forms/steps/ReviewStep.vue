@@ -48,10 +48,13 @@
           <p class="ack-section-label text-medium-emphasis mb-1">{{ section }}</p>
           <div v-for="item in items" :key="item.label" class="ack-item mb-2">
             <p class="text-body-2 mb-0">{{ item.label }}</p>
-            <p class="text-caption text-success font-weight-medium mb-0">Confirmed</p>
+            <p class="text-caption text-teal-accent-4 font-weight-medium mb-0">Confirmed</p>
           </div>
         </div>
-        <p v-if="stepSummary(step.id).length === 0" class="text-medium-emphasis font-italic text-body-2">
+        <p
+          v-if="stepSummary(step.id).length === 0"
+          class="text-medium-emphasis font-italic text-body-2"
+        >
           No acknowledgments confirmed
         </p>
       </template>
@@ -92,7 +95,7 @@
     <v-dialog v-model="showDialog" max-width="480" persistent>
       <v-card>
         <v-card-title class="d-flex align-center ga-2">
-          <v-icon :color="dialogSuccess ? 'success' : 'error'">
+          <v-icon :color="dialogSuccess ? 'teal-accent-4' : 'error'">
             {{ dialogSuccess ? 'mdi-check-circle' : 'mdi-alert-circle' }}
           </v-icon>
           {{ dialogSuccess ? 'Submission received' : 'Submission failed' }}

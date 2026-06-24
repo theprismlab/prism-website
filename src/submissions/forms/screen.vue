@@ -6,10 +6,11 @@
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
-            <v-icon :color="iconColor(i)" class="mr-2" size="20">{{ step.icon }}</v-icon>
+            <!-- <v-icon :color="iconColor(i)" class="mr-2" size="28">{{ step.icon }}</v-icon> -->
+            <v-icon class="mr-2" size="28">{{ step.icon }}</v-icon>
             <span>{{ step.title }}</span>
             <template #actions>
-              <v-icon v-if="isCompleted(i)" color="success" size="24" class="mr-1"
+              <v-icon v-if="isCompleted(i)" color="teal-accent-4" size="28" class="mr-1"
                 >mdi-check-circle</v-icon
               >
               <v-icon v-else>$expand</v-icon>
@@ -152,7 +153,7 @@
         return this.stepValidity[this.steps[i].id] ?? false;
       },
       iconColor(i) {
-        if (this.isCompleted(i)) return 'success';
+        if (this.isCompleted(i)) return 'teal-accent-4';
         if (this.formStore.stepStatus(this.screen, i) === 'current') return 'primary';
         return undefined;
       },

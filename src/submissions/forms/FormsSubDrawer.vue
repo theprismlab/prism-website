@@ -116,13 +116,15 @@
   }
 
   .circle-completed {
-    background-color: rgb(var(--v-theme-success));
+    background-color: rgb(var(--v-theme-teal-accent-4));
     color: white;
   }
 
   .circle-current {
-    background-color: rgb(var(--v-theme-primary));
-    color: white;
+    /* background-color: rgb(var(--v-theme-primary));
+    color: white; */
+    border: 2px solid black;
+    color: black;
   }
 
   .circle-available {
@@ -138,7 +140,7 @@
   }
 
   .connector-done {
-    background-color: rgb(var(--v-theme-success));
+    background-color: rgb(var(--v-theme-teal-accent-4));
   }
 
   .connector-upcoming {
