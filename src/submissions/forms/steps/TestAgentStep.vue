@@ -41,7 +41,7 @@
       data:       { type: Object, required: true },
       errors:     { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
-      submitted:  { type: Boolean, default: false },
+      submitted:  { type: Number, default: 0 },
     },
     computed: {
       screenFields() {

@@ -89,7 +89,7 @@
       errors: { type: Array, default: () => [] },
       multiRow: { type: Boolean, default: false },
       addLabel: { type: String, default: 'Add row' },
-      submitted: { type: Boolean, default: false },
+      submitted: { type: Number, default: 0 },
     },
     emits: ['add-row', 'remove-row'],
     data() {
@@ -97,17 +97,14 @@
     },
     watch: {
       submitted(val) {
-        if (val) this.rows.forEach(r => {
+        if (val > 0) this.rows.forEach(r => {
           if (!this.submittedRows.includes(r)) this.submittedRows.push(r);
         });
       },
     },
     methods: {
       hasError(row, i, fieldKey) {
-        if (!this.submitted) return false;
-        const wasPresent = this.submittedRows.includes(row);
-        const hasSomeValue = Object.values(row).some(v => !!v);
-        if (!wasPresent && !hasSomeValue) return false;
+        if (!this.submittedRows.includes(row)) return false;
         return !!this.errors[i]?.[fieldKey];
       },
     },
