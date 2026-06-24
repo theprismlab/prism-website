@@ -32,7 +32,7 @@
               <v-chip
                 :to="
                   computedStatus(item) === 'OPEN'
-                    ? `/submission-hub/forms/${item.screen}`
+                    ? `/submission-hub/forms/${item.screen_type}`
                     : undefined
                 "
                 :color="statusMeta(computedStatus(item)).color"
@@ -52,13 +52,13 @@
                 indeterminate
                 color="grey"
               />
-              <template v-else-if="windowStore.statuses[item.screen]">
-                <div>{{ windowStore.statuses[item.screen].status }}</div>
+              <template v-else-if="windowStore.statuses[item.screen_type]">
+                <div>{{ windowStore.statuses[item.screen_type].status }}</div>
                 <div
-                  v-if="windowStore.statuses[item.screen].message"
+                  v-if="windowStore.statuses[item.screen_type].message"
                   class="text-caption text-medium-emphasis mt-1"
                 >
-                  {{ windowStore.statuses[item.screen].message }}
+                  {{ windowStore.statuses[item.screen_type].message }}
                 </div>
               </template>
               <span v-else class="text-grey-lighten-1">—</span>

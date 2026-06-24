@@ -76,7 +76,7 @@ export function computedStatus(item) {
 export function resolveScreenEntry(screenType) {
   return (
     SCHEDULE.filter((item) => {
-      if (item.screen !== screenType) return false;
+      if (item.screen_type !== screenType) return false;
       const status = computedStatus(item);
       return status === 'OPEN' || status === 'SCHEDULED';
     }).sort((a, b) => a.window_start.localeCompare(b.window_start))[0] ?? null
