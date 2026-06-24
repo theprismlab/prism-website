@@ -43,6 +43,17 @@
         />
       </template>
     </v-list>
+    <!-- <div style="text-align: center">
+      <v-btn
+        rounded
+        variant="outlined"
+        :to="`/submission-hub/forms/${screen}`"
+        append-icon="mdi-arrow-right"
+        class="mt-4 mx-auto"
+      >
+        Start Form</v-btn
+      >
+    </div> -->
 
     <v-list v-if="screen" density="comfortable" nav>
       <v-list-item
@@ -139,11 +150,11 @@
 
 <style scoped>
   #form-btn {
-    padding-left: 24px;
-    padding-right: 16px;
+    text-align: center;
+    width: 100%;
     font-weight: bold;
     color: black;
-    border-radius: 40px;
+    border-radius: 50px;
     border: 1px solid black;
   }
   .v-list--nav {
@@ -156,9 +167,9 @@
     padding-right: 8px;
     border-left: 4px solid #d8d8d8;
   }
-  .v-list-item:not(#form-btn) {
+  /* .v-list-item:not(#form-btn) {
     border-left-color: #d8d8d8;
-  }
+  } */
   .v-list-item--active {
     border-left-color: #1d4ed8 !important;
   }

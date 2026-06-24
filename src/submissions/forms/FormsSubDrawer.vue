@@ -20,6 +20,7 @@
     <div v-if="screen">
       <v-list density="comfortable" nav>
         <v-list-item
+          id="instructions-btn"
           :to="`/submissions/instructions/${screen}`"
           title="Back to Instructions"
           prepend-icon="mdi-arrow-left"
@@ -88,6 +89,14 @@
 </script>
 
 <style scoped>
+  #instructions-btn {
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    color: black;
+    border-radius: 50px;
+    border: 1px solid black;
+  }
   .step-track {
     display: flex;
     flex-direction: column;
