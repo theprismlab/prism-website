@@ -2,8 +2,7 @@
   <page>
     <app-container wide>
       <prism-page-title>
-        {{ screenName }} - Form
-        <!-- {{ screenName ?? screenType }}<template v-if="screenFullName"> — {{ screenFullName }}</template> -->
+        {{ screenDisplay?.screen_name ?? screenType }} - Form
       </prism-page-title>
 
       <div v-if="screenMeta.length" class="screen-meta mb-4">
@@ -14,17 +13,17 @@
       </div>
 
       <v-chip
-        v-if="screenStatus"
-        :color="screenStatus.color"
+        v-if="screenDisplay?.statusMeta"
+        :color="screenDisplay.statusMeta.color"
         size="small"
         variant="flat"
         class="mb-4"
-        >{{ screenStatus.label }}</v-chip
+        >{{ screenDisplay.statusMeta.label }}</v-chip
       >
 
       <v-alert
         v-if="apiStatus?.message"
-        :color="screenStatus?.color"
+        :color="screenDisplay?.statusMeta?.color"
         variant="tonal"
         density="compact"
         class="mb-4"
@@ -89,9 +88,7 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
-  import { ASSAYS } from '@/utils/assays';
-  import { resolveScreenEntry, computedStatus, formatWindow } from '@/submissions/schedule.js';
-  import { statusMeta } from '@/submissions/status-utils.js';
+  import { resolveScreenDisplay } from '@/submissions/schedule.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
@@ -118,27 +115,18 @@
       screenType() {
         return this.$route.params.screenType ?? null;
       },
-      resolvedEntry() {
-        return resolveScreenEntry(this.screenType);
-      },
-      screenName() {
-        return this.resolvedEntry?.screen_name ?? null;
-      },
-      screenFullName() {
-        return ASSAYS[this.screenType]?.screen_full ?? null;
+      screenDisplay() {
+        return resolveScreenDisplay(this.screenType);
       },
       screenMeta() {
-        if (!this.resolvedEntry) return [];
-        const assay = ASSAYS[this.screenType];
+        const d = this.screenDisplay;
+        if (!d) return [];
         return [
           { label: 'Screen Type', value: this.screenType },
-          assay?.test_agents ? { label: 'Test Agents', value: assay.test_agents } : null,
-          { label: 'Submission Window', value: formatWindow(this.resolvedEntry) },
-          { label: 'Data Delivery', value: this.resolvedEntry.data_delivery_date },
+          d.testAgents ? { label: 'Test Agents', value: d.testAgents } : null,
+          { label: 'Submission Window', value: d.windowDates },
+          { label: 'Data Delivery', value: d.data_delivery_date },
         ].filter(Boolean);
-      },
-      screenStatus() {
-        return this.resolvedEntry ? statusMeta(computedStatus(this.resolvedEntry)) : null;
       },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;

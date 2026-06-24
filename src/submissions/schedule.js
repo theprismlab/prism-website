@@ -1,4 +1,5 @@
 import { ASSAYS } from '@/utils/assays';
+import { statusMeta } from './status-utils.js';
 
 export const SCHEDULE = [
   {
@@ -59,8 +60,7 @@ export const SCHEDULE = [
   },
 ];
 
-// Returns 'YYYY-MM-DD' in US Eastern Time for lexicographic date comparison.
-export function todayET() {
+function todayET() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 }
 
@@ -82,14 +82,37 @@ export function formatWindow(item) {
   return `${startStr} – ${endStr}`;
 }
 
-// Returns the OPEN or SCHEDULED entry for a screen type with the soonest window_start,
-// or null if no such entry exists.
-export function resolveScreenEntry(screenType) {
-  return (
-    SCHEDULE.filter((item) => {
-      if (item.screen_type !== screenType) return false;
-      const status = computedStatus(item);
-      return status === 'OPEN' || status === 'SCHEDULED';
-    }).sort((a, b) => a.window_start.localeCompare(b.window_start))[0] ?? null
-  );
+// Decorates a raw SCHEDULE entry with derived display fields.
+export function enrichEntry(item) {
+  const status = computedStatus(item);
+  return {
+    ...item,
+    status,
+    statusMeta: statusMeta(status),
+    windowDates: formatWindow(item),
+  };
+}
+
+// Returns a fully display-ready object for a given screen type (soonest open/scheduled entry),
+// or null if no qualifying entry exists.
+export function resolveScreenDisplay(screenType) {
+  const entry = SCHEDULE.filter((item) => {
+    if (item.screen_type !== screenType) return false;
+    const status = computedStatus(item);
+    return status === 'OPEN' || status === 'SCHEDULED';
+  }).sort((a, b) => a.window_start.localeCompare(b.window_start))[0] ?? null;
+
+  if (!entry) return null;
+
+  const assay = ASSAYS[screenType] ?? {};
+  return {
+    ...enrichEntry(entry),
+    screenFullName: assay.screen_full ?? null,
+    testAgents: assay.test_agents ?? null,
+  };
+}
+
+// Convenience: enrich all SCHEDULE entries (useful for table displays).
+export function enrichedSchedule() {
+  return SCHEDULE.map(enrichEntry);
 }

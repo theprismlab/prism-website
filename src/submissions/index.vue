@@ -25,22 +25,18 @@
             id="submission-hub__schedule-table"
           >
             <template #item.submission_window="{ item }">
-              {{ formatWindow(item) }}
+              {{ item.windowDates }}
             </template>
 
             <template #item.status="{ item }">
               <v-chip
-                :to="
-                  computedStatus(item) === 'OPEN'
-                    ? `/submission-hub/forms/${item.screen_type}`
-                    : undefined
-                "
-                :color="statusMeta(computedStatus(item)).color"
+                :to="item.status === 'OPEN' ? `/submission-hub/forms/${item.screen_type}` : undefined"
+                :color="item.statusMeta.color"
                 size="small"
                 variant="flat"
-                :append-icon="computedStatus(item) === 'OPEN' ? 'mdi-arrow-top-right' : ''"
+                :append-icon="item.status === 'OPEN' ? 'mdi-arrow-top-right' : ''"
               >
-                {{ statusMeta(computedStatus(item)).label }}
+                {{ item.statusMeta.label }}
               </v-chip>
             </template>
 
@@ -130,8 +126,7 @@
 
 <script>
   import { ASSAYS } from '@/utils/assays';
-  import { SCHEDULE, computedStatus, formatWindow } from './schedule.js';
-  import { statusMeta } from './status-utils.js';
+  import { enrichedSchedule } from './schedule.js';
   import { useWindowStatusStore } from './window-status-store.js';
 
   export default {
@@ -149,7 +144,7 @@
           // { title: 'API Status', key: 'window_status', sortable: false },
           { title: 'Estimated Data Delivery', key: 'data_delivery_date', sortable: false },
         ],
-        schedule: SCHEDULE,
+        schedule: enrichedSchedule(),
         assays: ASSAYS,
         participationSteps: [
           'Complete a submission form',
@@ -162,11 +157,7 @@
       this.windowStore.load(import.meta.env.VITE_API_URL);
       console.log('windowStore', this.windowStore);
     },
-    methods: {
-      statusMeta,
-      computedStatus,
-      formatWindow,
-    },
+    methods: {},
   };
 </script>
 
