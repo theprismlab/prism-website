@@ -1,7 +1,9 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>{{ screenName ?? screenType }}</prism-page-title>
+      <prism-page-title>
+        {{ screenName ?? screenType }}<template v-if="screenFullName"> — {{ screenFullName }}</template>
+      </prism-page-title>
 
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
@@ -61,6 +63,7 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { ASSAYS } from '@/utils/assays';
+  import { resolveScreenEntry } from '@/submissions/schedule.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
@@ -87,7 +90,13 @@
       screenType() {
         return this.$route.params.screenType ?? null;
       },
+      resolvedEntry() {
+        return resolveScreenEntry(this.screenType);
+      },
       screenName() {
+        return this.resolvedEntry?.screen_name ?? null;
+      },
+      screenFullName() {
         return ASSAYS[this.screenType]?.screen_full ?? null;
       },
       openPanel() {
