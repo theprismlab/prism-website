@@ -13,6 +13,14 @@
         class="mb-4"
       >{{ screenStatus.label }}</v-chip>
 
+      <v-alert
+        v-if="apiStatus?.message"
+        :color="screenStatus?.color"
+        variant="tonal"
+        density="compact"
+        class="mb-4"
+      >{{ apiStatus.message }}</v-alert>
+
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
@@ -70,6 +78,7 @@
 
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
+  import { useWindowStatusStore } from '@/submissions/window-status-store.js';
   import { ASSAYS } from '@/utils/assays';
   import { resolveScreenEntry, computedStatus } from '@/submissions/schedule.js';
   import { statusMeta } from '@/submissions/status-utils.js';
@@ -90,7 +99,7 @@
       ReviewStep,
     },
     setup() {
-      return { formStore: useFormProgressStore() };
+      return { formStore: useFormProgressStore(), windowStore: useWindowStatusStore() };
     },
     data() {
       return { steps: FORM_STEPS, attemptedSteps: {} };
@@ -110,6 +119,9 @@
       },
       screenStatus() {
         return this.resolvedEntry ? statusMeta(computedStatus(this.resolvedEntry)) : null;
+      },
+      apiStatus() {
+        return this.screenType ? this.windowStore.statuses[this.screenType] : null;
       },
       openPanel() {
         return this.screenType ? this.formStore.openPanel(this.screenType) : 0;
@@ -140,6 +152,9 @@
           ]),
         );
       },
+    },
+    mounted() {
+      this.windowStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
       screenType() {

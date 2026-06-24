@@ -2,7 +2,7 @@ import { ASSAYS } from '@/utils/assays';
 
 export const SCHEDULE = [
   {
-    screen: 'EPS',
+    screen_type: 'EPS',
     screen_name: 'EPS008',
     time_point: ASSAYS.EPS.time_point,
     window_start: '2026-06-15',
@@ -10,7 +10,7 @@ export const SCHEDULE = [
     data_delivery_date: 'November 2026',
   },
   {
-    screen: 'MTS',
+    screen_type: 'MTS',
     screen_name: 'MTS033',
     time_point: ASSAYS.MTS.time_point,
     window_start: '2026-07-13',
@@ -18,7 +18,7 @@ export const SCHEDULE = [
     data_delivery_date: 'November 2026',
   },
   {
-    screen: 'MTS',
+    screen_type: 'MTS',
     screen_name: 'MTS034',
     time_point: ASSAYS.MTS.time_point,
     window_start: '2026-09-07',
@@ -26,7 +26,7 @@ export const SCHEDULE = [
     data_delivery_date: 'January 2027',
   },
   {
-    screen: 'CPS',
+    screen_type: 'CPS',
     screen_name: 'CPS017',
     time_point: ASSAYS.CPS.time_point,
     window_start: '2026-09-07',
@@ -34,7 +34,7 @@ export const SCHEDULE = [
     data_delivery_date: 'January 2027',
   },
   {
-    screen: 'APS',
+    screen_type: 'APS',
     screen_name: 'APS009',
     time_point: ASSAYS.APS.time_point,
     window_start: '2026-09-07',
@@ -42,7 +42,7 @@ export const SCHEDULE = [
     data_delivery_date: 'January 2027',
   },
   {
-    screen: 'AIR',
+    screen_type: 'AIR',
     screen_name: 'AIR003',
     time_point: ASSAYS.AIR.time_point,
     window_start: '2026-09-07',
@@ -50,7 +50,7 @@ export const SCHEDULE = [
     data_delivery_date: 'January 2027',
   },
   {
-    screen: 'EPS',
+    screen_type: 'EPS',
     screen_name: 'EPS009 (PR1000)',
     time_point: ASSAYS.EPS.time_point,
     window_start: '2026-11-02',
