@@ -7,7 +7,7 @@
           <template #prepend>
             <v-icon>mdi-information-outline</v-icon>
           </template>
-          <span class="prism-text-h6">For academic/non-profit collaborators only</span>
+          <span class="prism-text-h5">For academic/non-profit collaborators only</span>
         </v-alert>
         <p class="prism-text-body-1">
           PRISM utilizes the Broad Quote Portal to allow collaborators to view, approve, and fund
@@ -24,7 +24,7 @@
           rounded
           size="large"
           color="primary-base"
-          href=""
+          href="https://quote.broadinstitute.org/sign-in?returnUrl=%2F"
           target="_blank"
         >
           Go to quote</v-btn

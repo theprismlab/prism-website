@@ -1,10 +1,10 @@
-$heading-font-family: 'Archivo Expanded', sans-serif;
+$heading-font-family: 'Archivo', sans-serif;
 $body-font-family: 'Inter', sans-serif;
 
 @use 'vuetify/settings' with (
   $color-pack: true,
   $body-font-family: 'Inter',
-  $heading-font-family: 'Archivo Expanded',
+  $heading-font-family: 'Archivo',
   $font-size-root: var(--font-size-root),
   $card-title-white-space: normal,
   $card-title-word-wrap: initial,
