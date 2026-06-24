@@ -94,6 +94,11 @@
       submitted: { type: Boolean, default: false },
     },
     emits: ['add-row', 'remove-row'],
+    watch: {
+      submitted(val) {
+        if (val) this.rows.forEach(row => this.fields.forEach(f => this.touch(row, f.key)));
+      },
+    },
     data() {
       return {
         // Keyed by row object reference so indices don't matter when rows are added/removed.
@@ -110,7 +115,7 @@
         return this.touched.get(row)?.has(fieldKey) ?? false;
       },
       hasError(row, i, fieldKey) {
-        return (this.submitted || this.isTouched(row, fieldKey)) && !!this.errors[i]?.[fieldKey];
+        return this.isTouched(row, fieldKey) && !!this.errors[i]?.[fieldKey];
       },
     },
   };
