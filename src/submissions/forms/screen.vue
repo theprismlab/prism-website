@@ -45,6 +45,7 @@
               :data="fd.review"
               :form-data="fd"
               :errors="stepErrors.review || {}"
+              :screen-type="screenType"
             />
 
             <div v-if="step.id !== 'review'" class="d-flex justify-end mt-4">

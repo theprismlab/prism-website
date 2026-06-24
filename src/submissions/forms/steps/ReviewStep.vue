@@ -1,7 +1,10 @@
 <template>
   <div>
     <div v-for="step in summarySteps" :key="step.id" class="mb-5">
-      <h3 class="prism-text-form-group-label">{{ step.title }}</h3>
+      <h3 class="prism-text-form-group-label d-flex align-center ga-1">
+        {{ step.title }}
+        <v-icon v-if="!stepValidity[step.id]" color="warning" size="18">mdi-alert-circle</v-icon>
+      </h3>
       <v-table density="compact">
         <tbody>
           <tr v-for="item in stepSummary(step.id)" :key="item.label">
@@ -21,11 +24,12 @@
       v-model="data.reviewed"
       label="I have reviewed my submission and confirm it is correct."
       :error-messages="errors.reviewed ? [errors.reviewed] : []"
+      :disabled="!allStepsValid"
       hide-details="auto"
     />
 
     <div class="d-flex justify-end mt-4">
-      <v-btn color="primary" :disabled="!data.reviewed" :loading="submitting" @click="submitForm">
+      <v-btn color="primary" :disabled="!data.reviewed || !allStepsValid" :loading="submitting" @click="submitForm">
         Submit
       </v-btn>
     </div>
@@ -57,6 +61,20 @@
       data: { type: Object, required: true },
       formData: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
+      screenType: { type: String, default: null },
+    },
+    computed: {
+      stepValidity() {
+        return Object.fromEntries(
+          this.summarySteps.map((step) => [
+            step.id,
+            Object.keys(STEP_REGISTRY[step.id].validate(this.formData[step.id], this.screenType)).length === 0,
+          ]),
+        );
+      },
+      allStepsValid() {
+        return Object.values(this.stepValidity).every((v) => v);
+      },
     },
     data() {
       return {
