@@ -86,7 +86,8 @@ export function getInitialData() {
 export function getSummary(data) {
   return Object.values(FIELDS)
     .map((f) => ({
-      label: f.section + ': ' + f.description.replace(/<[^>]+>/g, ''),
+      section: f.section,
+      label: f.description.replace(/<[^>]+>/g, ''),
       value: data[f.key] ? 'Confirmed' : null,
     }))
     .filter((item) => item.value);

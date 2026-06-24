@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-for="step in summarySteps" :key="step.id" class="mb-5">
-      <h3 class="prism-text-form-group-label d-flex align-center ga-1">
+    <div v-for="step in summarySteps" :key="step.id" class="review-section mb-6">
+      <h3 class="prism-text-form-group-label d-flex align-center ga-1 mb-2">
         {{ step.title }}
         <v-icon v-if="!stepValidity[step.id]" color="warning" size="18">mdi-alert-circle</v-icon>
       </h3>
 
-      <!-- Test Agent: columnar table per agent row -->
+      <!-- Test Agent: columnar table per agent row (unchanged) -->
       <template v-if="step.id === 'testAgent'">
         <v-table v-if="agentFields.length" density="compact" class="agent-table">
           <thead>
@@ -38,18 +38,38 @@
         </template>
       </template>
 
-      <!-- All other steps: label / value table -->
-      <v-table v-else density="compact">
-        <tbody>
-          <tr v-for="item in stepSummary(step.id)" :key="item.label">
-            <td class="label-col text-medium-emphasis">{{ item.label }}</td>
-            <td>{{ item.value }}</td>
-          </tr>
-          <tr v-if="stepSummary(step.id).length === 0">
-            <td class="text-medium-emphasis font-italic">No information provided</td>
-          </tr>
-        </tbody>
-      </v-table>
+      <!-- Acknowledgments: grouped checklist -->
+      <template v-else-if="step.id === 'acknowledgments'">
+        <div
+          v-for="(items, section) in groupedAcknowledgments"
+          :key="section"
+          class="ack-group mb-3"
+        >
+          <p class="ack-section-label text-medium-emphasis mb-1">{{ section }}</p>
+          <div
+            v-for="item in items"
+            :key="item.label"
+            class="d-flex align-start ga-2 mb-2"
+          >
+            <v-icon color="success" size="16" class="mt-1 flex-shrink-0">mdi-check-circle</v-icon>
+            <span class="text-body-2">{{ item.label }}</span>
+          </div>
+        </div>
+        <p v-if="stepSummary(step.id).length === 0" class="text-medium-emphasis font-italic text-body-2">
+          No acknowledgments confirmed
+        </p>
+      </template>
+
+      <!-- Collaborator / Institution: lightweight key-value grid -->
+      <template v-else>
+        <div v-if="stepSummary(step.id).length" class="kv-grid">
+          <template v-for="item in stepSummary(step.id)" :key="item.label">
+            <span class="kv-label text-medium-emphasis">{{ item.label }}</span>
+            <span class="kv-value">{{ item.value }}</span>
+          </template>
+        </div>
+        <p v-else class="text-medium-emphasis font-italic text-body-2">No information provided</p>
+      </template>
     </div>
 
     <v-divider class="my-4" />
@@ -122,6 +142,15 @@
       allStepsValid() {
         return Object.values(this.stepValidity).every((v) => v);
       },
+      groupedAcknowledgments() {
+        const items = this.stepSummary('acknowledgments');
+        return items.reduce((groups, item) => {
+          const key = item.section ?? 'General';
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(item);
+          return groups;
+        }, {});
+      },
     },
     data() {
       return {
@@ -161,12 +190,35 @@
 </script>
 
 <style scoped>
-  .label-col {
-    width: 40%;
-    font-size: 0.8rem;
-    white-space: normal;
-    overflow-wrap: break-word;
+  .review-section + .review-section {
+    padding-top: 8px;
+    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   }
+
+  /* Key-value grid for collaborator / institution */
+  .kv-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    row-gap: 6px;
+    column-gap: 16px;
+  }
+  .kv-label {
+    font-size: 0.8rem;
+    padding-top: 1px;
+  }
+  .kv-value {
+    font-size: 0.85rem;
+  }
+
+  /* Acknowledgments checklist */
+  .ack-section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Test agent table */
   .agent-table th {
     font-size: 0.7rem;
     white-space: normal;
