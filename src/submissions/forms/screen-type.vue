@@ -1,27 +1,25 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>
-        {{ screenDisplay?.screen_name ?? screenType }} - Form
-      </prism-page-title>
+      <prism-page-title>{{ screenName }} - Form</prism-page-title>
 
       <div v-if="screenMeta.length" class="screen-meta mb-4">
         <div v-for="item in screenMeta" :key="item.label" class="screen-meta__item">
           <span class="screen-meta__label">{{ item.label }}</span>
           <v-chip
             v-if="item.key === 'status'"
-            :color="screenDisplay.statusMeta.color"
+            :color="screenStatus.color"
             size="small"
             variant="flat"
             class="screen-meta__chip"
-          >{{ screenDisplay.statusMeta.label }}</v-chip>
+          >{{ screenStatus.label }}</v-chip>
           <span v-else class="screen-meta__value">{{ item.value }}</span>
         </div>
       </div>
 
       <v-alert
         v-if="apiStatus?.message"
-        :color="screenDisplay?.statusMeta?.color"
+        :color="screenStatus?.color"
         variant="tonal"
         density="compact"
         class="mb-4"
@@ -115,6 +113,12 @@
       },
       screenDisplay() {
         return resolveScreenDisplay(this.screenType);
+      },
+      screenName() {
+        return this.screenDisplay?.screen_name ?? this.screenType;
+      },
+      screenStatus() {
+        return this.screenDisplay?.statusMeta ?? null;
       },
       screenMeta() {
         const d = this.screenDisplay;
