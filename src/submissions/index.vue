@@ -5,14 +5,9 @@
         <div class="hub-layout__main">
           <prism-page-title>Submission Hub</prism-page-title>
           <p class="prism-text-body-1">
-            [BLURB NEEDED] Welcome to the PRISM Submission Hub. Here, you can explore upcoming
-            screens, access detailed instructions, and submit your test agents to participate in our
-            consortium screens.<br /><br />
-            <!-- The next PRISM screens will be in July 2026 for DMSO-soluble single agents only (MTS)
-            and Fall 2026 for DMSO-soluble single agents and combinations, as well as single aqueous
-            test agents. Data delivery for the current screens (MTS032, CPS016, APS008, and AIR002)
-            is planned for September 2026.
-            <br /><br /> -->
+            Welcome to the PRISM Submission Hub. Explore upcoming screens, review submission
+            instructions and guidelines, and submit your test agents to one of our consortium
+            screens.
           </p>
 
           <h2 class="prism-text-h3">Screening Schedule 2026</h2>
@@ -26,7 +21,9 @@
           >
             <template #item.status="{ item }">
               <v-chip
-                :to="item.status === 'OPEN' ? `/submission-hub/forms/${item.screen_type}` : undefined"
+                :to="
+                  item.status === 'OPEN' ? `/submission-hub/forms/${item.screen_type}` : undefined
+                "
                 :color="item.statusMeta.color"
                 size="small"
                 variant="flat"
@@ -108,7 +105,11 @@
     name: 'SubmissionsOverview',
     data() {
       return {
-        headers: TABLE_FIELD_KEYS.map((key) => ({ title: FIELD_LABELS[key], key, sortable: false })),
+        headers: TABLE_FIELD_KEYS.map((key) => ({
+          title: FIELD_LABELS[key],
+          key,
+          sortable: false,
+        })),
         schedule: enrichedSchedule(),
         assays: ASSAYS,
         participationSteps: [
