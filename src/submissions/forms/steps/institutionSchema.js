@@ -5,8 +5,8 @@ import { required, validEmail } from './validationHelpers';
 
 export const COLLABORATOR_TYPE_OPTIONS = {
   DMC: { key: 'DMC', label: 'DepMap Consortium' },
-  BROAD: { key: 'NFP', label: 'Broad Institute' },
-  ACADEMIC: { key: 'ACADEMIC', label: 'Academic Institution' },
+  BROAD: { key: 'NFP', label: 'Broad Institute and Affiliates' },
+  ACADEMIC: { key: 'ACADEMIC', label: 'Non-Broad Academic Institution' },
   INDUSTRY: { key: 'INDUSTRY', label: 'Industry' },
 };
 
@@ -74,6 +74,7 @@ export const FIELDS = {
     label: 'Comments',
     hint: 'For example, requests to receive invoices earlier due to funding deadlines',
     showIf: requiresExtendedForm,
+    required: false,
   },
 };
 
@@ -98,6 +99,7 @@ export function validate(data, _screenType) {
   const errors = {};
   Object.values(FIELDS).forEach((f) => {
     if (f.showIf && !f.showIf(data)) return;
+    if (f.required === false) return;
     const err =
       required(data[f.key]) || (EMAIL_FIELDS.has(f.key) ? validEmail(data[f.key]) : undefined);
     if (err) errors[f.key] = err;
