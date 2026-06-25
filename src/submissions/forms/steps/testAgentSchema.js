@@ -107,15 +107,14 @@ const SCREENS = {
         validate: validNumber,
       },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
-      { key: 'drugb', label: 'Drug B Compound Name', required: false },
+      { key: 'drugb', label: 'Drug B Compound Name' },
       {
         key: 'drugb_dose',
         label: 'Drug B Dose',
         inputmode: 'decimal',
         validate: validNumber,
-        required: false,
       },
-      { key: 'drugb_dose_unit', label: 'Drug B Dose Unit', options: ['uM'], required: false },
+      { key: 'drugb_dose_unit', label: 'Drug B Dose Unit', options: ['uM'] },
     ],
     fields: [
       FIELDS.COMPOUND_NAME,
@@ -413,16 +412,13 @@ export function validate(data, screenType) {
   const combinationFields = buildCombinationFields(screenType);
   if (combinationFields.length > 0 && data.combinations) {
     const compoundNames = rows.map((r) => r.compound_name).filter(Boolean);
-    const DRUG_B_KEYS = new Set(['drugb', 'drugb_dose', 'drugb_dose_unit']);
     const seenPairs = new Map();
 
     const combinationErrors = data.combinations.map((comboRow, i) => {
       const comboErrors = {};
       for (const f of combinationFields) {
         const val = comboRow[f.key];
-        if (DRUG_B_KEYS.has(f.key)) {
-          if (comboRow.drugb && !val) comboErrors[f.key] = 'Required when Drug B is specified';
-        } else if (f.required !== false && !val) {
+        if (f.required !== false && !val) {
           comboErrors[f.key] = 'Required';
         }
         if (f.validate && val) {
@@ -463,18 +459,6 @@ export function validate(data, screenType) {
       errors.combinations = combinationErrors;
     }
 
-    // Every unique Drug A must appear in at least one solo row (no Drug B)
-    const allDrugAs = [...new Set(data.combinations.map((r) => r.druga).filter(Boolean))];
-    const soloDrugAs = new Set(
-      data.combinations
-        .filter((r) => !r.drugb)
-        .map((r) => r.druga)
-        .filter(Boolean),
-    );
-    const missingSolo = allDrugAs.filter((a) => !soloDrugAs.has(a));
-    if (missingSolo.length > 0) {
-      errors.combinations_solo = `Each Drug A must also appear as a solo row (no Drug B): ${missingSolo.join(', ')}`;
-    }
   }
 
   return errors;

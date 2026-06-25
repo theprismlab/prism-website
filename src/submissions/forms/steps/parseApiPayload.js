@@ -1,6 +1,6 @@
 import { FIELDS as COLLABORATOR_FIELDS } from './collaboratorSchema.js';
 import { FIELDS as INSTITUTION_FIELDS, COLLABORATOR_TYPE_OPTIONS } from './institutionSchema.js';
-import { FIELDS as TEST_AGENT_FIELDS } from './testAgentSchema.js';
+import { FIELDS as TEST_AGENT_FIELDS, buildCombinationFields } from './testAgentSchema.js';
 import { buildScreenFields as buildAcknowledgementFields } from './acknowledgementsSchema.js';
 
 export function parseFormDataForApi(formData, screenType) {
@@ -74,6 +74,10 @@ export function parseFormDataForApi(formData, screenType) {
       grant_admin: grantAdmin,
     },
     compounds,
-    combinations: testAgent.combinations ?? [],
+    combinations: buildCombinationFields(screenType).length > 0
+      ? (testAgent.combinations ?? []).map((row) =>
+          Object.fromEntries(buildCombinationFields(screenType).map((f) => [f.key, row[f.key] ?? ''])),
+        )
+      : [],
   };
 }
