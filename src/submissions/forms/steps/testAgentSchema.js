@@ -23,12 +23,6 @@ const AMOUNT_UNITS = ['uL'];
 
 export const FIELDS = {
   COMPOUND_NAME: { key: 'compound_name', label: 'Test Agent Name' },
-  FULL_BRD: {
-    key: 'full_brd',
-    label: 'Full BRD',
-    required: false,
-    validate: (val) => (BRD_REGEX.test(val.toUpperCase()) ? undefined : 'Must be a valid BRD ID'),
-  },
   MOLECULE_TYPE: { key: 'molecule_type', label: 'Molecule Type', options: MOLECULE_TYPES },
   SOLVENT: { key: 'solvent', label: 'Solvent' },
   TOP_DOSE: {
@@ -48,28 +42,12 @@ export const FIELDS = {
   },
   CONC_AMOUNT: { key: 'amount', label: 'Amount', inputmode: 'decimal', validate: validNumber },
   CONC_AMOUNT_UNIT: { key: 'amount_unit', label: 'Amount Unit', options: AMOUNT_UNITS },
-  SUPPLIER: { key: 'supplier', label: 'Supplier' },
-  SUPPLIER_CATALOG_NAME: { key: 'supplier_catalog_name', label: 'Supplier Catalog Name' },
   STORAGE_CONDITIONS: {
     key: 'storage_conditions',
     label: 'Storage Conditions',
     options: STORAGE_OPTIONS,
   },
-  QC_LAST_SIX_MONTHS: {
-    key: 'qc_last_six_months',
-    label: "QC'd in last 6 months?",
-    options: YES_NO,
-  },
-  SDS_AVAILABLE: { key: 'sds_available', label: 'SDS Available?', options: YES_NO },
   HEALTH_HAZARD: { key: 'health_hazard', label: 'Health Hazard?', options: YES_NO },
-  ACUTELY_TOXIC: { key: 'acutely_toxic', label: 'Acutely Toxic?', options: YES_NO },
-  SMILES: { key: 'smiles', label: 'SMILES', required: false },
-  CANCER_CELL_LINES: {
-    key: 'cancer_cell_lines',
-    label: 'Previously Tested Cancer Cell Lines',
-    required: false,
-  },
-  TARGET_MOA: { key: 'target_moa', label: 'Target/MOA', required: false },
 };
 
 // Keyed by data key for O(1) lookups in getSummary and getInitialData.

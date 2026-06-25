@@ -44,7 +44,6 @@ export function parseFormDataForApi(formData, screenType) {
 
   const compounds = (testAgent.rows ?? []).map((row) => ({
     [TEST_AGENT_FIELDS.COMPOUND_NAME.key]: row[TEST_AGENT_FIELDS.COMPOUND_NAME.key] ?? '',
-    [TEST_AGENT_FIELDS.FULL_BRD.key]: row[TEST_AGENT_FIELDS.FULL_BRD.key] ?? '',
     [TEST_AGENT_FIELDS.TOP_DOSE.key]: row[TEST_AGENT_FIELDS.TOP_DOSE.key] ?? '',
     [TEST_AGENT_FIELDS.TOP_DOSE_UNIT.key]: row[TEST_AGENT_FIELDS.TOP_DOSE_UNIT.key] ?? '',
     [TEST_AGENT_FIELDS.CONC_AMOUNT.key]: row[TEST_AGENT_FIELDS.CONC_AMOUNT.key] ?? '',
@@ -52,17 +51,7 @@ export function parseFormDataForApi(formData, screenType) {
     [TEST_AGENT_FIELDS.CONC.key]: row[TEST_AGENT_FIELDS.CONC.key] ?? '',
     [TEST_AGENT_FIELDS.CONC_UNIT.key]: row[TEST_AGENT_FIELDS.CONC_UNIT.key] ?? '',
     [TEST_AGENT_FIELDS.STORAGE_CONDITIONS.key]: row[TEST_AGENT_FIELDS.STORAGE_CONDITIONS.key] ?? '',
-    [TEST_AGENT_FIELDS.SUPPLIER.key]: row[TEST_AGENT_FIELDS.SUPPLIER.key] ?? '',
-    [TEST_AGENT_FIELDS.SUPPLIER_CATALOG_NAME.key]:
-      row[TEST_AGENT_FIELDS.SUPPLIER_CATALOG_NAME.key] ?? '',
-    structure_smiles: row[TEST_AGENT_FIELDS.SMILES.key] ?? '',
-    [TEST_AGENT_FIELDS.QC_LAST_SIX_MONTHS.key]: row[TEST_AGENT_FIELDS.QC_LAST_SIX_MONTHS.key] ?? '',
-    [TEST_AGENT_FIELDS.SDS_AVAILABLE.key]: row[TEST_AGENT_FIELDS.SDS_AVAILABLE.key] ?? '',
     [TEST_AGENT_FIELDS.HEALTH_HAZARD.key]: row[TEST_AGENT_FIELDS.HEALTH_HAZARD.key] ?? '',
-    [TEST_AGENT_FIELDS.ACUTELY_TOXIC.key]: row[TEST_AGENT_FIELDS.ACUTELY_TOXIC.key] ?? '',
-    [TEST_AGENT_FIELDS.CANCER_CELL_LINES.key]: row[TEST_AGENT_FIELDS.CANCER_CELL_LINES.key] ?? '',
-    [TEST_AGENT_FIELDS.TARGET_MOA.key]: row[TEST_AGENT_FIELDS.TARGET_MOA.key] ?? '',
-    vial_barcode: '',
   }));
 
   return {
