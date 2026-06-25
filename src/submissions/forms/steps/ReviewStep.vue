@@ -113,6 +113,7 @@
   import { FORM_STEPS } from '@/submissions/store';
   import { STEP_REGISTRY } from './registry';
   import { buildScreenFields, buildCombinationFields } from './testAgentSchema.js';
+  import { parseFormDataForApi } from './parseApiPayload.js';
 
   export default {
     name: 'ReviewStep',
@@ -121,6 +122,9 @@
       formData: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
+    },
+    mounted() {
+      console.log('ReviewStep mounted', this.formData);
     },
     computed: {
       agentFields() {
@@ -165,6 +169,7 @@
         return STEP_REGISTRY[stepId].getSummary(this.formData[stepId]);
       },
       async submitForm() {
+        this.parseResponseForApi();
         this.submitting = true;
         try {
           // TODO: replace with real API call, e.g.:
@@ -185,8 +190,7 @@
         }
       },
       parseResponseForApi() {
-        let parsedData = {};
-        parsedData.compoundInfo = {};
+        return parseFormDataForApi(this.formData, this.screenType);
       },
     },
   };

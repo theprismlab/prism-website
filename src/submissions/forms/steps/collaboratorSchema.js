@@ -9,9 +9,9 @@ import {
 } from './validationHelpers';
 
 export const FIELDS = {
-  YOUR_NAME: { key: 'yourName', label: 'Your Name' },
+  YOUR_NAME: { key: 'submitterName', label: 'Your Name' },
   YOUR_EMAIL: {
-    key: 'yourEmail',
+    key: 'submitterEmail',
     label: 'Your Email',
     hint: institutionalEmailHint,
   },

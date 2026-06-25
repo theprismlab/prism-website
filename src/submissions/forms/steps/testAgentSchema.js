@@ -21,7 +21,7 @@ const AMOUNT_UNITS = ['uL'];
 // Validators here are for format/pattern checks only (e.g. BRD regex).
 // Business rule validation (conc, amount) lives in the per-screen validators below.
 
-const FIELDS = {
+export const FIELDS = {
   COMPOUND_NAME: { key: 'compound_name', label: 'Test Agent Name' },
   FULL_BRD: {
     key: 'full_brd',
@@ -31,11 +31,21 @@ const FIELDS = {
   },
   MOLECULE_TYPE: { key: 'molecule_type', label: 'Molecule Type', options: MOLECULE_TYPES },
   SOLVENT: { key: 'solvent', label: 'Solvent' },
-  TOP_DOSE: { key: 'top_dose', label: 'Top Screening Dose', inputmode: 'decimal', validate: validNumber },
+  TOP_DOSE: {
+    key: 'top_dose',
+    label: 'Top Screening Dose',
+    inputmode: 'decimal',
+    validate: validNumber,
+  },
   TOP_DOSE_UNIT: { key: 'top_dose_unit', label: 'Top Dose Unit' },
   CONC: { key: 'conc', label: 'Stock Concentration', inputmode: 'decimal', validate: validNumber },
   CONC_UNIT: { key: 'conc_unit', label: 'Stock Conc. Unit' },
-  DILUTION_FACTOR: { key: 'dilution_factor', label: 'Dilution Factor', inputmode: 'decimal', validate: validNumber },
+  DILUTION_FACTOR: {
+    key: 'dilution_factor',
+    label: 'Dilution Factor',
+    inputmode: 'decimal',
+    validate: validNumber,
+  },
   CONC_AMOUNT: { key: 'amount', label: 'Amount', inputmode: 'decimal', validate: validNumber },
   CONC_AMOUNT_UNIT: { key: 'amount_unit', label: 'Amount Unit', options: AMOUNT_UNITS },
   SUPPLIER: { key: 'supplier', label: 'Supplier' },
@@ -72,7 +82,13 @@ const FIELDS_BY_KEY = Object.fromEntries(Object.values(FIELDS).map((f) => [f.key
 export const SCREEN_CONFIG = {
   MTS: { concMultiplier: 1000, minAmountUL: 150 },
   CPS: { concMultiplier: 1000, minAmountUL: 150, comboAmountPerSlotUL: 400 }, // solo: 150 uL; combo: 400 × n slots
-  EPS: { concMultiplier: 1000, minDilutionFactor: 2, minAmountHighDilutionUL: 600, minAmountLowDilutionUL: 720, dilutionThreshold: 3 },
+  EPS: {
+    concMultiplier: 1000,
+    minDilutionFactor: 2,
+    minAmountHighDilutionUL: 600,
+    minAmountLowDilutionUL: 720,
+    dilutionThreshold: 3,
+  },
   APS: { concMultiplier: 250, minAmountUL: 1000, unitPairs: { uM: 'mM', 'ug/mL': 'mg/mL' } },
   AIR: { concMultiplier: 500, minAmountUL: 500, maxTopDoseUgML: 2 },
 };
@@ -106,12 +122,23 @@ const SCREENS = {
   // Keys match getCombinationMapping() in compound-submission-constants.js.
   CPS: {
     combinationFields: [
-      { key: 'druga',               label: 'Drug A Compound Name' },
-      { key: 'druga_top_dose',      label: 'Drug A Top Dose', inputmode: 'decimal', validate: validNumber },
+      { key: 'druga', label: 'Drug A Compound Name' },
+      {
+        key: 'druga_top_dose',
+        label: 'Drug A Top Dose',
+        inputmode: 'decimal',
+        validate: validNumber,
+      },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
-      { key: 'drugb',               label: 'Drug B Compound Name', required: false },
-      { key: 'drugb_dose',          label: 'Drug B Dose', inputmode: 'decimal', validate: validNumber, required: false },
-      { key: 'drugb_dose_unit',     label: 'Drug B Dose Unit', options: ['uM'], required: false },
+      { key: 'drugb', label: 'Drug B Compound Name', required: false },
+      {
+        key: 'drugb_dose',
+        label: 'Drug B Dose',
+        inputmode: 'decimal',
+        validate: validNumber,
+        required: false,
+      },
+      { key: 'drugb_dose_unit', label: 'Drug B Dose Unit', options: ['uM'], required: false },
     ],
     fields: [
       FIELDS.COMPOUND_NAME,
@@ -146,7 +173,10 @@ const SCREENS = {
   APS: {
     fields: [
       FIELDS.COMPOUND_NAME,
-      { ...FIELDS.MOLECULE_TYPE, options: ['Antibody', 'Aqueous Small Molecule', 'Antibody Drug Conjugate (ADC)', 'Other'] },
+      {
+        ...FIELDS.MOLECULE_TYPE,
+        options: ['Antibody', 'Aqueous Small Molecule', 'Antibody Drug Conjugate (ADC)', 'Other'],
+      },
       FIELDS.TOP_DOSE,
       { ...FIELDS.TOP_DOSE_UNIT, options: ['uM', 'ug/mL'] },
       FIELDS.SOLVENT,
@@ -213,15 +243,21 @@ function validateCPS(row) {
 }
 
 function validateEPS(row) {
-  const { concMultiplier, minDilutionFactor, minAmountHighDilutionUL, minAmountLowDilutionUL, dilutionThreshold } =
-    SCREEN_CONFIG.EPS;
+  const {
+    concMultiplier,
+    minDilutionFactor,
+    minAmountHighDilutionUL,
+    minAmountLowDilutionUL,
+    dilutionThreshold,
+  } = SCREEN_CONFIG.EPS;
   const errors = {};
 
   const dilutionFactor = Number(row.dilution_factor) || 0;
   if (row.dilution_factor && dilutionFactor < minDilutionFactor)
     errors.dilution_factor = `Minimum dilution factor is ${minDilutionFactor}`;
 
-  const minAmount = dilutionFactor >= dilutionThreshold ? minAmountHighDilutionUL : minAmountLowDilutionUL;
+  const minAmount =
+    dilutionFactor >= dilutionThreshold ? minAmountHighDilutionUL : minAmountLowDilutionUL;
   if (Number(row.amount) < minAmount)
     errors.amount = `Minimum ${minAmount} uL required (${dilutionFactor >= dilutionThreshold ? `≥${dilutionThreshold}` : `2–${dilutionThreshold}`}-fold dilution)`;
 
@@ -287,8 +323,7 @@ function buildTooltips(screenType) {
   const tooltips = {};
   const divisor = 1000 / cfg.concMultiplier;
 
-  if (cfg.maxTopDoseUgML !== undefined)
-    tooltips.top_dose = `Maximum ${cfg.maxTopDoseUgML} ug/mL`;
+  if (cfg.maxTopDoseUgML !== undefined) tooltips.top_dose = `Maximum ${cfg.maxTopDoseUgML} ug/mL`;
 
   if (screenType === 'EPS') {
     tooltips.dilution_factor = `Minimum ${cfg.minDilutionFactor}`;
@@ -306,7 +341,9 @@ function buildTooltips(screenType) {
   tooltips.conc = `Must equal Top Screening Dose ${divisorText} (e.g. ${exampleTopDose} ${topUnit} → ${exampleTopDose / divisor} ${stockUnit} stock)`;
 
   if (cfg.unitPairs)
-    tooltips.conc_unit = `Must pair with Top Dose Unit: ${Object.entries(cfg.unitPairs).map(([k, v]) => `${k} → ${v}`).join(', ')}`;
+    tooltips.conc_unit = `Must pair with Top Dose Unit: ${Object.entries(cfg.unitPairs)
+      .map(([k, v]) => `${k} → ${v}`)
+      .join(', ')}`;
 
   return tooltips;
 }
@@ -345,7 +382,9 @@ export function getSummary(data) {
     Object.entries(row)
       .filter(([, v]) => v)
       .map(([key, value]) => ({
-        label: prefix ? `[Agent ${i + 1}] ${FIELDS_BY_KEY[key]?.label ?? key}` : (FIELDS_BY_KEY[key]?.label ?? key),
+        label: prefix
+          ? `[Agent ${i + 1}] ${FIELDS_BY_KEY[key]?.label ?? key}`
+          : (FIELDS_BY_KEY[key]?.label ?? key),
         value,
       })),
   );
@@ -377,8 +416,7 @@ export function validate(data, screenType) {
       const { comboAmountPerSlotUL } = SCREEN_CONFIG.CPS;
       const n = data.combinations
         .filter((r) => r.druga || r.drugb)
-        .filter((r) => r.druga === row.compound_name || r.drugb === row.compound_name)
-        .length;
+        .filter((r) => r.druga === row.compound_name || r.drugb === row.compound_name).length;
       if (n > 0) {
         const requiredVolume = n * comboAmountPerSlotUL;
         if (Number(row.amount) < requiredVolume) {
@@ -451,7 +489,10 @@ export function validate(data, screenType) {
     // Every unique Drug A must appear in at least one solo row (no Drug B)
     const allDrugAs = [...new Set(data.combinations.map((r) => r.druga).filter(Boolean))];
     const soloDrugAs = new Set(
-      data.combinations.filter((r) => !r.drugb).map((r) => r.druga).filter(Boolean),
+      data.combinations
+        .filter((r) => !r.drugb)
+        .map((r) => r.druga)
+        .filter(Boolean),
     );
     const missingSolo = allDrugAs.filter((a) => !soloDrugAs.has(a));
     if (missingSolo.length > 0) {
