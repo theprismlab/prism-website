@@ -46,7 +46,12 @@
             our team sends you confirmation that funding for your quote has been approved.
             <br /><br />
             Additional information and troubleshooting tips on how to navigate the Broad Quote
-            Portal can be found here.
+            Portal can be found
+            <a
+              href="https://assets.clue.io/prism/compound-submission/Navigating-Broad-Quote-Portal-for-PRISM-Collaborators.pdf"
+              target="_blank"
+              >here</a
+            >.
           </p>
         </section>
         <section class="mt-12">
