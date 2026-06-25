@@ -16,12 +16,20 @@ const FIELDS = {
     key: 'acknowledgement2',
     section: 'Test agent requirements',
     description:
-      "All test agents must be solubilized in either 100% DMSO for MTS and CPS screens or 100% aqueous solution for APS and AIR screens. We do not QC compounds before the PRISM assay. The collaborator is responsible for QC'ing test agents ahead of submission.",
+      'All test agents must be solubilized in the appropriate solvent for their specific screen type (i.e. 100% DMSO or 100% aqueous solution). We do not accept or solubilize powder stock.',
+    label: 'I acknowledge and agree.',
+    default: false,
+  },
+  TEST_AGENT_REQ_3: {
+    key: 'acknowledgement3',
+    section: 'Test agent requirements',
+    description:
+      "The collaborator is responsible for quality control of test agents ahead of submission. PRISM does not quality control test agents before the assay or have the bandwidth to re-run any test agents that do not perform well. Any test agents will be run 'at-risk' to the collaborator.",
     label: 'I acknowledge and agree.',
     default: false,
   },
   SHIPPING_1: {
-    key: 'acknowledgement3',
+    key: 'acknowledgement4',
     section: 'Test agent shipping',
     description:
       'Test agents must arrive at the PRISM Lab by 12:00pm ET on the submission window deadline. Any test agents that arrive after this time will not be included in the screen and held until the following screening window.',
@@ -29,14 +37,14 @@ const FIELDS = {
     default: false,
   },
   SHIPPING_2: {
-    key: 'acknowledgement4',
+    key: 'acknowledgement5',
     section: 'Test agent shipping',
     description: `International shipments MUST go through the Broad Institute's Customs Broker and should be shipped at least 1 week before the submission deadline. Review the <a href="/submission-hub/instructions/{screenType}/shipping" target="_blank" rel="noopener noreferrer">Shipping Information</a> for additional instructions and information.`,
     label: 'I acknowledge and agree.',
     default: false,
   },
   RESULTS_USE_1: {
-    key: 'acknowledgement5',
+    key: 'acknowledgement6',
     section: 'Use of PRISM results',
     description:
       'Academics/non-profits receive subsidized pricing for PRISM screens and thus, results are for academic/research purposes only. If academics would like to use results for commercial/industry purposes, they will need to purchase a license or sign a sponsored research agreement, and pay a higher fee. Examples of using PRISM results in commercial or industry purposes include but are not limited to: starting a new company using PRISM results, or selling a test agent with PRISM results to a company.',
@@ -44,7 +52,7 @@ const FIELDS = {
     default: false,
   },
   RESULTS_USE_2: {
-    key: 'acknowledgement6',
+    key: 'acknowledgement7',
     section: 'Use of PRISM results',
     description:
       'PRISM retains the right to use collaboratively generated data to validate and improve the PRISM platform.',
@@ -52,7 +60,7 @@ const FIELDS = {
     default: false,
   },
   RESULTS_USE_3: {
-    key: 'acknowledgement7',
+    key: 'acknowledgement9',
     section: 'Use of PRISM results',
     description:
       'PRISM requests acknowledgement in manuscripts in accordance with the NIH guidelines for Authorship Contribution. At minimum, please acknowledge the PRISM lab and use the word "PRISM" in the manuscript. Additional information about citing PRISM can be found on our website.',
@@ -66,6 +74,7 @@ const SCREEN_CONFIGS = {
   default: [
     'TEST_AGENT_REQ_1',
     'TEST_AGENT_REQ_2',
+    'TEST_AGENT_REQ_3',
     'SHIPPING_1',
     'SHIPPING_2',
     'RESULTS_USE_1',
