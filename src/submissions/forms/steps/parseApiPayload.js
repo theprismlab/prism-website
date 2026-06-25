@@ -14,8 +14,9 @@ export function parseFormDataForApi(formData, screenType) {
     Object.values(COLLABORATOR_TYPE_OPTIONS).find((o) => o.key === collaboratorTypeKey)?.label ??
     collaboratorTypeKey;
 
-  const managers = collaborator[COLLABORATOR_FIELDS.DATA_ACCESS_MANAGERS.key] ?? [];
-  const mainContact = managers[0] ?? {};
+  const managers = (collaborator[COLLABORATOR_FIELDS.DATA_ACCESS_MANAGERS.key] ?? []).filter(
+    (m) => m.name || m.email,
+  );
 
   const fundingInst = [
     institution[INSTITUTION_FIELDS.FUNDING_INSTITUTION_NAME.key],
@@ -62,10 +63,10 @@ export function parseFormDataForApi(formData, screenType) {
       submitter_name: collaborator[COLLABORATOR_FIELDS.YOUR_NAME.key] ?? '',
       investigator_email: collaborator[COLLABORATOR_FIELDS.INVESTIGATOR_EMAIL.key] ?? '',
       investigator_name: collaborator[COLLABORATOR_FIELDS.INVESTIGATOR_NAME.key] ?? '',
-      main_contact: mainContact.name ?? '',
-      main_contact_email: mainContact.email ?? '',
+      main_contact: managers.map((m) => m.name),
+      main_contact_email: managers.map((m) => m.email),
       home_institution: institution[INSTITUTION_FIELDS.INSTITUTION_NAME.key] ?? '',
-      total_num_cpds: (testAgent.rows ?? []).length,
+      //   total_num_cpds: (testAgent.rows ?? []).length,
       collaboration_type: collaboratorTypeLabel ?? '',
       agreements,
       funding_comments: institution[INSTITUTION_FIELDS.COMMENTS.key] ?? '',

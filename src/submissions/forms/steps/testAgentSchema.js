@@ -4,7 +4,6 @@
 
 import { validNumber } from './validationHelpers';
 
-const BRD_REGEX = /^BRD-[AKUMC][0-9]{8}-[0-9]{3}-[0-9]{2}-[0-9]$|^BRD-[AKUM][0-9]{8}$/;
 const YES_NO = ['Yes', 'No'];
 const STORAGE_OPTIONS = ['Room temperature', '4°C', '-20°C'];
 const MOLECULE_TYPES = [
