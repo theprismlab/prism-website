@@ -42,7 +42,7 @@
         </v-btn>
       </div>
 
-      <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
+      <v-expansion-panels v-model="openPanel">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
             <v-icon class="mr-2" size="28">{{ step.icon }}</v-icon>
@@ -152,8 +152,13 @@
       isDev() {
         return import.meta.env.DEV;
       },
-      openPanel() {
-        return this.screenType ? this.formStore.openPanel(this.screenType) : 0;
+      openPanel: {
+        get() {
+          return this.screenType ? this.formStore.openPanel(this.screenType) : null;
+        },
+        set(val) {
+          if (this.screenType) this.formStore.setOpenPanel(this.screenType, val ?? null);
+        },
       },
       fd() {
         if (!this.screenType) return null;
@@ -234,11 +239,6 @@
           return this.steps.every((s) => this.stepIsValid[s.id] ?? false);
         }
         return this.stepIsValid[step.id] ?? false;
-      },
-      onPanelChange(val) {
-        if (this.screenType && val !== undefined) {
-          this.formStore.setOpenPanel(this.screenType, val);
-        }
       },
       completeStep(i) {
         this.attemptedSteps = { ...this.attemptedSteps, [i]: (this.attemptedSteps[i] ?? 0) + 1 };

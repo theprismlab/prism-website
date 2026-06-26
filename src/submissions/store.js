@@ -22,7 +22,7 @@ export const useFormProgressStore = defineStore('formProgress', {
       if (s.openPanel === index) return 'current';
       return 'available';
     },
-    openPanel: (state) => (screenType) => state.screenTypes[screenType]?.openPanel ?? 0,
+    openPanel: (state) => (screenType) => state.screenTypes[screenType]?.openPanel ?? null,
   },
   actions: {
     _ensure(screenType) {
