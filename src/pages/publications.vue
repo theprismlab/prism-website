@@ -25,7 +25,7 @@
   import PublicationCard from '@/components/PublicationCard.vue';
   import PublicationsExplorer from '@/components/PublicationsExplorer.vue';
 
-  const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL + 'data/' : '../public/data/';
+  const dataPath = import.meta.env.BASE_URL + 'data/';
   const whitepaperDateFormatter = new Intl.DateTimeFormat(undefined, {
     month: 'long',
     day: 'numeric',
