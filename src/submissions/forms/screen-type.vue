@@ -192,8 +192,9 @@
       this.screenValidation = await this.validateScreen();
     },
     watch: {
-      screenType() {
+      async screenType() {
         this.attemptedSteps = {};
+        this.screenValidation = await this.validateScreen();
       },
       fd: {
         deep: true,
