@@ -12,7 +12,8 @@
             size="small"
             variant="flat"
             class="screen-meta__chip"
-          >{{ screenStatus.label }}</v-chip>
+            >{{ screenStatus.label }}</v-chip
+          >
           <span v-else class="screen-meta__value">{{ item.value }}</span>
         </div>
       </div>
@@ -35,13 +36,13 @@
         >{{ screenValidation.message }}</v-alert
       >
 
-      <div v-if="isDev" class="mb-4">
+      <!-- <div v-if="isDev" class="mb-4">
         <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
           Fill test data
         </v-btn>
-      </div>
+      </div> -->
 
-      <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
+      <v-expansion-panels v-else v-model="openPanel">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
             <v-icon class="mr-2" size="28">{{ step.icon }}</v-icon>
@@ -50,7 +51,7 @@
               <v-icon v-if="isCompleted(i)" color="teal-accent-4" size="28" class="mr-1"
                 >mdi-check-circle</v-icon
               >
-              <v-icon v-else>$expand</v-icon>
+              <v-icon>$expand</v-icon>
             </template>
           </v-expansion-panel-title>
 
@@ -123,7 +124,7 @@
       return { formStore: useFormProgressStore(), windowStore: useWindowStatusStore() };
     },
     data() {
-      return { steps: FORM_STEPS, attemptedSteps: {}, screenValidation: null };
+      return { steps: FORM_STEPS, attemptedSteps: {}, screenValidation: null, stepIsValid: {} };
     },
     computed: {
       screenType() {
@@ -141,9 +142,9 @@
       screenMeta() {
         const d = this.screenDisplay;
         if (!d) return [];
-        return META_FIELD_KEYS
-          .map((key) => d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null)
-          .filter(Boolean);
+        return META_FIELD_KEYS.map((key) =>
+          d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null,
+        ).filter(Boolean);
       },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;
@@ -151,8 +152,13 @@
       isDev() {
         return import.meta.env.DEV;
       },
-      openPanel() {
-        return this.screenType ? this.formStore.openPanel(this.screenType) : 0;
+      openPanel: {
+        get() {
+          return this.screenType ? this.formStore.openPanel(this.screenType) : null;
+        },
+        set(val) {
+          if (this.screenType) this.formStore.setOpenPanel(this.screenType, val ?? null);
+        },
       },
       fd() {
         if (!this.screenType) return null;
@@ -191,11 +197,14 @@
       },
       fd: {
         deep: true,
+        immediate: true,
         handler() {
           if (!this.screenType || !this.fd) return;
+          const validity = {};
           this.steps.forEach((step, i) => {
             const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
             const hasErrors = Object.keys(errors).length > 0;
+            validity[step.id] = !hasErrors;
             const status = this.formStore.stepStatus(this.screenType, i);
             if (hasErrors && status === 'completed') {
               this.formStore.uncompleteStep(this.screenType, i);
@@ -203,6 +212,7 @@
               this.formStore.markStepValid(this.screenType, i);
             }
           });
+          this.stepIsValid = validity;
         },
       },
     },
@@ -224,16 +234,15 @@
         return { status: response.status, message: response.message };
       },
       isCompleted(i) {
-        return this.stepValidity[this.steps[i].id] ?? false;
-      },
-      onPanelChange(val) {
-        if (this.screenType && val !== undefined) {
-          this.formStore.setOpenPanel(this.screenType, val);
+        const step = this.steps[i];
+        if (step.id === 'review') {
+          return this.steps.every((s) => this.stepIsValid[s.id] ?? false);
         }
+        return this.stepIsValid[step.id] ?? false;
       },
       completeStep(i) {
         this.attemptedSteps = { ...this.attemptedSteps, [i]: (this.attemptedSteps[i] ?? 0) + 1 };
-        if (!this.stepValidity[this.steps[i].id]) return;
+        if (!this.stepIsValid[this.steps[i].id]) return;
         this.formStore.completeStep(this.screenType, i);
       },
     },
@@ -241,6 +250,18 @@
 </script>
 
 <style scoped>
+  .v-expansion-panel-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+    font-weight: bold;
+  }
+  .v-expansion-panel-title span {
+    color: #3d3d3d !important;
+  }
+  .v-expansion-panel-title.v-expansion-panel-title--active {
+    background-color: rgba(var(--v-theme-on-surface), 0.04);
+  }
+
   .screen-meta {
     display: flex;
     flex-wrap: wrap;

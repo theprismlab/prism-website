@@ -1,5 +1,5 @@
 <template>
-  <v-row dense>
+  <v-row dense class="mt-4">
     <v-col cols="12" sm="6">
       <!-- <h4 class="prism-text-form-label">{{ F.INSTITUTION_TYPE.label }}</h4> -->
       <v-select
@@ -187,7 +187,6 @@
         try {
           const institutions = await getCollaboratorList(import.meta.env.VITE_API_URL);
           this.allInstitutions = institutions;
-          console.log('Loaded institutions:', institutions);
         } catch (error) {
           console.error('Failed to load institution names', error);
         }

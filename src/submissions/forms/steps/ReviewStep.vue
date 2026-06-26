@@ -48,7 +48,10 @@
           <p class="ack-section-label text-medium-emphasis mb-1">{{ section }}</p>
           <div v-for="item in items" :key="item.label" class="ack-item mb-2">
             <p class="text-body-2 mb-0">{{ item.label }}</p>
-            <p class="text-caption text-teal-accent-4 font-weight-medium mb-0">Confirmed</p>
+            <p
+              class="text-caption font-weight-medium mb-0"
+              :class="item.value === 'Confirmed' ? 'text-teal-accent-4' : 'text-medium-emphasis font-italic'"
+            >{{ item.value }}</p>
           </div>
         </div>
         <p
@@ -64,7 +67,10 @@
         <div v-if="stepSummary(step.id).length" class="kv-grid">
           <template v-for="item in stepSummary(step.id)" :key="item.label">
             <span class="kv-label text-medium-emphasis">{{ item.label }}</span>
-            <span class="kv-value">{{ item.value }}</span>
+            <span
+              class="kv-value"
+              :class="{ 'text-medium-emphasis font-italic': item.value === 'No response' }"
+            >{{ item.value }}</span>
           </template>
         </div>
         <p v-else class="text-medium-emphasis font-italic text-body-2">No information provided</p>
@@ -125,19 +131,45 @@
       screenType: { type: String, default: null },
       screenValidation: { type: Object, default: null },
     },
+    mounted() {
+      if (!this.allStepsValid && this.data.reviewed) {
+        this.data.reviewed = false;
+      }
+    },
+    watch: {
+      nonReviewSnapshot() {
+        if (this.data.reviewed) {
+          this.data.reviewed = false;
+        }
+      },
+    },
     computed: {
+      nonReviewSnapshot() {
+        const { review, ...rest } = this.formData;
+        return JSON.stringify(rest);
+      },
       agentFields() {
         return buildScreenFields(this.screenType);
       },
       combinationFields() {
         return buildCombinationFields(this.screenType);
       },
+      stepErrors() {
+        // Reference nonReviewSnapshot so this computed re-runs on any deep formData change.
+        // Without this, Vue may not track property accesses inside validate() reliably.
+        void this.nonReviewSnapshot;
+        return Object.fromEntries(
+          this.summarySteps.map((step) => [
+            step.id,
+            STEP_REGISTRY[step.id].validate(this.formData[step.id], this.screenType),
+          ]),
+        );
+      },
       stepValidity() {
         return Object.fromEntries(
           this.summarySteps.map((step) => [
             step.id,
-            Object.keys(STEP_REGISTRY[step.id].validate(this.formData[step.id], this.screenType))
-              .length === 0,
+            Object.keys(this.stepErrors[step.id]).length === 0,
           ]),
         );
       },
@@ -145,6 +177,7 @@
         return Object.values(this.stepValidity).every((v) => v);
       },
       groupedAcknowledgments() {
+        void this.nonReviewSnapshot; // ensure deep reactivity when checkboxes change
         const items = this.stepSummary('acknowledgments');
         return items.reduce((groups, item) => {
           const key = item.section ?? 'General';

@@ -93,13 +93,11 @@ export function getInitialData() {
 }
 
 export function getSummary(data) {
-  return Object.values(FIELDS)
-    .map((f) => ({
-      section: f.section,
-      label: f.description.replace(/<[^>]+>/g, ''),
-      value: data[f.key] ? 'Confirmed' : null,
-    }))
-    .filter((item) => item.value);
+  return Object.values(FIELDS).map((f) => ({
+    section: f.section,
+    label: f.description.replace(/<[^>]+>/g, ''),
+    value: data[f.key] ? 'Confirmed' : 'No response',
+  }));
 }
 
 export function validate(data, screenType) {
