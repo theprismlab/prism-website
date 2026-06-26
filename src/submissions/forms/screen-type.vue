@@ -12,7 +12,8 @@
             size="small"
             variant="flat"
             class="screen-meta__chip"
-          >{{ screenStatus.label }}</v-chip>
+            >{{ screenStatus.label }}</v-chip
+          >
           <span v-else class="screen-meta__value">{{ item.value }}</span>
         </div>
       </div>
@@ -123,7 +124,7 @@
       return { formStore: useFormProgressStore(), windowStore: useWindowStatusStore() };
     },
     data() {
-      return { steps: FORM_STEPS, attemptedSteps: {}, screenValidation: null };
+      return { steps: FORM_STEPS, attemptedSteps: {}, screenValidation: null, stepIsValid: {} };
     },
     computed: {
       screenType() {
@@ -141,9 +142,9 @@
       screenMeta() {
         const d = this.screenDisplay;
         if (!d) return [];
-        return META_FIELD_KEYS
-          .map((key) => d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null)
-          .filter(Boolean);
+        return META_FIELD_KEYS.map((key) =>
+          d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null,
+        ).filter(Boolean);
       },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;
@@ -191,11 +192,14 @@
       },
       fd: {
         deep: true,
+        immediate: true,
         handler() {
           if (!this.screenType || !this.fd) return;
+          const validity = {};
           this.steps.forEach((step, i) => {
             const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
             const hasErrors = Object.keys(errors).length > 0;
+            validity[step.id] = !hasErrors;
             const status = this.formStore.stepStatus(this.screenType, i);
             if (hasErrors && status === 'completed') {
               this.formStore.uncompleteStep(this.screenType, i);
@@ -203,6 +207,7 @@
               this.formStore.markStepValid(this.screenType, i);
             }
           });
+          this.stepIsValid = validity;
         },
       },
     },
@@ -224,7 +229,11 @@
         return { status: response.status, message: response.message };
       },
       isCompleted(i) {
-        return this.formStore.stepStatus(this.screenType, i) === 'completed';
+        const step = this.steps[i];
+        if (step.id === 'review') {
+          return this.steps.every((s) => this.stepIsValid[s.id] ?? false);
+        }
+        return this.stepIsValid[step.id] ?? false;
       },
       onPanelChange(val) {
         if (this.screenType && val !== undefined) {
@@ -233,7 +242,7 @@
       },
       completeStep(i) {
         this.attemptedSteps = { ...this.attemptedSteps, [i]: (this.attemptedSteps[i] ?? 0) + 1 };
-        if (!this.stepValidity[this.steps[i].id]) return;
+        if (!this.stepIsValid[this.steps[i].id]) return;
         this.formStore.completeStep(this.screenType, i);
       },
     },

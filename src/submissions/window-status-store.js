@@ -13,7 +13,6 @@ export const useWindowStatusStore = defineStore('windowStatus', {
       this.loading = true;
       try {
         const messages = await fetchSubmissionMessage(apiUrl);
-        console.log('Fetched window statuses', messages);
         const map = {};
         for (const msg of messages || []) {
           if (msg.submission_type) map[msg.submission_type] = msg;
