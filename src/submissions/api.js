@@ -36,9 +36,31 @@ export async function getCollaboratorList(apiURL) {
   return authedGet(apiURL, 'mts_institutions');
 }
 
+// export async function postSubmission(apiURL, payload) {
+//   console.log(apiURL, 'mts_compound_submissions/createSubmission', payload);
+//   return authedPost(apiURL, 'mts_compound_submissions/createSubmission', payload);
+// }
 export async function postSubmission(apiURL, payload) {
-  return authedPost(apiURL, 'mts_compound_submissions/createSubmission', payload);
+  const url = apiURL + 'mts_compound_submissions/createSubmission';
+  const userKey = await getTempApiKey(apiURL);
+  console.log(url, payload, userKey);
+  // log the fully formatted request as a json
+  console.log(
+    'Request:',
+    JSON.stringify({ url, payload, headers: { ...JSON_HEADERS, user_key: userKey } }),
+  );
+  // console.log('Request:', { url, payload, headers: { ...JSON_HEADERS, user_key: userKey } });
+
+  const res = await axios.post(url, payload, {
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      user_key: userKey,
+    },
+  });
+  return res.data;
 }
+//{"error":"Model::findById requires the id argument"}
 
 export async function findScreen(apiURL, screen) {
   const path = 'prism_screens?filter=' + JSON.stringify({ where: { name: screen } });
@@ -48,4 +70,17 @@ export async function findScreen(apiURL, screen) {
     return found[0];
   }
   throw `Screen '${screen}' is not registered or not an ACTIVE screen`;
+}
+
+export async function validateScreen(apiURL, screen, screenType) {
+  try {
+    const foundRecord = await findScreen(apiURL, screen);
+    if (foundRecord && foundRecord.name === screen && foundRecord.screen_type) {
+      return;
+    }
+    throw "Screen '" + screen + "' is not associated with submission type '" + screenType + "'";
+  } catch (err) {
+    console.log(err);
+    throw "Screen '" + screen + "' is not associated with submission type '" + screenType + "'";
+  }
 }

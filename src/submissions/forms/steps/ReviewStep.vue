@@ -84,7 +84,7 @@
     <div class="d-flex justify-end mt-4">
       <v-btn
         color="primary"
-        :disabled="!data.reviewed || !allStepsValid"
+        :disabled="!data.reviewed || !allStepsValid || screenValidation?.status === 'INVALID'"
         :loading="submitting"
         @click="submitForm"
       >
@@ -98,9 +98,9 @@
           <v-icon :color="dialogSuccess ? 'teal-accent-4' : 'error'">
             {{ dialogSuccess ? 'mdi-check-circle' : 'mdi-alert-circle' }}
           </v-icon>
-          {{ dialogSuccess ? 'Submission received' : 'Submission failed' }}
+          {{ dialog.title }}
         </v-card-title>
-        <v-card-text>{{ dialogMessage }}</v-card-text>
+        <v-card-text>{{ dialog.body }}</v-card-text>
         <v-card-actions class="justify-end">
           <v-btn variant="text" @click="showDialog = false">Close</v-btn>
         </v-card-actions>
@@ -113,6 +113,8 @@
   import { FORM_STEPS } from '@/submissions/store';
   import { STEP_REGISTRY } from './registry';
   import { buildScreenFields, buildCombinationFields } from './testAgentSchema.js';
+  import { parseFormDataForApi } from './parseApiPayload.js';
+  import * as api from '@/submissions/api';
 
   export default {
     name: 'ReviewStep',
@@ -121,6 +123,7 @@
       formData: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
+      screenValidation: { type: Object, default: null },
     },
     computed: {
       agentFields() {
@@ -157,7 +160,7 @@
         submitting: false,
         showDialog: false,
         dialogSuccess: false,
-        dialogMessage: '',
+        dialog: { title: '', body: '' },
       };
     },
     methods: {
@@ -165,28 +168,33 @@
         return STEP_REGISTRY[stepId].getSummary(this.formData[stepId]);
       },
       async submitForm() {
+        const apiPayload = this.parseResponseForApi();
         this.submitting = true;
+
         try {
           // TODO: replace with real API call, e.g.:
-          // const result = await ApiClasses.postSubmission(apiURL, this.formData);
-          await new Promise((resolve) => setTimeout(resolve, 800)); // placeholder
+          const result = await api.postSubmission(import.meta.env.VITE_API_URL, apiPayload);
           this.dialogSuccess = true;
-          this.dialogMessage =
-            'Your submission has been received. You will be contacted with next steps.';
+          this.dialog = {
+            title: 'Submission successful',
+            body: 'Your submission has been successfully received. You will receive an email confirmation shortly.',
+          };
         } catch (err) {
+          console.log('err', err, err.response?.data);
           this.dialogSuccess = false;
-          this.dialogMessage =
-            err?.response?.data?.message ||
-            err?.message ||
-            'An unexpected error occurred. Please try again.';
+          this.dialog = {
+            title: 'Submission failed',
+            body:
+              err.response?.data?.message ??
+              'There was an error submitting your form. Please try again later.',
+          };
         } finally {
           this.submitting = false;
           this.showDialog = true;
         }
       },
       parseResponseForApi() {
-        let parsedData = {};
-        parsedData.compoundInfo = {};
+        return parseFormDataForApi(this.formData, this.screenType);
       },
     },
   };

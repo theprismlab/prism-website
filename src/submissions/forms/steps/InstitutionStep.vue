@@ -175,7 +175,8 @@
       institutionNames() {
         return this.allInstitutions
           .filter((i) => i.collaboration_type === this.data[FIELDS.INSTITUTION_TYPE.key])
-          .map((i) => i.name);
+          .map((i) => i.name)
+          .sort((a, b) => a.localeCompare(b));
       },
     },
     created() {
