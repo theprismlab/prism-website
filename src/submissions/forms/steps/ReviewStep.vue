@@ -6,6 +6,17 @@
         <v-icon v-if="!stepValidity[step.id]" color="warning" size="18">mdi-alert-circle</v-icon>
       </h3>
 
+      <v-alert
+        v-if="!stepValidity[step.id]"
+        type="warning"
+        variant="tonal"
+        density="compact"
+        class="mb-3"
+      >
+        This step has missing or invalid required fields. Please go back to complete it before
+        submitting.
+      </v-alert>
+
       <!-- Test Agent: columnar table per agent row (unchanged) -->
       <template v-if="step.id === 'testAgent'">
         <v-table v-if="agentFields.length" density="compact" class="agent-table">
@@ -125,19 +136,40 @@
       screenType: { type: String, default: null },
       screenValidation: { type: Object, default: null },
     },
+    watch: {
+      nonReviewSnapshot() {
+        if (this.data.reviewed) {
+          this.data.reviewed = false;
+        }
+      },
+    },
     computed: {
+      nonReviewSnapshot() {
+        const { review, ...rest } = this.formData;
+        return JSON.stringify(rest);
+      },
       agentFields() {
         return buildScreenFields(this.screenType);
       },
       combinationFields() {
         return buildCombinationFields(this.screenType);
       },
+      stepErrors() {
+        // Reference nonReviewSnapshot so this computed re-runs on any deep formData change.
+        // Without this, Vue may not track property accesses inside validate() reliably.
+        void this.nonReviewSnapshot;
+        return Object.fromEntries(
+          this.summarySteps.map((step) => [
+            step.id,
+            STEP_REGISTRY[step.id].validate(this.formData[step.id], this.screenType),
+          ]),
+        );
+      },
       stepValidity() {
         return Object.fromEntries(
           this.summarySteps.map((step) => [
             step.id,
-            Object.keys(STEP_REGISTRY[step.id].validate(this.formData[step.id], this.screenType))
-              .length === 0,
+            Object.keys(this.stepErrors[step.id]).length === 0,
           ]),
         );
       },
