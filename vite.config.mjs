@@ -67,6 +67,12 @@ export default defineConfig({
       },
       vueTemplate: true,
     }),
+    {
+      name: 'remove-mdi-font-preloads',
+      transformIndexHtml(html) {
+        return html.replace(/<link rel="preload" as="font"[^>]*materialdesignicons[^>]*>\n?/g, '');
+      },
+    },
   ],
   define: { 'process.env': {} },
   resolve: {
