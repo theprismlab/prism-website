@@ -124,7 +124,12 @@
       return { formStore: useFormProgressStore(), windowStore: useWindowStatusStore() };
     },
     data() {
-      return { steps: FORM_STEPS, attemptedSteps: {}, screenValidation: null, stepIsValid: {} };
+      return {
+        steps: FORM_STEPS,
+        attemptedSteps: {},
+        screenValidation: null,
+        stepIsValid: {},
+      };
     },
     computed: {
       screenType() {

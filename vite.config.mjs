@@ -54,6 +54,11 @@ export default defineConfig({
           },
         ],
       },
+      custom: {
+        families: [],
+        // EOT is an IE-only format with no valid preload MIME type; strip it to avoid browser warnings.
+        linkFilter: (tags) => tags.filter((tag) => tag.attrs?.type !== 'font/eot'),
+      },
     }),
     AutoImport({
       imports: ['vue', 'vue-router'],
