@@ -51,7 +51,7 @@
               <v-icon v-if="isCompleted(i)" color="teal-accent-4" size="28" class="mr-1"
                 >mdi-check-circle</v-icon
               >
-              <v-icon v-else>$expand</v-icon>
+              <v-icon>$expand</v-icon>
             </template>
           </v-expansion-panel-title>
 
