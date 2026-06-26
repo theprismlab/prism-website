@@ -50,8 +50,14 @@
             <p class="text-body-2 mb-0">{{ item.label }}</p>
             <p
               class="text-caption font-weight-medium mb-0"
-              :class="item.value === 'Confirmed' ? 'text-teal-accent-4' : 'text-medium-emphasis font-italic'"
-            >{{ item.value }}</p>
+              :class="
+                item.value === 'Confirmed'
+                  ? 'text-teal-accent-4'
+                  : 'text-medium-emphasis font-italic'
+              "
+            >
+              {{ item.value }}
+            </p>
           </div>
         </div>
         <p
@@ -70,7 +76,8 @@
             <span
               class="kv-value"
               :class="{ 'text-medium-emphasis font-italic': item.value === 'No response' }"
-            >{{ item.value }}</span>
+              >{{ item.value }}</span
+            >
           </template>
         </div>
         <p v-else class="text-medium-emphasis font-italic text-body-2">No information provided</p>
