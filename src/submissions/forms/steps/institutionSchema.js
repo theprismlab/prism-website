@@ -87,10 +87,12 @@ export function getSummary(data) {
     .filter((f) => !f.showIf || f.showIf(data))
     .map((f) => {
       const raw = data[f.key];
-      const value = raw === true ? 'Confirmed' : raw === false ? null : raw;
+      let value;
+      if (raw === true) value = 'Confirmed';
+      else if (raw === false || raw === '' || raw == null) value = 'No response';
+      else value = String(raw);
       return { label: f.label, value };
-    })
-    .filter((item) => item.value);
+    });
 }
 
 const EMAIL_FIELDS = new Set([FIELDS.BILLING_CONTACT_EMAIL.key]);

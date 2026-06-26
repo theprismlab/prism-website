@@ -6,17 +6,6 @@
         <v-icon v-if="!stepValidity[step.id]" color="warning" size="18">mdi-alert-circle</v-icon>
       </h3>
 
-      <v-alert
-        v-if="!stepValidity[step.id]"
-        type="warning"
-        variant="tonal"
-        density="compact"
-        class="mb-3"
-      >
-        This step has missing or invalid required fields. Please go back to complete it before
-        submitting.
-      </v-alert>
-
       <!-- Test Agent: columnar table per agent row (unchanged) -->
       <template v-if="step.id === 'testAgent'">
         <v-table v-if="agentFields.length" density="compact" class="agent-table">
@@ -59,7 +48,10 @@
           <p class="ack-section-label text-medium-emphasis mb-1">{{ section }}</p>
           <div v-for="item in items" :key="item.label" class="ack-item mb-2">
             <p class="text-body-2 mb-0">{{ item.label }}</p>
-            <p class="text-caption text-teal-accent-4 font-weight-medium mb-0">Confirmed</p>
+            <p
+              class="text-caption font-weight-medium mb-0"
+              :class="item.value === 'Confirmed' ? 'text-teal-accent-4' : 'text-medium-emphasis font-italic'"
+            >{{ item.value }}</p>
           </div>
         </div>
         <p
@@ -75,7 +67,10 @@
         <div v-if="stepSummary(step.id).length" class="kv-grid">
           <template v-for="item in stepSummary(step.id)" :key="item.label">
             <span class="kv-label text-medium-emphasis">{{ item.label }}</span>
-            <span class="kv-value">{{ item.value }}</span>
+            <span
+              class="kv-value"
+              :class="{ 'text-medium-emphasis font-italic': item.value === 'No response' }"
+            >{{ item.value }}</span>
           </template>
         </div>
         <p v-else class="text-medium-emphasis font-italic text-body-2">No information provided</p>
@@ -177,6 +172,7 @@
         return Object.values(this.stepValidity).every((v) => v);
       },
       groupedAcknowledgments() {
+        void this.nonReviewSnapshot; // ensure deep reactivity when checkboxes change
         const items = this.stepSummary('acknowledgments');
         return items.reduce((groups, item) => {
           const key = item.section ?? 'General';

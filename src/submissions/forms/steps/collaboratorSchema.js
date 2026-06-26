@@ -44,9 +44,7 @@ export function getSummary(data) {
     FIELDS.YOUR_EMAIL,
     FIELDS.INVESTIGATOR_NAME,
     FIELDS.INVESTIGATOR_EMAIL,
-  ]
-    .map((f) => ({ label: f.label, value: data[f.key] }))
-    .filter((item) => item.value);
+  ].map((f) => ({ label: f.label, value: data[f.key] || 'No response' }));
 
   const managers = (data[FIELDS.DATA_ACCESS_MANAGERS.key] || [])
     .filter((m) => m.name || m.email)
