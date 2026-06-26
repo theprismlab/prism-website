@@ -36,13 +36,13 @@
         >{{ screenValidation.message }}</v-alert
       >
 
-      <div v-if="isDev" class="mb-4">
+      <!-- <div v-if="isDev" class="mb-4">
         <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
           Fill test data
         </v-btn>
-      </div>
+      </div> -->
 
-      <v-expansion-panels v-model="openPanel">
+      <v-expansion-panels v-else v-model="openPanel">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
             <v-icon class="mr-2" size="28">{{ step.icon }}</v-icon>
@@ -250,6 +250,18 @@
 </script>
 
 <style scoped>
+  .v-expansion-panel-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+    font-weight: bold;
+  }
+  .v-expansion-panel-title span {
+    color: #3d3d3d !important;
+  }
+  .v-expansion-panel-title.v-expansion-panel-title--active {
+    background-color: rgba(var(--v-theme-on-surface), 0.04);
+  }
+
   .screen-meta {
     display: flex;
     flex-wrap: wrap;

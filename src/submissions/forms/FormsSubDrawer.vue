@@ -80,8 +80,10 @@
         };
       },
       labelClass(i) {
+        // const isCompleted = this.stepStatus(i) === 'completed';
+        const isOpen = this.formStore.openPanel(this.screenType) === i;
         return {
-          'font-weight-bold': this.stepStatus(i) === 'current',
+          'font-weight-bold': isOpen,
         };
       },
     },

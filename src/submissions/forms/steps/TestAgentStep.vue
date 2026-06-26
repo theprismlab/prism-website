@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-4">
     <test-agent-table
       :fields="screenFields"
       :rows="rows"
@@ -38,10 +38,10 @@
     name: 'TestAgentStep',
     components: { TestAgentTable },
     props: {
-      data:       { type: Object, required: true },
-      errors:     { type: Object, default: () => ({}) },
+      data: { type: Object, required: true },
+      errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
-      submitted:  { type: Number, default: 0 },
+      submitted: { type: Number, default: 0 },
     },
     computed: {
       screenFields() {

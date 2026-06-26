@@ -1,5 +1,5 @@
 <template>
-  <v-row dense>
+  <v-row dense class="mt-4">
     <v-col cols="12" sm="6">
       <!-- <h4 class="prism-text-form-label">{{ F.INSTITUTION_TYPE.label }}</h4> -->
       <v-select
