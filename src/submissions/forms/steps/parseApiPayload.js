@@ -48,10 +48,13 @@ export function parseFormDataForApi(formData, screenType) {
   }
 
   const compoundFields = buildTestAgentFields(screenType);
+
+  //  // const compounds below will be used when api is updated/removes previously required fields
   // const compounds = (testAgent.rows ?? []).map((row) =>
   //   Object.fromEntries(compoundFields.map((f) => [f.key, row[f.key] ?? ''])),
   // );
 
+  // This work-around will be depricated once the API no longer requires previously hardcoded fields.
   const compounds = (testAgent.rows ?? []).map((row) => {
     const base = Object.fromEntries(compoundFields.map((f) => [f.key, row[f.key] ?? '']));
     return {
@@ -60,14 +63,14 @@ export function parseFormDataForApi(formData, screenType) {
       health_hazard: base.health_hazard === 'Yes',
       // Fields no longer collected by the form — hardcoded to satisfy the API contract.
       full_brd: '',
-      structure_smiles: '',
+      // structure_smiles: '',
       supplier: 'Testing. Field to be removed.',
       supplier_catalog_name: 'Testing. Field to be removed.',
-      qc_last_six_months: true,
-      cancer_cell_lines: '',
-      target_moa: '',
-      sds_available: true,
-      acutely_toxic: false,
+      // qc_last_six_months: true,
+      // cancer_cell_lines: '',
+      // target_moa: '',
+      // sds_available: true,
+      // acutely_toxic: false,
     };
   });
 
