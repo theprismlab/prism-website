@@ -84,7 +84,7 @@
     <div class="d-flex justify-end mt-4">
       <v-btn
         color="primary"
-        :disabled="!data.reviewed || !allStepsValid"
+        :disabled="!data.reviewed || !allStepsValid || screenValidation?.status === 'INVALID'"
         :loading="submitting"
         @click="submitForm"
       >
@@ -114,6 +114,7 @@
   import { STEP_REGISTRY } from './registry';
   import { buildScreenFields, buildCombinationFields } from './testAgentSchema.js';
   import { parseFormDataForApi } from './parseApiPayload.js';
+  import * as api from '@/submissions/api';
 
   export default {
     name: 'ReviewStep',
@@ -122,9 +123,7 @@
       formData: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
-    },
-    mounted() {
-      console.log('ReviewStep mounted', this.formData);
+      screenValidation: { type: Object, default: null },
     },
     computed: {
       agentFields() {
@@ -169,21 +168,23 @@
         return STEP_REGISTRY[stepId].getSummary(this.formData[stepId]);
       },
       async submitForm() {
-        this.parseResponseForApi();
+        const apiPayload = this.parseResponseForApi();
         this.submitting = true;
+
         try {
           // TODO: replace with real API call, e.g.:
-          // const result = await ApiClasses.postSubmission(apiURL, this.formData);
-          await new Promise((resolve) => setTimeout(resolve, 800)); // placeholder
+          const result = await api.postSubmission(import.meta.env.VITE_API_URL, apiPayload);
+          console.log('submit result', result);
           this.dialogSuccess = true;
-          this.dialogMessage =
-            'Your submission has been received. You will be contacted with next steps.';
+          // this.dialogMessage.title = 'Submission Successful';
+          // this.dialogMessage.message =
+          //   'Your submission has been successfully received. You will receive an email confirmation shortly.';
         } catch (err) {
+          // console.log('err', err, err.response?.data);
           this.dialogSuccess = false;
-          this.dialogMessage =
-            err?.response?.data?.message ||
-            err?.message ||
-            'An unexpected error occurred. Please try again.';
+          // this.dialogMessage.title = 'Submission Failed';
+          // this.dialogMessage.message =
+          //   'There was an error submitting your form. Please try again later.';
         } finally {
           this.submitting = false;
           this.showDialog = true;

@@ -26,6 +26,15 @@
         >{{ apiStatus.message }}</v-alert
       >
 
+      <v-alert
+        v-if="screenValidation?.status === 'INVALID'"
+        type="error"
+        variant="tonal"
+        density="compact"
+        class="mb-4"
+        >{{ screenValidation.message }}</v-alert
+      >
+
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
@@ -69,6 +78,7 @@
               :form-data="fd"
               :errors="stepErrors.review || {}"
               :screen-type="screenType"
+              :screen-validation="screenValidation"
             />
 
             <div v-if="step.id !== 'review'" class="d-flex justify-end mt-4">
@@ -85,6 +95,7 @@
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
   import { resolveScreenDisplay, FIELD_LABELS, META_FIELD_KEYS } from '@/submissions/schedule.js';
+  import * as api from '@/submissions/api';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
@@ -105,7 +116,7 @@
       return { formStore: useFormProgressStore(), windowStore: useWindowStatusStore() };
     },
     data() {
-      return { steps: FORM_STEPS, attemptedSteps: {} };
+      return { steps: FORM_STEPS, attemptedSteps: {}, screenValidation: null };
     },
     computed: {
       screenType() {
@@ -160,8 +171,9 @@
         );
       },
     },
-    mounted() {
+    async mounted() {
       this.windowStore.load(import.meta.env.VITE_API_URL);
+      this.screenValidation = await this.validateScreen();
     },
     watch: {
       screenType() {
@@ -185,6 +197,16 @@
       },
     },
     methods: {
+      async validateScreen() {
+        const response = {};
+        try {
+          await api.validateScreen(import.meta.env.VITE_API_URL, this.screenName, this.screenType);
+        } catch (error) {
+          response.message = error;
+          response.status = 'INVALID';
+        }
+        return { status: response.status, message: response.message };
+      },
       isCompleted(i) {
         return this.stepValidity[this.steps[i].id] ?? false;
       },

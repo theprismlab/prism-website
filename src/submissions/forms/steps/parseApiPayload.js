@@ -2,6 +2,7 @@ import { FIELDS as COLLABORATOR_FIELDS } from './collaboratorSchema.js';
 import { FIELDS as INSTITUTION_FIELDS, COLLABORATOR_TYPE_OPTIONS } from './institutionSchema.js';
 import { FIELDS as TEST_AGENT_FIELDS, buildCombinationFields } from './testAgentSchema.js';
 import { buildScreenFields as buildAcknowledgementFields } from './acknowledgementsSchema.js';
+import { resolveScreenDisplay } from '@/submissions/schedule.js';
 
 export function parseFormDataForApi(formData, screenType) {
   const collaborator = formData.collaborator ?? {};
@@ -57,16 +58,23 @@ export function parseFormDataForApi(formData, screenType) {
 
   return {
     compoundInfo: {
-      screen: screenType,
-      submission_type: screenType,
+      screen: resolveScreenDisplay(screenType)?.screen_name,
+      submission_type: `${screenType}_SEQ`,
       submitter_email: collaborator[COLLABORATOR_FIELDS.YOUR_EMAIL.key] ?? '',
       submitter_name: collaborator[COLLABORATOR_FIELDS.YOUR_NAME.key] ?? '',
       investigator_email: collaborator[COLLABORATOR_FIELDS.INVESTIGATOR_EMAIL.key] ?? '',
       investigator_name: collaborator[COLLABORATOR_FIELDS.INVESTIGATOR_NAME.key] ?? '',
-      main_contact: managers.map((m) => m.name),
-      main_contact_email: managers.map((m) => m.email),
+      main_contact: managers
+        .map((m) => m.name)
+        .filter(Boolean)
+        .join(', '),
+      main_contact_email: managers
+        .map((m) => m.email)
+        .filter(Boolean)
+        .join(', '),
       home_institution: institution[INSTITUTION_FIELDS.INSTITUTION_NAME.key] ?? '',
-      //   total_num_cpds: (testAgent.rows ?? []).length,
+      project_goals: '',
+      total_num_cpds: (testAgent.rows ?? []).length,
       collaboration_type: collaboratorTypeLabel ?? '',
       agreements,
       funding_comments: institution[INSTITUTION_FIELDS.COMMENTS.key] ?? '',
@@ -74,10 +82,13 @@ export function parseFormDataForApi(formData, screenType) {
       grant_admin: grantAdmin,
     },
     compounds,
-    combinations: buildCombinationFields(screenType).length > 0
-      ? (testAgent.combinations ?? []).map((row) =>
-          Object.fromEntries(buildCombinationFields(screenType).map((f) => [f.key, row[f.key] ?? ''])),
-        )
-      : [],
+    combinations:
+      buildCombinationFields(screenType).length > 0
+        ? (testAgent.combinations ?? []).map((row) =>
+            Object.fromEntries(
+              buildCombinationFields(screenType).map((f) => [f.key, row[f.key] ?? '']),
+            ),
+          )
+        : [],
   };
 }
