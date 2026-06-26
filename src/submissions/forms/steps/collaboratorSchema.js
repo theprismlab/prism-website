@@ -46,12 +46,16 @@ export function getSummary(data) {
     FIELDS.INVESTIGATOR_EMAIL,
   ].map((f) => ({ label: f.label, value: data[f.key] || 'No response' }));
 
-  const managers = (data[FIELDS.DATA_ACCESS_MANAGERS.key] || [])
+  const filled = (data[FIELDS.DATA_ACCESS_MANAGERS.key] || [])
     .filter((m) => m.name || m.email)
     .map((m, i) => ({
       label: `Data Access Manager ${i + 1}`,
       value: [m.name, m.email].filter(Boolean).join(', '),
     }));
+
+  const managers = filled.length
+    ? filled
+    : [{ label: 'Data Access Manager', value: 'No response' }];
 
   return [...simple, ...managers];
 }

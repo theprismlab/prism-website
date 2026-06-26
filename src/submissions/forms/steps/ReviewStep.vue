@@ -131,6 +131,11 @@
       screenType: { type: String, default: null },
       screenValidation: { type: Object, default: null },
     },
+    mounted() {
+      if (!this.allStepsValid && this.data.reviewed) {
+        this.data.reviewed = false;
+      }
+    },
     watch: {
       nonReviewSnapshot() {
         if (this.data.reviewed) {

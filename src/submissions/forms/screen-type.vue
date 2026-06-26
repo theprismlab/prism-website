@@ -224,7 +224,7 @@
         return { status: response.status, message: response.message };
       },
       isCompleted(i) {
-        return this.stepValidity[this.steps[i].id] ?? false;
+        return this.formStore.stepStatus(this.screenType, i) === 'completed';
       },
       onPanelChange(val) {
         if (this.screenType && val !== undefined) {
