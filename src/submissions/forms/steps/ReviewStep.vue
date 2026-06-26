@@ -98,9 +98,9 @@
           <v-icon :color="dialogSuccess ? 'teal-accent-4' : 'error'">
             {{ dialogSuccess ? 'mdi-check-circle' : 'mdi-alert-circle' }}
           </v-icon>
-          {{ dialogSuccess ? 'Submission received' : 'Submission failed' }}
+          {{ dialog.title }}
         </v-card-title>
-        <v-card-text>{{ dialogMessage }}</v-card-text>
+        <v-card-text>{{ dialog.body }}</v-card-text>
         <v-card-actions class="justify-end">
           <v-btn variant="text" @click="showDialog = false">Close</v-btn>
         </v-card-actions>
@@ -160,7 +160,7 @@
         submitting: false,
         showDialog: false,
         dialogSuccess: false,
-        dialogMessage: '',
+        dialog: { title: '', body: '' },
       };
     },
     methods: {
@@ -174,17 +174,20 @@
         try {
           // TODO: replace with real API call, e.g.:
           const result = await api.postSubmission(import.meta.env.VITE_API_URL, apiPayload);
-          console.log('submit result', result);
           this.dialogSuccess = true;
-          // this.dialogMessage.title = 'Submission Successful';
-          // this.dialogMessage.message =
-          //   'Your submission has been successfully received. You will receive an email confirmation shortly.';
+          this.dialog = {
+            title: 'Submission successful',
+            body: 'Your submission has been successfully received. You will receive an email confirmation shortly.',
+          };
         } catch (err) {
-          // console.log('err', err, err.response?.data);
+          console.log('err', err, err.response?.data);
           this.dialogSuccess = false;
-          // this.dialogMessage.title = 'Submission Failed';
-          // this.dialogMessage.message =
-          //   'There was an error submitting your form. Please try again later.';
+          this.dialog = {
+            title: 'Submission failed',
+            body:
+              err.response?.data?.message ??
+              'There was an error submitting your form. Please try again later.',
+          };
         } finally {
           this.submitting = false;
           this.showDialog = true;
