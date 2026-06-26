@@ -1,6 +1,9 @@
 import { FIELDS as COLLABORATOR_FIELDS } from './collaboratorSchema.js';
 import { FIELDS as INSTITUTION_FIELDS, COLLABORATOR_TYPE_OPTIONS } from './institutionSchema.js';
-import { FIELDS as TEST_AGENT_FIELDS, buildCombinationFields } from './testAgentSchema.js';
+import {
+  buildCombinationFields,
+  buildScreenFields as buildTestAgentFields,
+} from './testAgentSchema.js';
 import { buildScreenFields as buildAcknowledgementFields } from './acknowledgementsSchema.js';
 import { resolveScreenDisplay } from '@/submissions/schedule.js';
 
@@ -44,22 +47,34 @@ export function parseFormDataForApi(formData, screenType) {
     }
   }
 
-  const compounds = (testAgent.rows ?? []).map((row) => ({
-    [TEST_AGENT_FIELDS.COMPOUND_NAME.key]: row[TEST_AGENT_FIELDS.COMPOUND_NAME.key] ?? '',
-    [TEST_AGENT_FIELDS.TOP_DOSE.key]: row[TEST_AGENT_FIELDS.TOP_DOSE.key] ?? '',
-    [TEST_AGENT_FIELDS.TOP_DOSE_UNIT.key]: row[TEST_AGENT_FIELDS.TOP_DOSE_UNIT.key] ?? '',
-    [TEST_AGENT_FIELDS.CONC_AMOUNT.key]: row[TEST_AGENT_FIELDS.CONC_AMOUNT.key] ?? '',
-    [TEST_AGENT_FIELDS.CONC_AMOUNT_UNIT.key]: row[TEST_AGENT_FIELDS.CONC_AMOUNT_UNIT.key] ?? '',
-    [TEST_AGENT_FIELDS.CONC.key]: row[TEST_AGENT_FIELDS.CONC.key] ?? '',
-    [TEST_AGENT_FIELDS.CONC_UNIT.key]: row[TEST_AGENT_FIELDS.CONC_UNIT.key] ?? '',
-    [TEST_AGENT_FIELDS.STORAGE_CONDITIONS.key]: row[TEST_AGENT_FIELDS.STORAGE_CONDITIONS.key] ?? '',
-    [TEST_AGENT_FIELDS.HEALTH_HAZARD.key]: row[TEST_AGENT_FIELDS.HEALTH_HAZARD.key] ?? '',
-  }));
+  const compoundFields = buildTestAgentFields(screenType);
+  // const compounds = (testAgent.rows ?? []).map((row) =>
+  //   Object.fromEntries(compoundFields.map((f) => [f.key, row[f.key] ?? ''])),
+  // );
+
+  const compounds = (testAgent.rows ?? []).map((row) => {
+    const base = Object.fromEntries(compoundFields.map((f) => [f.key, row[f.key] ?? '']));
+    return {
+      ...base,
+      // API expects boolean; form uses 'Yes'/'No'.
+      health_hazard: base.health_hazard === 'Yes',
+      // Fields no longer collected by the form — hardcoded to satisfy the API contract.
+      full_brd: '',
+      structure_smiles: '',
+      supplier: 'Testing. Field to be removed.',
+      supplier_catalog_name: 'Testing. Field to be removed.',
+      qc_last_six_months: true,
+      cancer_cell_lines: '',
+      target_moa: '',
+      sds_available: true,
+      acutely_toxic: false,
+    };
+  });
 
   return {
     compoundInfo: {
       screen: resolveScreenDisplay(screenType)?.screen_name,
-      submission_type: `${screenType}_SEQ`,
+      submission_type: screenType,
       submitter_email: collaborator[COLLABORATOR_FIELDS.YOUR_EMAIL.key] ?? '',
       submitter_name: collaborator[COLLABORATOR_FIELDS.YOUR_NAME.key] ?? '',
       investigator_email: collaborator[COLLABORATOR_FIELDS.INVESTIGATOR_EMAIL.key] ?? '',
@@ -73,13 +88,15 @@ export function parseFormDataForApi(formData, screenType) {
         .filter(Boolean)
         .join(', '),
       home_institution: institution[INSTITUTION_FIELDS.INSTITUTION_NAME.key] ?? '',
-      project_goals: '',
-      total_num_cpds: (testAgent.rows ?? []).length,
+      total_num_cpds: String((testAgent.rows ?? []).length),
       collaboration_type: collaboratorTypeLabel ?? '',
       agreements,
       funding_comments: institution[INSTITUTION_FIELDS.COMMENTS.key] ?? '',
       br_funding_inst: fundingInst,
       grant_admin: grantAdmin,
+      project_goals: 'Testing. Field to be removed.', // to be removed
+      supplier: 'Testing. Field to be removed.',
+      supplier_catalog_name: 'Testing. Field to be removed.',
     },
     compounds,
     combinations:

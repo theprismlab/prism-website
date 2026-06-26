@@ -35,6 +35,12 @@
         >{{ screenValidation.message }}</v-alert
       >
 
+      <div v-if="isDev" class="mb-4">
+        <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
+          Fill test data
+        </v-btn>
+      </div>
+
       <v-expansion-panels :model-value="openPanel" @update:model-value="onPanelChange">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
@@ -96,6 +102,7 @@
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
   import { resolveScreenDisplay, FIELD_LABELS, META_FIELD_KEYS } from '@/submissions/schedule.js';
   import * as api from '@/submissions/api';
+  import { getTestData } from './testFixtures.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
@@ -140,6 +147,9 @@
       },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;
+      },
+      isDev() {
+        return import.meta.env.DEV;
       },
       openPanel() {
         return this.screenType ? this.formStore.openPanel(this.screenType) : 0;
@@ -197,6 +207,12 @@
       },
     },
     methods: {
+      fillTestData() {
+        const testData = getTestData(this.screenType);
+        for (const [stepId, stepData] of Object.entries(testData)) {
+          Object.assign(this.fd[stepId], stepData);
+        }
+      },
       async validateScreen() {
         const response = {};
         try {

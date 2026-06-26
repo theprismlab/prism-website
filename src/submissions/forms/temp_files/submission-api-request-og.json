@@ -1,0 +1,57 @@
+{
+  "url": "https://dev-api.theprismlab.org/api/mts_compound_submissions/createSubmission",
+  "payload": {
+    "compoundInfo": {
+      "screen": "EPS008",
+      "submission_type": "EPS",
+      "submitter_email": "lpetroni@broadinstitute.org",
+      "submitter_name": "lia",
+      "investigator_email": "lpetroni@broadinstitute.org",
+      "investigator_name": "lia",
+      "main_contact": "lia",
+      "main_contact_email": "lpetroni@broadinstitute.org",
+      "home_institution": "Abbvie",
+      "project_goals": "testing",
+      "total_num_cpds": "1",
+      "collaboration_type": "Dependency Map Consortium",
+      "agreements": {
+        "The collaborator is responsible for QC'ing test agents ahead of submission. We do not have the bandwidth to do any optimization for or re-running of test agents that don't perform well in PRISM. Any test agents submitted will be run 'at-risk'.": "I acknowledge and agree",
+        "Collaborators may use PRISM data for publication at any time. As authorship should reflect each party's contributions, we would appreciate inclusion of PRISM team members as authors.  We request 30 days notice for our team to review manuscripts and 10 days for posters.": "I acknowledge and agree",
+        "We will store your test agents in the storage conditions that you selected in your submission template (i.e. room temperature, 4&deg;C, or -20&deg;C).": "I acknowledge and agree",
+        "I understand that test agents must arrive at the Broad by 12 pm EDT on the submission deadline. Test Agents that do not arrive by the deadline will be held for approximately 4 months until the next PRISM screen. International shipments should be sent at least 1 week before the deadline to account for shipping delays and customs processing. ": "I acknowledge and agree",
+        "PRISM retains the right to use collaboratively generated data to validate and improve the PRISM platform.": "I acknowledge and agree",
+        "I understand that once I have completed my submission form, PRISM will be unable to make changes to or remove these test agents in the screen.": "I acknowledge and agree",
+        "I have reviewed the responses above and confirm they are correct": "Yes"
+      }
+    },
+    "compounds": [
+      {
+        "compound_name": "Test1",
+        "top_dose": "10",
+        "top_dose_unit": "uM",
+        "full_brd": "",
+        "structure_smiles": "",
+        "dilution_factor": "2",
+        "amount": "1000",
+        "amount_unit": "uL",
+        "supplier": "Broad Institute of MIT and Harvard",
+        "supplier_catalog_name": "Test1",
+        "conc": "10",
+        "conc_unit": "mM",
+        "storage_conditions": "4˚C",
+        "qc_last_six_months": true,
+        "cancer_cell_lines": "",
+        "target_moa": "",
+        "sds_available": true,
+        "health_hazard": true,
+        "acutely_toxic": false
+      }
+    ],
+    "combinations": []
+  },
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "user_key": "3d1e048269e39d8264e43ed6134cd14a"
+  }
+}

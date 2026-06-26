@@ -36,9 +36,29 @@ export async function getCollaboratorList(apiURL) {
   return authedGet(apiURL, 'mts_institutions');
 }
 
+// export async function postSubmission(apiURL, payload) {
+//   console.log(apiURL, 'mts_compound_submissions/createSubmission', payload);
+//   return authedPost(apiURL, 'mts_compound_submissions/createSubmission', payload);
+// }
 export async function postSubmission(apiURL, payload) {
-  console.log(apiURL, 'mts_compound_submissions/createSubmission', payload);
-  return authedPost(apiURL, 'mts_compound_submissions/createSubmission', payload);
+  const url = apiURL + 'mts_compound_submissions/createSubmission';
+  const userKey = await getTempApiKey(apiURL);
+  console.log(url, payload, userKey);
+  // log the fully formatted request as a json
+  console.log(
+    'Request:',
+    JSON.stringify({ url, payload, headers: { ...JSON_HEADERS, user_key: userKey } }),
+  );
+  // console.log('Request:', { url, payload, headers: { ...JSON_HEADERS, user_key: userKey } });
+
+  const res = await axios.post(url, payload, {
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      user_key: userKey,
+    },
+  });
+  return res.data;
 }
 //{"error":"Model::findById requires the id argument"}
 
