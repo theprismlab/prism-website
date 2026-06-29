@@ -1,9 +1,12 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>{{ screenName }} - Form</prism-page-title>
+      <div class="form-header mb-4">
+        <span class="form-header__eyebrow">Submission Form</span>
+        <h1 class="form-header__title">{{ screenType }} ({{ screenName }})</h1>
+      </div>
 
-      <div v-if="screenMeta.length" class="screen-meta mb-4">
+      <div v-if="screenMeta.length" class="screen-meta mb-5">
         <div v-for="item in screenMeta" :key="item.label" class="screen-meta__item">
           <span class="screen-meta__label">{{ item.label }}</span>
           <v-chip
@@ -101,7 +104,7 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
-  import { resolveScreenDisplay, FIELD_LABELS, META_FIELD_KEYS } from '@/submissions/schedule.js';
+  import { resolveScreenDisplay, FIELD_LABELS, FORM_FIELD_KEYS } from '@/submissions/schedule.js';
   import * as api from '@/submissions/api';
   import { getTestData } from './testFixtures.js';
   import { STEP_REGISTRY } from './steps/registry';
@@ -146,8 +149,9 @@
       },
       screenMeta() {
         const d = this.screenDisplay;
+        console.log('screenMeta', d, FORM_FIELD_KEYS, FIELD_LABELS);
         if (!d) return [];
-        return META_FIELD_KEYS.map((key) =>
+        return FORM_FIELD_KEYS.map((key) =>
           d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null,
         ).filter(Boolean);
       },
@@ -256,25 +260,33 @@
 </script>
 
 <style scoped>
-  .v-expansion-panel-title {
-    font-size: 1.05rem;
-    letter-spacing: 0.05em;
-    font-weight: bold;
+  /* ── Page header ─────────────────────────────────────────── */
+  .form-header__eyebrow {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: var(--prism-font-weight-semibold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--prism-color-primary);
+    margin-bottom: 5px;
   }
-  .v-expansion-panel-title span {
-    color: #3d3d3d !important;
-  }
-  .v-expansion-panel-title.v-expansion-panel-title--active {
-    background-color: rgba(var(--v-theme-on-surface), 0.04);
+  .form-header__title {
+    font-size: var(--prism-text-h3-size);
+    font-weight: var(--prism-font-weight-bold);
+    color: var(--prism-color-text);
+    line-height: 1.2;
+    margin: 0;
   }
 
+  /* ── Screen metadata bar ──────────────────────────────────── */
   .screen-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 32px;
-    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-    padding: 10px 0;
+    gap: 6px 32px;
+    padding: 12px 14px;
+    background: rgba(var(--v-theme-on-surface), 0.025);
+    border-left: 3px solid rgba(var(--v-theme-on-surface), 0.08);
+    border-radius: 0 4px 4px 0;
   }
   .screen-meta__item {
     display: flex;
@@ -282,17 +294,32 @@
     gap: 2px;
   }
   .screen-meta__label {
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
+    font-size: 0.65rem;
+    font-weight: var(--prism-font-weight-semibold);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   }
   .screen-meta__value {
     font-size: 0.875rem;
+    font-weight: var(--prism-font-weight-medium);
     color: rgba(var(--v-theme-on-surface), 0.87);
   }
   .screen-meta__chip {
     margin-top: 2px;
+    align-self: flex-start;
+  }
+
+  /* ── Accordion typography ─────────────────────────────────── */
+  .v-expansion-panel-title {
+    font-size: 0.925rem;
+    font-weight: var(--prism-font-weight-semibold);
+    letter-spacing: 0.01em;
+  }
+  .v-expansion-panel-title span {
+    color: var(--prism-color-text) !important;
+  }
+  .v-expansion-panel-title.v-expansion-panel-title--active {
+    background-color: rgba(var(--v-theme-on-surface), 0.03);
   }
 </style>
