@@ -2,7 +2,7 @@
   <page>
     <app-container wide>
       <div class="form-header mb-4">
-        <span class="form-header__eyebrow">Submission Form</span>
+        <span class="form-header__eyebrow">PRISM Submission Form</span>
         <h1 class="form-header__title">{{ screenType }} ({{ screenName }})</h1>
       </div>
 
@@ -149,7 +149,7 @@
       },
       screenMeta() {
         const d = this.screenDisplay;
-        console.log('screenMeta', d, FORM_FIELD_KEYS, FIELD_LABELS);
+
         if (!d) return [];
         return FORM_FIELD_KEYS.map((key) =>
           d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null,
@@ -282,7 +282,7 @@
   .screen-meta {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-    gap: 10px 20px;
+    gap: 6px 20px;
     padding: 12px 14px;
     background: rgba(var(--v-theme-on-surface), 0.025);
     border-left: 3px solid rgba(var(--v-theme-on-surface), 0.08);
@@ -291,20 +291,23 @@
   .screen-meta__item {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
     min-width: 0;
+    padding-bottom: 10px;
+    /* border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.07); */
   }
   .screen-meta__label {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: var(--prism-font-weight-semibold);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+    color: rgba(var(--v-theme-on-surface), 0.42);
   }
   .screen-meta__value {
     font-size: 0.875rem;
-    font-weight: var(--prism-font-weight-medium);
+    font-weight: var(--prism-font-weight-semibold);
     color: rgba(var(--v-theme-on-surface), 0.87);
+    overflow-wrap: break-word;
   }
   .screen-meta__chip {
     margin-top: 2px;
