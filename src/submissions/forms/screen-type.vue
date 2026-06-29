@@ -53,14 +53,11 @@
       <v-expansion-panels v-else v-model="openPanel">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
-            <v-icon class="mr-2" size="28">{{ step.icon }}</v-icon>
+            <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26"
+              >mdi-check-circle</v-icon
+            >
+            <span v-else class="step-number mr-2">{{ i + 1 }}</span>
             <span>{{ step.title }}</span>
-            <template #actions>
-              <v-icon v-if="isCompleted(i)" color="teal-accent-4" size="28" class="mr-1"
-                >mdi-check-circle</v-icon
-              >
-              <v-icon>$expand</v-icon>
-            </template>
           </v-expansion-panel-title>
 
           <v-expansion-panel-text>
@@ -335,6 +332,25 @@
     font-weight: var(--prism-font-weight-semibold);
     color: rgba(var(--v-theme-on-surface), 0.87);
     overflow-wrap: break-word;
+  }
+
+  /* ── Step indicator ──────────────────────────────────────── */
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(var(--v-theme-on-surface), 0.25);
+    font-size: 0.75rem;
+    font-weight: var(--prism-font-weight-semibold);
+    color: rgba(var(--v-theme-on-surface), 0.55);
+    line-height: 1;
+  }
+  .step-icon {
+    flex-shrink: 0;
   }
 
   /* ── Accordion typography ─────────────────────────────────── */
