@@ -280,9 +280,9 @@
 
   /* ── Screen metadata bar ──────────────────────────────────── */
   .screen-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 10px 20px;
     padding: 12px 14px;
     background: rgba(var(--v-theme-on-surface), 0.025);
     border-left: 3px solid rgba(var(--v-theme-on-surface), 0.08);
@@ -292,6 +292,7 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
   }
   .screen-meta__label {
     font-size: 0.65rem;

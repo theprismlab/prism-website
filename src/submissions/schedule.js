@@ -143,8 +143,6 @@ export const TABLE_FIELD_KEYS = [
 
 // Fields rendered in the form page meta bar.
 export const FORM_FIELD_KEYS = [
-  'screen_type',
-  'screen_name',
   'time_point',
   'testAgents',
   'windowDates',
