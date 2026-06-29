@@ -5,8 +5,8 @@ import { required, validEmail } from './validationHelpers';
 
 export const COLLABORATOR_TYPE_OPTIONS = {
   DMC: { key: 'DMC', label: 'DepMap Consortium' },
-  BROAD: { key: 'NFP', label: 'Broad Institute and Affiliates' },
-  ACADEMIC: { key: 'ACADEMIC', label: 'Non-Broad Academic Institution' },
+  BROAD: { key: 'NFP', label: 'Broad Institute & Affiliated Institutions' },
+  ACADEMIC: { key: 'ACADEMIC', label: 'Academic Institution (Non-Broad or Broad affiliates)' },
   INDUSTRY: { key: 'INDUSTRY', label: 'Industry' },
 };
 
