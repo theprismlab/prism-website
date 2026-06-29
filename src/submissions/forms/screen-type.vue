@@ -271,8 +271,7 @@
   /* ── Document header ─────────────────────────────────────── */
   .doc-header {
     border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
-    border-top: 3px solid rgb(var(--v-theme-primary));
-    border-radius: 2px 2px 6px 6px;
+    border-radius: 6px;
     overflow: hidden;
   }
   .doc-header__band {
@@ -281,7 +280,6 @@
     justify-content: space-between;
     gap: 12px;
     padding: 8px 16px;
-    background: rgba(var(--v-theme-on-surface), 0.025);
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.07);
   }
   .doc-header__eyebrow {
@@ -316,7 +314,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-    background: rgba(var(--v-theme-on-surface), 0.018);
   }
   .doc-meta__field {
     display: flex;
