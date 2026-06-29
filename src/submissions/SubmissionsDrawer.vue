@@ -103,3 +103,11 @@
     },
   };
 </script>
+<style scoped>
+  .v-list-item--nav {
+    border-radius: 40px !important ;
+  }
+  ::v-deep .v-list-item__prepend > .v-icon ~ .v-list-item__spacer {
+    width: 12px !important;
+  }
+</style>

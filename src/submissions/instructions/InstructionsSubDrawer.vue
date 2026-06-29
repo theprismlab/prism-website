@@ -87,7 +87,9 @@
         return this.$route.params.screenType;
       },
       testAgentPdf() {
-        return this.screenType ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null) : null;
+        return this.screenType
+          ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null)
+          : null;
       },
       shippingPdf() {
         return this.screenType ? PDF_PATHS.SHIPPING : null;
@@ -160,7 +162,9 @@
     border-left: 3px solid transparent;
     font-size: var(--prism-text-subtitle-1-size);
     font-weight: var(--prism-font-weight-medium);
-    transition: background-color var(--prism-transition-fast), color var(--prism-transition-fast);
+    transition:
+      background-color var(--prism-transition-fast),
+      color var(--prism-transition-fast);
   }
   .v-list-item:not(.submissions-nav-cta):hover {
     background-color: var(--prism-color-primary-lighter);
@@ -170,13 +174,16 @@
     border-left-color: var(--prism-color-primary) !important;
     background-color: var(--prism-color-primary-lighter) !important;
   }
+  ::v-deep .menu-group-activator .v-list-item__prepend > .v-icon ~ .v-list-item__spacer {
+    width: 12px;
+  }
   ::v-deep .v-list-item--active > .v-list-item__overlay,
   ::v-deep .v-list-item--active:hover > .v-list-item__overlay,
   ::v-deep .v-list-item--active:focus-visible > .v-list-item__overlay {
     opacity: 0 !important;
     pointer-events: none !important;
   }
-  .outline-level-0 > * {
+  /* .outline-level-0 > * {
     padding-left: 0px !important;
   }
   .outline-level-1 > * {
@@ -184,5 +191,8 @@
   }
   .outline-level-2 > * {
     padding-left: 32px !important;
-  }
+  } */
+  /* ::v-deep .v-list-group__items .v-list-item {
+    padding-inline-start: 32px !important;
+  } */
 </style>
