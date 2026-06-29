@@ -43,23 +43,16 @@
         />
       </template>
     </v-list>
-    <!-- <div style="text-align: center">
-      <v-btn
-        rounded
-        variant="outlined"
-        :to="`/submission-hub/forms/${screen}`"
-        append-icon="mdi-arrow-right"
-        class="mt-4 mx-auto"
-      >
-        Start Form</v-btn
-      >
-    </div> -->
-
     <div v-if="screenType" class="submissions-nav-cta-container">
-      <router-link :to="`/submission-hub/forms/${screenType}`" class="submissions-nav-cta">
-        Start Form
-        <v-icon size="16">mdi-arrow-right</v-icon>
-      </router-link>
+      <v-btn
+        :to="`/submission-hub/forms/${screenType}`"
+        variant="outlined"
+        color="primary-base"
+        block
+        rounded="pill"
+        append-icon="mdi-arrow-right"
+        size="small"
+      >Start Form</v-btn>
     </div>
   </sub-drawer>
 </template>

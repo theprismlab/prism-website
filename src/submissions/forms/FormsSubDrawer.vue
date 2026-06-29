@@ -18,10 +18,15 @@
       </div>
     </div>
     <div v-if="screenType" class="submissions-nav-cta-container">
-      <router-link :to="`/submissions/instructions/${screenType}`" class="submissions-nav-cta">
-        <v-icon size="16">mdi-arrow-left</v-icon>
-        Back to Instructions
-      </router-link>
+      <v-btn
+        :to="`/submissions/instructions/${screenType}`"
+        variant="outlined"
+        color="primary-base"
+        block
+        rounded="pill"
+        prepend-icon="mdi-arrow-left"
+        size="small"
+      >Back to Instructions</v-btn>
     </div>
   </sub-drawer>
 </template>
