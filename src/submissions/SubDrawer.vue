@@ -69,8 +69,8 @@
 
 <style>
   .active-menu-item {
-    font-weight: bold !important;
-    color: rgba(0, 0, 0, 0.87) !important;
+    color: var(--prism-color-primary) !important;
+    font-weight: var(--prism-font-weight-medium) !important;
   }
 
   .submissions-nav-cta {
