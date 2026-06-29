@@ -1,25 +1,30 @@
 <template>
   <page>
     <app-container wide>
-      <div class="form-header mb-4">
-        <span class="form-header__eyebrow">PRISM Submission Form</span>
-        <h1 class="form-header__title">{{ screenType }} ({{ screenName }})</h1>
-      </div>
-
-      <div v-if="screenMeta.length" class="screen-meta mb-5">
-        <div v-for="item in screenMeta" :key="item.label" class="screen-meta__item">
-          <span class="screen-meta__label">{{ item.label }}</span>
+      <header class="doc-header mb-5">
+        <div class="doc-header__band">
+          <span class="doc-header__eyebrow">PRISM Submission Form</span>
           <v-chip
-            v-if="item.key === 'status'"
+            v-if="screenStatus"
             :color="screenStatus.color"
             size="small"
             variant="flat"
-            class="screen-meta__chip"
-            >{{ screenStatus.label }}</v-chip
-          >
-          <span v-else class="screen-meta__value">{{ item.value }}</span>
+          >{{ screenStatus.label }}</v-chip>
         </div>
-      </div>
+        <div class="doc-header__title-block">
+          <h1 class="doc-header__title">
+            <span class="doc-header__type">{{ screenType }}</span>
+            <span class="doc-header__sep" aria-hidden="true"> · </span>
+            <span class="doc-header__name">{{ screenName }}</span>
+          </h1>
+        </div>
+        <div v-if="docMeta.length" class="doc-meta">
+          <div v-for="item in docMeta" :key="item.label" class="doc-meta__field">
+            <span class="doc-meta__label">{{ item.label }}</span>
+            <span class="doc-meta__value">{{ item.value }}</span>
+          </div>
+        </div>
+      </header>
 
       <v-alert
         v-if="apiStatus?.message"
@@ -155,6 +160,9 @@
           d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null,
         ).filter(Boolean);
       },
+      docMeta() {
+        return this.screenMeta.filter((item) => item.key !== 'status');
+      },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;
       },
@@ -260,58 +268,76 @@
 </script>
 
 <style scoped>
-  /* ── Page header ─────────────────────────────────────────── */
-  .form-header__eyebrow {
-    display: block;
+  /* ── Document header ─────────────────────────────────────── */
+  .doc-header {
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+    border-top: 3px solid rgb(var(--v-theme-primary));
+    border-radius: 2px 2px 6px 6px;
+    overflow: hidden;
+  }
+  .doc-header__band {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 16px;
+    background: rgba(var(--v-theme-on-surface), 0.025);
+    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.07);
+  }
+  .doc-header__eyebrow {
     font-size: 0.68rem;
     font-weight: var(--prism-font-weight-semibold);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--prism-color-primary);
-    margin-bottom: 5px;
   }
-  .form-header__title {
+  .doc-header__title-block {
+    padding: 16px 18px 14px;
+  }
+  .doc-header__title {
     font-size: var(--prism-text-h3-size);
     font-weight: var(--prism-font-weight-bold);
     color: var(--prism-color-text);
     line-height: 1.2;
     margin: 0;
   }
-
-  /* ── Screen metadata bar ──────────────────────────────────── */
-  .screen-meta {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-    gap: 6px 20px;
-    padding: 12px 14px;
-    background: rgba(var(--v-theme-on-surface), 0.025);
-    border-left: 3px solid rgba(var(--v-theme-on-surface), 0.08);
-    border-radius: 0 4px 4px 0;
+  .doc-header__sep {
+    color: rgba(var(--v-theme-on-surface), 0.25);
+    font-weight: 300;
+    margin: 0 1px;
   }
-  .screen-meta__item {
+  .doc-header__name {
+    color: rgba(var(--v-theme-on-surface), 0.6);
+    font-weight: var(--prism-font-weight-medium);
+  }
+
+  /* ── Metadata strip ───────────────────────────────────────── */
+  .doc-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+    background: rgba(var(--v-theme-on-surface), 0.018);
+  }
+  .doc-meta__field {
     display: flex;
     flex-direction: column;
     gap: 3px;
+    padding: 10px 16px;
     min-width: 0;
-    padding-bottom: 10px;
-    /* border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.07); */
+    box-shadow: 1px 0 0 rgba(var(--v-theme-on-surface), 0.07);
   }
-  .screen-meta__label {
+  .doc-meta__label {
     font-size: 0.62rem;
     font-weight: var(--prism-font-weight-semibold);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: rgba(var(--v-theme-on-surface), 0.42);
   }
-  .screen-meta__value {
+  .doc-meta__value {
     font-size: 0.875rem;
     font-weight: var(--prism-font-weight-semibold);
     color: rgba(var(--v-theme-on-surface), 0.87);
     overflow-wrap: break-word;
-  }
-  .screen-meta__chip {
-    margin-top: 2px;
-    align-self: flex-start;
   }
 
   /* ── Accordion typography ─────────────────────────────────── */
