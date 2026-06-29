@@ -52,7 +52,8 @@
         rounded="pill"
         append-icon="mdi-arrow-right"
         size="small"
-      >Start Form</v-btn>
+        >Start Form</v-btn
+      >
     </div>
   </sub-drawer>
 </template>
@@ -144,45 +145,67 @@
   .v-list--nav {
     padding-inline: 0px;
   }
+
+  /* Group activators and standalone leaf items */
   .v-list-item {
     color: var(--prism-color-text);
     border-radius: 0px;
     padding-left: 8px;
     padding-right: 8px;
     border-left: 3px solid transparent;
-    font-size: var(--prism-text-subtitle-1-size);
+    font-size: var(--prism-text-subtitle-2-size);
     font-weight: var(--prism-font-weight-medium);
     transition:
       background-color var(--prism-transition-fast),
       color var(--prism-transition-fast);
   }
-  .v-list-item:not(.submissions-nav-cta):hover {
+
+  .v-list-item:hover {
     background-color: var(--prism-color-primary-lighter);
     color: var(--prism-color-primary);
   }
+
   .v-list-item--active {
+    color: var(--prism-color-primary) !important;
     border-left-color: var(--prism-color-primary) !important;
     background-color: var(--prism-color-primary-lighter) !important;
   }
+
+  /* Child outline items inside an accordion group */
+  ::v-deep .v-list-group__items .v-list-item {
+    color: var(--prism-color-text-muted);
+    font-weight: var(--prism-font-weight-regular);
+    border-left: none;
+    padding-inline-start: var(--prism-space-8) !important;
+  }
+
+  ::v-deep .v-list-group__items .v-list-item .v-list-item-title {
+    font-size: var(--prism-text-caption-size);
+  }
+
+  ::v-deep .v-list-group__items .v-list-item:hover {
+    background-color: var(--prism-color-primary-lighter);
+    color: var(--prism-color-primary);
+  }
+
+  ::v-deep .v-list-group__items .v-list-item.v-list-item--active {
+    color: var(--prism-color-primary) !important;
+    background-color: transparent !important;
+    border-left-color: transparent !important;
+  }
+
+  ::v-deep .v-list-group__items .v-list-item.v-list-item--active .v-list-item-title {
+    font-weight: var(--prism-font-weight-medium);
+  }
+
   ::v-deep .menu-group-activator .v-list-item__prepend > .v-icon ~ .v-list-item__spacer {
     width: 12px;
   }
+
   ::v-deep .v-list-item--active > .v-list-item__overlay,
   ::v-deep .v-list-item--active:hover > .v-list-item__overlay,
   ::v-deep .v-list-item--active:focus-visible > .v-list-item__overlay {
     opacity: 0 !important;
     pointer-events: none !important;
   }
-  /* .outline-level-0 > * {
-    padding-left: 0px !important;
-  }
-  .outline-level-1 > * {
-    padding-left: 24px !important;
-  }
-  .outline-level-2 > * {
-    padding-left: 32px !important;
-  } */
-  /* ::v-deep .v-list-group__items .v-list-item {
-    padding-inline-start: 32px !important;
-  } */
 </style>
