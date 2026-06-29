@@ -43,27 +43,18 @@
         />
       </template>
     </v-list>
-    <!-- <div style="text-align: center">
+    <div v-if="screenType" class="submissions-nav-cta-container">
       <v-btn
-        rounded
+        :to="`/submission-hub/forms/${screenType}`"
         variant="outlined"
-        :to="`/submission-hub/forms/${screen}`"
+        color="primary-base"
+        block
+        rounded="pill"
         append-icon="mdi-arrow-right"
-        class="mt-4 mx-auto"
+        size="small"
+        >Start Form</v-btn
       >
-        Start Form</v-btn
-      >
-    </div> -->
-
-    <v-list v-if="screenType" density="comfortable" nav>
-      <v-list-item
-        id="form-btn"
-        :to="`/submission-hub/forms/${screen}`"
-        title="Start Form"
-        append-icon="mdi-arrow-right"
-        exact
-      />
-    </v-list>
+    </div>
   </sub-drawer>
 </template>
 
@@ -87,7 +78,9 @@
         return this.$route.params.screenType;
       },
       testAgentPdf() {
-        return this.screenType ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null) : null;
+        return this.screenType
+          ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null)
+          : null;
       },
       shippingPdf() {
         return this.screenType ? PDF_PATHS.SHIPPING : null;
@@ -149,68 +142,70 @@
 </script>
 
 <style scoped>
-  #form-btn {
-    text-align: center;
-    width: 100%;
-    font-weight: bold;
-    color: black;
-    border-radius: 50px;
-    border: 1px solid black;
-  }
   .v-list--nav {
     padding-inline: 0px;
   }
+
+  /* Group activators and standalone leaf items */
   .v-list-item {
-    color: #4b4b4b;
+    color: var(--prism-color-text);
     border-radius: 0px;
     padding-left: 8px;
     padding-right: 8px;
-    border-left: 4px solid #d8d8d8;
-  }
-  /* .v-list-item:not(#form-btn) {
-    border-left-color: #d8d8d8;
-  } */
-  .v-list-item--active {
-    border-left-color: #1d4ed8 !important;
+    border-left: 3px solid transparent;
+    font-size: var(--prism-text-subtitle-2-size);
+    font-weight: var(--prism-font-weight-medium);
+    transition:
+      background-color var(--prism-transition-fast),
+      color var(--prism-transition-fast);
   }
 
-  .menu-group-activator.v-list-item--active > * > * {
-    font-weight: bold !important;
-    color: black !important;
+  .v-list-item:hover {
+    background-color: var(--prism-color-primary-lighter);
+    color: var(--prism-color-primary);
   }
-  .menu-group-activator.v-list-item--active {
-    background: transparent !important;
+
+  .v-list-item--active {
+    color: var(--prism-color-primary) !important;
+    border-left-color: var(--prism-color-primary) !important;
+    background-color: var(--prism-color-primary-lighter) !important;
+  }
+
+  /* Child outline items inside an accordion group */
+  ::v-deep .v-list-group__items .v-list-item {
+    color: var(--prism-color-text-muted);
+    font-weight: var(--prism-font-weight-regular);
+    border-left: none;
+    padding-inline-start: var(--prism-space-8) !important;
+  }
+
+  ::v-deep .v-list-group__items .v-list-item .v-list-item-title {
+    font-size: var(--prism-text-caption-size);
+  }
+
+  ::v-deep .v-list-group__items .v-list-item:hover {
+    background-color: var(--prism-color-primary-lighter);
+    color: var(--prism-color-primary);
+  }
+
+  ::v-deep .v-list-group__items .v-list-item.v-list-item--active {
+    color: var(--prism-color-primary) !important;
     background-color: transparent !important;
-    box-shadow: none !important;
+    border-left-color: transparent !important;
   }
-  .menu-group-activator.v-list-item--active::v-deep > .v-list-item__overlay,
-  .menu-group-activator.v-list-item--active:hover::v-deep > .v-list-item__overlay,
-  .menu-group-activator.v-list-item--active:focus-visible::v-deep > .v-list-item__overlay,
+
+  ::v-deep .v-list-group__items .v-list-item.v-list-item--active .v-list-item-title {
+    font-weight: var(--prism-font-weight-medium);
+  }
+
+  ::v-deep .menu-group-activator .v-list-item__prepend > .v-icon ~ .v-list-item__spacer {
+    width: 12px;
+  }
+
   ::v-deep .v-list-item--active > .v-list-item__overlay,
   ::v-deep .v-list-item--active:hover > .v-list-item__overlay,
   ::v-deep .v-list-item--active:focus-visible > .v-list-item__overlay {
-    background: transparent !important;
-    background-color: transparent !important;
     opacity: 0 !important;
-    visibility: hidden !important;
     pointer-events: none !important;
-  }
-
-  .v-list-item--active {
-    font-weight: bold !important;
-    color: black !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    background-image: none !important;
-  }
-  .outline-level-0 > * {
-    padding-left: 0px !important;
-  }
-  .outline-level-1 > * {
-    padding-left: 24px !important;
-  }
-  .outline-level-2 > * {
-    padding-left: 32px !important;
   }
 </style>

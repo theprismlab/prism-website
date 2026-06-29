@@ -1,22 +1,27 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>{{ screenName }} - Form</prism-page-title>
-
-      <div v-if="screenMeta.length" class="screen-meta mb-4">
-        <div v-for="item in screenMeta" :key="item.label" class="screen-meta__item">
-          <span class="screen-meta__label">{{ item.label }}</span>
-          <v-chip
-            v-if="item.key === 'status'"
-            :color="screenStatus.color"
-            size="small"
-            variant="flat"
-            class="screen-meta__chip"
-            >{{ screenStatus.label }}</v-chip
-          >
-          <span v-else class="screen-meta__value">{{ item.value }}</span>
+      <header class="doc-header mb-5">
+        <div class="doc-header__band">
+          <span class="doc-header__eyebrow">PRISM Submission Form</span>
+          <v-chip v-if="screenStatus" :color="screenStatus.color" size="small" variant="flat">{{
+            screenStatus.label
+          }}</v-chip>
         </div>
-      </div>
+        <div class="doc-header__title-block">
+          <h1 class="doc-header__title">
+            <span class="doc-header__type">{{ screenType }}</span>
+            <span class="doc-header__sep" aria-hidden="true"> · </span>
+            <span class="doc-header__name">{{ screenName }}</span>
+          </h1>
+        </div>
+        <div v-if="docMeta.length" class="doc-meta">
+          <div v-for="item in docMeta" :key="item.label" class="doc-meta__field">
+            <span class="doc-meta__label">{{ item.label }}</span>
+            <span class="doc-meta__value">{{ item.value }}</span>
+          </div>
+        </div>
+      </header>
 
       <v-alert
         v-if="apiStatus?.message"
@@ -42,17 +47,19 @@
         </v-btn>
       </div> -->
 
-      <v-expansion-panels v-else v-model="openPanel">
+      <v-expansion-panels v-else v-model="openPanel" elevation="0">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
-          <v-expansion-panel-title>
-            <v-icon class="mr-2" size="28">{{ step.icon }}</v-icon>
+          <v-expansion-panel-title :class="{ 'is-completed': isCompleted(i) }">
+            <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26"
+              >mdi-check-circle</v-icon
+            >
+            <v-icon
+              v-else
+              class="step-number mr-2"
+              size="26"
+              :icon="`mdi-numeric-${i + 1}-circle-outline`"
+            />
             <span>{{ step.title }}</span>
-            <template #actions>
-              <v-icon v-if="isCompleted(i)" color="teal-accent-4" size="28" class="mr-1"
-                >mdi-check-circle</v-icon
-              >
-              <v-icon>$expand</v-icon>
-            </template>
           </v-expansion-panel-title>
 
           <v-expansion-panel-text>
@@ -88,8 +95,11 @@
               :screen-validation="screenValidation"
             />
 
-            <div v-if="step.id !== 'review'" class="d-flex justify-end mt-4">
-              <v-btn color="primary" @click="completeStep(i)">Continue</v-btn>
+            <div v-if="step.id !== 'review'" class="d-flex align-center justify-end mt-4 gap-3">
+              <!-- <span v-if="attemptedSteps[i] && !stepIsValid[step.id]" class="step-footer-hint mr-3">
+                Fix errors above to continue
+              </span> -->
+              <v-btn color="primary-base" flat rounded @click="completeStep(i)">Continue</v-btn>
             </div>
           </v-expansion-panel-text>
         </v-expansion-panel>
@@ -101,7 +111,7 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
-  import { resolveScreenDisplay, FIELD_LABELS, META_FIELD_KEYS } from '@/submissions/schedule.js';
+  import { resolveScreenDisplay, FIELD_LABELS, FORM_FIELD_KEYS } from '@/submissions/schedule.js';
   import * as api from '@/submissions/api';
   import { getTestData } from './testFixtures.js';
   import { STEP_REGISTRY } from './steps/registry';
@@ -146,10 +156,14 @@
       },
       screenMeta() {
         const d = this.screenDisplay;
+
         if (!d) return [];
-        return META_FIELD_KEYS.map((key) =>
+        return FORM_FIELD_KEYS.map((key) =>
           d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null,
         ).filter(Boolean);
+      },
+      docMeta() {
+        return this.screenMeta.filter((item) => item.key !== 'status');
       },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;
@@ -256,43 +270,116 @@
 </script>
 
 <style scoped>
-  .v-expansion-panel-title {
-    font-size: 1.05rem;
-    letter-spacing: 0.05em;
-    font-weight: bold;
+  /* ── Document header ─────────────────────────────────────── */
+  .doc-header {
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+    border-radius: 6px;
+    overflow: hidden;
   }
-  .v-expansion-panel-title span {
-    color: #3d3d3d !important;
+  .doc-header__band {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 16px;
+    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.07);
   }
-  .v-expansion-panel-title.v-expansion-panel-title--active {
-    background-color: rgba(var(--v-theme-on-surface), 0.04);
+  .doc-header__eyebrow {
+    font-size: 0.68rem;
+    font-weight: var(--prism-font-weight-semibold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--prism-color-primary);
+  }
+  .doc-header__title-block {
+    padding: 16px 18px 14px;
+  }
+  .doc-header__title {
+    font-size: var(--prism-text-h3-size);
+    font-weight: var(--prism-font-weight-bold);
+    color: var(--prism-color-text);
+    line-height: 1.2;
+    margin: 0;
+  }
+  .doc-header__sep {
+    color: rgba(var(--v-theme-on-surface), 0.25);
+    font-weight: 300;
+    margin: 0 1px;
+  }
+  .doc-header__name {
+    color: rgba(var(--v-theme-on-surface), 0.6);
+    font-weight: var(--prism-font-weight-medium);
   }
 
-  .screen-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 32px;
+  /* ── Metadata strip ───────────────────────────────────────── */
+  .doc-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-    padding: 10px 0;
   }
-  .screen-meta__item {
+  .doc-meta__field {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
+    padding: 10px 16px;
+    min-width: 0;
+    box-shadow: 1px 0 0 rgba(var(--v-theme-on-surface), 0.07);
   }
-  .screen-meta__label {
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
+  .doc-meta__label {
+    font-size: 0.62rem;
+    font-weight: var(--prism-font-weight-semibold);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+    color: rgba(var(--v-theme-on-surface), 0.42);
   }
-  .screen-meta__value {
+  .doc-meta__value {
     font-size: 0.875rem;
+    font-weight: var(--prism-font-weight-semibold);
     color: rgba(var(--v-theme-on-surface), 0.87);
+    overflow-wrap: break-word;
   }
-  .screen-meta__chip {
-    margin-top: 2px;
+
+  /* ── Step indicator ──────────────────────────────────────── */
+  .step-number {
+    flex-shrink: 0;
+    color: rgba(var(--v-theme-on-surface), 0.35);
+  }
+  .step-icon {
+    flex-shrink: 0;
+  }
+
+  /* ── Accordion typography ─────────────────────────────────── */
+  .v-expansion-panel-title {
+    font-size: 0.925rem;
+    font-weight: var(--prism-font-weight-semibold);
+    letter-spacing: 0.01em;
+  }
+  .v-expansion-panel-title span {
+    color: var(--prism-color-text) !important;
+  }
+  .v-expansion-panel-title.is-completed span {
+    color: rgba(var(--v-theme-on-surface), 0.45) !important;
+  }
+  .v-expansion-panel-title.v-expansion-panel-title--active .step-number {
+    color: var(--prism-color-primary);
+  }
+  .v-expansion-panel-title.v-expansion-panel-title--active {
+    background-color: rgba(var(--v-theme-on-surface), 0.03);
+  }
+  .v-expansion-panel {
+    margin-top: -1px;
+    /* margin-top: 8px;
+    margin-bottom: 8px; */
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+    box-shadow: none !important;
+  }
+  .v-expansion-panel:not(:first-child)::after {
+    display: none;
+  }
+
+  /* ── Step footer ──────────────────────────────────────────── */
+  .step-footer-hint {
+    font-size: 0.8rem;
+    color: rgba(var(--v-theme-error), 0.75);
   }
 </style>

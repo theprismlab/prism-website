@@ -67,6 +67,17 @@
   };
 </script>
 
+<style>
+  .active-menu-item {
+    color: var(--prism-color-primary) !important;
+    font-weight: var(--prism-font-weight-medium) !important;
+  }
+
+  .submissions-nav-cta-container {
+    padding: 8px 12px 12px;
+  }
+</style>
+
 <style scoped>
   .subdrawer-tab {
     position: fixed;
