@@ -53,7 +53,12 @@
             <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26"
               >mdi-check-circle</v-icon
             >
-            <v-icon v-else class="step-number mr-2" size="26" :icon="`mdi-numeric-${i + 1}-circle-outline`" />
+            <v-icon
+              v-else
+              class="step-number mr-2"
+              size="26"
+              :icon="`mdi-numeric-${i + 1}-circle-outline`"
+            />
             <span>{{ step.title }}</span>
           </v-expansion-panel-title>
 
@@ -90,8 +95,11 @@
               :screen-validation="screenValidation"
             />
 
-            <div v-if="step.id !== 'review'" class="d-flex justify-end mt-4">
-              <v-btn color="primary" @click="completeStep(i)">Continue</v-btn>
+            <div v-if="step.id !== 'review'" class="d-flex align-center justify-end mt-4 gap-3">
+              <!-- <span v-if="attemptedSteps[i] && !stepIsValid[step.id]" class="step-footer-hint mr-3">
+                Fix errors above to continue
+              </span> -->
+              <v-btn color="primary-base" flat rounded @click="completeStep(i)">Continue</v-btn>
             </div>
           </v-expansion-panel-text>
         </v-expansion-panel>
@@ -367,5 +375,11 @@
   }
   .v-expansion-panel:not(:first-child)::after {
     display: none;
+  }
+
+  /* ── Step footer ──────────────────────────────────────────── */
+  .step-footer-hint {
+    font-size: 0.8rem;
+    color: rgba(var(--v-theme-error), 0.75);
   }
 </style>
