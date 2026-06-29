@@ -86,7 +86,9 @@
           {
             id: 'forms',
             title: 'Forms',
-            route: this.screenType ? `/submission-hub/forms/${this.screenType}` : '/submission-hub/forms',
+            route: this.screenType
+              ? `/submission-hub/forms/${this.screenType}`
+              : '/submission-hub/forms',
             icon: 'mdi-file-document-outline',
             activePrefix: '/submission-hub/forms',
           },

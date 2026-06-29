@@ -57,10 +57,10 @@
 
     <v-list v-if="screenType" density="comfortable" nav>
       <v-list-item
-        id="form-btn"
         :to="`/submission-hub/forms/${screen}`"
         title="Start Form"
         append-icon="mdi-arrow-right"
+        class="submissions-nav-cta"
         exact
       />
     </v-list>
@@ -149,14 +149,6 @@
 </script>
 
 <style scoped>
-  #form-btn {
-    text-align: center;
-    width: 100%;
-    font-weight: bold;
-    color: black;
-    border-radius: 50px;
-    border: 1px solid black;
-  }
   .v-list--nav {
     padding-inline: 0px;
   }
@@ -174,10 +166,6 @@
     border-left-color: #1d4ed8 !important;
   }
 
-  .menu-group-activator.v-list-item--active > * > * {
-    font-weight: bold !important;
-    color: black !important;
-  }
   .menu-group-activator.v-list-item--active {
     background: transparent !important;
     background-color: transparent !important;
@@ -197,8 +185,6 @@
   }
 
   .v-list-item--active {
-    font-weight: bold !important;
-    color: black !important;
     background: transparent !important;
     background-color: transparent !important;
     box-shadow: none !important;

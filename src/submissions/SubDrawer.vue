@@ -67,6 +67,22 @@
   };
 </script>
 
+<style>
+  .active-menu-item {
+    font-weight: bold !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  .submissions-nav-cta {
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    color: black;
+    border-radius: 50px;
+    border: 1px solid black;
+  }
+</style>
+
 <style scoped>
   .subdrawer-tab {
     position: fixed;
