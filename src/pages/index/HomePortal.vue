@@ -69,6 +69,7 @@
 <style scoped lang="scss">
   .portal-section {
     position: relative;
+    overflow: hidden;
   }
 
   /* Decorative background orbs */
