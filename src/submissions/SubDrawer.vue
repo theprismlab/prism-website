@@ -73,13 +73,30 @@
     font-weight: var(--prism-font-weight-medium) !important;
   }
 
+  .submissions-nav-cta-container {
+    padding: 8px 12px 12px;
+  }
+
   .submissions-nav-cta {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     width: 100%;
-    font-weight: bold;
-    color: black;
-    border-radius: 50px;
-    border: 1px solid black;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    border: 1.5px solid var(--prism-color-primary);
+    color: var(--prism-color-primary);
+    font-size: var(--prism-text-subtitle-1-size);
+    font-weight: var(--prism-font-weight-medium);
+    font-family: var(--prism-font-family);
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background-color var(--prism-transition-fast), color var(--prism-transition-fast);
+  }
+  .submissions-nav-cta:hover {
+    background-color: var(--prism-color-primary);
+    color: white;
   }
 </style>
 

@@ -17,16 +17,11 @@
         </div>
       </div>
     </div>
-    <div v-if="screenType">
-      <v-list density="comfortable" nav>
-        <v-list-item
-          :to="`/submissions/instructions/${screenType}`"
-          title="Back to Instructions"
-          prepend-icon="mdi-arrow-left"
-          class="submissions-nav-cta"
-          exact
-        />
-      </v-list>
+    <div v-if="screenType" class="submissions-nav-cta-container">
+      <router-link :to="`/submissions/instructions/${screenType}`" class="submissions-nav-cta">
+        <v-icon size="16">mdi-arrow-left</v-icon>
+        Back to Instructions
+      </router-link>
     </div>
   </sub-drawer>
 </template>

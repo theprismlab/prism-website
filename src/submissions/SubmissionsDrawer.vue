@@ -105,7 +105,15 @@
 </script>
 <style scoped>
   .v-list-item--nav {
-    border-radius: 40px !important ;
+    border-radius: 40px !important;
+    transition: background-color var(--prism-transition-fast), color var(--prism-transition-fast);
+  }
+  .v-list-item--nav:hover {
+    background-color: var(--prism-color-primary-lighter);
+    color: var(--prism-color-primary);
+  }
+  ::v-deep .v-list-item--nav:hover > .v-list-item__overlay {
+    opacity: 0 !important;
   }
   ::v-deep .v-list-item__prepend > .v-icon ~ .v-list-item__spacer {
     width: 12px !important;

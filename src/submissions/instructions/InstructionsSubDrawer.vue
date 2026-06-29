@@ -55,15 +55,12 @@
       >
     </div> -->
 
-    <v-list v-if="screenType" density="comfortable" nav>
-      <v-list-item
-        :to="`/submission-hub/forms/${screen}`"
-        title="Start Form"
-        append-icon="mdi-arrow-right"
-        class="submissions-nav-cta"
-        exact
-      />
-    </v-list>
+    <div v-if="screenType" class="submissions-nav-cta-container">
+      <router-link :to="`/submission-hub/forms/${screenType}`" class="submissions-nav-cta">
+        Start Form
+        <v-icon size="16">mdi-arrow-right</v-icon>
+      </router-link>
+    </div>
   </sub-drawer>
 </template>
 
