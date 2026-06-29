@@ -5,13 +5,19 @@
       <div v-for="(step, i) in steps" :key="step.id">
         <div class="d-flex align-start step-clickable" @click="handleStepClick(i)">
           <div class="step-track mr-3">
-            <div class="step-circle" :class="circleClass(i)">
-              <v-icon v-if="stepStatus(i) === 'completed'" size="13">mdi-check</v-icon>
-              <span v-else class="text-caption font-weight-bold">{{ i + 1 }}</span>
-            </div>
+            <v-icon v-if="stepStatus(i) === 'completed'" color="teal-accent-4" size="22"
+              >mdi-check-circle</v-icon
+            >
+            <v-icon
+              v-else
+              :color="stepStatus(i) === 'current' ? 'primary' : undefined"
+              :class="{ 'step-icon-muted': stepStatus(i) !== 'current' }"
+              size="22"
+              :icon="`mdi-numeric-${i + 1}-circle-outline`"
+            />
             <div v-if="i < steps.length - 1" class="step-connector" :class="connectorClass(i)" />
           </div>
-          <span class="step-label prism-text-subtitle-2 pt-1" :class="labelClass(i)">
+          <span class="step-label prism-text-subtitle-2" :class="labelClass(i)">
             {{ step.title }}
           </span>
         </div>
@@ -26,7 +32,8 @@
         rounded="pill"
         prepend-icon="mdi-arrow-left"
         size="small"
-      >Back to Instructions</v-btn>
+        >Back to Instructions</v-btn
+      >
     </div>
   </sub-drawer>
 </template>
@@ -65,14 +72,6 @@
       handleStepClick(i) {
         this.formStore.setOpenPanel(this.screenType, i);
       },
-      circleClass(i) {
-        const s = this.stepStatus(i);
-        return {
-          'circle-completed': s === 'completed',
-          'circle-current': s === 'current',
-          'circle-available': s === 'available',
-        };
-      },
       connectorClass(i) {
         return {
           'connector-done': this.stepStatus(i) === 'completed',
@@ -96,34 +95,11 @@
     flex-direction: column;
     align-items: center;
     flex-shrink: 0;
-    width: 24px;
+    width: 22px;
   }
 
-  .step-circle {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .circle-completed {
-    background-color: rgb(var(--v-theme-teal-accent-4));
-    color: white;
-  }
-
-  .circle-current {
-    /* background-color: rgb(var(--v-theme-primary));
-    color: white; */
-    border: 2px solid black;
-    color: black;
-  }
-
-  .circle-available {
-    border: 2px solid rgba(var(--v-border-color), var(--v-border-opacity));
-    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  .step-icon-muted {
+    color: rgba(var(--v-theme-on-surface), 0.35);
   }
 
   .step-connector {
@@ -142,8 +118,8 @@
   }
 
   .step-label {
-    line-height: 1.4;
-    min-height: 44px;
+    line-height: 1.33em;
+    padding-top: 0.1em;
   }
 
   .step-clickable {

@@ -4,12 +4,9 @@
       <header class="doc-header mb-5">
         <div class="doc-header__band">
           <span class="doc-header__eyebrow">PRISM Submission Form</span>
-          <v-chip
-            v-if="screenStatus"
-            :color="screenStatus.color"
-            size="small"
-            variant="flat"
-          >{{ screenStatus.label }}</v-chip>
+          <v-chip v-if="screenStatus" :color="screenStatus.color" size="small" variant="flat">{{
+            screenStatus.label
+          }}</v-chip>
         </div>
         <div class="doc-header__title-block">
           <h1 class="doc-header__title">
@@ -50,13 +47,13 @@
         </v-btn>
       </div> -->
 
-      <v-expansion-panels v-else v-model="openPanel">
+      <v-expansion-panels v-else v-model="openPanel" elevation="0">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
-          <v-expansion-panel-title>
+          <v-expansion-panel-title :class="{ 'is-completed': isCompleted(i) }">
             <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26"
               >mdi-check-circle</v-icon
             >
-            <span v-else class="step-number mr-2">{{ i + 1 }}</span>
+            <v-icon v-else class="step-number mr-2" size="26" :icon="`mdi-numeric-${i + 1}-circle-outline`" />
             <span>{{ step.title }}</span>
           </v-expansion-panel-title>
 
@@ -336,18 +333,8 @@
 
   /* ── Step indicator ──────────────────────────────────────── */
   .step-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
     flex-shrink: 0;
-    border-radius: 50%;
-    border: 1.5px solid rgba(var(--v-theme-on-surface), 0.25);
-    font-size: 0.75rem;
-    font-weight: var(--prism-font-weight-semibold);
-    color: rgba(var(--v-theme-on-surface), 0.55);
-    line-height: 1;
+    color: rgba(var(--v-theme-on-surface), 0.35);
   }
   .step-icon {
     flex-shrink: 0;
@@ -362,7 +349,23 @@
   .v-expansion-panel-title span {
     color: var(--prism-color-text) !important;
   }
+  .v-expansion-panel-title.is-completed span {
+    color: rgba(var(--v-theme-on-surface), 0.45) !important;
+  }
+  .v-expansion-panel-title.v-expansion-panel-title--active .step-number {
+    color: var(--prism-color-primary);
+  }
   .v-expansion-panel-title.v-expansion-panel-title--active {
     background-color: rgba(var(--v-theme-on-surface), 0.03);
+  }
+  .v-expansion-panel {
+    margin-top: -1px;
+    /* margin-top: 8px;
+    margin-bottom: 8px; */
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+    box-shadow: none !important;
+  }
+  .v-expansion-panel:not(:first-child)::after {
+    display: none;
   }
 </style>
