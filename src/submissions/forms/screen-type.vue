@@ -2,34 +2,18 @@
   <page>
     <app-container wide>
       <prism-page-title>PRISM {{ screenType }} Form</prism-page-title>
-      <v-table v-if="docMeta.length" density="compact" class="doc-meta-table mb-5">
-        <thead>
-          <tr>
-            <th v-for="item in docMeta" :key="item.key" class="doc-meta-table__th">
-              {{ item.label }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td
-              v-for="item in docMeta"
-              :key="item.key"
-              class="doc-meta-table__td"
-              :data-label="item.label"
-            >
-              <v-chip
-                v-if="item.key === 'status' && screenStatus"
-                :color="screenStatus.color"
-                size="small"
-                variant="flat"
-                >{{ screenStatus.label }}</v-chip
-              >
-              <span v-else>{{ item.value }}</span>
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
+      <div v-if="docMeta.length" class="doc-meta-grid mb-5">
+        <div v-for="item in docMeta" :key="item.key" class="doc-meta-grid__item">
+          <span class="doc-meta-grid__label">{{ item.label }}</span>
+          <v-chip
+            v-if="item.key === 'status' && screenStatus"
+            :color="screenStatus.color"
+            size="small"
+            variant="flat"
+          >{{ screenStatus.label }}</v-chip>
+          <span v-else class="doc-meta-grid__value">{{ item.value }}</span>
+        </div>
+      </div>
 
       <v-alert
         v-if="apiStatus?.message"
@@ -278,69 +262,40 @@
 </script>
 
 <style scoped>
-  /* ── Metadata table ───────────────────────────────────────── */
-  .doc-meta-table {
-    width: fit-content;
-    border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  /* ── Metadata grid ────────────────────────────────────────── */
+  .doc-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 6px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
-  .doc-meta-table :deep(.v-table__wrapper),
-  .doc-meta-table :deep(table) {
-    width: fit-content;
+  .doc-meta-grid__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   }
-  .doc-meta-table__th {
-    font-size: 0.75rem !important;
-    font-weight: 600 !important;
+  .doc-meta-grid__item:nth-child(odd) {
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .doc-meta-grid__item:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+  .doc-meta-grid__label {
+    font-size: 0.75rem;
+    font-weight: 600;
     letter-spacing: 0.06em;
-    color: rgba(0, 0, 0, 0.6) !important;
-    background: rgba(0, 0, 0, 0.015);
-    border-bottom: 2px solid rgba(0, 0, 0, 0.12) !important;
-    white-space: normal !important;
-    padding: 8px 14px !important;
+    color: rgba(0, 0, 0, 0.6);
+    flex-shrink: 0;
   }
-  .doc-meta-table__td {
+  .doc-meta-grid__value {
     font-size: 0.875rem;
     color: rgba(0, 0, 0, 0.82);
-    padding: 8px 14px !important;
-    border-bottom: none !important;
-    white-space: normal !important;
-  }
-
-  @media (max-width: 900px) {
-    .doc-meta-table :deep(table) {
-      display: block;
-    }
-    .doc-meta-table :deep(thead) {
-      display: none;
-    }
-    .doc-meta-table :deep(tbody),
-    .doc-meta-table :deep(tr) {
-      display: block;
-      width: 100%;
-    }
-
-    .doc-meta-table__td {
-      display: flex !important;
-      justify-content: space-between;
-      align-items: center;
-      white-space: normal !important;
-      border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.06) !important;
-    }
-    .doc-meta-table__td:last-child {
-      border-bottom: none !important;
-    }
-    .doc-meta-table__td::before {
-      content: attr(data-label);
-      flex-shrink: 0;
-      margin-right: 16px;
-      font-size: 0.72rem;
-      font-weight: var(--prism-font-weight-semibold);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(var(--v-theme-on-surface), 0.45);
-    }
+    text-align: right;
   }
 
   /* ── Step indicator ──────────────────────────────────────── */
