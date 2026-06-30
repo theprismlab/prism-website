@@ -2,9 +2,7 @@
   font-weight: 600;
   color: var(--base-color-gray--900);
 }
-p {
-  margin: 12px 0 24px 0; // not sure is this is needed
-}
+
 .page-section {
   margin-top: 48px;
   margin-bottom: 48px;
@@ -57,24 +55,9 @@ p {
   background: linear-gradient(180deg, #d4eaf6, #f9f9f9 75%, #fff);
 }
 
-.elevation-1 {
-  box-shadow: 2px 4px 12px #00000014 !important;
-}
-
 a {
   text-decoration: none !important;
   color: var(--v-primary-base);
-}
-a:hover {
-  opacity: 0.85;
-}
-// a:not(button){
-//     text-decoration: none !important;
-//     border-bottom:0.25px solid var(--v-primary);
-//     cursor: pointer;
-// }
-.no-border {
-  border: none !important;
 }
 
 ul {
@@ -85,12 +68,12 @@ li {
   margin-bottom: 0.65em;
   padding-left: 6px;
 }
+// Below are classes to add to prism-component-lib (once finalized)
 .prism-text-form-group-label {
   font-size: 1.025rem;
   margin-top: 24px;
   font-weight: 600;
   color: var(--base-color-gray--900);
-
   letter-spacing: 0.03em;
 }
 .prism-text-form-label {
@@ -107,15 +90,6 @@ li {
   margin-bottom: 0.5rem;
 }
 
-// xxl
-@media (min-width: 2560px) {
-}
-// xl
-@media (min-width: 1920px) and (max-width: 2560px) {
-}
-// lg
-@media (min-width: 1280px) and (max-width: 1920px) {
-}
 // md
 @media (min-width: 960px) and (max-width: 1280px) {
   .v-container {

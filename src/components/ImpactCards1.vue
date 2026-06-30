@@ -74,8 +74,6 @@
   .card-title {
     margin: 0;
     line-height: 1.2em !important;
-    font-family: 'Archivo', sans-serif !important;
-    font-variation-settings: "wdth" 125;
   }
 
   .card-subtitle {

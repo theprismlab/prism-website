@@ -41,14 +41,6 @@ export default defineConfig({
             styles: 'wght@100;200;300;400;500;600;700;800;900',
           },
           {
-            name: 'Playfair Display',
-            styles: 'wght@100;200;300;400;500;600;700;800;900',
-          },
-          {
-            name: 'Sorts Mill Goudy',
-            styles: 'wght@400;500;600;700;800;900',
-          },
-          {
             name: 'Archivo Expanded',
             styles: 'wght@400;500;600;700;800;900',
           },

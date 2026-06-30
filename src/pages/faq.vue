@@ -5,7 +5,7 @@
       <section class="faq-list">
         <v-expansion-panels variant="accordion" flat>
           <v-expansion-panel v-for="item in faqs" :key="item.question">
-            <v-expansion-panel-title>
+            <v-expansion-panel-title class="prism-text-h4">
               {{ item.question }}
             </v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -96,19 +96,19 @@
     display: none;
   }
 
-  .v-expansion-panel-title {
+  /* .v-expansion-panel-title {
     font-size: 0.925rem;
     font-weight: 500;
     letter-spacing: 0.01em;
-  }
+  } */
 
   .v-expansion-panel-title.v-expansion-panel-title--active {
     background-color: rgba(var(--v-theme-on-surface), 0.03);
   }
 
-  .faq-answer {
+  /* .faq-answer {
     font-size: 0.875rem;
     color: rgb(120, 126, 140);
     line-height: 1.6;
-  }
+  } */
 </style>

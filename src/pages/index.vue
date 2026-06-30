@@ -2,9 +2,9 @@
   <page class="mt-0 pt-0">
     <HomeHero></HomeHero>
 
-    <page-section background="multi-focal-cool" :padding="24">
+    <page-section background="multi-focal-cool" :padding="16">
       <app-container>
-        <p class="prism-text-h3 text-center mb-0" style="line-height: 2.4rem">
+        <p class="prism-text-display-medium text-center">
           Our lab partners with researchers to
           <span class="text-gradient-blue"
             >reveal clinically important differences in drug behavior</span
@@ -15,25 +15,23 @@
       </app-container>
     </page-section>
 
-    <page-section class="my-12" :padding="0">
-      <app-container>
-        <p class="prism-text-body-1">
-          Cancer cell line models remain essential in drug development, providing a controlled
-          system to assess potency and confirm on-target engagement. At a larger scale using PRISM,
-          these models provide power to
-          <span class="text-gradient-blue">understand heterogeneity</span> in drug response among
-          cell lines harboring the targeted alteration(s), assess
-          <span class="text-gradient-blue"
-            >selectivity relative to those without target alterations, and investigate potential
-            biomarkers associated with these responses</span
-          >.
-        </p>
-      </app-container>
+    <app-container class="my-12">
+      <p class="prism-text-body-xlarge" style="max-width: 720px; margin: auto">
+        Cancer cell line models remain essential in drug development, providing a controlled system
+        to assess potency and confirm on-target engagement. At a larger scale using PRISM, these
+        models provide power to
+        <span class="text-gradient-blue">understand heterogeneity</span> in drug response among cell
+        lines harboring the targeted alteration(s), assess
+        <span class="text-gradient-blue"
+          >selectivity relative to those without target alterations, and investigate potential
+          biomarkers associated with these responses</span
+        >.
+      </p>
+    </app-container>
 
-      <app-container wide>
-        <HomeOverviewCards></HomeOverviewCards>
-      </app-container>
-    </page-section>
+    <app-container wide class="my-12">
+      <HomeOverviewCards></HomeOverviewCards>
+    </app-container>
 
     <page-section background="gradient">
       <app-container wide>
