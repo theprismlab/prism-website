@@ -2,18 +2,28 @@
   <page>
     <app-container wide>
       <prism-page-title>PRISM {{ screenType }} Form</prism-page-title>
-      <div v-if="docMeta.length" class="doc-meta mb-5">
-        <div v-for="item in docMeta" :key="item.label" class="doc-meta__field">
-          <span class="doc-meta__label">{{ item.label }}</span>
-          <v-chip
-            v-if="item.key === 'status' && screenStatus"
-            :color="screenStatus.color"
-            size="small"
-            variant="flat"
-          >{{ screenStatus.label }}</v-chip>
-          <span v-else class="doc-meta__value">{{ item.value }}</span>
-        </div>
-      </div>
+      <v-table v-if="docMeta.length" density="compact" class="doc-meta-table mb-5">
+        <thead>
+          <tr>
+            <th v-for="item in docMeta" :key="item.key" class="doc-meta-table__th">
+              {{ item.label }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td v-for="item in docMeta" :key="item.key" class="doc-meta-table__td">
+              <v-chip
+                v-if="item.key === 'status' && screenStatus"
+                :color="screenStatus.color"
+                size="small"
+                variant="flat"
+              >{{ screenStatus.label }}</v-chip>
+              <span v-else>{{ item.value }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
 
       <v-alert
         v-if="apiStatus?.message"
@@ -262,34 +272,31 @@
 </script>
 
 <style scoped>
-  /* ── Metadata strip ───────────────────────────────────────── */
-  .doc-meta {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  /* ── Metadata table ───────────────────────────────────────── */
+  .doc-meta-table {
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
     border-radius: 6px;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
-  .doc-meta__field {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 10px 16px;
-    min-width: 0;
-    box-shadow: 1px 0 0 rgba(var(--v-theme-on-surface), 0.07);
-  }
-  .doc-meta__label {
-    font-size: 0.62rem;
-    font-weight: var(--prism-font-weight-semibold);
-    letter-spacing: 0.1em;
+  .doc-meta-table__th {
+    font-size: 0.72rem !important;
+    font-weight: var(--prism-font-weight-semibold) !important;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(var(--v-theme-on-surface), 0.42);
+    color: rgba(var(--v-theme-on-surface), 0.45) !important;
+    background: rgba(var(--v-theme-on-surface), 0.015);
+    border-bottom: 2px solid rgba(var(--v-theme-on-surface), 0.1) !important;
+    white-space: nowrap;
+    padding: 10px 16px !important;
   }
-  .doc-meta__value {
+  .doc-meta-table__td {
     font-size: 0.875rem;
     font-weight: var(--prism-font-weight-semibold);
     color: rgba(var(--v-theme-on-surface), 0.87);
-    overflow-wrap: break-word;
+    padding: 12px 16px !important;
+    border-bottom: none !important;
+    white-space: nowrap;
   }
 
   /* ── Step indicator ──────────────────────────────────────── */
