@@ -1,24 +1,19 @@
 <template>
   <page>
     <app-container wide>
-      <header class="doc-header mb-5">
-        <div class="doc-header__band">
-          <span class="doc-header__eyebrow">PRISM Submission Form</span>
+      <prism-page-title>PRISM {{ screenType }} Form</prism-page-title>
+      <div v-if="docMeta.length" class="doc-meta mb-5">
+        <div v-for="item in docMeta" :key="item.label" class="doc-meta__field">
+          <span class="doc-meta__label">{{ item.label }}</span>
+          <v-chip
+            v-if="item.key === 'status' && screenStatus"
+            :color="screenStatus.color"
+            size="small"
+            variant="flat"
+          >{{ screenStatus.label }}</v-chip>
+          <span v-else class="doc-meta__value">{{ item.value }}</span>
         </div>
-        <div class="doc-header__title-block">
-          <h1 class="doc-header__title">
-            <span class="doc-header__type">{{ screenType }}</span>
-            <span class="doc-header__sep" aria-hidden="true"> · </span>
-            <span class="doc-header__name">{{ screenName }}</span>
-          </h1>
-        </div>
-        <div v-if="docMeta.length" class="doc-meta">
-          <div v-for="item in docMeta" :key="item.label" class="doc-meta__field">
-            <span class="doc-meta__label">{{ item.label }}</span>
-            <span class="doc-meta__value">{{ item.value }}</span>
-          </div>
-        </div>
-      </header>
+      </div>
 
       <v-alert
         v-if="apiStatus?.message"
@@ -267,52 +262,13 @@
 </script>
 
 <style scoped>
-  /* ── Document header ─────────────────────────────────────── */
-  .doc-header {
-    border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-  .doc-header__band {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 16px;
-    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.07);
-  }
-  .doc-header__eyebrow {
-    font-size: 0.68rem;
-    font-weight: var(--prism-font-weight-semibold);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--prism-color-primary);
-  }
-  .doc-header__title-block {
-    padding: 16px 18px 14px;
-  }
-  .doc-header__title {
-    font-size: var(--prism-text-h3-size);
-    font-weight: var(--prism-font-weight-bold);
-    color: var(--prism-color-text);
-    line-height: 1.2;
-    margin: 0;
-  }
-  .doc-header__sep {
-    color: rgba(var(--v-theme-on-surface), 0.25);
-    font-weight: 300;
-    margin: 0 1px;
-  }
-  .doc-header__name {
-    color: rgba(var(--v-theme-on-surface), 0.6);
-    font-weight: var(--prism-font-weight-medium);
-  }
-
   /* ── Metadata strip ───────────────────────────────────────── */
   .doc-meta {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+    border-radius: 6px;
+    overflow: hidden;
   }
   .doc-meta__field {
     display: flex;
