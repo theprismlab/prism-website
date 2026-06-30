@@ -47,15 +47,14 @@
     width: 100%;
     margin: 0 auto;
   }
-  .page-section--bg-muted {
-    background-color: var(--v-grey-lighten-5);
-  }
-  .page-section--bg-tinted {
-    background-color: var(--v-primary-lighten-6-desaturated);
-  }
+
   .page-section--bg-gradient {
     color: white;
-    background: linear-gradient(120deg, var(--v-primary-accent-3), var(--v-primary-darken-4));
+    background: linear-gradient(120deg, var(--prism-color-blue-700), var(--prism-color-indigo-700));
+  }
+  .page-section--bg-portal {
+    color: white;
+    background: linear-gradient(135deg, var(--prism-color-blue-800), var(--prism-color-indigo-600) 60%, var(--prism-color-blue-700));
   }
   .page-section--bg-multi-focal-cool {
     background:

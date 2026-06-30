@@ -33,32 +33,28 @@
       <HomeOverviewCards></HomeOverviewCards>
     </app-container>
 
-    <page-section background="gradient">
+    <page-section background="portal">
       <app-container wide>
         <HomePortal></HomePortal>
       </app-container>
     </page-section>
 
-    <page-section class="my-12" :padding="0">
-      <app-container>
-        <section-overline class="text-center">Impact</section-overline>
-        <prism-section-title class="text-center"
-          >Dedicated to advancing oncology research</prism-section-title
-        >
-        <p class="prism-text-body-1 text-center">
-          Working with pharmaceutical and biotech companies and academics to improve the outcome for
-          cancer patients worldwide.
-        </p>
-        <HomeImpactCards></HomeImpactCards>
-      </app-container>
-    </page-section>
+    <app-container>
+      <section-overline class="text-center">Impact</section-overline>
+      <prism-section-title class="text-center"
+        >Dedicated to advancing oncology research</prism-section-title
+      >
+      <p class="prism-text-body-xlarge text-center">
+        Working with pharmaceutical and biotech companies and academics to improve the outcome for
+        cancer patients worldwide.
+      </p>
+      <HomeImpactCards></HomeImpactCards>
+    </app-container>
 
-    <page-section class="my-12" :padding="0">
-      <app-container>
-        <section-overline class="text-center">Testimonials</section-overline>
-        <HomeTestimonialCards class="pt-8"></HomeTestimonialCards>
-      </app-container>
-    </page-section>
+    <app-container>
+      <section-overline class="text-center">Testimonials</section-overline>
+      <HomeTestimonialCards class="pt-8"></HomeTestimonialCards>
+    </app-container>
   </page>
 </template>
 <script>
