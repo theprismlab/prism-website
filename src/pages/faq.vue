@@ -4,7 +4,7 @@
       <prism-page-title>Frequently Asked Questions</prism-page-title>
       <section class="faq-list">
         <v-expansion-panels variant="accordion" flat>
-          <v-expansion-panel v-for="item in faqs" :key="item.question" class="faq-panel">
+          <v-expansion-panel v-for="item in faqs" :key="item.question">
             <v-expansion-panel-title>
               {{ item.question }}
             </v-expansion-panel-title>
@@ -83,17 +83,27 @@
     max-width: 720px;
   }
 
-  /* :deep(.v-expansion-panel--active),
-  :deep(.v-expansion-panel--active + .v-expansion-panel) {
-    margin-top: 0;
+  /* .v-expansion-panel {
+    margin-top: -1px;
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+    box-shadow: none !important;
   } */
-
-  .faq-panel {
+  .v-expansion-panel {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   }
 
-  .faq-panel:last-child {
-    border-bottom: none;
+  .v-expansion-panel:not(:first-child)::after {
+    display: none;
+  }
+
+  .v-expansion-panel-title {
+    font-size: 0.925rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .v-expansion-panel-title.v-expansion-panel-title--active {
+    background-color: rgba(var(--v-theme-on-surface), 0.03);
   }
 
   .faq-answer {
