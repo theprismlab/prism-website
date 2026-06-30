@@ -4,9 +4,6 @@
       <header class="doc-header mb-5">
         <div class="doc-header__band">
           <span class="doc-header__eyebrow">PRISM Submission Form</span>
-          <v-chip v-if="screenStatus" :color="screenStatus.color" size="small" variant="flat">{{
-            screenStatus.label
-          }}</v-chip>
         </div>
         <div class="doc-header__title-block">
           <h1 class="doc-header__title">
@@ -163,7 +160,7 @@
         ).filter(Boolean);
       },
       docMeta() {
-        return this.screenMeta.filter((item) => item.key !== 'status');
+        return this.screenMeta;
       },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;
