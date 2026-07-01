@@ -1,21 +1,21 @@
 <template>
   <page>
-    <app-container>
+    <app-container narrow>
       <prism-page-title>Webinars</prism-page-title>
       <section class="webinar-list">
-        <div
-          v-for="webinar in webinars"
-          :key="webinar.title"
-          class="webinar-card"
-        >
+        <div v-for="webinar in webinars" :key="webinar.title" class="webinar-card">
           <span class="webinar-card__accent" />
           <div class="webinar-card__body">
             <div class="webinar-card__eyebrow">
               <v-icon class="webinar-card__eyebrow-icon" size="14">mdi-play-circle-outline</v-icon>
               <span>Webinar</span>
             </div>
-            <h3 class="webinar-card__title">{{ webinar.title }}</h3>
-            <p class="webinar-card__description">{{ webinar.description }}</p>
+            <h3 class="prism-text-headline-small font-weight-light">
+              {{ webinar.title }}
+            </h3>
+            <p class="prism-text-body-large text-medium-emphasis">
+              {{ webinar.description }}
+            </p>
             <div class="webinar-card__footer">
               <a
                 class="webinar-card__link"
@@ -66,7 +66,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    max-width: 720px;
   }
 
   .webinar-card {
@@ -88,6 +87,7 @@
   }
 
   .webinar-card:hover {
+    cursor: pointer;
     border-color: rgba(39, 127, 253, 0.4);
     box-shadow:
       0 2px 4px rgba(20, 30, 60, 0.07),
@@ -125,22 +125,6 @@
 
   .webinar-card__eyebrow-icon {
     color: #277ffd;
-  }
-
-  .webinar-card__title {
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1.35;
-    font-weight: 600;
-    color: rgb(23, 23, 23);
-    letter-spacing: -0.005em;
-  }
-
-  .webinar-card__description {
-    margin: 0;
-    font-size: 0.875rem;
-    color: rgb(120, 126, 140);
-    line-height: 1.5;
   }
 
   .webinar-card__footer {
