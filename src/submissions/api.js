@@ -16,14 +16,6 @@ async function authedGet(apiURL, path) {
   return res.data;
 }
 
-async function authedPost(apiURL, path, payload) {
-  const userKey = await getTempApiKey(apiURL);
-  const res = await axios.post(apiURL + path, payload, {
-    headers: { ...JSON_HEADERS, user_key: userKey },
-  });
-  return res.data;
-}
-
 export async function fetchSubmissionMessage(apiURL, submission_type) {
   let path = 'prism_submission_window_message';
   if (submission_type) {
@@ -36,10 +28,6 @@ export async function getCollaboratorList(apiURL) {
   return authedGet(apiURL, 'mts_institutions');
 }
 
-// export async function postSubmission(apiURL, payload) {
-//   console.log(apiURL, 'mts_compound_submissions/createSubmission', payload);
-//   return authedPost(apiURL, 'mts_compound_submissions/createSubmission', payload);
-// }
 export async function postSubmission(apiURL, payload) {
   const url = apiURL + 'mts_compound_submissions/createSubmission';
   const userKey = await getTempApiKey(apiURL);
@@ -49,7 +37,6 @@ export async function postSubmission(apiURL, payload) {
     'Request:',
     JSON.stringify({ url, payload, headers: { ...JSON_HEADERS, user_key: userKey } }),
   );
-  // console.log('Request:', { url, payload, headers: { ...JSON_HEADERS, user_key: userKey } });
 
   const res = await axios.post(url, payload, {
     headers: {
@@ -60,11 +47,9 @@ export async function postSubmission(apiURL, payload) {
   });
   return res.data;
 }
-//{"error":"Model::findById requires the id argument"}
 
 export async function findScreens(apiURL) {
-  const path =
-    'prism_screens?filter=' + JSON.stringify({ where: { screen_category: 'EXTERNAL' } });
+  const path = 'prism_screens?filter=' + JSON.stringify({ where: { screen_category: 'EXTERNAL' } });
   return authedGet(apiURL, path);
 }
 
