@@ -95,7 +95,10 @@ export async function findScreen(apiURL, screen) {
 export async function validateScreen(apiURL, screen, screenType) {
   try {
     const foundRecord = await findScreen(apiURL, screen);
-    if (foundRecord && foundRecord.name === screen && foundRecord.screen_type) {
+    const foundType = foundRecord?.screen_type?.endsWith('_SEQ')
+      ? foundRecord.screen_type.replace('_SEQ', '')
+      : foundRecord?.screen_type;
+    if (foundRecord && foundRecord.name === screen && foundType === screenType) {
       return;
     }
     throw "Screen '" + screen + "' is not associated with submission type '" + screenType + "'";
