@@ -68,22 +68,36 @@ Every schema module exports three functions consumed by `STEP_REGISTRY`:
 export function getInitialData(screenType) { ... }
 
 // Returns [{ label, value }] pairs for the Review step summary.
-export function getSummary(data, screenType) { ... }
+export function getSummary(data) { ... }
 
 // Returns { fieldKey: errorMessage } — empty object means valid.
 export function validate(data, screenType) { ... }
 ```
+
+`screenType` is only meaningful for schemas whose fields or rules actually differ by screen —
+`STEP_REGISTRY`/`ReviewStep.vue` call every schema the same way regardless, so a schema that
+doesn't need it just omits the parameter. Only `testAgentSchema.js` currently uses `screenType`
+in all three functions (different fields, different validation math, and CPS-only combination
+rows — see the table below). `collaboratorSchema.js` and `reviewSchema.js` don't take it at all.
+`institutionSchema.js` accepts it in `validate(data, _screenType)` but ignores it — same
+institution fields for every screen. `acknowledgementsSchema.js` also doesn't take it: every
+screen shares the same acknowledgement fields, so unlike `testAgentSchema.js`'s
+`buildScreenFields(screenType)`, it exports a plain `getFields()` with no per-screen selection.
+(`screenType` is still passed as a *prop* to `AcknowledgmentsStep.vue`, but only to build the
+links into screen-specific instructions pages inside the acknowledgement text — not to choose
+which fields render.)
 
 Schemas are plain JS with no Vue dependencies, making them easy to unit-test in isolation.
 
 ## Screen types
 
 The route is `/submission-hub/forms/:screenType/:screen` — `screenType` (`MTS`, `CPS`, `EPS`,
-`APS`, `AIR`) is passed through to every step's `validate` and `buildScreenFields` call;
-`screen` is the specific resolved screen name (e.g. `MTS033`), used for the header display and
-as the `screen` field in the submission payload. How `:screen` gets resolved, cached, and
-validated against the API is a separate concern from the form steps documented here — see
-[../SCREEN_STATUS_MIGRATION.md](../SCREEN_STATUS_MIGRATION.md).
+`APS`, `AIR`) is passed down to every step component as a prop, but (per the previous section)
+only `TestAgentStep.vue`/`testAgentSchema.js` actually varies fields or validation by it; other
+steps either ignore it or don't take it. `screen` is the specific resolved screen name (e.g.
+`MTS033`), used for the header display and as the `screen` field in the submission payload. How
+`:screen` gets resolved, cached, and validated against the API is a separate concern from the
+form steps documented here — see [../SCREEN_STATUS_MIGRATION.md](../SCREEN_STATUS_MIGRATION.md).
 
 **Test agent requirements by screen type** (`SCREEN_CONFIG` in `testAgentSchema.js`):
 
