@@ -102,9 +102,13 @@
 <script>
   import { ASSAYS } from '@/utils/assays';
   import { enrichedSchedule, FIELD_LABELS, TABLE_FIELD_KEYS } from './schedule.js';
+  import { useActiveScreenStore } from './active-screen-store.js';
 
   export default {
     name: 'SubmissionsOverview',
+    setup() {
+      return { activeScreenStore: useActiveScreenStore() };
+    },
     data() {
       return {
         headers: TABLE_FIELD_KEYS.map((key) => ({
@@ -112,7 +116,6 @@
           key,
           sortable: false,
         })),
-        schedule: enrichedSchedule(),
         assays: ASSAYS,
         participationSteps: [
           'Complete a submission form',
@@ -120,6 +123,23 @@
           'Ship your compounds to our lab',
         ],
       };
+    },
+    computed: {
+      // Screen names the API currently reports as ACTIVE, used to override the schedule's
+      // window-date guess so a screen the API says is open always shows as OPEN.
+      activeScreenNames() {
+        return new Set(
+          this.activeScreenStore.screens
+            .filter((screen) => screen.status === 'ACTIVE')
+            .map((screen) => screen.name),
+        );
+      },
+      schedule() {
+        return enrichedSchedule(this.activeScreenNames);
+      },
+    },
+    mounted() {
+      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
     },
   };
 </script>

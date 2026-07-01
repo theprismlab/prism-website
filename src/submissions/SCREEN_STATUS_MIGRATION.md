@@ -28,20 +28,32 @@ than one nav surface:
 | Component | How it resolves `:screen` |
 |---|---|
 | [index.vue](index.vue) hub table | Already has it — each row is a static `SCHEDULE` entry with its own `screen_name`. |
-| [ScreenSelector.vue](ScreenSelector.vue) (type dropdown, shown in the forms/instructions drawers) | Calls `findActiveScreen(apiURL, newType)` when switching type while already on a `:screen` route, so it never carries over the old type's screen name. |
-| [SubmissionsDrawer.vue](SubmissionsDrawer.vue) / [InstructionsSubDrawer.vue](instructions/InstructionsSubDrawer.vue) | Resolve via `findActiveScreen` in a `screenType` watcher; the "Forms" link/button falls back to the generic `/submission-hub/forms` path if nothing is active. |
+| [ScreenSelector.vue](ScreenSelector.vue) (type dropdown, shown in the forms/instructions drawers) | Reads `activeScreenStore.activeScreenFor(newType)` when switching type while already on a `:screen` route, so it never carries over the old type's screen name. |
+| [SubmissionsDrawer.vue](SubmissionsDrawer.vue) / [InstructionsSubDrawer.vue](instructions/InstructionsSubDrawer.vue) | Read the same store via a `resolvedScreenName` computed; the "Forms" link/button falls back to the generic `/submission-hub/forms` path if nothing is active. |
 
-## `api.js` — the two API calls that matter here
+## `active-screen-store.js` — shared cache for "what's the active screen for this type"
+
+All three nav components above need the same thing (the currently `ACTIVE` screen for a
+type), and used to each fetch and watch it independently. [active-screen-store.js](active-screen-store.js)
+is a Pinia store (same shape as [window-status-store.js](window-status-store.js)) that centralizes it:
+
+- `load(apiUrl)` — fetches `findScreens` **once** (guarded by `loaded`/`loading`, like
+  `windowStatusStore.load`) and caches the raw list of all EXTERNAL screens.
+- `activeScreenFor(screenType)` (getter) — filters the cached list to this type (stripping the
+  `_SEQ` suffix variant, e.g. `MTS_SEQ` → `MTS`) and `status === 'ACTIVE'`. If more than one
+  screen of the type is `ACTIVE`, picks the newest by `date_created` — matches
+  `CompoundSubmissionConstants.sortScreens(activeScreens, 'date_created')` in the portal's
+  `SubmissionsPage.vue`. Returns `null` if nothing is currently active.
+
+Each consumer just calls `store.load(apiUrl)` once on `mounted` and reads
+`store.activeScreenFor(type)` as a plain computed — no per-component data property, watcher,
+or duplicate network call.
+
+## `api.js`
 
 **`findScreens(apiURL)`** — `GET prism_screens?filter={screen_category: 'EXTERNAL'}`. Returns
-every external screen record (`name`, `screen_type`, `status`, `date_created`, ...).
-
-**`findActiveScreen(apiURL, screenType)`** — filters `findScreens` to this type (stripping the
-`_SEQ` suffix variant, e.g. `MTS_SEQ` → `MTS`) and `status === 'ACTIVE'`. If more than one
-screen of the type is `ACTIVE`, picks the newest by `date_created` — this matches
-`CompoundSubmissionConstants.sortScreens(activeScreens, 'date_created')` in the portal's
-`SubmissionsPage.vue`, which does the same when building its hub table. Returns `null` if
-nothing is currently active. Used only by the three nav components above, to build links.
+every external screen record (`name`, `screen_type`, `status`, `date_created`, ...). Backs
+`active-screen-store.js`.
 
 **`findScreen(apiURL, screen)`** / **`validateScreen(apiURL, screen, screenType)`** — the
 actual validity check, run by the form itself. `findScreen` looks up one screen by exact

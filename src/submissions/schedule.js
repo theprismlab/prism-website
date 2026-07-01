@@ -64,7 +64,11 @@ function todayET() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 }
 
-export function computedStatus(item) {
+// activeScreenNames: optional Set of screen names the API currently reports as ACTIVE.
+// When the schedule entry's screen_name is in that set, the API is treated as ground
+// truth and the window-date estimate below is overridden to OPEN.
+export function computedStatus(item, activeScreenNames) {
+  if (activeScreenNames?.has(item.screen_name)) return 'OPEN';
   const today = todayET();
   if (today < item.window_start) return 'SCHEDULED';
   if (today <= item.window_end) return 'OPEN';
@@ -87,8 +91,8 @@ export function formatWindow(item) {
 }
 
 // Decorates a raw SCHEDULE entry with derived display fields.
-export function enrichEntry(item) {
-  const status = computedStatus(item);
+export function enrichEntry(item, activeScreenNames) {
+  const status = computedStatus(item, activeScreenNames);
   return {
     ...item,
     status,
@@ -98,8 +102,8 @@ export function enrichEntry(item) {
 }
 
 // Convenience: enrich all SCHEDULE entries (useful for table displays).
-export function enrichedSchedule() {
-  return SCHEDULE.map(enrichEntry);
+export function enrichedSchedule(activeScreenNames) {
+  return SCHEDULE.map((item) => enrichEntry(item, activeScreenNames));
 }
 
 export const FIELD_LABELS = {
