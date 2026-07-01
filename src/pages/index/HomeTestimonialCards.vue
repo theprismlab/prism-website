@@ -10,29 +10,19 @@
       lg="6"
       xl="6"
     >
-      <v-card class="pa-6 px-10 fill-height justify-start" variant="tonal" color="amber-lighten-3">
-        <v-card-item>
-          <p class="prism-text-title-large text-black" style="line-height: 1.5em">
-            <svg-icon
-              size="34"
-              type="mdi"
-              :path="mdiFormatQuoteOpenPath"
-              class="text-amber-darken-1"
-            ></svg-icon>
-            {{ card.quote }}
-            <svg-icon
-              size="34"
-              type="mdi"
-              :path="mdiFormatQuoteClosePath"
-              class="text-amber-darken-1"
-              style="float: right"
-            ></svg-icon>
-          </p>
-          <p class="prism-text-body-large font-weight-bold text-amber-darken-2 mt-6">
-            {{ card.author }} <br />
-            <span class="prism-text-body-large text-grey-darken-1" v-html="card.company"></span>
-          </p>
-        </v-card-item>
+      <v-card class="testimonial-card fill-height d-flex flex-column" variant="flat">
+        <svg-icon
+          size="36"
+          type="mdi"
+          :path="mdiFormatQuoteOpenPath"
+          class="testimonial-quote-mark"
+        ></svg-icon>
+        <p class="prism-text-title-large testimonial-quote flex-grow-1">{{ card.quote }}</p>
+        <div class="testimonial-divider"></div>
+        <div class="testimonial-author">
+          <p class="prism-text-body-large font-weight-bold mb-0">{{ card.author }}</p>
+          <span class="prism-text-body-medium text-medium-emphasis" v-html="card.company"></span>
+        </div>
       </v-card>
     </v-col>
   </v-row>
@@ -41,7 +31,6 @@
 <script>
   import SvgIcon from '@jamescoyle/vue-icon';
   import { mdiFormatQuoteOpen } from '@mdi/js';
-  import { mdiFormatQuoteClose } from '@mdi/js';
 
   export default {
     name: 'HomeTestimonialCards',
@@ -51,7 +40,6 @@
     data() {
       return {
         mdiFormatQuoteOpenPath: mdiFormatQuoteOpen,
-        mdiFormatQuoteClosePath: mdiFormatQuoteClose,
         testimonialCards: [
           {
             quote:
@@ -72,7 +60,28 @@
 </script>
 
 <style scoped>
-  .v-card {
-    border: 1px solid var(--v-amber-lighten-4);
+  .testimonial-card {
+    padding: 44px 40px 36px;
+    border-radius: 20px;
+    background: #fff;
+    background-color: var(--v-amber-lighten-5);
+  }
+
+  .testimonial-quote-mark {
+    color: var(--prism-color-secondary-light);
+    margin-bottom: 4px;
+  }
+
+  .testimonial-quote {
+    line-height: 1.6;
+    color: #2b2b2b;
+  }
+
+  .testimonial-divider {
+    width: 40px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--prism-color-secondary);
+    margin: 28px 0 20px;
   }
 </style>
