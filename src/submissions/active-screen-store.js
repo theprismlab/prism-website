@@ -1,12 +1,11 @@
 import { defineStore } from 'pinia';
 import { findScreens, stripSeqSuffix } from './api.js';
+import { loadableState, loadableActions } from './loadable.js';
 
 export const useActiveScreenStore = defineStore('activeScreen', {
   state: () => ({
     screens: [], // raw findScreens() results, all EXTERNAL screens
-    loading: false,
-    loaded: false,
-    _loadPromise: null,
+    ...loadableState(),
   }),
   getters: {
     // Newest ACTIVE screen for a screen type (e.g. 'MTS'), or null if none is open.
@@ -44,36 +43,10 @@ export const useActiveScreenStore = defineStore('activeScreen', {
       };
     },
   },
-  actions: {
-    // Returns a promise that resolves once screens are loaded. Concurrent callers share the
-    // same in-flight promise instead of no-op'ing past a load that hasn't landed yet. Uses the
-    // cache once loaded — call refresh() instead when you need genuinely current data.
-    load(apiUrl) {
-      if (this.loaded) return Promise.resolve();
-      return this._fetch(apiUrl);
-    },
-    // Always re-fetches, bypassing the cache — for moments that need up-to-the-second data
-    // (e.g. re-validating a screen right before submitting a form).
-    refresh(apiUrl) {
-      return this._fetch(apiUrl);
-    },
-    _fetch(apiUrl) {
-      if (!this._loadPromise) {
-        this.loading = true;
-        this._loadPromise = findScreens(apiUrl)
-          .then((screens) => {
-            this.screens = screens;
-            this.loaded = true;
-          })
-          .catch((e) => {
-            console.error('Failed to load screens', e);
-          })
-          .finally(() => {
-            this.loading = false;
-            this._loadPromise = null;
-          });
-      }
-      return this._loadPromise;
-    },
-  },
+  // load()/refresh()/_fetch() come from loadable.js — shared load-once/share-in-flight/error
+  // scaffolding. refresh() always re-fetches, bypassing the cache, for moments that need
+  // up-to-the-second data (e.g. re-validating a screen right before submitting a form).
+  actions: loadableActions(async function (apiUrl) {
+    this.screens = await findScreens(apiUrl);
+  }),
 });
