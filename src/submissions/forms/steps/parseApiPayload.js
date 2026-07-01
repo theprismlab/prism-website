@@ -4,7 +4,7 @@ import {
   buildCombinationFields,
   buildScreenFields as buildTestAgentFields,
 } from './testAgentSchema.js';
-import { buildScreenFields as buildAcknowledgementFields } from './acknowledgementsSchema.js';
+import { getFields as getAcknowledgementFields } from './acknowledgementsSchema.js';
 
 export function parseFormDataForApi(formData, screenType, screenName) {
   const collaborator = formData.collaborator ?? {};
@@ -35,7 +35,7 @@ export function parseFormDataForApi(formData, screenType, screenName) {
     .filter(Boolean)
     .join(' ');
 
-  const ackFields = buildAcknowledgementFields(screenType);
+  const ackFields = getAcknowledgementFields();
   const agreements = {};
   for (const f of ackFields) {
     if (acknowledgments[f.key]) {

@@ -23,7 +23,7 @@
         return this.$route.params.screenType;
       },
       pdfPath() {
-        return this.screenType ? PDF_PATHS.TEST_AGENT[this.screenType] : null;
+        return this.screenType ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null) : null;
       },
       flatPages() {
         return flattenOutline(this.pages);
