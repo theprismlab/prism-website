@@ -1,7 +1,7 @@
 <template>
   <sub-drawer title="Steps">
     <screen-selector />
-    <div v-if="screenType" class="form-stepper pt-4 pb-2 px-4">
+    <div v-if="screenSelected" class="form-stepper pt-4 pb-2 px-4">
       <div v-for="(step, i) in steps" :key="step.id">
         <div class="d-flex align-start step-clickable" @click="handleStepClick(i)">
           <div class="step-track mr-3">
@@ -42,12 +42,13 @@
   import SubDrawer from '../SubDrawer.vue';
   import ScreenSelector from '../ScreenSelector.vue';
   import { FORM_STEPS, useFormProgressStore } from '../store.js';
+  import { useActiveScreenStore } from '../active-screen-store.js';
 
   export default {
     name: 'FormsSubDrawer',
     components: { SubDrawer, ScreenSelector },
     setup() {
-      return { formStore: useFormProgressStore() };
+      return { formStore: useFormProgressStore(), activeScreenStore: useActiveScreenStore() };
     },
     data() {
       return { steps: FORM_STEPS };
@@ -67,6 +68,17 @@
       screenName() {
         return this.$route.params.screen;
       },
+      // Steps only mean something once a genuinely valid, currently-open screen is resolved
+      // (same check screen-type.vue gates the form itself on) — not merely because :screenType
+      // and :screen segments exist in the URL, which a stale/bogus deep link would still have.
+      screenSelected() {
+        if (!this.screenType || !this.screenName) return false;
+        if (!this.activeScreenStore.loaded) return true; // avoid flashing hidden while loading
+        return this.activeScreenStore.validationFor(this.screenName, this.screenType).status === null;
+      },
+    },
+    mounted() {
+      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
     },
     methods: {
       stepStatus(i) {

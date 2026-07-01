@@ -2,7 +2,7 @@
   <sub-drawer title="Contents">
     <screen-selector />
     <v-list
-      v-if="screenType"
+      v-if="screenSelected"
       :opened="openedGroups"
       density="comfortable"
       nav
@@ -43,7 +43,7 @@
         />
       </template>
     </v-list>
-    <div v-if="screenType" class="submissions-nav-cta-container">
+    <div v-if="screenSelected" class="submissions-nav-cta-container">
       <v-btn
         v-if="resolvedScreenName"
         :to="`/submission-hub/forms/${screenType}/${resolvedScreenName}`"
@@ -64,12 +64,16 @@
   import ScreenSelector from '../ScreenSelector.vue';
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline.js';
   import { useActiveScreenStore } from '../active-screen-store.js';
+  import { useWindowStatusStore } from '../window-status-store.js';
 
   export default {
     name: 'InstructionsSubDrawer',
     components: { SubDrawer, ScreenSelector },
     setup() {
-      return { activeScreenStore: useActiveScreenStore() };
+      return {
+        activeScreenStore: useActiveScreenStore(),
+        windowStatusStore: useWindowStatusStore(),
+      };
     },
     data() {
       return {
@@ -81,6 +85,15 @@
     computed: {
       screenType() {
         return this.$route.params.screenType;
+      },
+      // Instructions have no :screen segment to resolve — only whether screenType itself is a
+      // real, known type matters here. windowStatusStore.statuses is keyed by the API's own
+      // (SEQ-stripped) submission types, so this rejects a bogus/typo'd :screenType the same
+      // way FormsSubDrawer.vue rejects a bogus :screen (via active-screen-store's validationFor).
+      screenSelected() {
+        if (!this.screenType) return false;
+        if (!this.windowStatusStore.loaded) return true; // avoid flashing hidden while loading
+        return this.screenType in this.windowStatusStore.statuses;
       },
       resolvedScreenName() {
         return this.activeScreenStore.activeScreenNameFor(this.screenType);
@@ -138,6 +151,7 @@
     },
     mounted() {
       this.activeScreenStore.load(import.meta.env.VITE_API_URL);
+      this.windowStatusStore.load(import.meta.env.VITE_API_URL);
     },
     methods: {
       flattenOutline,

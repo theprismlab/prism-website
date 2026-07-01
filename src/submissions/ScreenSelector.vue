@@ -1,8 +1,8 @@
 <template>
   <v-select
-    :model-value="$route.params.screenType"
+    :model-value="selectedScreenType"
     :items="screens"
-    :placeholder="$route.params.screenType ? undefined : 'Select screen'"
+    :placeholder="selectedScreenType ? undefined : 'Select screen'"
     hide-details
     v-model:menu="menuOpen"
     @update:model-value="onScreenChange"
@@ -33,6 +33,24 @@
         screens: ['MTS', 'CPS', 'APS', 'EPS', 'AIR'],
         menuOpen: false,
       };
+    },
+    computed: {
+      // Only reports the type as "selected" when the URL's specific :screen segment is the
+      // one currently valid for that type — not merely because a screenType segment exists.
+      // Otherwise a stale/bogus screen name (e.g. a since-closed screen, or a typo) would
+      // still show its type as selected, which both looks wrong and means re-picking that
+      // same type is a no-op change, leaving onScreenChange's resolve-and-redirect stuck.
+      selectedScreenType() {
+        const type = this.$route.params.screenType;
+        if (!type) return null;
+        // Instructions routes only carry :screenType, no :screen to validate against.
+        if (!this.$route.path.startsWith('/submission-hub/forms')) return type;
+        // Don't flash "unselected" while the store is still loading for the first time.
+        if (!this.activeScreenStore.loaded) return type;
+        return this.activeScreenStore.activeScreenNameFor(type) === this.$route.params.screen
+          ? type
+          : null;
+      },
     },
     mounted() {
       this.activeScreenStore.load(import.meta.env.VITE_API_URL);
