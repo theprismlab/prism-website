@@ -1,73 +1,69 @@
-# Screen validity & status: migrating from static schedule to API
+# Screen validation & routing
 
-Notes from reviewing `PRISM-data-portal`'s `SubmissionsPage` to inform replacing prism-website's
-static `SCHEDULE` JSON ([schedule.js](schedule.js)) with live API data for screen validity and status.
+How the submission form determines "which screen" it's for, whether that screen is valid,
+and how navigation keeps those two in sync. This replaces the static `SCHEDULE` json as the
+source of truth for the form — modeled on `PRISM-data-portal`'s `SubmissionFormPage.vue`.
 
-## Current state (prism-website)
+## Where `SCHEDULE` json still lives
 
-- [schedule.js](schedule.js) hardcodes a `SCHEDULE` array (screen name, window start/end,
-  data delivery date) and derives `status` (`SCHEDULED` / `OPEN` / `IN-PROGRESS`) by comparing
-  today's date (ET) against the window dates.
-- [api.js](api.js) already has:
-  - `fetchSubmissionMessage(apiURL, submission_type)` — matches the portal's implementation
-    byte-for-byte.
-  - `findScreen(apiURL, screen)` — looks up **one screen by exact name** against
-    `prism_screens`, throws if not `ACTIVE`. Used by `validateScreen()`.
-- [window-status-store.js](window-status-store.js) (Pinia `useWindowStatusStore`) loads
-  `fetchSubmissionMessage` results once and keys them by `submission_type`.
-- [forms/screen-type.vue](forms/screen-type.vue) combines the static schedule display
-  (`resolveScreenDisplay`) with `windowStore` messages and a `validateScreen()` call for
-  pass/fail validation.
+[schedule.js](schedule.js) (`SCHEDULE`, `enrichedSchedule`, `FIELD_LABELS`, `TABLE_FIELD_KEYS`)
+is used **only** by [index.vue](index.vue) — the Submission Hub's schedule table (window
+dates, timepoint, data delivery estimates). Nothing under `forms/` reads it anymore.
 
-## PRISM-data-portal reference implementation
+## Routing
 
-**Component:** `PRISM-data-portal/vue/src/views/SubmissionsPage.vue` ([mounted hook, lines
-445-503](../../../PRISM-data-portal/vue/src/views/SubmissionsPage.vue#L445-L503))
+The form route now carries the resolved screen name, not just the type:
 
-### `findScreens(apiURL)`
+```
+/submission-hub/forms/:screenType/:screen
+```
 
-`PRISM-data-portal/vue/src/js/utils/api-classes.js:203-215`
+e.g. `/submission-hub/forms/MTS/MTS033`. This mirrors the portal's
+`/submissions/forms/:type/:screen` — the portal's `SubmissionFormPage.vue` never resolves
+"which screen" itself; whatever links to it always supplies both params already resolved.
 
-- `GET {apiURL}prism_screens?filter={"where":{"screen_category":"EXTERNAL"}}`
-- Returns **all** EXTERNAL screens (not filtered by name), shape:
-  ```js
-  { screen_category, screen_type, name, status, date_created, date_updated, ... }
-  ```
-- `status` values observed: `ACTIVE`, `ACTIVE - WINDOW CLOSED`, `COMPLETE`, `DEPRECATED`
+Three things build links into this route, since prism-website (unlike the portal) has more
+than one nav surface:
 
-### `fetchSubmissionMessage(apiURL, submission_type?)`
+| Component | How it resolves `:screen` |
+|---|---|
+| [index.vue](index.vue) hub table | Already has it — each row is a static `SCHEDULE` entry with its own `screen_name`. |
+| [ScreenSelector.vue](ScreenSelector.vue) (type dropdown, shown in the forms/instructions drawers) | Calls `findActiveScreen(apiURL, newType)` when switching type while already on a `:screen` route, so it never carries over the old type's screen name. |
+| [SubmissionsDrawer.vue](SubmissionsDrawer.vue) / [InstructionsSubDrawer.vue](instructions/InstructionsSubDrawer.vue) | Resolve via `findActiveScreen` in a `screenType` watcher; the "Forms" link/button falls back to the generic `/submission-hub/forms` path if nothing is active. |
 
-`PRISM-data-portal/vue/src/js/utils/api-classes.js:321-337`
+## `api.js` — the two API calls that matter here
 
-- `GET {apiURL}prism_submission_window_message[?filter=...]`
-- Returns `{ submission_type, status, message }[]`, `status` ∈ `OPEN` / `MAX_CAPACITY` /
-  `CLOSE` / `INVALID`
-- Identical to prism-website's existing `fetchSubmissionMessage`.
+**`findScreens(apiURL)`** — `GET prism_screens?filter={screen_category: 'EXTERNAL'}`. Returns
+every external screen record (`name`, `screen_type`, `status`, `date_created`, ...).
 
-### Logic in `SubmissionsPage.vue`
+**`findActiveScreen(apiURL, screenType)`** — filters `findScreens` to this type (stripping the
+`_SEQ` suffix variant, e.g. `MTS_SEQ` → `MTS`) and `status === 'ACTIVE'`. If more than one
+screen of the type is `ACTIVE`, picks the newest by `date_created` — this matches
+`CompoundSubmissionConstants.sortScreens(activeScreens, 'date_created')` in the portal's
+`SubmissionsPage.vue`, which does the same when building its hub table. Returns `null` if
+nothing is currently active. Used only by the three nav components above, to build links.
 
-1. Fetch all EXTERNAL screens via `findScreens`; strip `_SEQ` suffix from `screen_type`
-   (e.g. `MTS_SEQ` → `MTS`).
-2. Group screens by `screen_type` (`_.groupBy`).
-3. For each type, pick the "current" screen with a priority fallback:
-   - Newest `ACTIVE` screen (by `date_created`), else
-   - Newest `ACTIVE - WINDOW CLOSED` screen (by `date_updated`), else
-   - Newest `COMPLETE` screen (by `date_updated`)
-   - That screen's `name` becomes the active screen name for the type — this is what
-     determines **screen validity** (is there a live screen at all).
-4. Fetch all submission messages via `fetchSubmissionMessage` (no filter), strip `_SEQ` the
-   same way, and assign `status` / `message` per type directly from the response — this
-   drives the **screen status** alert (open / closed / max capacity / invalid).
-5. No Pinia/Vuex store — plain component `data()` state (`submission_types`). No equivalent
-   to `useWindowStatusStore`.
+**`findScreen(apiURL, screen)`** / **`validateScreen(apiURL, screen, screenType)`** — the
+actual validity check, run by the form itself. `findScreen` looks up one screen by exact
+`name` and throws if it isn't `ACTIVE`. `validateScreen` additionally confirms the found
+record's `screen_type` (`_SEQ`-stripped) matches the expected `screenType` — this catches a
+mismatched URL like `/submission-hub/forms/MTS/CPS017` (a real, ACTIVE screen, but the wrong
+type). This is the piece PRISM-data-portal's `SubmissionFormPage.vue` also does via
+`CompoundSubmissionConstants.validateScreen`.
 
-## Implications for prism-website
+**`fetchSubmissionMessage(apiURL, submission_type?)`** — unchanged, drives the window-status
+alert (`OPEN` / `MAX_CAPACITY` / `CLOSE` / `INVALID` + message) via `windowStatusStore`.
 
-- Add a `findScreens` (plural, unfiltered by name, `screen_category: EXTERNAL`) call to
-  `api.js` — only single-screen `findScreen` exists today.
-- Replace `resolveScreenDisplay`'s reliance on hardcoded `window_start` / `window_end` dates
-  with the priority-fallback logic above (`ACTIVE` → `ACTIVE - WINDOW CLOSED` → `COMPLETE`) to
-  pick the current screen name/status per type.
-- Keep `fetchSubmissionMessage` / `windowStatusStore` as-is for status/message (already
-  matches); source screen **validity** from `findScreens` grouping instead of
-  `validateScreen()` + `SCHEDULE` window-date math.
+## `forms/screen-type.vue`
+
+- `screenType` — `$route.params.screenType`.
+- `screenName` — `$route.params.screen` (falls back to `screenType` only if somehow absent).
+- On `mounted` and whenever `screenName` changes, calls `validateScreen()`
+  (`api.validateScreen(apiURL, screenName, screenType)`) and stores the result in
+  `screenValidation`. `INVALID` renders the error alert and hides the step accordion.
+- No header meta strip, no schedule-derived display fields, no status-driven color logic —
+  the header shows only `screenType` / `screenName`; the only styled alert is the plain
+  window-status message from `fetchSubmissionMessage`.
+- `screenName` is passed down to `ReviewStep.vue` → `parseFormDataForApi(formData, screenType,
+  screenName)` ([parseApiPayload.js](forms/steps/parseApiPayload.js)) as the `screen` field in
+  the submission payload — also no longer sourced from `schedule.js`.
