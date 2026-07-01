@@ -29,8 +29,8 @@
   color: transparent;
 }
 .text-gradient-blue {
-  --gradient-start: var(--prism-color-blue-700);
-  --gradient-end: var(--prism-color-indigo-700);
+  --gradient-start: var(--v-indigo-accent-2);
+  --gradient-end: var(--v-indigo-darken-1);
   background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
   -webkit-background-clip: text;
   background-clip: text;

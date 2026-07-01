@@ -10,33 +10,28 @@
       lg="6"
       xl="6"
     >
-      <v-card
-        class="pa-6 px-10 fill-height justify-start"
-        variant="tonal"
-        color="secondary-lighten-3"
-      >
+      <v-card class="pa-6 px-10 fill-height justify-start" variant="tonal" color="amber-lighten-3">
         <v-card-item>
-          <p class="text-body-1 text-black">
+          <p class="prism-text-title-large text-black" style="line-height: 1.5em">
             <svg-icon
               size="34"
               type="mdi"
               :path="mdiFormatQuoteOpenPath"
-              class="text-secondary"
+              class="text-amber-darken-1"
             ></svg-icon>
             {{ card.quote }}
             <svg-icon
               size="34"
               type="mdi"
               :path="mdiFormatQuoteClosePath"
-              class="text-secondary"
+              class="text-amber-darken-1"
               style="float: right"
             ></svg-icon>
           </p>
-          <p
-            class="text-body-2 mb-0 font-weight-bold text-secondary-darken-2"
-            v-html="card.author"
-          ></p>
-          <p class="text-body-2 mb-0 mt-0 text-grey-darken-1" v-html="card.company"></p>
+          <p class="prism-text-body-large font-weight-bold text-amber-darken-2 mt-6">
+            {{ card.author }} <br />
+            <span class="prism-text-body-large text-grey-darken-1" v-html="card.company"></span>
+          </p>
         </v-card-item>
       </v-card>
     </v-col>
@@ -78,8 +73,6 @@
 
 <style scoped>
   .v-card {
-    border: 1px solid var(--v-secondary-lighten-4);
+    border: 1px solid var(--v-amber-lighten-4);
   }
 </style>
-
-

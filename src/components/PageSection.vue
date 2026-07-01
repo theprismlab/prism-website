@@ -50,11 +50,16 @@
 
   .page-section--bg-gradient {
     color: white;
-    background: linear-gradient(120deg, var(--prism-color-blue-700), var(--prism-color-indigo-700));
+    background: linear-gradient(120deg, var(--v-blue-base), var(--v-indigo-darken-1));
   }
-  .page-section--bg-portal {
+  .page-section--bg-blue-indigo-dark {
     color: white;
-    background: linear-gradient(135deg, var(--prism-color-blue-800), var(--prism-color-indigo-600) 60%, var(--prism-color-blue-700));
+    background: linear-gradient(
+      135deg,
+      var(--v-blue-darken-3),
+      var(--v-indigo-darken-3) 60%,
+      var(--v-blue-darken-4)
+    );
   }
   .page-section--bg-multi-focal-cool {
     background:

@@ -15,7 +15,7 @@
       </app-container>
     </page-section>
 
-    <app-container class="my-12">
+    <app-container wide class="my-10">
       <p class="prism-text-body-xlarge" style="max-width: 720px; margin: auto">
         Cancer cell line models remain essential in drug development, providing a controlled system
         to assess potency and confirm on-target engagement. At a larger scale using PRISM, these
@@ -27,32 +27,29 @@
           biomarkers associated with these responses</span
         >.
       </p>
+      <HomeOverviewCards class="mt-10"></HomeOverviewCards>
     </app-container>
 
-    <app-container wide class="my-12">
-      <HomeOverviewCards></HomeOverviewCards>
-    </app-container>
-
-    <page-section background="portal">
+    <page-section background="blue-indigo-dark">
       <app-container wide>
         <HomePortal></HomePortal>
       </app-container>
     </page-section>
 
-    <app-container>
-      <section-overline class="text-center">Impact</section-overline>
-      <prism-section-title class="text-center"
-        >Dedicated to advancing oncology research</prism-section-title
-      >
-      <p class="prism-text-body-xlarge text-center">
-        Working with pharmaceutical and biotech companies and academics to improve the outcome for
-        cancer patients worldwide.
-      </p>
+    <app-container class="my-10">
+      <section class="text-center mb-12">
+        <h2 class="prism-text-overline text-secondary mb-2">Impact</h2>
+        <h3 class="prism-text-display-large mb-8">Dedicated to advancing oncology research</h3>
+        <p class="prism-text-body-xlarge text-center" style="max-width: 720px; margin: auto">
+          Working with pharmaceutical and biotech companies and academics to improve the outcome for
+          cancer patients worldwide.
+        </p>
+      </section>
       <HomeImpactCards></HomeImpactCards>
     </app-container>
 
-    <app-container>
-      <section-overline class="text-center">Testimonials</section-overline>
+    <app-container class="my-10">
+      <h2 class="prism-text-overline text-secondary text-center mb-2">Testimonials</h2>
       <HomeTestimonialCards class="pt-8"></HomeTestimonialCards>
     </app-container>
   </page>

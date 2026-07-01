@@ -13,10 +13,8 @@
         class="impact-card fill-height d-flex flex-column align-center text-center"
         :elevation="0"
         :style="{
-          // border: `2px solid color-mix(in srgb, ${card.color} 20%, white)`,
           borderTop: `3px solid ${card.color}`,
           background: `color-mix(in srgb, ${card.color} 5%, white)`,
-          //  background: `oklch(from ${card.color} 0.96 calc(c * 0.12) h)`,
         }"
       >
         <div
@@ -25,8 +23,12 @@
         >
           <svg-icon :size="28" type="mdi" :path="card.icon" color="white" />
         </div>
-        <div class="card-stat" :style="{ color: card.color }">{{ card.title }}</div>
-        <p class="card-label">{{ card.subtitle }}</p>
+        <h4 class="prism-text-display-large card-title" :style="{ color: card.color }">
+          {{ card.title }}
+        </h4>
+        <p class="prism-text-body-xlarge text-grey-darken-1 card-subtitle">
+          {{ card.subtitle }}
+        </p>
       </v-card>
     </v-col>
   </v-row>
@@ -66,22 +68,15 @@
     border-radius: 14px;
     flex-shrink: 0;
   }
-
-  .card-stat {
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 1;
-    /* font-family: 'Archivo', sans-serif;
-    font-variation-settings: "wdth" 125;
-    letter-spacing: -0.02em; */
+  .card-title {
+    font-weight: 600;
+    font-variation-settings: 'wdth' 120;
+    line-height: 1em;
     margin: 0;
   }
-
-  .card-label {
-    font-size: 0.975rem;
+  .card-subtitle {
     font-weight: 500;
-    color: #666;
-    line-height: 1.5;
+    line-height: 1.5rem;
     margin: 0;
   }
 </style>

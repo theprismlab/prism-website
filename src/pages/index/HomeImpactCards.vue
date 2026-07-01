@@ -22,7 +22,7 @@
             title: '7,000+',
             subtitle: 'Compounds screened in over 500 cell lines',
             icon: mdiHexagonMultiple,
-            color: 'var(--v-secondary-accent-4)',
+            color: 'var(--v-amber-accent-4)',
           },
           {
             title: '50+',

@@ -70,18 +70,4 @@
     padding: 13.5px;
     border-radius: 50%;
   }
-
-  .card-title {
-    margin: 0;
-    line-height: 1.2em !important;
-  }
-
-  .card-subtitle {
-    margin: 0;
-    opacity: 1;
-    line-height: 1.4em !important;
-    font-size: 1.12rem !important;
-    font-weight: 600 !important;
-    color: var(--v-grey) !important;
-  }
 </style>

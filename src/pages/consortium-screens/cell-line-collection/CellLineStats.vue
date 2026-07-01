@@ -1,5 +1,5 @@
 <template>
-  <impact-cards :cards="cards"/>
+  <impact-cards :cards="cards" />
 </template>
 
 <script>
@@ -16,13 +16,13 @@
             title: '900+',
             subtitle: 'Cancer cell lines',
             icon: mdiMicroscope,
-             color: 'var(--v-red-accent-2)',
+            color: 'var(--v-red-accent-2)',
           },
           {
             title: '45+',
             subtitle: 'Lineages',
             icon: mdiSitemap,
-            color: 'var(--v-secondary-accent-4)',
+            color: 'var(--v-amber-accent-4)',
           },
           {
             title: '80+',
