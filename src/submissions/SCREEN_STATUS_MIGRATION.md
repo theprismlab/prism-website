@@ -109,9 +109,14 @@ separate network call; see below.
 - `screenValidation` is a **plain computed**, not local state assigned from an async method:
   `!activeScreenStore.loaded ? null : activeScreenStore.validationFor(screenName, screenType)`.
   `mounted()` just calls `activeScreenStore.load(apiUrl)` (fire-and-forget) — once it resolves,
-  the computed re-evaluates on its own, no manual "await then assign" plumbing. Staying `null`
-  until `loaded` is what avoids flashing `INVALID` before the store has any data yet. `INVALID`
-  renders the error alert and hides the step accordion (`v-else` on `v-expansion-panels`).
+  the computed re-evaluates on its own, no manual "await then assign" plumbing.
+- The template is a three-way branch on that computed, not a two-way `v-if`/`v-else`: `INVALID`
+  → error alert; `null` (store hasn't loaded yet) → a loading spinner; anything else (valid) →
+  the step accordion. This matters because the default has to be "don't show the form" — a
+  two-way `v-if`/`v-else` would treat the `null` loading state the same as "valid" and render
+  the form immediately, before the API confirms it, letting a since-closed or never-`ACTIVE`
+  screen (e.g. a completed/deprecated one someone still has a link to) show a fully usable form
+  for as long as the fetch takes.
 - No header meta strip, no schedule-derived display fields, no status-driven color logic —
   the header shows only `screenType` / `screenName`; the only styled alert is the plain
   window-status message from `fetchSubmissionMessage`.

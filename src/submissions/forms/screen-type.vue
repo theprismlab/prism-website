@@ -19,6 +19,12 @@
         >{{ screenValidation.message }}</v-alert
       >
 
+      <!-- Default to not showing the form until we've actually confirmed the screen is
+           valid — screenValidation is null while active-screen-store is still loading. -->
+      <div v-else-if="!screenValidation" class="d-flex justify-center pa-8">
+        <v-progress-circular indeterminate color="primary" />
+      </div>
+
       <!-- <div v-if="isDev" class="mb-4">
         <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
           Fill test data

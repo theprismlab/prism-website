@@ -24,19 +24,22 @@ export const useActiveScreenStore = defineStore('activeScreen', {
     },
     // Is this exact screen name valid to submit against for this type? { status: null } means
     // valid; { status: 'INVALID', message } means not — same shape screen-type.vue's alert and
-    // ReviewStep's submit dialog both expect.
-    validationFor: (state) => (screenName, screenType) => {
-      const invalid = {
-        status: 'INVALID',
-        message: `Screen '${screenName}' is not associated with submission type '${screenType}'`,
+    // ReviewStep's submit dialog both expect. Deliberately defers to activeScreenNameFor rather
+    // than independently checking "is a screen with this name ACTIVE" — the only viewable/
+    // submittable screen for a type is the one activeScreenNameFor designates as current (the
+    // newest ACTIVE, when more than one exists), not merely any ACTIVE screen sharing the type.
+    validationFor() {
+      return (screenName, screenType) => {
+        const invalid = {
+          status: 'INVALID',
+          message: `Screen '${screenName}' is not associated with submission type '${screenType}'`,
+        };
+        if (!screenName || !screenType) return invalid;
+        if (this.activeScreenNameFor(screenType) === screenName) {
+          return { status: null, message: null };
+        }
+        return invalid;
       };
-      if (!screenName || !screenType) return invalid;
-      const found = state.screens.find((screen) => screen.name === screenName);
-      const foundType = found ? stripSeqSuffix(found.screen_type) : null;
-      if (found && found.status === 'ACTIVE' && foundType === screenType) {
-        return { status: null, message: null };
-      }
-      return invalid;
     },
   },
   actions: {
