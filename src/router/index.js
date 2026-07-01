@@ -185,7 +185,7 @@ const routes = [
     },
   },
   {
-    path: '/submission-hub/forms/:screenType',
+    path: '/submission-hub/forms/:screenType/:screen',
     component: () => import('@/submissions/forms/screen-type.vue'),
     meta: {
       layout: submissionsLayout,

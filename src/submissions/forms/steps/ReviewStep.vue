@@ -136,6 +136,7 @@
       formData: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
+      screenName: { type: String, default: null },
       screenValidation: { type: Object, default: null },
     },
     mounted() {
@@ -234,7 +235,7 @@
         }
       },
       parseResponseForApi() {
-        return parseFormDataForApi(this.formData, this.screenType);
+        return parseFormDataForApi(this.formData, this.screenType, this.screenName);
       },
     },
   };

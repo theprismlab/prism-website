@@ -45,7 +45,8 @@
     </v-list>
     <div v-if="screenType" class="submissions-nav-cta-container">
       <v-btn
-        :to="`/submission-hub/forms/${screenType}`"
+        v-if="resolvedScreenName"
+        :to="`/submission-hub/forms/${screenType}/${resolvedScreenName}`"
         variant="outlined"
         color="primary-base"
         block
@@ -62,6 +63,7 @@
   import SubDrawer from '../SubDrawer.vue';
   import ScreenSelector from '../ScreenSelector.vue';
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline.js';
+  import { findActiveScreen } from '../api.js';
 
   export default {
     name: 'InstructionsSubDrawer',
@@ -71,6 +73,7 @@
         openedGroups: ['test-agent'],
         testAgentPages: [],
         shippingPages: [],
+        resolvedScreenName: null,
       };
     },
     computed: {
@@ -115,6 +118,14 @@
         immediate: true,
         async handler(url) {
           this.shippingPages = url ? await loadPdfOutline(url) : [];
+        },
+      },
+      screenType: {
+        immediate: true,
+        async handler(type) {
+          this.resolvedScreenName = type
+            ? ((await findActiveScreen(import.meta.env.VITE_API_URL, type))?.name ?? null)
+            : null;
         },
       },
       '$route.path': {

@@ -62,6 +62,26 @@ export async function postSubmission(apiURL, payload) {
 }
 //{"error":"Model::findById requires the id argument"}
 
+export async function findScreens(apiURL) {
+  const path =
+    'prism_screens?filter=' + JSON.stringify({ where: { screen_category: 'EXTERNAL' } });
+  return authedGet(apiURL, path);
+}
+
+// Resolves the currently ACTIVE screen for a screen type (e.g. 'MTS'), handling the
+// '_SEQ' suffix variant the same way PRISM-data-portal does. Returns null if none is open.
+export async function findActiveScreen(apiURL, screenType) {
+  const screens = await findScreens(apiURL);
+  return (
+    screens.find((screen) => {
+      const type = screen.screen_type?.endsWith('_SEQ')
+        ? screen.screen_type.replace('_SEQ', '')
+        : screen.screen_type;
+      return type === screenType && screen.status === 'ACTIVE';
+    }) ?? null
+  );
+}
+
 export async function findScreen(apiURL, screen) {
   const path = 'prism_screens?filter=' + JSON.stringify({ where: { name: screen } });
   const found = await authedGet(apiURL, path);

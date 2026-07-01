@@ -5,9 +5,8 @@ import {
   buildScreenFields as buildTestAgentFields,
 } from './testAgentSchema.js';
 import { buildScreenFields as buildAcknowledgementFields } from './acknowledgementsSchema.js';
-import { resolveScreenDisplay } from '@/submissions/schedule.js';
 
-export function parseFormDataForApi(formData, screenType) {
+export function parseFormDataForApi(formData, screenType, screenName) {
   const collaborator = formData.collaborator ?? {};
   const institution = formData.institution ?? {};
   const acknowledgments = formData.acknowledgments ?? {};
@@ -76,7 +75,7 @@ export function parseFormDataForApi(formData, screenType) {
 
   return {
     compoundInfo: {
-      screen: resolveScreenDisplay(screenType)?.screen_name,
+      screen: screenName,
       submission_type: screenType,
       submitter_email: collaborator[COLLABORATOR_FIELDS.YOUR_EMAIL.key] ?? '',
       submitter_name: collaborator[COLLABORATOR_FIELDS.YOUR_NAME.key] ?? '',

@@ -12,17 +12,10 @@
             <span class="doc-header__name">{{ screenName }}</span>
           </h1>
         </div>
-        <div v-if="docMeta.length" class="doc-meta">
-          <div v-for="item in docMeta" :key="item.label" class="doc-meta__field">
-            <span class="doc-meta__label">{{ item.label }}</span>
-            <span class="doc-meta__value">{{ item.value }}</span>
-          </div>
-        </div>
       </header>
 
       <v-alert
         v-if="apiStatus?.message"
-        :color="screenStatus?.color"
         variant="tonal"
         density="compact"
         class="mb-4"
@@ -89,6 +82,7 @@
               :form-data="fd"
               :errors="stepErrors.review || {}"
               :screen-type="screenType"
+              :screen-name="screenName"
               :screen-validation="screenValidation"
             />
 
@@ -108,7 +102,6 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
-  import { resolveScreenDisplay, FIELD_LABELS, FORM_FIELD_KEYS } from '@/submissions/schedule.js';
   import * as api from '@/submissions/api';
   import { getTestData } from './testFixtures.js';
   import { STEP_REGISTRY } from './steps/registry';
@@ -142,25 +135,8 @@
       screenType() {
         return this.$route.params.screenType ?? null;
       },
-      screenDisplay() {
-        return resolveScreenDisplay(this.screenType);
-      },
       screenName() {
-        return this.screenDisplay?.screen_name ?? this.screenType;
-      },
-      screenStatus() {
-        return this.screenDisplay?.statusMeta ?? null;
-      },
-      screenMeta() {
-        const d = this.screenDisplay;
-
-        if (!d) return [];
-        return FORM_FIELD_KEYS.map((key) =>
-          d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null,
-        ).filter(Boolean);
-      },
-      docMeta() {
-        return this.screenMeta;
+        return this.$route.params.screen ?? this.screenType;
       },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;
@@ -208,7 +184,7 @@
       this.screenValidation = await this.validateScreen();
     },
     watch: {
-      async screenType() {
+      async screenName() {
         this.attemptedSteps = {};
         this.screenValidation = await this.validateScreen();
       },
@@ -306,34 +282,6 @@
   .doc-header__name {
     color: rgba(var(--v-theme-on-surface), 0.6);
     font-weight: var(--prism-font-weight-medium);
-  }
-
-  /* ── Metadata strip ───────────────────────────────────────── */
-  .doc-meta {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  }
-  .doc-meta__field {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 10px 16px;
-    min-width: 0;
-    box-shadow: 1px 0 0 rgba(var(--v-theme-on-surface), 0.07);
-  }
-  .doc-meta__label {
-    font-size: 0.62rem;
-    font-weight: var(--prism-font-weight-semibold);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(var(--v-theme-on-surface), 0.42);
-  }
-  .doc-meta__value {
-    font-size: 0.875rem;
-    font-weight: var(--prism-font-weight-semibold);
-    color: rgba(var(--v-theme-on-surface), 0.87);
-    overflow-wrap: break-word;
   }
 
   /* ── Step indicator ──────────────────────────────────────── */

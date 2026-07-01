@@ -25,6 +25,7 @@
 
 <script>
   import { useFormProgressStore } from './store';
+  import { findActiveScreen } from './api.js';
 
   export default {
     name: 'SubmissionsDrawer',
@@ -36,6 +37,7 @@
     data() {
       return {
         drawer: true,
+        resolvedScreenName: null,
       };
     },
     watch: {
@@ -43,6 +45,14 @@
         immediate: true,
         handler(screen) {
           this.formStore.setLastScreenType(screen);
+        },
+      },
+      screenType: {
+        immediate: true,
+        async handler(type) {
+          this.resolvedScreenName = type
+            ? ((await findActiveScreen(import.meta.env.VITE_API_URL, type))?.name ?? null)
+            : null;
         },
       },
     },
@@ -86,8 +96,8 @@
           {
             id: 'forms',
             title: 'Forms',
-            route: this.screenType
-              ? `/submission-hub/forms/${this.screenType}`
+            route: this.resolvedScreenName
+              ? `/submission-hub/forms/${this.screenType}/${this.resolvedScreenName}`
               : '/submission-hub/forms',
             icon: 'mdi-file-document-outline',
             activePrefix: '/submission-hub/forms',

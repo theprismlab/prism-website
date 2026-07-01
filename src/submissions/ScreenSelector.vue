@@ -10,6 +10,8 @@
 </template>
 
 <script>
+  import { findActiveScreen } from './api.js';
+
   export default {
     name: 'ScreenSelector',
     data() {
@@ -26,7 +28,17 @@
       }
     },
     methods: {
-      onScreenChange(screen) {
+      async onScreenChange(screen) {
+        // The forms route also carries a resolved :screen segment after the type, which
+        // a plain segment swap would leave stale (pointing at the old type's screen).
+        if (this.$route.params.screen) {
+          const active = await findActiveScreen(import.meta.env.VITE_API_URL, screen);
+          this.$router.push(
+            active ? `/submission-hub/forms/${screen}/${active.name}` : '/submission-hub/forms',
+          );
+          return;
+        }
+
         const segments = this.$route.path.split('/');
         const screenIndex = segments.indexOf(this.$route.params.screenType);
         if (screenIndex !== -1) {

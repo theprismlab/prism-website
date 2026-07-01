@@ -22,7 +22,9 @@
             <template #item.status="{ item }">
               <v-chip
                 :to="
-                  item.status === 'OPEN' ? `/submission-hub/forms/${item.screen_type}` : undefined
+                  item.status === 'OPEN'
+                    ? `/submission-hub/forms/${item.screen_type}/${item.screen_name}`
+                    : undefined
                 "
                 :color="item.statusMeta.color"
                 size="small"
