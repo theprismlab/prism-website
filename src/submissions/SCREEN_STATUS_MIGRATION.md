@@ -45,18 +45,24 @@ than one nav surface:
 | [ScreenSelector.vue](ScreenSelector.vue) (type dropdown, shown in the forms/instructions drawers) | Reads `activeScreenStore.activeScreenNameFor(newType)` when switching type while already on the forms path, so it never carries over the old type's screen name — this also covers picking a type for the first time from the bare `/submission-hub/forms` page. |
 | [SubmissionsDrawer.vue](SubmissionsDrawer.vue) / [InstructionsSubDrawer.vue](instructions/InstructionsSubDrawer.vue) | Read the same store via a `resolvedScreenName` computed (`activeScreenStore.activeScreenNameFor(screenType)`); the "Forms" link/button falls back to the generic `/submission-hub/forms` path if nothing is active. |
 
-## `active-screen-store.js` — shared cache for "what's the active screen for this type"
+## `active-screen-store.js` — single source of truth for "what do we know about screens"
 
-The three nav components above, [index.vue](index.vue)'s hub table, and `forms/screen-type.vue`
-itself (see below) all need the same underlying data (which screens are currently `ACTIVE`),
-and used to each fetch it independently. [active-screen-store.js](active-screen-store.js) is a
-Pinia store (same shape as [window-status-store.js](window-status-store.js)) that centralizes it:
+Every screen-related question in this app — which nav components should link to, what the
+form itself is allowed to submit against — is really the same underlying question asked
+differently: "given the cached list of EXTERNAL screens, what's true about this
+type/name?" [active-screen-store.js](active-screen-store.js) (a Pinia store, same shape as
+[window-status-store.js](window-status-store.js)) is the one place that list lives, and the
+one place the derived questions about it are answered:
 
-- `load(apiUrl)` — fetches `findScreens` and caches the raw list of all EXTERNAL screens.
-  Returns a promise; once `loaded` is `true` it resolves immediately, but while a fetch is
-  already in flight, concurrent callers **share that same promise** rather than getting an
-  empty no-op back — `await store.load(apiUrl)` is always safe to follow with a read of
-  `store.screens`.
+- `load(apiUrl)` — fetches `findScreens` and caches the raw list. Returns a promise; once
+  `loaded` is `true` it resolves immediately, but while a fetch is already in flight,
+  concurrent callers **share that same promise** rather than getting an empty no-op back —
+  `await store.load(apiUrl)` is always safe to follow with a read of `store.screens`. Use this
+  for "give me *a* answer, cached is fine" (page loads, nav links).
+- `refresh(apiUrl)` — same in-flight-sharing behavior, but **always re-fetches**, bypassing the
+  cache. Use this when the answer needs to be current as of right now (see `ReviewStep.vue`
+  below) — `load()` alone would just replay whatever was cached at page-load time forever,
+  since it only ever fetches once.
 - `activeScreenFor(screenType)` (getter) — filters the cached list to this type (via
   `stripSeqSuffix` from `api.js`, e.g. `MTS_SEQ` → `MTS`) and `status === 'ACTIVE'`. If more
   than one screen of the type is `ACTIVE`, picks the newest by `date_created` — matches
@@ -64,14 +70,21 @@ Pinia store (same shape as [window-status-store.js](window-status-store.js)) tha
   `SubmissionsPage.vue`. Returns `null` if nothing is currently active.
 - `activeScreenNameFor(screenType)` (getter) — thin wrapper around `activeScreenFor(...)?.name`
   that also tolerates a falsy `screenType`, so consumers don't each need their own null-guard.
+- `validationFor(screenName, screenType)` (getter) — is *this exact* screen name valid to
+  submit against for this type? Returns `{ status: null, message: null }` when valid, or
+  `{ status: 'INVALID', message }` otherwise — the same shape both `screen-type.vue`'s alert
+  and `ReviewStep.vue`'s submit-failure dialog expect. Valid means: a record with that exact
+  `name` exists, `status === 'ACTIVE'`, and its `screen_type` (`_SEQ`-stripped) matches
+  `screenType` — this is what catches a mismatched URL like
+  `/submission-hub/forms/MTS/CPS017` (a real, `ACTIVE` screen, but the wrong type), mirroring
+  what the portal does via `CompoundSubmissionConstants.validateScreen`.
 
-Each consumer just calls `store.load(apiUrl)` once on `mounted` and reads
-`store.activeScreenNameFor(type)` / `store.activeScreenFor(type)` as a plain computed — no
-per-component data property, watcher, or duplicate network call.
-
-`window-status-store.js` follows the identical pattern for `fetchSubmissionMessage` (same
-shared in-flight promise on `load()`), keying its `statuses` map by `submission_type` with the
-same `stripSeqSuffix` applied.
+Every consumer just calls `store.load(apiUrl)` once on `mounted` and reads whichever getter it
+needs as a plain computed — no per-component data property, watcher, async method, or
+duplicate network call. `window-status-store.js` follows the identical `load()`
+shared-in-flight-promise pattern for `fetchSubmissionMessage`, keying its `statuses` map by
+`submission_type` with the same `stripSeqSuffix` applied (it doesn't need a `refresh()`,
+nothing re-checks it mid-session).
 
 ## `api.js`
 
@@ -93,17 +106,25 @@ separate network call; see below.
 
 - `screenType` — `$route.params.screenType`.
 - `screenName` — `$route.params.screen` (falls back to `screenType` only if somehow absent).
-- On `mounted` and whenever `screenName` changes, calls `validateScreen()`, which awaits
-  `activeScreenStore.load(apiUrl)` and looks up `screenName` in the already-cached
-  `activeScreenStore.screens` list (no separate API request) — valid only if a record with
-  that exact `name` exists, `status === 'ACTIVE'`, and its `screen_type` (`_SEQ`-stripped)
-  matches `screenType`. Result goes in `screenValidation`; `INVALID` renders the error alert
-  and hides the step accordion. The `screenType` check is what catches a mismatched URL like
-  `/submission-hub/forms/MTS/CPS017` (a real, `ACTIVE` screen, but the wrong type) — mirroring
-  what PRISM-data-portal's `SubmissionFormPage.vue` does via `CompoundSubmissionConstants.validateScreen`.
+- `screenValidation` is a **plain computed**, not local state assigned from an async method:
+  `!activeScreenStore.loaded ? null : activeScreenStore.validationFor(screenName, screenType)`.
+  `mounted()` just calls `activeScreenStore.load(apiUrl)` (fire-and-forget) — once it resolves,
+  the computed re-evaluates on its own, no manual "await then assign" plumbing. Staying `null`
+  until `loaded` is what avoids flashing `INVALID` before the store has any data yet. `INVALID`
+  renders the error alert and hides the step accordion (`v-else` on `v-expansion-panels`).
 - No header meta strip, no schedule-derived display fields, no status-driven color logic —
   the header shows only `screenType` / `screenName`; the only styled alert is the plain
   window-status message from `fetchSubmissionMessage`.
+- That computed only reflects the store's *cached* state, though — it does **not** gate the
+  Submit button in `ReviewStep.vue`, which only requires a fully valid, reviewed form
+  (`data.reviewed && allStepsValid`). Instead, `ReviewStep.vue` imports `active-screen-store.js`
+  directly (no prop-drilling) and, in `submitForm()`, calls `activeScreenStore.refresh(apiUrl)`
+  — a genuine re-fetch, not the cache — then reads `activeScreenStore.validationFor(screenName,
+  screenType)` fresh, right before building the payload. Because both components read the same
+  store, `screen-type.vue`'s `screenValidation` computed picks up that refreshed result too,
+  automatically, with no event needed. On `INVALID` at submit time, `ReviewStep.vue` shows the
+  same success/failure dialog used for the actual API call, with an explanatory message, and
+  skips calling `postSubmission`.
 - `screenName` is passed down to `ReviewStep.vue` → `parseFormDataForApi(formData, screenType,
   screenName)` ([parseApiPayload.js](forms/steps/parseApiPayload.js)) as the `screen` field in
   the submission payload — also no longer sourced from `schedule.js`.

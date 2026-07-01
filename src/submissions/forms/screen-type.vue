@@ -71,7 +71,6 @@
               :errors="stepErrors.review || {}"
               :screen-type="screenType"
               :screen-name="screenName"
-              :screen-validation="screenValidation"
             />
 
             <div v-if="step.id !== 'review'" class="d-flex align-center justify-end mt-4 gap-3">
@@ -88,7 +87,6 @@
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
   import { useActiveScreenStore } from '@/submissions/active-screen-store.js';
-  import { stripSeqSuffix } from '@/submissions/api';
   import { getTestData } from './testFixtures.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
@@ -117,7 +115,6 @@
       return {
         steps: FORM_STEPS,
         attemptedSteps: {},
-        screenValidation: null,
         stepIsValid: {},
       };
     },
@@ -127,6 +124,13 @@
       },
       screenName() {
         return this.$route.params.screen ?? this.screenType;
+      },
+      // Reactive read of the shared store — no manual fetch-then-assign dance. Stays null
+      // (rendering neither the alert nor its absence as a verdict) until the store has
+      // actually loaded, so we don't flash an INVALID state before data arrives.
+      screenValidation() {
+        if (!this.activeScreenStore.loaded) return null;
+        return this.activeScreenStore.validationFor(this.screenName, this.screenType);
       },
       apiStatus() {
         return this.screenType ? this.windowStore.statuses[this.screenType] : null;
@@ -171,14 +175,13 @@
         );
       },
     },
-    async mounted() {
+    mounted() {
       this.windowStore.load(import.meta.env.VITE_API_URL);
-      this.screenValidation = await this.validateScreen();
+      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
-      async screenName() {
+      screenName() {
         this.attemptedSteps = {};
-        this.screenValidation = await this.validateScreen();
       },
       fd: {
         deep: true,
@@ -207,23 +210,6 @@
         for (const [stepId, stepData] of Object.entries(testData)) {
           Object.assign(this.fd[stepId], stepData);
         }
-      },
-      async validateScreen() {
-        const invalid = {
-          status: 'INVALID',
-          message: `Screen '${this.screenName}' is not associated with submission type '${this.screenType}'`,
-        };
-        if (!this.screenType || !this.screenName) return invalid;
-
-        await this.activeScreenStore.load(import.meta.env.VITE_API_URL);
-        const found = this.activeScreenStore.screens.find(
-          (screen) => screen.name === this.screenName,
-        );
-        const foundType = found ? stripSeqSuffix(found.screen_type) : null;
-        if (found && found.status === 'ACTIVE' && foundType === this.screenType) {
-          return { status: null, message: null };
-        }
-        return invalid;
       },
       isCompleted(i) {
         const step = this.steps[i];

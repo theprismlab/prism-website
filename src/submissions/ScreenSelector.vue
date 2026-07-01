@@ -7,7 +7,7 @@
     v-model:menu="menuOpen"
     @update:model-value="onScreenChange"
   >
-    <template #item="{ item, props }">
+    <!-- <template #item="{ item, props }">
       <v-list-item v-bind="props">
         <template #title>
           {{ item.raw }}
@@ -16,7 +16,7 @@
           }}</span>
         </template>
       </v-list-item>
-    </template>
+    </template> -->
   </v-select>
 </template>
 
