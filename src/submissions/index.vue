@@ -22,7 +22,9 @@
             <template #item.status="{ item }">
               <v-chip
                 :to="
-                  item.status === 'OPEN' ? `/submission-hub/forms/${item.screen_type}` : undefined
+                  item.status === 'OPEN'
+                    ? `/submission-hub/forms/${item.screen_type}/${item.screen_name}`
+                    : undefined
                 "
                 :color="item.statusMeta.color"
                 size="small"
@@ -100,9 +102,13 @@
 <script>
   import { ASSAYS } from '@/utils/assays';
   import { enrichedSchedule, FIELD_LABELS, TABLE_FIELD_KEYS } from './schedule.js';
+  import { useActiveScreenStore } from './active-screen-store.js';
 
   export default {
     name: 'SubmissionsOverview',
+    setup() {
+      return { activeScreenStore: useActiveScreenStore() };
+    },
     data() {
       return {
         headers: TABLE_FIELD_KEYS.map((key) => ({
@@ -110,7 +116,6 @@
           key,
           sortable: false,
         })),
-        schedule: enrichedSchedule(),
         assays: ASSAYS,
         participationSteps: [
           'Complete a submission form',
@@ -118,6 +123,17 @@
           'Ship your compounds to our lab',
         ],
       };
+    },
+    computed: {
+      schedule() {
+        // Reuses the same "newest ACTIVE screen per type" resolution the rest of the app
+        // uses (form validation, nav drawers) instead of a separate ad-hoc active-name check,
+        // so a SCHEDULE entry only overrides to OPEN when it's the one the app treats as current.
+        return enrichedSchedule(this.activeScreenStore.activeScreenNameFor);
+      },
+    },
+    mounted() {
+      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
     },
   };
 </script>

@@ -16,18 +16,20 @@
 </template>
 
 <script>
-  import { buildScreenFields } from './acknowledgementsSchema.js';
+  import { getFields } from './acknowledgementsSchema.js';
 
   export default {
     name: 'AcknowledgmentsStep',
     props: {
       data: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
+      // Still needed for descriptionHtml() — the acknowledgement text links to
+      // screen-specific instructions pages, even though the fields themselves don't vary.
       screenType: { type: String, default: null },
     },
     computed: {
       screenFields() {
-        return buildScreenFields(this.screenType);
+        return getFields();
       },
       groupedFields() {
         const groups = {};
@@ -40,7 +42,10 @@
     },
     methods: {
       descriptionHtml(f) {
-        return f.description.replace('{screenType}', this.screenType || '');
+        // screenType comes from the route and is spliced into an href inside HTML that's
+        // rendered via v-html — encode it so it can't break out of the attribute/tag.
+        const safeScreenType = encodeURIComponent(this.screenType || '');
+        return f.description.replace(/\{screenType\}/g, safeScreenType);
       },
     },
   };
