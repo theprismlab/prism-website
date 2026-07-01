@@ -10,6 +10,18 @@ source of truth for the form — modeled on `PRISM-data-portal`'s `SubmissionFor
 is used **only** by [index.vue](index.vue) — the Submission Hub's schedule table (window
 dates, timepoint, data delivery estimates). Nothing under `forms/` reads it anymore.
 
+Its `status` column isn't purely date math anymore, either. `enrichedSchedule(activeScreenNames)`
+takes an optional `Set` of screen names the API currently reports as `ACTIVE`
+(`computedStatus` in [schedule.js](schedule.js) checks it first, before falling back to
+comparing `window_start`/`window_end` against today). `index.vue` builds that set from
+`activeScreenStore.screens` (the same shared store the nav drawers use — see below) filtered
+to `status === 'ACTIVE'`, and `schedule` is a computed, not a static `data()` value, so the
+table re-renders once the store resolves. Net effect: if the API says a `SCHEDULE` entry's
+screen is `ACTIVE`, the table shows `OPEN` (and links to the form) regardless of what the
+hardcoded window dates say. There's no reverse override — if the dates say a window is open
+but the API doesn't confirm an `ACTIVE` screen with that name, the date-based guess still
+stands.
+
 ## Routing
 
 The form route now carries the resolved screen name, not just the type:
