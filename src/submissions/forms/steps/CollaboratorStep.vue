@@ -15,13 +15,14 @@
     </v-col>
     <v-col cols="12" sm="7">
       <v-text-field
-        v-model="data[F.YOUR_EMAIL.key]"
+        :model-value="data[F.YOUR_EMAIL.key]"
         :label="F.YOUR_EMAIL.label"
         variant="outlined"
         type="email"
         :hint="F.YOUR_EMAIL.hint"
         persistent-hint
         :error-messages="errors[F.YOUR_EMAIL.key]"
+        @update:model-value="(value) => (data[F.YOUR_EMAIL.key] = normalizeEmail(value))"
       />
     </v-col>
   </v-row>
@@ -40,13 +41,14 @@
     </v-col>
     <v-col cols="12" sm="7">
       <v-text-field
-        v-model="data[F.INVESTIGATOR_EMAIL.key]"
+        :model-value="data[F.INVESTIGATOR_EMAIL.key]"
         :label="F.INVESTIGATOR_EMAIL.label"
         variant="outlined"
         type="email"
         :hint="F.INVESTIGATOR_EMAIL.hint"
         persistent-hint
         :error-messages="errors[F.INVESTIGATOR_EMAIL.key]"
+        @update:model-value="(value) => (data[F.INVESTIGATOR_EMAIL.key] = normalizeEmail(value))"
       />
     </v-col>
   </v-row>
@@ -72,13 +74,14 @@
         </v-col>
         <v-col cols="12" sm="6">
           <v-text-field
-            v-model="manager.email"
+            :model-value="manager.email"
             :label="F.DATA_ACCESS_MANAGERS.emailLabel"
             variant="outlined"
             type="email"
             :hint="F.DATA_ACCESS_MANAGERS.hint"
             persistent-hint
             :error-messages="errors[`dataAccessManagers_${i}_email`]"
+            @update:model-value="(value) => (manager.email = normalizeEmail(value))"
           />
         </v-col>
         <v-col cols="auto" class="d-flex align-start pt-1">
@@ -102,6 +105,7 @@
 
 <script>
   import { FIELDS } from './collaboratorSchema';
+  import { normalizeEmail } from './validationHelpers';
 
   export default {
     name: 'CollaboratorStep',
@@ -110,7 +114,7 @@
       errors: { type: Object, default: () => ({}) },
     },
     data() {
-      return { F: FIELDS };
+      return { F: FIELDS, normalizeEmail };
     },
     methods: {
       addManager() {
