@@ -49,7 +49,8 @@ The review step behaves differently from the others — it owns its own Submit b
 1. User reads the summary tables (pulled from each step's `getSummary`).
 2. User checks "I have reviewed my submission and confirm it is correct." — this sets `data.reviewed = true`, which causes the live-validation watcher to mark the step Done.
 3. User clicks Submit. The button is disabled until the checkbox is checked.
-4. `submitForm()` fires the API call (see placeholder below) and shows a `v-dialog` with the success or error message returned by the API.
+4. `submitForm()` first re-confirms the screen is still open — `activeScreenStore.refresh()`, a genuine re-fetch, not the cached list. If that refresh fails outright, or comes back saying the screen is no longer valid to submit against, it shows the failure dialog and stops before calling the API. See [../SCREEN_STATUS_MIGRATION.md](../SCREEN_STATUS_MIGRATION.md) for the full detail on that check.
+5. `submitForm()` fires the API call (see placeholder below) and shows a `v-dialog` with the success or error message returned by the API.
 
 **The API call is wired up** — `submitForm()` calls `api.postSubmission(apiUrl, apiPayload)`,
 where `apiPayload` is built by `parseResponseForApi()` →

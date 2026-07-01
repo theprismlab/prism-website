@@ -54,15 +54,24 @@ type/name?" [active-screen-store.js](active-screen-store.js) (a Pinia store, sam
 [window-status-store.js](window-status-store.js)) is the one place that list lives, and the
 one place the derived questions about it are answered:
 
-- `load(apiUrl)` — fetches `findScreens` and caches the raw list. Returns a promise; once
-  `loaded` is `true` it resolves immediately, but while a fetch is already in flight,
-  concurrent callers **share that same promise** rather than getting an empty no-op back —
-  `await store.load(apiUrl)` is always safe to follow with a read of `store.screens`. Use this
-  for "give me *a* answer, cached is fine" (page loads, nav links).
-- `refresh(apiUrl)` — same in-flight-sharing behavior, but **always re-fetches**, bypassing the
-  cache. Use this when the answer needs to be current as of right now (see `ReviewStep.vue`
-  below) — `load()` alone would just replay whatever was cached at page-load time forever,
-  since it only ever fetches once.
+- `load(apiUrl)` / `refresh(apiUrl)` / the `loading`/`loaded`/`error` state — come from
+  [loadable.js](loadable.js), a small shared helper both this store and `window-status-store.js`
+  build on, so the load-once/share-in-flight/error bookkeeping only lives in one place.
+  `load(apiUrl)` fetches `findScreens` and caches the raw list. Returns a promise; once `loaded`
+  is `true` it resolves immediately, but while a fetch is already in flight, concurrent callers
+  **share that same promise** rather than getting an empty no-op back — `await
+  store.load(apiUrl)` is always safe to follow with a read of `store.screens`. Use this for
+  "give me *a* answer, cached is fine" (page loads, nav links). `refresh(apiUrl)` has the same
+  in-flight-sharing behavior, but **always re-fetches**, bypassing the cache. Use this when the
+  answer needs to be current as of right now (see `ReviewStep.vue` below) — `load()` alone would
+  just replay whatever was cached at page-load time forever, since it only ever fetches once.
+- `error` — `null` unless the last `load()`/`refresh()` failed, in which case it holds the
+  thrown error and `loaded` stays `false` (so a subsequent `load()` naturally retries instead of
+  no-op'ing). Neither `load()` nor `refresh()` ever *rejects* — failures are swallowed into this
+  field instead, so best-effort callers (nav links, the Hub schedule table) don't need a
+  `try`/`catch` and just silently fall back to "no active screen" on failure. Callers that need
+  to know whether the fetch actually succeeded (`screen-type.vue`'s error alert,
+  `ReviewStep.vue`'s pre-submit check — both below) read `error` explicitly after awaiting.
 - `activeScreenFor(screenType)` (getter) — filters the cached list to this type (via
   `stripSeqSuffix` from `api.js`, e.g. `MTS_SEQ` → `MTS`) and `status === 'ACTIVE'`. If more
   than one screen of the type is `ACTIVE`, picks the newest by `date_created` — matches
@@ -88,12 +97,27 @@ one place the derived questions about it are answered:
 
 Every consumer just calls `store.load(apiUrl)` once on `mounted` and reads whichever getter it
 needs as a plain computed — no per-component data property, watcher, async method, or
-duplicate network call. `window-status-store.js` follows the identical `load()`
-shared-in-flight-promise pattern for `fetchSubmissionMessage`, keying its `statuses` map by
-`submission_type` with the same `stripSeqSuffix` applied (it doesn't need a `refresh()`,
-nothing re-checks it mid-session).
+duplicate network call. `window-status-store.js` is built on the same `loadable.js` helper for
+`fetchSubmissionMessage`, keying its `statuses` map by `submission_type` with the same
+`stripSeqSuffix` applied, and exposes a `messageFor(submissionType)` getter mirroring
+`activeScreenNameFor` instead of making its one consumer (`screen-type.vue`'s `apiStatus`) reach
+into `.statuses[type]` directly. It gets `refresh()` for free via the shared helper too — nothing
+currently calls it (nothing re-checks the window-status message mid-session), but it's there for
+interface symmetry.
 
 ## `api.js`
+
+**`getTempApiKey(apiURL)`** — every authed call needs this short-lived credential first. It's
+memoized per `apiURL` (an in-flight/resolved promise cached in a module-level `Map`, same
+shared-promise trick the stores use), so the several authed calls that fire within one page load
+(`active-screen-store`, `window-status-store`, `InstitutionStep.vue`'s `getCollaboratorList`,
+`postSubmission`) share a single fetch instead of each re-requesting their own key. A failed
+fetch isn't cached (the next call retries cleanly), and `authedGet` retries once with a fresh key
+if a request comes back `401`/`403`, since the cached key can expire mid-session. `postSubmission`
+calls `getTempApiKey` directly rather than through `authedGet` and benefits from the shared cache
+too, but deliberately does **not** get the same auto-retry-on-auth-failure — retrying a POST
+automatically risks a double-submit if the backend doesn't treat `createSubmission` as
+idempotent; its failures still surface through `ReviewStep.vue`'s existing `catch` block.
 
 **`findScreens(apiURL)`** — `GET prism_screens?filter={screen_category: 'EXTERNAL'}`. Returns
 every external screen record (`name`, `screen_type`, `status`, `date_created`, ...). Backs
@@ -117,6 +141,13 @@ separate network call; see below.
   `!activeScreenStore.loaded ? null : activeScreenStore.validationFor(screenName, screenType)`.
   `mounted()` just calls `activeScreenStore.load(apiUrl)` (fire-and-forget) — once it resolves,
   the computed re-evaluates on its own, no manual "await then assign" plumbing.
+- `loadError` is a separate computed reading `activeScreenStore.error` directly. It exists
+  because `screenValidation` alone can't distinguish "still loading" from "failed to load" — both
+  leave `loaded: false` forever (see `loadable.js`'s `error` behavior above). The template checks
+  `loadError` *before* the three-way `screenValidation` branch below, rendering a retryable error
+  alert (its button just calls `activeScreenStore.load(apiUrl)` again — safe, since `loaded`
+  never flipped `true`) instead of leaving the loading spinner spinning forever on a network
+  failure.
 - The template is a three-way branch on that computed, not a two-way `v-if`/`v-else`: `INVALID`
   → error alert; `null` (store hasn't loaded yet) → a loading spinner; anything else (valid) →
   the step accordion. This matters because the default has to be "don't show the form" — a
@@ -136,7 +167,11 @@ separate network call; see below.
   store, `screen-type.vue`'s `screenValidation` computed picks up that refreshed result too,
   automatically, with no event needed. On `INVALID` at submit time, `ReviewStep.vue` shows the
   same success/failure dialog used for the actual API call, with an explanatory message, and
-  skips calling `postSubmission`.
+  skips calling `postSubmission`. Since `refresh()` never rejects (see `loadable.js` above), it
+  also checks `activeScreenStore.error` right after the `await` and, if the refresh itself
+  failed, shows a "couldn't verify screen status" dialog and returns *without* calling
+  `validationFor`/`postSubmission` — otherwise a failed refresh would silently fall through to
+  validating against whatever was cached before, which could be stale or empty.
 - `screenName` is passed down to `ReviewStep.vue` → `parseFormDataForApi(formData, screenType,
   screenName)` ([parseApiPayload.js](forms/steps/parseApiPayload.js)) as the `screen` field in
   the submission payload — also no longer sourced from `schedule.js`.
