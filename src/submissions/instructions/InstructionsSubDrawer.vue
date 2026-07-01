@@ -83,9 +83,7 @@
         return this.$route.params.screenType;
       },
       resolvedScreenName() {
-        return this.screenType
-          ? (this.activeScreenStore.activeScreenFor(this.screenType)?.name ?? null)
-          : null;
+        return this.activeScreenStore.activeScreenNameFor(this.screenType);
       },
       testAgentPdf() {
         return this.screenType

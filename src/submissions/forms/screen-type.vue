@@ -90,7 +90,8 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
-  import * as api from '@/submissions/api';
+  import { useActiveScreenStore } from '@/submissions/active-screen-store.js';
+  import { stripSeqSuffix } from '@/submissions/api';
   import { getTestData } from './testFixtures.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
@@ -110,7 +111,11 @@
       ReviewStep,
     },
     setup() {
-      return { formStore: useFormProgressStore(), windowStore: useWindowStatusStore() };
+      return {
+        formStore: useFormProgressStore(),
+        windowStore: useWindowStatusStore(),
+        activeScreenStore: useActiveScreenStore(),
+      };
     },
     data() {
       return {
@@ -206,14 +211,21 @@
         }
       },
       async validateScreen() {
-        const response = {};
-        try {
-          await api.validateScreen(import.meta.env.VITE_API_URL, this.screenName, this.screenType);
-        } catch (error) {
-          response.message = error;
-          response.status = 'INVALID';
+        const invalid = {
+          status: 'INVALID',
+          message: `Screen '${this.screenName}' is not associated with submission type '${this.screenType}'`,
+        };
+        if (!this.screenType || !this.screenName) return invalid;
+
+        await this.activeScreenStore.load(import.meta.env.VITE_API_URL);
+        const found = this.activeScreenStore.screens.find(
+          (screen) => screen.name === this.screenName,
+        );
+        const foundType = found ? stripSeqSuffix(found.screen_type) : null;
+        if (found && found.status === 'ACTIVE' && foundType === this.screenType) {
+          return { status: null, message: null };
         }
-        return { status: response.status, message: response.message };
+        return invalid;
       },
       isCompleted(i) {
         const step = this.steps[i];
@@ -232,47 +244,6 @@
 </script>
 
 <style scoped>
-  /* ── Document header ─────────────────────────────────────── */
-  .doc-header {
-    border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-  .doc-header__band {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 16px;
-    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.07);
-  }
-  .doc-header__eyebrow {
-    font-size: 0.68rem;
-    font-weight: var(--prism-font-weight-semibold);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--prism-color-primary);
-  }
-  .doc-header__title-block {
-    padding: 16px 18px 14px;
-  }
-  .doc-header__title {
-    font-size: var(--prism-text-h3-size);
-    font-weight: var(--prism-font-weight-bold);
-    color: var(--prism-color-text);
-    line-height: 1.2;
-    margin: 0;
-  }
-  .doc-header__sep {
-    color: rgba(var(--v-theme-on-surface), 0.25);
-    font-weight: 300;
-    margin: 0 1px;
-  }
-  .doc-header__name {
-    color: rgba(var(--v-theme-on-surface), 0.6);
-    font-weight: var(--prism-font-weight-medium);
-  }
-
   /* ── Step indicator ──────────────────────────────────────── */
   .step-number {
     flex-shrink: 0;

@@ -62,9 +62,7 @@
         return this.$route.params.screenType || this.formStore.lastScreenType;
       },
       resolvedScreenName() {
-        return this.screenType
-          ? (this.activeScreenStore.activeScreenFor(this.screenType)?.name ?? null)
-          : null;
+        return this.activeScreenStore.activeScreenNameFor(this.screenType);
       },
       isSubSection() {
         const path = this.$route.path;

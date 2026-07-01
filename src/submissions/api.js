@@ -68,28 +68,8 @@ export async function findScreens(apiURL) {
   return authedGet(apiURL, path);
 }
 
-export async function findScreen(apiURL, screen) {
-  const path = 'prism_screens?filter=' + JSON.stringify({ where: { name: screen } });
-  const found = await authedGet(apiURL, path);
-  if (found?.length > 0) {
-    if (found[0].status !== 'ACTIVE') throw `Screen '${screen}' is not an ACTIVE screen`;
-    return found[0];
-  }
-  throw `Screen '${screen}' is not registered or not an ACTIVE screen`;
-}
-
-export async function validateScreen(apiURL, screen, screenType) {
-  try {
-    const foundRecord = await findScreen(apiURL, screen);
-    const foundType = foundRecord?.screen_type?.endsWith('_SEQ')
-      ? foundRecord.screen_type.replace('_SEQ', '')
-      : foundRecord?.screen_type;
-    if (foundRecord && foundRecord.name === screen && foundType === screenType) {
-      return;
-    }
-    throw "Screen '" + screen + "' is not associated with submission type '" + screenType + "'";
-  } catch (err) {
-    console.log(err);
-    throw "Screen '" + screen + "' is not associated with submission type '" + screenType + "'";
-  }
+// Some screen/submission types come back from the API with a '_SEQ' suffix variant
+// (e.g. 'MTS_SEQ'). Everywhere we compare against a plain type ('MTS'), strip it first.
+export function stripSeqSuffix(type) {
+  return type?.endsWith('_SEQ') ? type.replace('_SEQ', '') : type;
 }
