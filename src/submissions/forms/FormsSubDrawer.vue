@@ -64,13 +64,16 @@
       screenType() {
         return this.$route.params.screenType;
       },
+      screenName() {
+        return this.$route.params.screen;
+      },
     },
     methods: {
       stepStatus(i) {
-        return this.formStore.stepStatus(this.screenType, i);
+        return this.formStore.stepStatus(this.screenName, i);
       },
       handleStepClick(i) {
-        this.formStore.setOpenPanel(this.screenType, i);
+        this.formStore.setOpenPanel(this.screenName, this.screenType, i);
       },
       connectorClass(i) {
         return {
@@ -80,7 +83,7 @@
       },
       labelClass(i) {
         // const isCompleted = this.stepStatus(i) === 'completed';
-        const isOpen = this.formStore.openPanel(this.screenType) === i;
+        const isOpen = this.formStore.openPanel(this.screenName) === i;
         return {
           'font-weight-bold': isOpen,
         };

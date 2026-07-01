@@ -75,9 +75,6 @@
             />
 
             <div v-if="step.id !== 'review'" class="d-flex align-center justify-end mt-4 gap-3">
-              <!-- <span v-if="attemptedSteps[i] && !stepIsValid[step.id]" class="step-footer-hint mr-3">
-                Fix errors above to continue
-              </span> -->
               <v-btn color="primary-base" flat rounded @click="completeStep(i)">Continue</v-btn>
             </div>
           </v-expansion-panel-text>
@@ -99,7 +96,6 @@
   import TestAgentStep from './steps/TestAgentStep.vue';
   import AcknowledgmentsStep from './steps/AcknowledgmentsStep.vue';
   import ReviewStep from './steps/ReviewStep.vue';
-  import { PrismPageTitle } from '@/lib/prism.js';
 
   export default {
     name: 'FormsScreen',
@@ -140,16 +136,18 @@
       },
       openPanel: {
         get() {
-          return this.screenType ? this.formStore.openPanel(this.screenType) : null;
+          return this.screenName ? this.formStore.openPanel(this.screenName) : null;
         },
         set(val) {
-          if (this.screenType) this.formStore.setOpenPanel(this.screenType, val ?? null);
+          if (this.screenName) {
+            this.formStore.setOpenPanel(this.screenName, this.screenType, val ?? null);
+          }
         },
       },
       fd() {
-        if (!this.screenType) return null;
-        this.formStore._ensure(this.screenType);
-        return this.formStore.screenTypes[this.screenType].formData;
+        if (!this.screenType || !this.screenName) return null;
+        this.formStore._ensure(this.screenName, this.screenType);
+        return this.formStore.screens[this.screenName].formData;
       },
       stepErrors() {
         if (!this.fd) return {};
@@ -192,11 +190,11 @@
             const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
             const hasErrors = Object.keys(errors).length > 0;
             validity[step.id] = !hasErrors;
-            const status = this.formStore.stepStatus(this.screenType, i);
+            const status = this.formStore.stepStatus(this.screenName, i);
             if (hasErrors && status === 'completed') {
-              this.formStore.uncompleteStep(this.screenType, i);
+              this.formStore.uncompleteStep(this.screenName, i);
             } else if (!hasErrors && status !== 'completed') {
-              this.formStore.markStepValid(this.screenType, i);
+              this.formStore.markStepValid(this.screenName, this.screenType, i);
             }
           });
           this.stepIsValid = validity;
@@ -237,7 +235,7 @@
       completeStep(i) {
         this.attemptedSteps = { ...this.attemptedSteps, [i]: (this.attemptedSteps[i] ?? 0) + 1 };
         if (!this.stepIsValid[this.steps[i].id]) return;
-        this.formStore.completeStep(this.screenType, i);
+        this.formStore.completeStep(this.screenName, this.screenType, i);
       },
     },
   };

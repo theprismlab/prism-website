@@ -8,7 +8,7 @@ Multi-step submission form for PRISM screening requests. Each submission is scop
 submissions/
 ├── store.js                     # Pinia store + FORM_STEPS definition
 ├── forms/
-│   ├── screen.vue               # Page component — renders the accordion, drives step logic
+│   ├── screen-type.vue          # Page component — renders the accordion, drives step logic
 │   ├── index.vue                # Entry point / route wrapper
 │   ├── FormsSubDrawer.vue       # Sidebar drawer for the forms section
 │   └── steps/
@@ -39,7 +39,7 @@ Steps are defined in `store.js` as `FORM_STEPS` (ordered array) and wired up in 
 | `acknowledgments`| Acknowledgments  | `acknowledgementsSchema.js`  |
 | `review`         | Review & Submit  | `reviewSchema.js`            |
 
-The review step behaves differently from the others — it owns its own Submit button and does not use the shared Continue button rendered by `screen.vue`.
+The review step behaves differently from the others — it owns its own Submit button and does not use the shared Continue button rendered by `screen-type.vue`.
 
 ## Review & Submit step
 
@@ -51,13 +51,13 @@ The review step behaves differently from the others — it owns its own Submit b
 3. User clicks Submit. The button is disabled until the checkbox is checked.
 4. `submitForm()` fires the API call (see placeholder below) and shows a `v-dialog` with the success or error message returned by the API.
 
-**Adding the real API call** — find the `TODO` comment in `ReviewStep.vue`:
-```js
-// TODO: replace with real API call, e.g.:
-// const result = await ApiClasses.postSubmission(apiURL, this.formData);
-await new Promise((resolve) => setTimeout(resolve, 800)); // placeholder
-```
-Replace the placeholder with the actual call. `this.formData` contains the complete form payload (`collaborator`, `institution`, `testAgent`, `acknowledgments`, `review`). On success set `dialogSuccess = true` and a message; on catch set `dialogSuccess = false` and the error message — the dialog handles both cases.
+**The API call is wired up** — `submitForm()` calls `api.postSubmission(apiUrl, apiPayload)`,
+where `apiPayload` is built by `parseResponseForApi()` →
+`parseFormDataForApi(formData, screenType, screenName)`
+([parseApiPayload.js](steps/parseApiPayload.js)). On success set `dialogSuccess = true` and a
+message; on catch set `dialogSuccess = false` and the error message — the dialog handles both
+cases. (There's a stale `// TODO: replace with real API call` comment left over above that
+line in `ReviewStep.vue` — the call itself is already real, the comment just wasn't cleaned up.)
 
 ## Schema pattern
 
@@ -78,7 +78,12 @@ Schemas are plain JS with no Vue dependencies, making them easy to unit-test in 
 
 ## Screen types
 
-The `screenType` param is derived from the route param (`MTS`, `CPS`, `EPS`, `APS`, `AIR`) in `screen.vue` and passed through to every step's `validate` and `buildScreenFields` call.
+The route is `/submission-hub/forms/:screenType/:screen` — `screenType` (`MTS`, `CPS`, `EPS`,
+`APS`, `AIR`) is passed through to every step's `validate` and `buildScreenFields` call;
+`screen` is the specific resolved screen name (e.g. `MTS033`), used for the header display and
+as the `screen` field in the submission payload. How `:screen` gets resolved, cached, and
+validated against the API is a separate concern from the form steps documented here — see
+[../SCREEN_STATUS_MIGRATION.md](../SCREEN_STATUS_MIGRATION.md).
 
 **Test agent requirements by screen type** (`SCREEN_CONFIG` in `testAgentSchema.js`):
 
@@ -92,27 +97,31 @@ The `screenType` param is derived from the route param (`MTS`, `CPS`, `EPS`, `AP
 
 ## State management (`store.js`)
 
-State is keyed by **screen ID** so the user can fill out multiple screens independently.
+State is keyed by the specific resolved **screen name** (e.g. `MTS034`), not the screen type —
+a type can have more than one screen over time (`SCHEDULE` has both `MTS033` and `MTS034`),
+and each should start with a fresh form rather than inheriting a prior screen's in-progress
+draft.
 
 ```
-store.screens[screenId] = {
+store.screens[screenName] = {
   openPanel: number,       // which accordion panel is expanded
   completed: number[],     // indices of steps that passed validation
   formData: { collaborator, institution, testAgent, acknowledgments, review }
 }
 ```
 
-Key store actions:
+Key store actions — `screenType` is only needed the first time a screen is touched, to build
+the right initial form shape (schemas key off the type, not the specific screen name):
 
 | Action | Effect |
 |--------|--------|
-| `_ensure(screen)` | Initialises state for a screen if not already present |
-| `completeStep(screen, i)` | Marks step `i` complete and advances `openPanel` |
-| `uncompleteStep(screen, i)` | Removes step `i` from `completed` (called when live validation detects a regression) |
-| `markStepValid(screen, i)` | Marks a step complete without advancing the panel |
-| `setOpenPanel(screen, i)` | Manually opens a panel (accordion click) |
+| `_ensure(screenName, screenType)` | Initialises state for a screen if not already present |
+| `completeStep(screenName, screenType, i)` | Marks step `i` complete and advances `openPanel` |
+| `uncompleteStep(screenName, i)` | Removes step `i` from `completed` (called when live validation detects a regression) |
+| `markStepValid(screenName, screenType, i)` | Marks a step complete without advancing the panel |
+| `setOpenPanel(screenName, screenType, i)` | Manually opens a panel (accordion click) |
 
-`screen.vue` runs a deep watcher on `formData` to auto-complete or auto-invalidate steps as the user types, so the "Done" chip stays in sync without requiring the user to click Continue.
+`screen-type.vue` runs a deep watcher on `formData` to auto-complete or auto-invalidate steps as the user types, so the "Done" chip stays in sync without requiring the user to click Continue.
 
 ## Validation helpers (`validationHelpers.js`)
 
@@ -133,4 +142,4 @@ required(val) || validEmail(val)
 2. Create `steps/NewStep.vue` that accepts `:data` and `:errors` props and mutates `data` in place.
 3. Add the step to `FORM_STEPS` in `store.js` (order matters — it controls the accordion order).
 4. Register it in `STEP_REGISTRY` in `steps/registry.js`.
-5. Add a `v-else-if` branch in `screen.vue` to render the new component.
+5. Add a `v-else-if` branch in `screen-type.vue` to render the new component.

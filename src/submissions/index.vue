@@ -125,17 +125,11 @@
       };
     },
     computed: {
-      // Screen names the API currently reports as ACTIVE, used to override the schedule's
-      // window-date guess so a screen the API says is open always shows as OPEN.
-      activeScreenNames() {
-        return new Set(
-          this.activeScreenStore.screens
-            .filter((screen) => screen.status === 'ACTIVE')
-            .map((screen) => screen.name),
-        );
-      },
       schedule() {
-        return enrichedSchedule(this.activeScreenNames);
+        // Reuses the same "newest ACTIVE screen per type" resolution the rest of the app
+        // uses (form validation, nav drawers) instead of a separate ad-hoc active-name check,
+        // so a SCHEDULE entry only overrides to OPEN when it's the one the app treats as current.
+        return enrichedSchedule(this.activeScreenStore.activeScreenNameFor);
       },
     },
     mounted() {

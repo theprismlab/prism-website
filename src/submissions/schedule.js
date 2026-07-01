@@ -64,11 +64,12 @@ function todayET() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 }
 
-// activeScreenNames: optional Set of screen names the API currently reports as ACTIVE.
-// When the schedule entry's screen_name is in that set, the API is treated as ground
-// truth and the window-date estimate below is overridden to OPEN.
-export function computedStatus(item, activeScreenNames) {
-  if (activeScreenNames?.has(item.screen_name)) return 'OPEN';
+// activeScreenNameFor: optional (screenType) => name|null lookup, e.g.
+// activeScreenStore.activeScreenNameFor, resolving the newest ACTIVE screen the API
+// currently reports for a type. When the schedule entry IS that screen, the API is
+// treated as ground truth and the window-date estimate below is overridden to OPEN.
+export function computedStatus(item, activeScreenNameFor) {
+  if (activeScreenNameFor?.(item.screen_type) === item.screen_name) return 'OPEN';
   const today = todayET();
   if (today < item.window_start) return 'SCHEDULED';
   if (today <= item.window_end) return 'OPEN';
@@ -91,8 +92,8 @@ export function formatWindow(item) {
 }
 
 // Decorates a raw SCHEDULE entry with derived display fields.
-export function enrichEntry(item, activeScreenNames) {
-  const status = computedStatus(item, activeScreenNames);
+export function enrichEntry(item, activeScreenNameFor) {
+  const status = computedStatus(item, activeScreenNameFor);
   return {
     ...item,
     status,
@@ -102,8 +103,8 @@ export function enrichEntry(item, activeScreenNames) {
 }
 
 // Convenience: enrich all SCHEDULE entries (useful for table displays).
-export function enrichedSchedule(activeScreenNames) {
-  return SCHEDULE.map((item) => enrichEntry(item, activeScreenNames));
+export function enrichedSchedule(activeScreenNameFor) {
+  return SCHEDULE.map((item) => enrichEntry(item, activeScreenNameFor));
 }
 
 export const FIELD_LABELS = {
