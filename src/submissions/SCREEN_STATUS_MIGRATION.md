@@ -71,13 +71,20 @@ one place the derived questions about it are answered:
 - `activeScreenNameFor(screenType)` (getter) — thin wrapper around `activeScreenFor(...)?.name`
   that also tolerates a falsy `screenType`, so consumers don't each need their own null-guard.
 - `validationFor(screenName, screenType)` (getter) — is *this exact* screen name valid to
-  submit against for this type? Returns `{ status: null, message: null }` when valid, or
-  `{ status: 'INVALID', message }` otherwise — the same shape both `screen-type.vue`'s alert
-  and `ReviewStep.vue`'s submit-failure dialog expect. Valid means: a record with that exact
-  `name` exists, `status === 'ACTIVE'`, and its `screen_type` (`_SEQ`-stripped) matches
-  `screenType` — this is what catches a mismatched URL like
-  `/submission-hub/forms/MTS/CPS017` (a real, `ACTIVE` screen, but the wrong type), mirroring
-  what the portal does via `CompoundSubmissionConstants.validateScreen`.
+  submit against for this type? Returns `{ status: null, message: null }` only when
+  `screenName === activeScreenNameFor(screenType)` — i.e. it's the one screen the app treats as
+  current for that type, not merely *some* `ACTIVE` screen sharing the type. Anything else is
+  `{ status: 'INVALID', message }`, but never the same generic message — each failure mode is
+  distinguished so the alert/dialog says something accurate, not just "invalid":
+  - No screen with that exact `name` exists at all → *"Screen 'X' is not registered"*.
+  - A screen with that `name` exists but its `screen_type` (`_SEQ`-stripped) doesn't match
+    `screenType` → *"Screen 'X' is not associated with submission type 'Y'"* — this is what
+    catches a mismatched URL like `/submission-hub/forms/MTS/CPS017` (a real screen, wrong
+    type), mirroring what the portal does via `CompoundSubmissionConstants.validateScreen`.
+  - The name and type both check out, but it isn't the screen `activeScreenNameFor` currently
+    designates (e.g. it's `COMPLETE`, `DEPRECATED`, or its window closed) →
+    *"Screen 'X' is not currently open for submissions"*. None of these three cases render a
+    viewable or submittable form — only the exact currently-designated screen does.
 
 Every consumer just calls `store.load(apiUrl)` once on `mounted` and reads whichever getter it
 needs as a plain computed — no per-component data property, watcher, async method, or
