@@ -25,33 +25,22 @@ export const useActiveScreenStore = defineStore('activeScreen', {
     // Is this exact screen name valid to submit against for this type? { status: null } means
     // valid; { status: 'INVALID', message } means not — same shape screen-type.vue's alert and
     // ReviewStep's submit dialog both expect. Only the screen activeScreenNameFor designates as
-    // current for the type is viewable/submittable (not merely any ACTIVE screen sharing the
-    // type) — but a screen that's simply not current right now (e.g. COMPLETE, window closed)
-    // gets its own message distinct from a name/type that don't belong together at all
-    // (whether that's because the name isn't registered or belongs to a different type).
+    // current for the type is viewable/submittable — not merely any ACTIVE screen sharing the
+    // type, and not a screen that used to be current but no longer is (e.g. COMPLETE, window
+    // closed). Whatever the reason screenName isn't that exact match — wrong type, not
+    // registered, or simply no longer current — it's the same single INVALID message below;
+    // none of those reasons get their own distinct wording.
     validationFor() {
       return (screenName, screenType) => {
-        if (!screenName || !screenType) {
-          return {
-            status: 'INVALID',
-            message: `Screen '${screenName}' is not associated with submission type '${screenType}'`,
-          };
+        const invalid = {
+          status: 'INVALID',
+          message: `Screen '${screenName}' is not associated with submission type '${screenType}'`,
+        };
+        if (!screenName || !screenType) return invalid;
+        if (this.activeScreenNameFor(screenType) === screenName) {
+          return { status: null, message: null };
         }
-        const found = this.screens.find((screen) => screen.name === screenName);
-        const foundType = found ? stripSeqSuffix(found.screen_type) : null;
-        if (foundType !== screenType) {
-          return {
-            status: 'INVALID',
-            message: `Screen '${screenName}' is not associated with submission type '${screenType}'`,
-          };
-        }
-        if (this.activeScreenNameFor(screenType) !== screenName) {
-          return {
-            status: 'INVALID',
-            message: `Screen '${screenName}' is not currently open for submissions`,
-          };
-        }
-        return { status: null, message: null };
+        return invalid;
       };
     },
   },
