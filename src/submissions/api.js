@@ -69,17 +69,19 @@ export async function findScreens(apiURL) {
 }
 
 // Resolves the currently ACTIVE screen for a screen type (e.g. 'MTS'), handling the
-// '_SEQ' suffix variant the same way PRISM-data-portal does. Returns null if none is open.
+// '_SEQ' suffix variant the same way PRISM-data-portal does. If more than one screen
+// of the type is ACTIVE, picks the newest by date_created (matches sortScreens in
+// PRISM-data-portal's SubmissionsPage). Returns null if none is open.
 export async function findActiveScreen(apiURL, screenType) {
   const screens = await findScreens(apiURL);
-  return (
-    screens.find((screen) => {
-      const type = screen.screen_type?.endsWith('_SEQ')
-        ? screen.screen_type.replace('_SEQ', '')
-        : screen.screen_type;
-      return type === screenType && screen.status === 'ACTIVE';
-    }) ?? null
-  );
+  const active = screens.filter((screen) => {
+    const type = screen.screen_type?.endsWith('_SEQ')
+      ? screen.screen_type.replace('_SEQ', '')
+      : screen.screen_type;
+    return type === screenType && screen.status === 'ACTIVE';
+  });
+  if (active.length === 0) return null;
+  return active.sort((a, b) => new Date(b.date_created) - new Date(a.date_created))[0];
 }
 
 export async function findScreen(apiURL, screen) {
