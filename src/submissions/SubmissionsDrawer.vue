@@ -25,34 +25,29 @@
 
 <script>
   import { useFormProgressStore } from './store';
-  import { findActiveScreen } from './api.js';
+  import { useActiveScreenStore } from './active-screen-store.js';
 
   export default {
     name: 'SubmissionsDrawer',
     setup() {
       return {
         formStore: useFormProgressStore(),
+        activeScreenStore: useActiveScreenStore(),
       };
     },
     data() {
       return {
         drawer: true,
-        resolvedScreenName: null,
       };
+    },
+    mounted() {
+      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
       '$route.params.screenType': {
         immediate: true,
         handler(screen) {
           this.formStore.setLastScreenType(screen);
-        },
-      },
-      screenType: {
-        immediate: true,
-        async handler(type) {
-          this.resolvedScreenName = type
-            ? ((await findActiveScreen(import.meta.env.VITE_API_URL, type))?.name ?? null)
-            : null;
         },
       },
     },
@@ -65,6 +60,11 @@
     computed: {
       screenType() {
         return this.$route.params.screenType || this.formStore.lastScreenType;
+      },
+      resolvedScreenName() {
+        return this.screenType
+          ? (this.activeScreenStore.activeScreenFor(this.screenType)?.name ?? null)
+          : null;
       },
       isSubSection() {
         const path = this.$route.path;

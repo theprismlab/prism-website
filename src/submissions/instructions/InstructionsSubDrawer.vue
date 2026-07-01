@@ -63,22 +63,29 @@
   import SubDrawer from '../SubDrawer.vue';
   import ScreenSelector from '../ScreenSelector.vue';
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline.js';
-  import { findActiveScreen } from '../api.js';
+  import { useActiveScreenStore } from '../active-screen-store.js';
 
   export default {
     name: 'InstructionsSubDrawer',
     components: { SubDrawer, ScreenSelector },
+    setup() {
+      return { activeScreenStore: useActiveScreenStore() };
+    },
     data() {
       return {
         openedGroups: ['test-agent'],
         testAgentPages: [],
         shippingPages: [],
-        resolvedScreenName: null,
       };
     },
     computed: {
       screenType() {
         return this.$route.params.screenType;
+      },
+      resolvedScreenName() {
+        return this.screenType
+          ? (this.activeScreenStore.activeScreenFor(this.screenType)?.name ?? null)
+          : null;
       },
       testAgentPdf() {
         return this.screenType
@@ -120,14 +127,6 @@
           this.shippingPages = url ? await loadPdfOutline(url) : [];
         },
       },
-      screenType: {
-        immediate: true,
-        async handler(type) {
-          this.resolvedScreenName = type
-            ? ((await findActiveScreen(import.meta.env.VITE_API_URL, type))?.name ?? null)
-            : null;
-        },
-      },
       '$route.path': {
         handler(path) {
           if (path.includes('/shipping') && !this.openedGroups.includes('shipping')) {
@@ -138,6 +137,9 @@
           }
         },
       },
+    },
+    mounted() {
+      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
     },
     methods: {
       flattenOutline,

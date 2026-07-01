@@ -1,26 +1,14 @@
 <template>
   <page>
     <app-container wide>
-      <header class="doc-header mb-5">
-        <div class="doc-header__band">
-          <span class="doc-header__eyebrow">PRISM Submission Form</span>
-        </div>
-        <div class="doc-header__title-block">
-          <h1 class="doc-header__title">
-            <span class="doc-header__type">{{ screenType }}</span>
-            <span class="doc-header__sep" aria-hidden="true"> · </span>
-            <span class="doc-header__name">{{ screenName }}</span>
-          </h1>
-        </div>
-      </header>
-
-      <v-alert
-        v-if="apiStatus?.message"
-        variant="tonal"
-        density="compact"
-        class="mb-4"
-        >{{ apiStatus.message }}</v-alert
+      <prism-page-title
+        >{{ screenType }} Submission Form —<br />
+        {{ screenName }}</prism-page-title
       >
+
+      <v-alert v-if="apiStatus?.message" variant="tonal" density="compact" class="mb-4">{{
+        apiStatus.message
+      }}</v-alert>
 
       <v-alert
         v-if="screenValidation?.status === 'INVALID'"
@@ -110,6 +98,7 @@
   import TestAgentStep from './steps/TestAgentStep.vue';
   import AcknowledgmentsStep from './steps/AcknowledgmentsStep.vue';
   import ReviewStep from './steps/ReviewStep.vue';
+  import { PrismPageTitle } from '@/lib/prism.js';
 
   export default {
     name: 'FormsScreen',
