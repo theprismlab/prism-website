@@ -63,8 +63,28 @@
   .testimonial-card {
     padding: 44px 40px 36px;
     border-radius: 20px;
-    background: #fff;
-    background-color: var(--v-amber-lighten-5);
+    background:
+      radial-gradient(
+        ellipse at 20% 70%,
+        color-mix(in srgb, var(--prism-color-secondary) 24%, transparent) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse at 80% 20%,
+        color-mix(in srgb, var(--prism-color-error) 16%, transparent) 0%,
+        transparent 45%
+      ),
+      radial-gradient(
+        ellipse at 55% 90%,
+        color-mix(in srgb, var(--prism-color-warning) 18%, transparent) 0%,
+        transparent 42%
+      ),
+      radial-gradient(
+        ellipse at 70% 45%,
+        color-mix(in srgb, var(--prism-color-secondary) 12%, transparent) 0%,
+        transparent 40%
+      ),
+      #fff8f5;
   }
 
   .testimonial-quote-mark {

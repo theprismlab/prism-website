@@ -38,7 +38,7 @@
 
     <app-container class="my-10">
       <section class="text-center mb-12">
-        <h2 class="prism-text-overline text-secondary mb-2">Impact</h2>
+        <h2 class="prism-text-overline text-amber-accent-4 mb-2">Impact</h2>
         <h3 class="prism-text-display-large mb-8">Dedicated to advancing oncology research</h3>
         <p class="prism-text-body-xlarge text-center" style="max-width: 720px; margin: auto">
           Working with pharmaceutical and biotech companies and academics to improve the outcome for
@@ -49,7 +49,10 @@
     </app-container>
 
     <app-container class="my-10">
-      <h2 class="prism-text-overline text-secondary text-center mb-2">Testimonials</h2>
+      <section class="text-center mb-12">
+        <h2 class="prism-text-overline text-amber-accent-4 mb-2">Testimonials</h2>
+        <h3 class="prism-text-display-large mb-8">What our collaborators say</h3>
+      </section>
       <HomeTestimonialCards class="pt-8"></HomeTestimonialCards>
     </app-container>
   </page>

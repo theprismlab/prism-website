@@ -89,6 +89,6 @@
   background: linear-gradient(15deg, #0e0c1b, #161730 40%, #24286e);
 } */
   .background {
-    background: linear-gradient(120deg, var(--prism-color-primary), var(--prism-color-blue-700));
+    background: linear-gradient(120deg, var(--v-primary), var(--v-blue-darken-4));
   }
 </style>
