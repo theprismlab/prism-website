@@ -43,6 +43,9 @@
 </script>
 
 <style scoped>
+  .page-section--bg-muted {
+    background-color: var(--v-grey-lighten-5);
+  }
   .page-section {
     width: 100%;
     margin: 0 auto;
