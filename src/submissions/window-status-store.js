@@ -12,6 +12,12 @@ export const useWindowStatusStore = defineStore('windowStatus', {
     // `.statuses[type]` directly.
     messageFor: (state) => (submissionType) =>
       submissionType ? (state.statuses[submissionType] ?? null) : null,
+    // `fetchSubmissionMessage` returns one row per real submission type, so its keys (after
+    // stripSeqSuffix) are the canonical list of known screen types — used by Instructions
+    // (which has no :screen to resolve, only a :screenType to validate) to reject a bogus or
+    // typo'd type in the URL.
+    isValidType: (state) => (submissionType) =>
+      !!submissionType && submissionType in state.statuses,
   },
   // load()/refresh()/_fetch() come from loadable.js — same shared scaffolding
   // active-screen-store.js uses.
@@ -25,3 +31,9 @@ export const useWindowStatusStore = defineStore('windowStatus', {
     this.statuses = map;
   }),
 });
+
+// Shared wording for an unrecognized :screenType — kept in one place since it's used by
+// InstructionsSubDrawer.vue, test-agent.vue, and shipping.vue.
+export function invalidScreenTypeMessage(screenType) {
+  return `'${screenType}' is not a valid screen type. Please select one from the menu`;
+}

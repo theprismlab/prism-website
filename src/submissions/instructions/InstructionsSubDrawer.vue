@@ -87,13 +87,17 @@
         return this.$route.params.screenType;
       },
       // Instructions have no :screen segment to resolve — only whether screenType itself is a
-      // real, known type matters here. windowStatusStore.statuses is keyed by the API's own
+      // real, known type matters here. windowStatusStore.isValidType is keyed by the API's own
       // (SEQ-stripped) submission types, so this rejects a bogus/typo'd :screenType the same
       // way FormsSubDrawer.vue rejects a bogus :screen (via active-screen-store's validationFor).
       screenSelected() {
         if (!this.screenType) return false;
+        // A failed fetch must not be treated the same as "still loading" — loaded never
+        // becomes true on failure (see loadable.js), so without this check a network error
+        // would make every screenType, including bogus ones, look permanently valid.
+        if (this.windowStatusStore.error) return false;
         if (!this.windowStatusStore.loaded) return true; // avoid flashing hidden while loading
-        return this.screenType in this.windowStatusStore.statuses;
+        return this.windowStatusStore.isValidType(this.screenType);
       },
       resolvedScreenName() {
         return this.activeScreenStore.activeScreenNameFor(this.screenType);
