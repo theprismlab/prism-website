@@ -3,7 +3,14 @@
     <app-container narrow>
       <prism-page-title>Webinars</prism-page-title>
       <section class="webinar-list">
-        <div v-for="webinar in webinars" :key="webinar.title" class="webinar-card">
+        <a
+          v-for="webinar in webinars"
+          :key="webinar.title"
+          class="webinar-card"
+          :href="webinar.url"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <span class="webinar-card__accent" />
           <div class="webinar-card__body">
             <div class="webinar-card__eyebrow">
@@ -17,18 +24,13 @@
               {{ webinar.description }}
             </p>
             <div class="webinar-card__footer">
-              <a
-                class="webinar-card__link"
-                :href="webinar.url"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <span class="webinar-card__link">
                 Watch Webinar
                 <v-icon size="14" class="webinar-card__link-icon">mdi-arrow-top-right</v-icon>
-              </a>
+              </span>
             </div>
           </div>
-        </div>
+        </a>
       </section>
     </app-container>
   </page>
@@ -84,6 +86,8 @@
       border-color 180ms ease,
       box-shadow 180ms ease;
     border-color: rgba(39, 127, 253, 0.1);
+    text-decoration: none;
+    color: inherit;
   }
 
   .webinar-card:hover {
@@ -138,11 +142,10 @@
     font-size: 0.825rem;
     font-weight: 600;
     color: #277ffd;
-    text-decoration: none;
     transition: opacity 150ms ease;
   }
 
-  .webinar-card__link:hover {
+  .webinar-card:hover .webinar-card__link {
     opacity: 0.75;
   }
 
@@ -151,7 +154,7 @@
     color: #277ffd;
   }
 
-  .webinar-card__link:hover .webinar-card__link-icon {
+  .webinar-card:hover .webinar-card__link-icon {
     transform: translate(1px, -1px);
   }
 </style>
