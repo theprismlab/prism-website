@@ -121,11 +121,12 @@
     <v-col v-if="show(F.BILLING_CONTACT_EMAIL)" cols="12" sm="6">
       <!-- <h4 class="prism-text-form-label">{{ F.BILLING_CONTACT_EMAIL.label }}</h4> -->
       <v-text-field
-        v-model="data[F.BILLING_CONTACT_EMAIL.key]"
+        :model-value="data[F.BILLING_CONTACT_EMAIL.key]"
         :label="F.BILLING_CONTACT_EMAIL.label"
         type="email"
         variant="outlined"
         :error-messages="errors[F.BILLING_CONTACT_EMAIL.key]"
+        @update:model-value="(value) => (data[F.BILLING_CONTACT_EMAIL.key] = normalizeEmail(value))"
       />
     </v-col>
 
@@ -151,6 +152,7 @@
     COLLABORATOR_TYPE_OPTIONS,
     INSTITUTION_TYPE_OPTIONS,
   } from './institutionSchema.js';
+  import { normalizeEmail } from './validationHelpers';
 
   export default {
     name: 'InstitutionStep',
@@ -163,6 +165,7 @@
         F: FIELDS,
         institutionTypeOptions: INSTITUTION_TYPE_OPTIONS,
         allInstitutions: [],
+        normalizeEmail,
       };
     },
     computed: {

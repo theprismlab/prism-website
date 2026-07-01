@@ -4,8 +4,12 @@
 
 export const required = (val) => (!val ? 'Required' : undefined);
 
+export const normalizeEmail = (val) => (val == null ? '' : String(val).toLowerCase());
+
 export const validEmail = (val) =>
-  !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? undefined : 'Invalid email address';
+  !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(val))
+    ? undefined
+    : 'Invalid email address';
 
 export const validNumber = (val) => (!val || !isNaN(Number(val)) ? undefined : 'Must be a number');
 
