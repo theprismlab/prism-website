@@ -1429,7 +1429,7 @@ B.install = function(t) {
 const ot = {
   name: "PrismPageTitle"
 }, ft = {
-  class: "prism-displlay",
+  class: "prism-text-display-large",
   style: { "margin-bottom": "2rem" }
 };
 function ut(e, t, r, f, c, i) {
