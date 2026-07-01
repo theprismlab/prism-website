@@ -45,9 +45,10 @@ than one nav surface:
 
 ## `active-screen-store.js` — shared cache for "what's the active screen for this type"
 
-All three nav components above need the same thing (the currently `ACTIVE` screen for a
-type), and used to each fetch and watch it independently. [active-screen-store.js](active-screen-store.js)
-is a Pinia store (same shape as [window-status-store.js](window-status-store.js)) that centralizes it:
+The three nav components above, plus [index.vue](index.vue)'s hub table, all need the same
+underlying data (which screens are currently `ACTIVE`), and used to each fetch it
+independently. [active-screen-store.js](active-screen-store.js) is a Pinia store (same shape
+as [window-status-store.js](window-status-store.js)) that centralizes it:
 
 - `load(apiUrl)` — fetches `findScreens` **once** (guarded by `loaded`/`loading`, like
   `windowStatusStore.load`) and caches the raw list of all EXTERNAL screens.
