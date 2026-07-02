@@ -73,10 +73,6 @@
       // and :screen segments exist in the URL, which a stale/bogus deep link would still have.
       screenSelected() {
         if (!this.screenType || !this.screenName) return false;
-        // A failed fetch must not be treated the same as "still loading" — loaded never
-        // becomes true on failure (see loadable.js), so without this check a network error
-        // would make the step outline look permanently valid instead of hiding it.
-        if (this.activeScreenStore.error) return false;
         if (!this.activeScreenStore.loaded) return true; // avoid flashing hidden while loading
         return this.activeScreenStore.validationFor(this.screenName, this.screenType).status === null;
       },

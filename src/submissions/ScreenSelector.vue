@@ -50,11 +50,9 @@
         // Instructions routes only carry :screenType, no :screen to validate against —
         // windowStatusStore's keys are the canonical list of known types for that check.
         if (!this.$route.path.startsWith('/submission-hub/forms')) {
-          if (this.windowStatusStore.error) return null; // can't confirm — don't claim selected
           if (!this.windowStatusStore.loaded) return type; // avoid flashing unselected while loading
           return this.windowStatusStore.isValidType(type) ? type : null;
         }
-        if (this.activeScreenStore.error) return null; // can't confirm — don't claim selected
         // Don't flash "unselected" while the store is still loading for the first time.
         if (!this.activeScreenStore.loaded) return type;
         return this.activeScreenStore.activeScreenNameFor(type) === this.$route.params.screen
@@ -82,12 +80,6 @@
         // the bare /submission-hub/forms page.
         if (this.$route.path.startsWith('/submission-hub/forms')) {
           await this.activeScreenStore.load(import.meta.env.VITE_API_URL);
-          // load() never rejects — a failed fetch just leaves screens empty, which would
-          // otherwise look identical to "no active screen for this type" below. Distinguish
-          // them so a network failure doesn't silently masquerade as a real answer.
-          if (this.activeScreenStore.error) {
-            console.error('Could not resolve active screen — screens failed to load', this.activeScreenStore.error);
-          }
           const activeName = this.activeScreenStore.activeScreenNameFor(screen);
           this.$router.push(
             activeName ? `/submission-hub/forms/${screen}/${activeName}` : '/submission-hub/forms',
