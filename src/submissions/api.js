@@ -61,12 +61,6 @@ export async function getCollaboratorList(apiURL) {
 export async function postSubmission(apiURL, payload) {
   const url = apiURL + 'mts_compound_submissions/createSubmission';
   const userKey = await getTempApiKey(apiURL);
-  console.log(url, payload, userKey);
-  // log the fully formatted request as a json
-  console.log(
-    'Request:',
-    JSON.stringify({ url, payload, headers: { ...JSON_HEADERS, user_key: userKey } }),
-  );
 
   const res = await axios.post(url, payload, {
     headers: {
