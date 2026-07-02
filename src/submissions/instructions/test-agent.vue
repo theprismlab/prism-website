@@ -29,12 +29,11 @@
       screenType() {
         return this.$route.params.screenType;
       },
-      // Only claim invalidity once the store has actually confirmed it — never during loading,
-      // and never on a failed fetch (loaded stays false forever on failure; see loadable.js),
-      // since we can't tell a bogus type from a valid one we simply failed to check.
+      // Only claim invalidity once the store has actually loaded — otherwise we'd flash the
+      // error before we've had a chance to check.
       invalidScreenType() {
         if (!this.screenType) return false;
-        if (!this.windowStatusStore.loaded || this.windowStatusStore.error) return false;
+        if (!this.windowStatusStore.loaded) return false;
         return !this.windowStatusStore.isValidType(this.screenType);
       },
       invalidScreenTypeMsg() {

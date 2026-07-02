@@ -10,13 +10,8 @@
         apiStatus.message
       }}</v-alert>
 
-      <v-alert v-if="loadError" type="error" variant="tonal" density="compact" class="mb-4">
-        Unable to load screen information.
-        <v-btn size="small" variant="text" @click="retryLoad">Try again</v-btn>
-      </v-alert>
-
       <v-alert
-        v-else-if="screenValidation?.status === 'INVALID'"
+        v-if="screenValidation?.status === 'INVALID'"
         type="error"
         variant="tonal"
         density="compact"
@@ -143,12 +138,6 @@
         if (!this.activeScreenStore.loaded) return null;
         return this.activeScreenStore.validationFor(this.screenName, this.screenType);
       },
-      // Distinguishes "still loading" from "failed to load" — without this, screenValidation
-      // alone can't tell the two apart (both leave activeScreenStore.loaded false), so a fetch
-      // failure would show the loading spinner forever instead of a retryable error.
-      loadError() {
-        return this.activeScreenStore.error;
-      },
       apiStatus() {
         return this.windowStore.messageFor(this.screenType);
       },
@@ -222,11 +211,6 @@
       },
     },
     methods: {
-      retryLoad() {
-        // Safe to call again — activeScreenStore.loaded never became true on failure, so
-        // load() re-fetches instead of no-op'ing.
-        this.activeScreenStore.load(import.meta.env.VITE_API_URL);
-      },
       fillTestData() {
         const testData = getTestData(this.screenType);
         for (const [stepId, stepData] of Object.entries(testData)) {

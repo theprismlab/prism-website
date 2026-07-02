@@ -54,24 +54,21 @@ type/name?" [active-screen-store.js](active-screen-store.js) (a Pinia store, sam
 [window-status-store.js](window-status-store.js)) is the one place that list lives, and the
 one place the derived questions about it are answered:
 
-- `load(apiUrl)` / `refresh(apiUrl)` / the `loading`/`loaded`/`error` state — come from
+- `load(apiUrl)` / `refresh(apiUrl)` / the `loaded` state — come from
   [loadable.js](loadable.js), a small shared helper both this store and `window-status-store.js`
-  build on, so the load-once/share-in-flight/error bookkeeping only lives in one place.
+  build on, so the load-once/share-in-flight bookkeeping only lives in one place.
   `load(apiUrl)` fetches `findScreens` and caches the raw list. Returns a promise; once `loaded`
   is `true` it resolves immediately, but while a fetch is already in flight, concurrent callers
   **share that same promise** rather than getting an empty no-op back — `await
   store.load(apiUrl)` is always safe to follow with a read of `store.screens`. Use this for
   "give me *a* answer, cached is fine" (page loads, nav links). `refresh(apiUrl)` has the same
-  in-flight-sharing behavior, but **always re-fetches**, bypassing the cache. Use this when the
-  answer needs to be current as of right now (see `ReviewStep.vue` below) — `load()` alone would
-  just replay whatever was cached at page-load time forever, since it only ever fetches once.
-- `error` — `null` unless the last `load()`/`refresh()` failed, in which case it holds the
-  thrown error and `loaded` stays `false` (so a subsequent `load()` naturally retries instead of
-  no-op'ing). Neither `load()` nor `refresh()` ever *rejects* — failures are swallowed into this
-  field instead, so best-effort callers (nav links, the Hub schedule table) don't need a
-  `try`/`catch` and just silently fall back to "no active screen" on failure. Callers that need
-  to know whether the fetch actually succeeded (`screen-type.vue`'s error alert,
-  `ReviewStep.vue`'s pre-submit check — both below) read `error` explicitly after awaiting.
+  in-flight-sharing behavior, but **always re-fetches**, bypassing the cache.
+- Neither `load()` nor `refresh()` ever *rejects* — a failed fetch is caught, logged via
+  `console.error`, and just leaves `loaded: false` (so a subsequent `load()` naturally retries
+  instead of no-op'ing). There's no dedicated error state today — every consumer treats "still
+  loading" and "failed to load" the same way (optimistically, until `loaded` flips `true`). This
+  was tried and rolled back once already; see "Possible future improvement" near the end of this
+  doc before re-adding it.
 - `activeScreenFor(screenType)` (getter) — filters the cached list to this type (via
   `stripSeqSuffix` from `api.js`, e.g. `MTS_SEQ` → `MTS`) and `status === 'ACTIVE'`. If more
   than one screen of the type is `ACTIVE`, picks the newest by `date_created` — matches
@@ -107,17 +104,16 @@ interface symmetry.
 
 ## `api.js`
 
-**`getTempApiKey(apiURL)`** — every authed call needs this short-lived credential first. It's
-memoized per `apiURL` (an in-flight/resolved promise cached in a module-level `Map`, same
-shared-promise trick the stores use), so the several authed calls that fire within one page load
-(`active-screen-store`, `window-status-store`, `InstitutionStep.vue`'s `getCollaboratorList`,
-`postSubmission`) share a single fetch instead of each re-requesting their own key. A failed
-fetch isn't cached (the next call retries cleanly), and `authedGet` retries once with a fresh key
-if a request comes back `401`/`403`, since the cached key can expire mid-session. `postSubmission`
-calls `getTempApiKey` directly rather than through `authedGet` and benefits from the shared cache
-too, but deliberately does **not** get the same auto-retry-on-auth-failure — retrying a POST
-automatically risks a double-submit if the backend doesn't treat `createSubmission` as
-idempotent; its failures still surface through `ReviewStep.vue`'s existing `catch` block.
+**`getTempApiKey(apiURL)`** — every authed call (`authedGet`, `postSubmission`) fetches its own
+fresh temp key; there's no caching or sharing across calls. A version with a module-level `Map`
+cache (sharing one key across concurrent/sequential calls) plus a retry-once-on-`401`/`403` in
+`authedGet` was tried and then deliberately reverted: the caching only saved a couple of
+redundant requests during initial page load, `postSubmission` — the one request where a stale
+key would matter most, since it happens after a potentially long form fill — never benefited
+from the retry logic anyway (retrying a POST automatically risks a double-submit, so it
+deliberately wasn't wired up there), and the cache+retry interaction had a real if narrow
+concurrency edge case (two concurrent calls racing to evict/refetch the same expired key). Plain
+per-call fetching has no shared state and self-heals by construction.
 
 **`findScreens(apiURL)`** — `GET prism_screens?filter={screen_category: 'EXTERNAL'}`. Returns
 every external screen record (`name`, `screen_type`, `status`, `date_created`, ...). Backs
@@ -141,13 +137,6 @@ separate network call; see below.
   `!activeScreenStore.loaded ? null : activeScreenStore.validationFor(screenName, screenType)`.
   `mounted()` just calls `activeScreenStore.load(apiUrl)` (fire-and-forget) — once it resolves,
   the computed re-evaluates on its own, no manual "await then assign" plumbing.
-- `loadError` is a separate computed reading `activeScreenStore.error` directly. It exists
-  because `screenValidation` alone can't distinguish "still loading" from "failed to load" — both
-  leave `loaded: false` forever (see `loadable.js`'s `error` behavior above). The template checks
-  `loadError` *before* the three-way `screenValidation` branch below, rendering a retryable error
-  alert (its button just calls `activeScreenStore.load(apiUrl)` again — safe, since `loaded`
-  never flipped `true`) instead of leaving the loading spinner spinning forever on a network
-  failure.
 - The template is a three-way branch on that computed, not a two-way `v-if`/`v-else`: `INVALID`
   → error alert; `null` (store hasn't loaded yet) → a loading spinner; anything else (valid) →
   the step accordion. This matters because the default has to be "don't show the form" — a
@@ -160,18 +149,16 @@ separate network call; see below.
   window-status message from `fetchSubmissionMessage`.
 - That computed only reflects the store's *cached* state, though — it does **not** gate the
   Submit button in `ReviewStep.vue`, which only requires a fully valid, reviewed form
-  (`data.reviewed && allStepsValid`). Instead, `ReviewStep.vue` imports `active-screen-store.js`
-  directly (no prop-drilling) and, in `submitForm()`, calls `activeScreenStore.refresh(apiUrl)`
-  — a genuine re-fetch, not the cache — then reads `activeScreenStore.validationFor(screenName,
-  screenType)` fresh, right before building the payload. Because both components read the same
-  store, `screen-type.vue`'s `screenValidation` computed picks up that refreshed result too,
-  automatically, with no event needed. On `INVALID` at submit time, `ReviewStep.vue` shows the
-  same success/failure dialog used for the actual API call, with an explanatory message, and
-  skips calling `postSubmission`. Since `refresh()` never rejects (see `loadable.js` above), it
-  also checks `activeScreenStore.error` right after the `await` and, if the refresh itself
-  failed, shows a "couldn't verify screen status" dialog and returns *without* calling
-  `validationFor`/`postSubmission` — otherwise a failed refresh would silently fall through to
-  validating against whatever was cached before, which could be stale or empty.
+  (`data.reviewed && allStepsValid`). `ReviewStep.vue`'s `submitForm()` used to also re-check
+  `activeScreenStore.validationFor(...)` fresh (via a `refresh()` call) right before submitting,
+  to catch a screen that closed mid-fill — this was removed after it caused a real bug: the
+  pre-flight `refresh()` could itself fail on a transient blip *unrelated to the actual
+  submission*, and blocking the whole submit on that failure produced a "fails once, works on
+  retry" experience where the first click's real submission was never even attempted.
+  `submitForm()` now calls `api.postSubmission(...)` directly; if the screen genuinely is no
+  longer valid by submit time, the backend rejects the POST and that error surfaces through the
+  normal `catch` block like any other submission failure. `ReviewStep.vue` no longer imports
+  `active-screen-store.js` at all.
 - `screenName` is passed down to `ReviewStep.vue` → `parseFormDataForApi(formData, screenType,
   screenName)` ([parseApiPayload.js](forms/steps/parseApiPayload.js)) as the `screen` field in
   the submission payload — also no longer sourced from `schedule.js`.
@@ -180,3 +167,47 @@ separate network call; see below.
   for the same reason as everything above: a type can have more than one screen over time
   (`MTS033`, then later `MTS034`), and each needs its own fresh in-progress form rather than
   inheriting a prior screen's draft.
+
+## Possible future improvement — centralizing loading/error handling
+
+Not implemented; written down so the reasoning isn't lost if this comes up again.
+
+Today, if a store's fetch outright fails (network down, server unreachable — not "the screen
+doesn't exist," which `validationFor`/`isValidType` already handle correctly), every consumer
+treats "still loading" and "will never load" identically, since `loaded` just stays `false`
+forever either way (see `loadable.js` above). A bad screen name/type in the URL still shows the
+correct, specific message immediately, because that path doesn't depend on the fetch failing —
+only a genuine fetch failure is affected.
+
+An `error` field on `loadable.js` plus a manual `if (store.error) return X; if (!store.loaded)
+return Y;` check was added to six consumers (`screen-type.vue`, `FormsSubDrawer.vue`,
+`InstructionsSubDrawer.vue`, `ScreenSelector.vue`, `test-agent.vue`, `shipping.vue`) to fix this,
+then rolled back — the duplication itself became a bug source (two of the six sites initially
+missed the `.error` check), and the value was narrow enough (only a total-fetch-failure, not the
+much more common bad-URL case, and a page refresh already recovers) that removing it was judged
+a reasonable trade for now.
+
+If this gets revisited, the fix isn't to re-duplicate the same three-line check in six places
+again — it's to fold loading/error awareness into the **one function each consumer already
+calls**: `active-screen-store.js`'s `validationFor()` and `window-status-store.js`'s
+`isValidType()`. Concretely:
+
+- Both getters currently assume `loaded` is already `true` by the time they're called (callers
+  check `!loaded` themselves first). Change them to a **tri-state return** instead:
+  `validationFor(screenName, screenType)` → `null` (still loading), `{ status: 'INVALID',
+  message }` (invalid — including "couldn't load" as one of the invalid reasons), or `{ status:
+  null, message: null }` (confirmed valid). This is the *same* three shapes `screen-type.vue`'s
+  template already branches on today, so no template changes would be needed there.
+  `isValidType(submissionType)` → `null` (loading), `false` (confirmed not a known type, or
+  couldn't confirm), or `true` (confirmed known type).
+- `null` always means "don't know yet, treat optimistically" (matches the "avoid flashing"
+  comments already throughout this codebase); `false`/`INVALID` always means "confirmed bad *or*
+  couldn't check" — collapsing those two outcomes is intentional, since `screen-type.vue` already
+  renders both identically (a red alert), just with different message text.
+- Every consumer then makes exactly one call to the domain getter and one comparison against its
+  result — no separate `loaded`/`error` branching left in any of them, and no way for a future
+  consumer to "forget" the check, since it's baked into the function they already have to call
+  to get their answer.
+- `messageFor()` in `window-status-store.js` (the non-gating informational banner) wouldn't need
+  this — it already fails silently to `null` on missing data, which is fine for something that's
+  just an FYI, not a gate.

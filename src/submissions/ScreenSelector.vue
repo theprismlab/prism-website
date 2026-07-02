@@ -50,7 +50,6 @@
         // Instructions routes only carry :screenType, no :screen to validate against —
         // windowStatusStore's keys are the canonical list of known types for that check.
         if (!this.$route.path.startsWith('/submission-hub/forms')) {
-          if (this.windowStatusStore.error) return null; // can't confirm — don't claim selected
           if (!this.windowStatusStore.loaded) return type; // avoid flashing unselected while loading
           return this.windowStatusStore.isValidType(type) ? type : null;
         }

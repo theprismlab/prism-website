@@ -92,10 +92,6 @@
       // way FormsSubDrawer.vue rejects a bogus :screen (via active-screen-store's validationFor).
       screenSelected() {
         if (!this.screenType) return false;
-        // A failed fetch must not be treated the same as "still loading" — loaded never
-        // becomes true on failure (see loadable.js), so without this check a network error
-        // would make every screenType, including bogus ones, look permanently valid.
-        if (this.windowStatusStore.error) return false;
         if (!this.windowStatusStore.loaded) return true; // avoid flashing hidden while loading
         return this.windowStatusStore.isValidType(this.screenType);
       },

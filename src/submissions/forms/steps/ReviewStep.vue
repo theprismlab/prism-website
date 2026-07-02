@@ -124,7 +124,6 @@
 
 <script>
   import { FORM_STEPS } from '@/submissions/store';
-  import { useActiveScreenStore } from '@/submissions/active-screen-store.js';
   import { STEP_REGISTRY } from './registry';
   import { buildScreenFields, buildCombinationFields } from './testAgentSchema.js';
   import { parseFormDataForApi } from './parseApiPayload.js';
@@ -138,9 +137,6 @@
       errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
       screenName: { type: String, default: null },
-    },
-    setup() {
-      return { activeScreenStore: useActiveScreenStore() };
     },
     mounted() {
       if (!this.allStepsValid && this.data.reviewed) {
@@ -215,37 +211,6 @@
         this.submitting = true;
 
         try {
-          // Re-check right before submitting — the screen may have closed, hit capacity, or
-          // been deprecated since the page loaded, so the form's completeness alone isn't
-          // enough to allow a submit. refresh() (unlike load()) always re-fetches, and since
-          // screen-type.vue reads the same store reactively, its alert picks up this result too.
-          await this.activeScreenStore.refresh(import.meta.env.VITE_API_URL);
-          if (this.activeScreenStore.error) {
-            // refresh() never rejects — it swallows fetch failures into store.error instead.
-            // Without this check we'd fall through to validating against whatever was cached
-            // before the refresh, which could be stale or empty, instead of blocking the submit.
-            this.dialogSuccess = false;
-            this.dialog = {
-              title: 'Unable to verify screen status',
-              body: 'We could not confirm this screen is still open for submissions. Please check your connection and try again.',
-            };
-            return;
-          }
-          const freshValidation = this.activeScreenStore.validationFor(
-            this.screenName,
-            this.screenType,
-          );
-          if (freshValidation?.status === 'INVALID') {
-            this.dialogSuccess = false;
-            this.dialog = {
-              title: 'Screen no longer available',
-              body:
-                freshValidation.message ??
-                'This screen is no longer accepting submissions. Please go back and check the submission hub.',
-            };
-            return;
-          }
-
           const apiPayload = this.parseResponseForApi();
           await api.postSubmission(import.meta.env.VITE_API_URL, apiPayload);
           this.dialogSuccess = true;
