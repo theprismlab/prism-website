@@ -1,2 +1,5 @@
 node_modules
 dist
+package-lock.json
+public/pdf.worker.min.js
+.idea
