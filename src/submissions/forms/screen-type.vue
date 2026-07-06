@@ -5,11 +5,11 @@
         >{{ screenType }} Submission Form —<br />
         {{ screenName }}</prism-page-title
       >
-      <div v-if="isDev" class="mb-4">
+      <!-- <div v-if="isDev" class="mb-4">
         <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
           Fill test data
         </v-btn>
-      </div>
+      </div> -->
       <v-alert v-if="apiStatus?.message" variant="tonal" density="compact" class="mb-4">{{
         apiStatus.message
       }}</v-alert>
