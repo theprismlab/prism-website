@@ -4,7 +4,7 @@
 
     <page-section background="multi-focal-cool" :padding="16">
       <app-container>
-        <p class="prism-text-display-medium text-center">
+        <p class="prism-text-display-small text-center">
           Our lab partners with researchers to
           <span class="text-gradient-blue"
             >reveal clinically important differences in drug behavior</span

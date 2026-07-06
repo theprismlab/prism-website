@@ -2,10 +2,10 @@
   <section id="hero-section">
     <HeroCanvas />
     <div class="hero-overlay text-center">
-      <h1 class="prism-text-display-large font-weight-bold pb-4 text-shadow">
+      <h1 class="prism-text-display-xlarge font-weight-bold pb-4 text-shadow">
         Pioneering large-scale, cancer therapeutic mapping
       </h1>
-      <h2 class="prism-text-display-small text-shadow">
+      <h2 class="prism-text-title-xlarge text-shadow">
         Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission
         driven.
       </h2>
