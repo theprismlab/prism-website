@@ -9,7 +9,7 @@
     name: 'TheAppBar',
     data() {
       return {
-        baseUrl: import.meta.env.VITE_PRISM_BASE_URL || '',
+        baseUrl: window.location.origin,
       };
     },
     computed: {},
