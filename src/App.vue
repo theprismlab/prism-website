@@ -13,8 +13,8 @@ export default {
   computed: {
     cssProps() {
       var themeColors = {};
-      Object.keys(this.$vuetify.theme.themes.prismTheme.colors).forEach((color) => {
-        themeColors[`--v-${color}`] = this.$vuetify.theme.themes.prismTheme.colors[color];
+      Object.keys(this.$vuetify.theme.themes.light.colors).forEach((color) => {
+        themeColors[`--v-${color}`] = this.$vuetify.theme.themes.light.colors[color];
       });
       return themeColors;
     },

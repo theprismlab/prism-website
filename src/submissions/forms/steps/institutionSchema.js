@@ -2,7 +2,7 @@
 // Pure JS — no Vue dependencies.
 
 import { required, validEmail } from './validationHelpers';
-
+// types: ['Dependency Map Consortium', 'Broad Institute & Affiliated Institutions', 'Academic Institution (Non-Broad or Broad affiliates)', 'Industry']
 export const COLLABORATOR_TYPE_OPTIONS = {
   DMC: { key: 'DMC', label: 'Dependency Map Consortium' },
   BROAD: { key: 'NFP', label: 'Broad Institute & Affiliated Institutions' },

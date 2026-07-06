@@ -2,9 +2,9 @@
   <page class="mt-0 pt-0">
     <HomeHero></HomeHero>
 
-    <page-section background="multi-focal-cool" :padding="24">
+    <page-section background="multi-focal-cool" :padding="16">
       <app-container>
-        <p class="prism-text-h3 text-center mb-0" style="line-height: 2.4rem">
+        <p class="prism-text-display-medium text-center">
           Our lab partners with researchers to
           <span class="text-gradient-blue"
             >reveal clinically important differences in drug behavior</span
@@ -15,52 +15,46 @@
       </app-container>
     </page-section>
 
-    <page-section class="my-12" :padding="0">
-      <app-container>
-        <p class="prism-text-body-1">
-          Cancer cell line models remain essential in drug development, providing a controlled
-          system to assess potency and confirm on-target engagement. At a larger scale using PRISM,
-          these models provide power to
-          <span class="text-gradient-blue">understand heterogeneity</span> in drug response among
-          cell lines harboring the targeted alteration(s), assess
-          <span class="text-gradient-blue"
-            >selectivity relative to those without target alterations, and investigate potential
-            biomarkers associated with these responses</span
-          >.
-        </p>
-      </app-container>
+    <app-container wide class="my-10">
+      <p class="prism-text-body-xlarge" style="max-width: 720px; margin: auto">
+        Cancer cell line models remain essential in drug development, providing a controlled system
+        to assess potency and confirm on-target engagement. At a larger scale using PRISM, these
+        models provide power to
+        <span class="text-gradient-blue">understand heterogeneity</span> in drug response among cell
+        lines harboring the targeted alteration(s), assess
+        <span class="text-gradient-blue"
+          >selectivity relative to those without target alterations, and investigate potential
+          biomarkers associated with these responses</span
+        >.
+      </p>
+      <HomeOverviewCards class="mt-10"></HomeOverviewCards>
+    </app-container>
 
-      <app-container wide>
-        <HomeOverviewCards></HomeOverviewCards>
-      </app-container>
-    </page-section>
-
-    <page-section background="gradient">
+    <page-section background="blue-indigo-dark">
       <app-container wide>
         <HomePortal></HomePortal>
       </app-container>
     </page-section>
 
-    <page-section class="my-12" :padding="0">
-      <app-container>
-        <section-overline class="text-center">Impact</section-overline>
-        <prism-section-title class="text-center"
-          >Dedicated to advancing oncology research</prism-section-title
-        >
-        <p class="prism-text-body-1 text-center">
+    <app-container class="my-10">
+      <section class="text-center mb-12">
+        <h2 class="prism-text-overline text-amber-accent-4 mb-2">Impact</h2>
+        <h3 class="prism-text-display-large mb-8">Dedicated to advancing oncology research</h3>
+        <p class="prism-text-body-xlarge text-center" style="max-width: 720px; margin: auto">
           Working with pharmaceutical and biotech companies and academics to improve the outcome for
           cancer patients worldwide.
         </p>
-        <HomeImpactCards></HomeImpactCards>
-      </app-container>
-    </page-section>
+      </section>
+      <HomeImpactCards></HomeImpactCards>
+    </app-container>
 
-    <page-section class="my-12" :padding="0">
-      <app-container>
-        <section-overline class="text-center">Testimonials</section-overline>
-        <HomeTestimonialCards class="pt-8"></HomeTestimonialCards>
-      </app-container>
-    </page-section>
+    <app-container class="my-10">
+      <section class="text-center mb-12">
+        <h2 class="prism-text-overline text-amber-accent-4 mb-2">Testimonials</h2>
+        <h3 class="prism-text-display-large mb-8">What our collaborators say</h3>
+      </section>
+      <HomeTestimonialCards class="pt-8"></HomeTestimonialCards>
+    </app-container>
   </page>
 </template>
 <script>

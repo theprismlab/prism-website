@@ -2,8 +2,10 @@
   <section id="hero-section">
     <HeroCanvas />
     <div class="hero-overlay text-center">
-      <h1 class="text-h1 pb-4 text-shadow">Pioneering large-scale, cancer therapeutic mapping</h1>
-      <h2 class="prism-text-h3 text-shadow">
+      <h1 class="prism-text-display-large font-weight-bold pb-4 text-shadow">
+        Pioneering large-scale, cancer therapeutic mapping
+      </h1>
+      <h2 class="prism-text-display-small text-shadow">
         Powerful insights. Rapid turnaround. Innovative technology. Systematic analysis. Mission
         driven.
       </h2>
@@ -46,22 +48,5 @@
       0px 0px 30px rgba(255, 255, 255, 0.75),
       0px 0px 60px rgba(255, 255, 255, 0.6),
       0px 0px 100px rgba(255, 255, 255, 0.35);
-  }
-  .text-h1 {
-    font-size: 4.25rem !important;
-    line-height: 1.1em !important;
-    font-weight: 900 !important;
-  }
-
-  /* xs */
-  @media (max-width: 600px) {
-    .text-xl {
-      font-size: 3.5rem;
-    }
-  }
-  @media (max-width: 600px) {
-    .text-h1 {
-      font-size: 3.5rem;
-    }
   }
 </style>
