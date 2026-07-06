@@ -12,7 +12,7 @@
         ></v-img>
       </div>
       <h3 class="prism-text-title-large mb-1 mt-4">{{ name }}</h3>
-      <p class="prism-text-body-xlarge text-grey-darken-1" style="line-height: 1.3em">
+      <p class="prism-text-body-large text-grey-darken-1" style="line-height: 1.3em">
         {{ title }}
       </p>
     </v-card-item>

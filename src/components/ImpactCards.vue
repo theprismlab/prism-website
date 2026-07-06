@@ -26,7 +26,7 @@
         <h4 class="prism-text-display-large card-title" :style="{ color: card.color }">
           {{ card.title }}
         </h4>
-        <p class="prism-text-body-xlarge text-grey-darken-1 card-subtitle">
+        <p class="prism-text-body-large text-grey-darken-1 card-subtitle">
           {{ card.subtitle }}
         </p>
       </v-card>
