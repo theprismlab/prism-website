@@ -61,7 +61,7 @@ export function parseFormDataForApi(formData, screenType, screenName) {
       // API expects boolean; form uses 'Yes'/'No'.
       health_hazard: base.health_hazard === 'Yes',
       // Fields no longer collected by the form — hardcoded to satisfy the API contract.
-      full_brd: '',
+      full_brd: 'BRD-K12345678-001-01-0', // FAKE FOR SUBMISSION API
       // structure_smiles: '',
       supplier: 'Testing. Field to be removed.',
       supplier_catalog_name: 'Testing. Field to be removed.',
