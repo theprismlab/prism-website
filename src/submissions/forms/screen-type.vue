@@ -5,7 +5,11 @@
         >{{ screenType }} Submission Form —<br />
         {{ screenName }}</prism-page-title
       >
-
+      <div v-if="isDev" class="mb-4">
+        <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
+          Fill test data
+        </v-btn>
+      </div>
       <v-alert v-if="apiStatus?.message" variant="tonal" density="compact" class="mb-4">{{
         apiStatus.message
       }}</v-alert>
@@ -24,12 +28,6 @@
       <div v-else-if="!screenValidation" class="d-flex justify-center pa-8">
         <v-progress-circular indeterminate color="primary" />
       </div>
-
-      <!-- <div v-if="isDev" class="mb-4">
-        <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
-          Fill test data
-        </v-btn>
-      </div> -->
 
       <v-expansion-panels v-else v-model="openPanel" elevation="0">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
