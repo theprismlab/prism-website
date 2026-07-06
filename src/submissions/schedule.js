@@ -64,7 +64,12 @@ function todayET() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 }
 
-export function computedStatus(item) {
+// activeScreenNameFor: optional (screenType) => name|null lookup, e.g.
+// activeScreenStore.activeScreenNameFor, resolving the newest ACTIVE screen the API
+// currently reports for a type. When the schedule entry IS that screen, the API is
+// treated as ground truth and the window-date estimate below is overridden to OPEN.
+export function computedStatus(item, activeScreenNameFor) {
+  if (activeScreenNameFor?.(item.screen_type) === item.screen_name) return 'OPEN';
   const today = todayET();
   if (today < item.window_start) return 'SCHEDULED';
   if (today <= item.window_end) return 'OPEN';
@@ -87,8 +92,8 @@ export function formatWindow(item) {
 }
 
 // Decorates a raw SCHEDULE entry with derived display fields.
-export function enrichEntry(item) {
-  const status = computedStatus(item);
+export function enrichEntry(item, activeScreenNameFor) {
+  const status = computedStatus(item, activeScreenNameFor);
   return {
     ...item,
     status,
@@ -97,36 +102,15 @@ export function enrichEntry(item) {
   };
 }
 
-// Returns a fully display-ready object for a given screen type (soonest open/scheduled entry),
-// or null if no qualifying entry exists.
-export function resolveScreenDisplay(screenType) {
-  const entry =
-    SCHEDULE.filter((item) => {
-      if (item.screen_type !== screenType) return false;
-      const status = computedStatus(item);
-      return status === 'OPEN' || status === 'SCHEDULED';
-    }).sort((a, b) => a.window_start.localeCompare(b.window_start))[0] ?? null;
-
-  if (!entry) return null;
-
-  const assay = ASSAYS[screenType] ?? {};
-  return {
-    ...enrichEntry(entry),
-    screenFullName: assay.screen_full ?? null,
-    testAgents: assay.test_agents ?? null,
-  };
-}
-
 // Convenience: enrich all SCHEDULE entries (useful for table displays).
-export function enrichedSchedule() {
-  return SCHEDULE.map(enrichEntry);
+export function enrichedSchedule(activeScreenNameFor) {
+  return SCHEDULE.map((item) => enrichEntry(item, activeScreenNameFor));
 }
 
 export const FIELD_LABELS = {
   screen_name: 'Screen Name',
   screen_type: 'Screen Type',
   time_point: 'Timepoint',
-  testAgents: 'Test Agents',
   windowDates: 'Submission Window',
   status: 'Screen Status',
   data_delivery_date: 'Estimated Data Delivery',
@@ -136,16 +120,6 @@ export const FIELD_LABELS = {
 export const TABLE_FIELD_KEYS = [
   'screen_name',
   'time_point',
-  'windowDates',
-  'status',
-  'data_delivery_date',
-];
-
-// Fields rendered in the form page meta bar.
-export const FORM_FIELD_KEYS = [
-  'screen_name',
-  'time_point',
-  'testAgents',
   'windowDates',
   'status',
   'data_delivery_date',

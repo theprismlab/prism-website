@@ -1,28 +1,18 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>PRISM {{ screenType }} Form</prism-page-title>
-      <div v-if="docMeta.length" class="doc-meta-grid mb-5">
-        <div v-for="item in docMeta" :key="item.key" class="doc-meta-grid__item">
-          <span class="doc-meta-grid__label">{{ item.label }}</span>
-          <v-chip
-            v-if="item.key === 'status' && screenStatus"
-            :color="screenStatus.color"
-            size="small"
-            variant="flat"
-          >{{ screenStatus.label }}</v-chip>
-          <span v-else class="doc-meta-grid__value">{{ item.value }}</span>
-        </div>
-      </div>
-
-      <v-alert
-        v-if="apiStatus?.message"
-        :color="screenStatus?.color"
-        variant="tonal"
-        density="compact"
-        class="mb-4"
-        >{{ apiStatus.message }}</v-alert
+      <prism-page-title
+        >{{ screenType }} Submission Form —<br />
+        {{ screenName }}</prism-page-title
       >
+      <!-- <div v-if="isDev" class="mb-4">
+        <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
+          Fill test data
+        </v-btn>
+      </div> -->
+      <v-alert v-if="apiStatus?.message" variant="tonal" density="compact" class="mb-4">{{
+        apiStatus.message
+      }}</v-alert>
 
       <v-alert
         v-if="screenValidation?.status === 'INVALID'"
@@ -33,11 +23,11 @@
         >{{ screenValidation.message }}</v-alert
       >
 
-      <!-- <div v-if="isDev" class="mb-4">
-        <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
-          Fill test data
-        </v-btn>
-      </div> -->
+      <!-- Default to not showing the form until we've actually confirmed the screen is
+           valid — screenValidation is null while active-screen-store is still loading. -->
+      <div v-else-if="!screenValidation" class="d-flex justify-center pa-8">
+        <v-progress-circular indeterminate color="primary" />
+      </div>
 
       <v-expansion-panels v-else v-model="openPanel" elevation="0">
         <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
@@ -84,13 +74,10 @@
               :form-data="fd"
               :errors="stepErrors.review || {}"
               :screen-type="screenType"
-              :screen-validation="screenValidation"
+              :screen-name="screenName"
             />
 
             <div v-if="step.id !== 'review'" class="d-flex align-center justify-end mt-4 gap-3">
-              <!-- <span v-if="attemptedSteps[i] && !stepIsValid[step.id]" class="step-footer-hint mr-3">
-                Fix errors above to continue
-              </span> -->
               <v-btn color="primary-base" flat rounded @click="completeStep(i)">Continue</v-btn>
             </div>
           </v-expansion-panel-text>
@@ -103,8 +90,7 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { useWindowStatusStore } from '@/submissions/window-status-store.js';
-  import { resolveScreenDisplay, FIELD_LABELS, FORM_FIELD_KEYS } from '@/submissions/schedule.js';
-  import * as api from '@/submissions/api';
+  import { useActiveScreenStore } from '@/submissions/active-screen-store.js';
   import { getTestData } from './testFixtures.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
@@ -123,13 +109,16 @@
       ReviewStep,
     },
     setup() {
-      return { formStore: useFormProgressStore(), windowStore: useWindowStatusStore() };
+      return {
+        formStore: useFormProgressStore(),
+        windowStore: useWindowStatusStore(),
+        activeScreenStore: useActiveScreenStore(),
+      };
     },
     data() {
       return {
         steps: FORM_STEPS,
         attemptedSteps: {},
-        screenValidation: null,
         stepIsValid: {},
       };
     },
@@ -137,44 +126,36 @@
       screenType() {
         return this.$route.params.screenType ?? null;
       },
-      screenDisplay() {
-        return resolveScreenDisplay(this.screenType);
-      },
       screenName() {
-        return this.screenDisplay?.screen_name ?? this.screenType;
+        return this.$route.params.screen ?? this.screenType;
       },
-      screenStatus() {
-        return this.screenDisplay?.statusMeta ?? null;
-      },
-      screenMeta() {
-        const d = this.screenDisplay;
-
-        if (!d) return [];
-        return FORM_FIELD_KEYS.map((key) =>
-          d[key] ? { key, label: FIELD_LABELS[key], value: d[key] } : null,
-        ).filter(Boolean);
-      },
-      docMeta() {
-        return this.screenMeta;
+      // Reactive read of the shared store — no manual fetch-then-assign dance. Stays null
+      // (rendering neither the alert nor its absence as a verdict) until the store has
+      // actually loaded, so we don't flash an INVALID state before data arrives.
+      screenValidation() {
+        if (!this.activeScreenStore.loaded) return null;
+        return this.activeScreenStore.validationFor(this.screenName, this.screenType);
       },
       apiStatus() {
-        return this.screenType ? this.windowStore.statuses[this.screenType] : null;
+        return this.windowStore.messageFor(this.screenType);
       },
       isDev() {
         return import.meta.env.DEV;
       },
       openPanel: {
         get() {
-          return this.screenType ? this.formStore.openPanel(this.screenType) : null;
+          return this.screenName ? this.formStore.openPanel(this.screenName) : null;
         },
         set(val) {
-          if (this.screenType) this.formStore.setOpenPanel(this.screenType, val ?? null);
+          if (this.screenName) {
+            this.formStore.setOpenPanel(this.screenName, this.screenType, val ?? null);
+          }
         },
       },
       fd() {
-        if (!this.screenType) return null;
-        this.formStore._ensure(this.screenType);
-        return this.formStore.screenTypes[this.screenType].formData;
+        if (!this.screenType || !this.screenName) return null;
+        this.formStore._ensure(this.screenName, this.screenType);
+        return this.formStore.screens[this.screenName].formData;
       },
       stepErrors() {
         if (!this.fd) return {};
@@ -198,14 +179,13 @@
         );
       },
     },
-    async mounted() {
+    mounted() {
       this.windowStore.load(import.meta.env.VITE_API_URL);
-      this.screenValidation = await this.validateScreen();
+      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
-      async screenType() {
+      screenName() {
         this.attemptedSteps = {};
-        this.screenValidation = await this.validateScreen();
       },
       fd: {
         deep: true,
@@ -217,11 +197,11 @@
             const errors = STEP_REGISTRY[step.id].validate(this.fd[step.id], this.screenType);
             const hasErrors = Object.keys(errors).length > 0;
             validity[step.id] = !hasErrors;
-            const status = this.formStore.stepStatus(this.screenType, i);
+            const status = this.formStore.stepStatus(this.screenName, i);
             if (hasErrors && status === 'completed') {
-              this.formStore.uncompleteStep(this.screenType, i);
+              this.formStore.uncompleteStep(this.screenName, i);
             } else if (!hasErrors && status !== 'completed') {
-              this.formStore.markStepValid(this.screenType, i);
+              this.formStore.markStepValid(this.screenName, this.screenType, i);
             }
           });
           this.stepIsValid = validity;
@@ -235,16 +215,6 @@
           Object.assign(this.fd[stepId], stepData);
         }
       },
-      async validateScreen() {
-        const response = {};
-        try {
-          await api.validateScreen(import.meta.env.VITE_API_URL, this.screenName, this.screenType);
-        } catch (error) {
-          response.message = error;
-          response.status = 'INVALID';
-        }
-        return { status: response.status, message: response.message };
-      },
       isCompleted(i) {
         const step = this.steps[i];
         if (step.id === 'review') {
@@ -255,49 +225,13 @@
       completeStep(i) {
         this.attemptedSteps = { ...this.attemptedSteps, [i]: (this.attemptedSteps[i] ?? 0) + 1 };
         if (!this.stepIsValid[this.steps[i].id]) return;
-        this.formStore.completeStep(this.screenType, i);
+        this.formStore.completeStep(this.screenName, this.screenType, i);
       },
     },
   };
 </script>
 
 <style scoped>
-  /* ── Metadata grid ────────────────────────────────────────── */
-  .doc-meta-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  }
-  .doc-meta-grid__item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding: 10px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  }
-  .doc-meta-grid__item:nth-child(odd) {
-    border-right: 1px solid rgba(0, 0, 0, 0.06);
-  }
-  .doc-meta-grid__item:nth-last-child(-n+2) {
-    border-bottom: none;
-  }
-  .doc-meta-grid__label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: rgba(0, 0, 0, 0.6);
-    flex-shrink: 0;
-  }
-  .doc-meta-grid__value {
-    font-size: 0.875rem;
-    color: rgba(0, 0, 0, 0.82);
-    text-align: right;
-  }
-
   /* ── Step indicator ──────────────────────────────────────── */
   .step-number {
     flex-shrink: 0;

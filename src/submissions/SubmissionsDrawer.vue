@@ -25,18 +25,23 @@
 
 <script>
   import { useFormProgressStore } from './store';
+  import { useActiveScreenStore } from './active-screen-store.js';
 
   export default {
     name: 'SubmissionsDrawer',
     setup() {
       return {
         formStore: useFormProgressStore(),
+        activeScreenStore: useActiveScreenStore(),
       };
     },
     data() {
       return {
         drawer: true,
       };
+    },
+    mounted() {
+      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
       '$route.params.screenType': {
@@ -55,6 +60,9 @@
     computed: {
       screenType() {
         return this.$route.params.screenType || this.formStore.lastScreenType;
+      },
+      resolvedScreenName() {
+        return this.activeScreenStore.activeScreenNameFor(this.screenType);
       },
       isSubSection() {
         const path = this.$route.path;
@@ -86,8 +94,8 @@
           {
             id: 'forms',
             title: 'Forms',
-            route: this.screenType
-              ? `/submission-hub/forms/${this.screenType}`
+            route: this.resolvedScreenName
+              ? `/submission-hub/forms/${this.screenType}/${this.resolvedScreenName}`
               : '/submission-hub/forms',
             icon: 'mdi-file-document-outline',
             activePrefix: '/submission-hub/forms',

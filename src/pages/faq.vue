@@ -8,7 +8,7 @@
             <span class="prism-text-headline-small font-weight-light">{{ item.question }}</span>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
-            <div class="prism-text-body-xlarge">{{ item.answer }}</div>
+            <div class="prism-text-body-large">{{ item.answer }}</div>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>

@@ -10,7 +10,7 @@
       <v-col cols="12" sm="6" md="6" offset-md="1" order="1" order-sm="2">
         <p class="prism-text-overline prism-text-fade">{{ overline }}</p>
         <h3 class="prism-text-display-small">{{ title }}</h3>
-        <p class="prism-text-body-xlarge my-4 prism-text-fade">{{ body }}</p>
+        <p class="prism-text-body-large my-4 prism-text-fade">{{ body }}</p>
         <v-btn :href="button.link" target="_blank" variant="outlined" size="large" rounded>
           {{ button.text }}
           <v-icon end size="16">mdi-arrow-top-right</v-icon>

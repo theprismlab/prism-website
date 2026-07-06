@@ -97,7 +97,7 @@
     <div class="d-flex justify-end mt-4">
       <v-btn
         color="primary"
-        :disabled="!data.reviewed || !allStepsValid || screenValidation?.status === 'INVALID'"
+        :disabled="!data.reviewed || !allStepsValid"
         :loading="submitting"
         @click="submitForm"
       >
@@ -115,7 +115,7 @@
         </v-card-title>
         <v-card-text>{{ dialog.body }}</v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn variant="text" @click="showDialog = false">Close</v-btn>
+          <v-btn variant="text" @click="closeDialog">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -136,7 +136,7 @@
       formData: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
-      screenValidation: { type: Object, default: null },
+      screenName: { type: String, default: null },
     },
     mounted() {
       if (!this.allStepsValid && this.data.reviewed) {
@@ -208,12 +208,11 @@
         return STEP_REGISTRY[stepId].getSummary(this.formData[stepId]);
       },
       async submitForm() {
-        const apiPayload = this.parseResponseForApi();
         this.submitting = true;
 
         try {
-          // TODO: replace with real API call, e.g.:
-          const result = await api.postSubmission(import.meta.env.VITE_API_URL, apiPayload);
+          const apiPayload = this.parseResponseForApi();
+          await api.postSubmission(import.meta.env.VITE_API_URL, apiPayload);
           this.dialogSuccess = true;
           this.dialog = {
             title: 'Submission successful',
@@ -234,7 +233,13 @@
         }
       },
       parseResponseForApi() {
-        return parseFormDataForApi(this.formData, this.screenType);
+        return parseFormDataForApi(this.formData, this.screenType, this.screenName);
+      },
+      closeDialog() {
+        this.showDialog = false;
+        if (this.dialogSuccess) {
+          this.$router.push('/submission-hub/overview');
+        }
       },
     },
   };

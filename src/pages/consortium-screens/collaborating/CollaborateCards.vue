@@ -1,11 +1,11 @@
 <template>
-  <v-card elevation="0" variant="tonal" color="cyan-lighten-4" class="pa-5 pb-7" max-width="700">
+  <v-card elevation="0" variant="tonal" color="teal-lighten-4" class="pa-5" max-width="700">
     <div v-for="item in agreements" :key="item.title" class="mt-2">
-      <h3 class="text-h5 d-flex align-center justify-start text-cyan-darken-1">
+      <h3 class="prism-text-title-large d-flex align-center justify-start text-cyan-darken-1">
         <svg-icon :path="item.path" type="mdi" :size="item.size" class="mr-2"></svg-icon>
         {{ item.title }}
       </h3>
-      <p class="text-grey-darken-2 text-body-2 ml-8" v-html="item.text"></p>
+      <p class="prism-text-body-large text-grey-darken-2 ml-8 mt-2 mb-6" v-html="item.text"></p>
     </div>
   </v-card>
 </template>
@@ -46,8 +46,4 @@
     },
   };
 </script>
-<style scoped>
-  .v-card {
-    border: 1px solid var(--v-cyan-lighten-4);
-  }
-</style>
+<style scoped></style>

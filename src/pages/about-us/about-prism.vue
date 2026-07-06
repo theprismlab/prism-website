@@ -2,7 +2,7 @@
   <page>
     <app-container narrow>
       <prism-page-title>About PRISM</prism-page-title>
-      <p class="prism-text-body-xlarge">
+      <p class="prism-text-body-large">
         Developed by the Broad Institute of MIT and Harvard, PRISM (Profiling Relative Inhibition
         Simultaneously in Mixtures) is a novel DNA barcoding technology that allows for rapid,
         viability screening of cancer cell line models in mixtures. Our original efforts have been

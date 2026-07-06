@@ -4,13 +4,13 @@
       <div class="hub-layout">
         <div class="hub-layout__main">
           <prism-page-title>Submission Hub</prism-page-title>
-          <p class="prism-text-body-1">
+          <p class="prism-text-body-large mb-8">
             Welcome to the PRISM Submission Hub. Explore upcoming screens, review submission
             instructions and guidelines, and submit your test agents to one of our consortium
             screens.
           </p>
 
-          <h2 class="prism-text-h3">Screening Schedule 2026</h2>
+          <h2 class="prism-text-display-small">Screening Schedule 2026</h2>
           <v-data-table
             :headers="headers"
             :items="schedule"
@@ -22,7 +22,9 @@
             <template #item.status="{ item }">
               <v-chip
                 :to="
-                  item.status === 'OPEN' ? `/submission-hub/forms/${item.screen_type}` : undefined
+                  item.status === 'OPEN'
+                    ? `/submission-hub/forms/${item.screen_type}/${item.screen_name}`
+                    : undefined
                 "
                 :color="item.statusMeta.color"
                 size="small"
@@ -100,9 +102,13 @@
 <script>
   import { ASSAYS } from '@/utils/assays';
   import { enrichedSchedule, FIELD_LABELS, TABLE_FIELD_KEYS } from './schedule.js';
+  import { useActiveScreenStore } from './active-screen-store.js';
 
   export default {
     name: 'SubmissionsOverview',
+    setup() {
+      return { activeScreenStore: useActiveScreenStore() };
+    },
     data() {
       return {
         headers: TABLE_FIELD_KEYS.map((key) => ({
@@ -110,7 +116,6 @@
           key,
           sortable: false,
         })),
-        schedule: enrichedSchedule(),
         assays: ASSAYS,
         participationSteps: [
           'Complete a submission form',
@@ -118,6 +123,17 @@
           'Ship your compounds to our lab',
         ],
       };
+    },
+    computed: {
+      schedule() {
+        // Reuses the same "newest ACTIVE screen per type" resolution the rest of the app
+        // uses (form validation, nav drawers) instead of a separate ad-hoc active-name check,
+        // so a SCHEDULE entry only overrides to OPEN when it's the one the app treats as current.
+        return enrichedSchedule(this.activeScreenStore.activeScreenNameFor);
+      },
+    },
+    mounted() {
+      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
     },
   };
 </script>
@@ -174,7 +190,7 @@
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--v-primary-darken-1, #1976d2);
+    color: var(--prism-color-blue-darken-1);
     margin-bottom: 6px;
   }
 

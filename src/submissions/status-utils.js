@@ -9,11 +9,6 @@ export const STATUS_META = {
     label: 'In Progress',
     color: 'yellow-darken-2',
   },
-  CLOSED: {
-    key: 'closed',
-    label: 'Closed',
-    color: 'red-accent-4',
-  },
   SCHEDULED: {
     key: 'scheduled',
     label: 'Scheduled',

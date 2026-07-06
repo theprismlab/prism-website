@@ -55,7 +55,7 @@
   <v-row dense>
     <v-col cols="12">
       <h3 class="prism-text-form-group-label">Data Access Managers</h3>
-      <p class="prism-text-body-1">
+      <p class="prism-text-body-large">
         All contacts included in this form will be assigned Data Access Managers for the dataset and
         manage access to others once it is delivered. Please include any additional contacts in the
         fields below.

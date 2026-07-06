@@ -69,23 +69,10 @@ const FIELDS = {
   },
 };
 
-// Per-screen field lists — extend as screen variants are added.
-const SCREEN_CONFIGS = {
-  default: [
-    'TEST_AGENT_REQ_1',
-    'TEST_AGENT_REQ_2',
-    'TEST_AGENT_REQ_3',
-    'SHIPPING_1',
-    'SHIPPING_2',
-    'RESULTS_USE_1',
-    'RESULTS_USE_2',
-    'RESULTS_USE_3',
-  ],
-};
-
-export function buildScreenFields(screenType) {
-  const keys = SCREEN_CONFIGS[screenType] || SCREEN_CONFIGS.default;
-  return keys.map((k) => FIELDS[k]);
+// Same acknowledgements for every screen type — unlike testAgentSchema.js, there's no
+// per-screen config here.
+export function getFields() {
+  return Object.values(FIELDS);
 }
 
 export function getInitialData() {
@@ -93,16 +80,16 @@ export function getInitialData() {
 }
 
 export function getSummary(data) {
-  return Object.values(FIELDS).map((f) => ({
+  return getFields().map((f) => ({
     section: f.section,
     label: f.description.replace(/<[^>]+>/g, ''),
     value: data[f.key] ? 'Confirmed' : 'No response',
   }));
 }
 
-export function validate(data, screenType) {
+export function validate(data) {
   const errors = {};
-  for (const f of buildScreenFields(screenType)) {
+  for (const f of getFields()) {
     const err = required(data[f.key]);
     if (err) errors[f.key] = err;
   }

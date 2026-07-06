@@ -18,7 +18,7 @@
 <style scoped>
   .page {
     padding-top: 24px;
-    padding-bottom: 24px;
+    padding-bottom: 64px;
   }
 
   /* xxl  */

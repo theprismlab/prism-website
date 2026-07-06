@@ -35,25 +35,25 @@
     padding: 0;
   }
   .hbspt-form .hs-richtext {
-    font-family: Inter, Sans-Serif !important;
-    font-size: var(--body-1-size) !important;
-    line-height: var(--body-1-line-height) !important;
+    font-family: 'Inter', Sans-Serif !important;
+    font-size: var(--prism-text-body-xlarge-size) !important;
+    line-height: 1.4em !important;
   }
   label {
-    font-family: Inter, Sans-Serif !important;
-    font-size: var(--body-1-size) !important;
-    line-height: var(--body-1-line-height) !important;
+    font-family: 'Inter', Sans-Serif !important;
+    font-size: var(--prism-text-body-xlarge-size) !important;
+    line-height: 1.4em !important;
     font-weight: 600;
   }
   .hbspt-form input {
-    font-family: Inter, Sans-Serif !important;
-    font-size: var(--body-1-size) !important;
-    line-height: var(--body-1-line-height) !important;
+    font-family: 'Inter', Sans-Serif !important;
+    font-size: var(--prism-text-body-xlarge-size) !important;
+    line-height: 1.4em !important;
   }
 
   .hs-main-font-element p {
-    font-size: var(--h4-size) !important;
-    line-height: var(--h4-line-height) !important;
+    font-size: var(--prism-text-body-xlarge-size) !important;
+    line-height: 1.4em !important;
   }
 
   .form-columns-2 {
@@ -65,7 +65,7 @@
   .hbspt-form .hs-firstname,
   .hbspt-form .hs-lastname {
     max-width: 49%;
-    margin-right: 4x;
+    margin-right: 4px;
   }
   .hbspt-form .input input {
     background-color: #f2f2f2;
@@ -79,8 +79,8 @@
     margin-bottom: 0px !important;
   }
   .hbspt-form .submitted-message p {
-    font-size: var(--h4-size) !important;
-    line-height: var(--h4-line-height) !important;
+    font-size: var(--prism-text-title-medium-size) !important;
+    line-height: 1.4em !important;
     font-weight: 900 !important;
   }
 
@@ -122,15 +122,15 @@
 
   .hbspt-form .hs-form-booleancheckbox-display,
   .hbspt-form .hs-error-msg {
-    font-size: 0.75rem !important;
-    line-height: var(--body-2-line-height) !important;
+    font-size: 0.85rem !important;
+    line-height: 1.4 !important;
     font-weight: 400 !important;
   }
 
   .hbspt-form .hs-form-radio-display,
   .hs-form-checkbox .hs-form-checkbox-display span {
     font-weight: 400 !important;
-    font-size: var(--body-2-size) !important;
+    font-size: var(--prism-text-body-large-size) !important;
   }
 
   .hbspt-form input.error {
@@ -146,8 +146,9 @@
   }
 
   .hbspt-form .legal-consent-container .hs-richtext p {
-    font-size: 0.75rem !important;
-    line-height: var(--body-2-line-height) !important;
+    font-size: 0.85rem !important;
+    line-height: 1.45 !important;
+    color: #737373;
   }
 
   .hbspt-form fieldset {
@@ -156,7 +157,7 @@
     margin: 0px !important;
   }
   .hbspt-form fieldset div {
-    margin-top: 12px !important;
+    margin-top: 18px !important;
     margin-bottom: 12px !important;
   }
   @media (max-width: 767px) {
