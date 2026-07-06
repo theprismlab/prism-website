@@ -4,13 +4,13 @@
       <div class="hub-layout">
         <div class="hub-layout__main">
           <prism-page-title>Submission Hub</prism-page-title>
-          <p class="prism-text-body-1">
+          <p class="prism-text-body-large mb-8">
             Welcome to the PRISM Submission Hub. Explore upcoming screens, review submission
             instructions and guidelines, and submit your test agents to one of our consortium
             screens.
           </p>
 
-          <h2 class="prism-text-h3">Screening Schedule 2026</h2>
+          <h2 class="prism-text-display-small">Screening Schedule 2026</h2>
           <v-data-table
             :headers="headers"
             :items="schedule"
@@ -190,7 +190,7 @@
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--v-primary-darken-1, #1976d2);
+    color: var(--prism-color-blue-darken-1);
     margin-bottom: 6px;
   }
 

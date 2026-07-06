@@ -43,19 +43,26 @@
 </script>
 
 <style scoped>
+  .page-section--bg-muted {
+    background-color: var(--v-grey-lighten-5);
+  }
   .page-section {
     width: 100%;
     margin: 0 auto;
   }
-  .page-section--bg-muted {
-    background-color: var(--v-grey-lighten-5);
-  }
-  .page-section--bg-tinted {
-    background-color: var(--v-primary-lighten-6-desaturated);
-  }
+
   .page-section--bg-gradient {
     color: white;
-    background: linear-gradient(120deg, var(--v-primary-accent-3), var(--v-primary-darken-4));
+    background: linear-gradient(120deg, var(--v-blue-base), var(--v-indigo-darken-1));
+  }
+  .page-section--bg-blue-indigo-dark {
+    color: white;
+    background: linear-gradient(
+      135deg,
+      var(--v-blue-darken-3),
+      var(--v-indigo-darken-3) 60%,
+      var(--v-blue-darken-4)
+    );
   }
   .page-section--bg-multi-focal-cool {
     background:

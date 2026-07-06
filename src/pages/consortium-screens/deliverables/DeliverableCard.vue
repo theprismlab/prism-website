@@ -2,14 +2,14 @@
   <v-card
     :class="`pa-6 px-10 justify-start mb-6 ${colorScheme}-card`"
     variant="tonal"
-    color="secondary-lighten-3"
+    color="var(--prism-color-amber-accent-4)"
     max-width="700"
   >
-    <h3 class="text-h5 d-flex align-center justify-start text-secondary-darken-3">
+    <h3 class="prism-text-title-large d-flex align-center justify-start">
       <svg-icon :path="icon.path" type="mdi" :size="icon.size" class="mr-2"></svg-icon>
       {{ title }}
     </h3>
-    <p class="text-grey-darken-2 text-body-2 ml-8 mt-4">
+    <p class="prism-text-body-large text-grey-darken-2 ml-8 mt-4">
       <slot></slot>
     </p>
   </v-card>
@@ -41,12 +41,4 @@
     },
   };
 </script>
-<style scoped>
-  .deliverable-card {
-    font-family: 'Inter', sans-serif !important;
-    border: 1px solid var(--v-secondary-lighten-4);
-  }
-  .secondary-card {
-    border: 1px solid var(--v-secondary-lighten-4);
-  }
-</style>
+<style scoped></style>

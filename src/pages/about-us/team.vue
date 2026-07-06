@@ -1,7 +1,7 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>Team</prism-page-title>
+      <prism-page-title class="text-center">Team</prism-page-title>
       <v-row class="mt-12" justify="space-around">
         <v-col
           cols="7"

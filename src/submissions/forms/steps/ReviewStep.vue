@@ -115,7 +115,7 @@
         </v-card-title>
         <v-card-text>{{ dialog.body }}</v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn variant="text" @click="showDialog = false">Close</v-btn>
+          <v-btn variant="text" @click="closeDialog">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -234,6 +234,12 @@
       },
       parseResponseForApi() {
         return parseFormDataForApi(this.formData, this.screenType, this.screenName);
+      },
+      closeDialog() {
+        this.showDialog = false;
+        if (this.dialogSuccess) {
+          this.$router.push('/submission-hub/overview');
+        }
       },
     },
   };

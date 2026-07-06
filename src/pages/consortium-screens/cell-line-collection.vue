@@ -1,8 +1,8 @@
 <template>
   <page>
-    <app-container>
+    <app-container narrow>
       <prism-page-title>Cell line collection</prism-page-title>
-      <p class="prism-text-body-1">
+      <p class="prism-text-body-large">
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45
         major types of cancer and wide genomic diversity. Among them, our collection includes a
         significant number of pediatric cancer cell lines, as well as over 100 hematopoietic cell
@@ -18,10 +18,10 @@
     </page-section>
 
     <page-section background="muted" :padding="10">
-      <app-container>
-        <section-overline class="text-center">Methodology</section-overline>
-        <h2 class="prism-text-h3 text-center">Cell line barcoding and pooling workflow</h2>
-        <p class="prism-text-body-1 text-center mx-auto mb-8" style="max-width: 560px">
+      <app-container class="text-center">
+        <section-overline>Methodology</section-overline>
+        <prism-section-title>Cell line barcoding and pooling workflow</prism-section-title>
+        <p class="prism-text-body-large mx-auto mb-8" style="max-width: 560px">
           Each cell line is individually DNA-barcoded, quality-controlled, and mixed by doubling
           time into pools for use in high-throughput PRISM screens.
         </p>
@@ -34,68 +34,52 @@
       </app-container>
     </page-section>
 
-    <page-section>
-      <app-container>
-        <h2 class="prism-text-h3 mb-0">All of our cell lines are:</h2>
-        <v-list class="mt-2 checklist-list">
-          <v-list-item v-for="item in checklist" :key="item">
-            <template v-slot:prepend>
-              <v-icon class="text-success-accent-4 mr-1">mdi-check-circle-outline</v-icon>
-            </template>
-            <v-list-item-title class="text-wrap">{{ item }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-        <!-- <v-card class="checklist-card" elevation="0">
-          <h2 class="prism-text-h3 mb-0">All of our cell lines are:</h2>
-          <v-list class="mt-2 checklist-list">
-            <v-list-item v-for="item in checklist" :key="item">
-              <template v-slot:prepend>
-                <v-icon class="text-success-accent-4 mr-1">mdi-check-circle-outline</v-icon>
-              </template>
-              <v-list-item-title class="text-wrap">{{ item }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-card> -->
-      </app-container>
-    </page-section>
+    <app-container narrow class="my-6">
+      <prism-section-title>All of our cell lines are:</prism-section-title>
+      <v-list class="mt-2 checklist-list">
+        <v-list-item v-for="item in checklist" :key="item">
+          <template v-slot:prepend>
+            <v-icon class="text-teal-accent-4 mr-1">mdi-check-circle-outline</v-icon>
+          </template>
+          <v-list-item-title class="text-wrap">{{ item }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </app-container>
 
-    <page-section>
-      <app-container>
-        <h2 class="prism-text-h3">Cell sets in PRISM screens</h2>
-        <p class="prism-text-body-1">
-          PRISM’s collection of over 900 cell lines is screened for all standard PRISM experiments
-          and is divided into two cell sets:
-        </p>
+    <app-container narrow class="my-6">
+      <prism-section-title>Cell sets in PRISM screens</prism-section-title>
+      <p class="prism-text-body-large">
+        PRISM’s collection of over 900 cell lines is screened for all standard PRISM experiments and
+        is divided into two cell sets:
+      </p>
 
-        <v-row class="mt-2" style="max-width: 420px">
-          <v-col cols="6">
-            <div class="cell-set-card">
-              <div class="cell-set-name">PR2025A</div>
-              <div class="cell-set-detail">20 fastest pools</div>
-            </div>
-          </v-col>
-          <v-col cols="6">
-            <div class="cell-set-card">
-              <div class="cell-set-name">PR2025B</div>
-              <div class="cell-set-detail">20 slowest pools</div>
-            </div>
-          </v-col>
-        </v-row>
-        <p class="text-body-2 text-grey-darken-1 mt-3 mb-8">
-          All 40 pools are used in our 5-day consortium screens
-        </p>
-
-        <v-btn
-          variant="outlined"
-          color="primary-base"
-          rounded
-          href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx"
-          target="_blank"
-          prepend-icon="mdi-download"
-          >PRISM barcoded cell lines</v-btn
-        >
-      </app-container>
-    </page-section>
+      <v-row class="my-6" style="max-width: 420px">
+        <v-col cols="6">
+          <div class="cell-set-card">
+            <div class="prism-text-title-large">PR2025A</div>
+            <div class="prism-text-body-large text-medium-emphasis">20 fastest pools</div>
+          </div>
+        </v-col>
+        <v-col cols="6">
+          <div class="cell-set-card">
+            <div class="prism-text-title-large">PR2025B</div>
+            <div class="prism-text-body-large text-medium-emphasis">20 slowest pools</div>
+          </div>
+        </v-col>
+      </v-row>
+      <p class="prism-text-body-large text-medium-emphasis mb-4">
+        All 40 pools are used in our 5-day consortium screens
+      </p>
+      <v-btn
+        variant="outlined"
+        color="primary"
+        rounded
+        href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx"
+        target="_blank"
+        prepend-icon="mdi-download"
+        >PRISM barcoded cell lines</v-btn
+      >
+    </app-container>
   </page>
 </template>
 
@@ -138,8 +122,8 @@
   }
 
   .cell-set-card {
-    border: 0.1px solid #e0e0e0;
-    border-radius: 10px;
+    border-left: 3px solid #e0e0e0;
+    border-radius: 0px;
     padding: 16px 20px;
     background: #fcfcfc;
   }

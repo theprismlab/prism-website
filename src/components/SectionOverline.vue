@@ -1,5 +1,5 @@
 <template>
-  <h2 :class="`text-overline text-${color} font-weight-black mb-0`"><slot></slot></h2>
+  <h2 :class="`prism-text-overline text-${color} font-weight-black mb-0`"><slot></slot></h2>
 </template>
 
 <script>
@@ -9,7 +9,7 @@
       color: {
         type: String,
         required: false,
-        default: 'secondary-accent-4',
+        default: 'secondary',
       },
     },
     data() {

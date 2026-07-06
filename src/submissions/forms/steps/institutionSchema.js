@@ -2,7 +2,7 @@
 // Pure JS — no Vue dependencies.
 
 import { required, validEmail } from './validationHelpers';
-
+// types: ['Dependency Map Consortium', 'Broad Institute & Affiliated Institutions', 'Academic Institution (Non-Broad or Broad affiliates)', 'Industry']
 export const COLLABORATOR_TYPE_OPTIONS = {
   DMC: { key: 'DMC', label: 'Dependency Map Consortium' },
   BROAD: { key: 'NFP', label: 'Broad Institute & Affiliated Institutions' },
@@ -26,6 +26,7 @@ export const FIELDS = {
   INSTITUTION_TYPE: {
     key: 'institutionType',
     label: 'Institution Type',
+    format: (key) => Object.values(COLLABORATOR_TYPE_OPTIONS).find((o) => o.key === key)?.label,
   },
   INSTITUTION_NAME: {
     key: 'institutionName',
@@ -90,7 +91,7 @@ export function getSummary(data) {
       let value;
       if (raw === true) value = 'Confirmed';
       else if (raw === false || raw === '' || raw == null) value = 'No response';
-      else value = String(raw);
+      else value = f.format ? (f.format(raw) ?? String(raw)) : String(raw);
       return { label: f.label, value };
     });
 }

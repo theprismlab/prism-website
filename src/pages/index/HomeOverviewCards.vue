@@ -1,18 +1,17 @@
 <template>
-  <v-row class="overview-cards">
+  <v-row>
     <v-col v-for="(card, index) in cards" :key="index" cols="12" md="4">
       <a :href="card.action.url" :target="card.action.target" class="overview-card-link">
         <v-card class="overview-card fill-height" :elevation="0">
           <div class="overview-card-media">
             <v-img eager :src="card.img" max-width="200px" class="mx-auto"></v-img>
           </div>
-          <div class="overview-card-body">
-            <h4 class="overview-card-title">{{ card.title }}</h4>
-            <p class="text-body-2 text-grey-darken-2 mb-4">{{ card.description }}</p>
-            <span class="overview-card-action">
-              {{ card.action.text }}
-              <v-icon size="16" class="overview-card-action-icon">mdi-arrow-right</v-icon>
-            </span>
+          <div class="px-6 py-4">
+            <h4 class="prism-text-title-large mb-3">{{ card.title }}</h4>
+            <p class="prism-text-body-large text-grey-darken-1 mb-4">{{ card.description }}</p>
+            <a :href="card.action.url" :target="card.action.target" class="overview-card-action">
+              {{ card.action.text }} <span class="mdi mdi-arrow-right"></span>
+            </a>
           </div>
         </v-card>
       </a>
@@ -95,36 +94,5 @@
     background: linear-gradient(180deg, #edf4fb, #f6f9fd);
     padding: 28px 24px 0;
     text-align: center;
-  }
-
-  .overview-card-body {
-    padding: 24px 24px 20px;
-  }
-
-  .overview-card-title {
-    font-size: var(--h5-size);
-    font-family: 'Archivo', sans-serif;
-    font-variation-settings: "wdth" 125;
-    font-weight: 600;
-    line-height: 1.35em;
-    color: #1a1a1a;
-    margin-bottom: 12px;
-  }
-
-  .overview-card-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--v-primary-darken-2);
-  }
-
-  .overview-card-action-icon {
-    transition: transform 0.2s ease;
-  }
-
-  .overview-card-link:hover .overview-card-action-icon {
-    transform: translateX(3px);
   }
 </style>
