@@ -28,7 +28,7 @@
   import * as d3 from 'd3';
   import TeamCard from '@/components/TeamCard.vue';
   import { assetUrl } from '@/utils/assets';
-  const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL + 'data/' : '../../public/data/';
+  const dataPath = import.meta.env.BASE_URL + 'data/';
   const dataFile = 'Website Content - 2025  - Team Page.csv';
 
   export default {

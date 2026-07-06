@@ -679,7 +679,7 @@ function q(e, t, r, f, c, i) {
     y(e.$slots, "default", {}, void 0, !0)
   ], 10, V);
 }
-const I = /* @__PURE__ */ m(G, [["render", q], ["__scopeId", "data-v-bf515133"]]);
+const I = /* @__PURE__ */ m(G, [["render", q], ["__scopeId", "data-v-40a07fd0"]]);
 I.install = function(t) {
   t.component(I.name, I);
 };
@@ -736,25 +736,72 @@ function F() {
   }
 }
 const ne = { marketing: "", portal: "/portal" }, re = [
-  { title: "About us", children: [
-    { title: "About PRISM", route: "/about-us/about-prism", id: "about-prism", site: "marketing" },
-    { title: "Team", route: "/about-us/team", id: "team", site: "marketing" }
-  ] },
-  { title: "Resources", children: [
-    { title: "Publications", route: "/publications", id: "publications", site: "marketing" },
-    { title: "FAQ", route: "/faq", id: "faq", site: "marketing" },
-    { title: "Webinars", route: "/webinars", id: "webinars", site: "marketing" }
-  ] },
-  { title: "Consortium Screens", children: [
-    { title: "Cell line collection", route: "/consortium-screens/cell-line-collection", id: "cell-line-collection", site: "marketing" },
-    { title: "Assays", route: "/consortium-screens/assays", id: "assays", site: "marketing" },
-    { title: "Data Analysis", route: "/consortium-screens/data-analysis", id: "data-analysis", site: "marketing" },
-    { title: "Deliverables", route: "/consortium-screens/deliverables", id: "deliverables", site: "marketing" },
-    { title: "Collaborating", route: "/consortium-screens/collaborating", id: "collaborating", site: "marketing" },
-    { title: "Submission Hub", route: "/submission-hub", id: "submission-hub", matchPrefix: !0, site: "marketing" }
-  ] },
+  {
+    title: "About us",
+    children: [
+      {
+        title: "About PRISM",
+        route: "/about-us/about-prism",
+        id: "about-prism",
+        site: "marketing"
+      },
+      { title: "Team", route: "/about-us/team", id: "team", site: "marketing" }
+    ]
+  },
+  {
+    title: "Resources",
+    children: [
+      { title: "Publications", route: "/publications", id: "publications", site: "marketing" },
+      { title: "FAQ", route: "/faq", id: "faq", site: "marketing" },
+      { title: "Webinars", route: "/webinars", id: "webinars", site: "marketing" }
+    ]
+  },
+  {
+    title: "Consortium Screens",
+    children: [
+      {
+        title: "Cell line collection",
+        route: "/consortium-screens/cell-line-collection",
+        id: "cell-line-collection",
+        site: "marketing"
+      },
+      { title: "Assays", route: "/consortium-screens/assays", id: "assays", site: "marketing" },
+      {
+        title: "Data Analysis",
+        route: "/consortium-screens/data-analysis",
+        id: "data-analysis",
+        site: "marketing"
+      },
+      {
+        title: "Deliverables",
+        route: "/consortium-screens/deliverables",
+        id: "deliverables",
+        site: "marketing"
+      },
+      {
+        title: "Collaborating",
+        route: "/consortium-screens/collaborating",
+        id: "collaborating",
+        site: "marketing"
+      },
+      {
+        title: "Submission Hub",
+        route: "/submission-hub",
+        id: "submission-hub",
+        matchPrefix: !0,
+        site: "marketing"
+      }
+    ]
+  },
   { title: "Contact us", route: "/contact-us", id: "contact-us", site: "marketing" },
-  { title: "Portal", route: "/portal", id: "portal", matchPrefix: !0, site: "portal", excludeRoutes: ["/portal/log-in"] }
+  {
+    title: "Portal",
+    route: "/portal",
+    id: "portal",
+    matchPrefix: !0,
+    site: "portal",
+    excludeRoutes: ["/portal/log-in"]
+  }
 ], se = { route: "/", site: "marketing" }, ie = { route: "/portal/log-in", site: "portal" };
 function P(e, t, r) {
   if (e.children)
@@ -919,7 +966,9 @@ function xe(e, t, r, f, c, i) {
         l("nav", pe, [
           (n(!0), s(v, null, k(i.resolvedItems, (a, b) => (n(), s("div", {
             key: b,
-            class: u(["prism-app-bar__nav-item", { "prism-app-bar__nav-item--has-children": a.children && a.children.length }])
+            class: u(["prism-app-bar__nav-item", {
+              "prism-app-bar__nav-item--has-children": a.children && a.children.length
+            }])
           }, [
             a.children && a.children.length ? (n(), s("button", {
               key: 0,
@@ -976,7 +1025,10 @@ function xe(e, t, r, f, c, i) {
             ])) : p("", !0)
           ], 2))), 128)),
           l("div", ge, [
-            (n(), A(T(i.resolvedLoginItem.external ? "a" : "router-link"), M(i.resolvedLoginItem.external ? { href: i.resolvedLoginItem.route } : { to: i.resolvedLoginItem.route }, { class: "prism-app-bar__login-btn" }), {
+            (n(), A(T(i.resolvedLoginItem.external ? "a" : "router-link"), M(
+              i.resolvedLoginItem.external ? { href: i.resolvedLoginItem.route } : { to: i.resolvedLoginItem.route },
+              { class: "prism-app-bar__login-btn" }
+            ), {
               default: g(() => [
                 c.isLoggedIn ? (n(), s("svg", me, [...t[6] || (t[6] = [
                   l("path", { d: "M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" }, null, -1)
@@ -1006,12 +1058,18 @@ function xe(e, t, r, f, c, i) {
               a.external ? (n(), s("a", {
                 key: `ext-${a.id}`,
                 href: a.route,
-                class: u(["prism-nav-drawer__link", { "is-active": e.$route && e.$route.path === a.route }]),
+                class: u([
+                  "prism-nav-drawer__link",
+                  { "is-active": e.$route && e.$route.path === a.route }
+                ]),
                 onClick: t[2] || (t[2] = (d) => c.drawerOpen = !1)
               }, o(a.title), 11, Ae)) : (n(), s("a", {
                 key: a.id,
                 href: a.route,
-                class: u(["prism-nav-drawer__link", { "is-active": e.$route && e.$route.path === a.route }]),
+                class: u([
+                  "prism-nav-drawer__link",
+                  { "is-active": e.$route && e.$route.path === a.route }
+                ]),
                 onClick: E((d) => i.navigateTo(a.route), ["prevent"])
               }, o(a.title), 11, ke))
             ], 64)) : (n(), s(v, { key: 1 }, [
@@ -1057,10 +1115,13 @@ function xe(e, t, r, f, c, i) {
             ], 64))
           ]))), 128)),
           l("div", Se, [
-            (n(), A(T(i.resolvedLoginItem.external ? "a" : "router-link"), M(i.resolvedLoginItem.external ? { href: i.resolvedLoginItem.route } : { to: i.resolvedLoginItem.route }, {
-              class: "prism-app-bar__login-btn",
-              onClick: t[3] || (t[3] = (a) => c.drawerOpen = !1)
-            }), {
+            (n(), A(T(i.resolvedLoginItem.external ? "a" : "router-link"), M(
+              i.resolvedLoginItem.external ? { href: i.resolvedLoginItem.route } : { to: i.resolvedLoginItem.route },
+              {
+                class: "prism-app-bar__login-btn",
+                onClick: t[3] || (t[3] = (a) => c.drawerOpen = !1)
+              }
+            ), {
               default: g(() => [
                 c.isLoggedIn ? (n(), s("svg", Pe, [...t[8] || (t[8] = [
                   l("path", { d: "M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" }, null, -1)
@@ -1076,7 +1137,7 @@ function xe(e, t, r, f, c, i) {
     })
   ]);
 }
-const x = /* @__PURE__ */ m(le, [["render", xe], ["__scopeId", "data-v-758427f8"]]);
+const x = /* @__PURE__ */ m(le, [["render", xe], ["__scopeId", "data-v-1cbfbd53"]]);
 x.install = function(t) {
   t.component(x.name, x);
 };
@@ -1280,7 +1341,7 @@ function ze(e, t, r, f, c, i) {
     ])
   ], 2);
 }
-const O = /* @__PURE__ */ m(We, [["render", ze], ["__scopeId", "data-v-844b1b37"]]);
+const O = /* @__PURE__ */ m(We, [["render", ze], ["__scopeId", "data-v-b4072711"]]);
 O.install = function(t) {
   t.component(O.name, O);
 };
@@ -1468,7 +1529,7 @@ H.install = function(t) {
 };
 const bt = {
   name: "PrismSubSectionTitle"
-}, vt = { class: "prism-text-h3" };
+}, vt = { class: "prism-text-headline-xlarge" };
 function gt(e, t, r, f, c, i) {
   return n(), s("h3", vt, [
     y(e.$slots, "default")
