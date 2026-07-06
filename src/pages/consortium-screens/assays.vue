@@ -1,8 +1,8 @@
 <template>
   <page id="" class="mb-0">
-    <app-container>
+    <app-container narrow>
       <prism-page-title>Assays</prism-page-title>
-      <p class="prism-text-body-1">
+      <p class="prism-text-body-large">
         Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures
         in 384- or 96-well plates at either 5- or 10-day assay timepoints. To ensure high-quality
         data, validation compounds are run on each assay plate.
@@ -24,8 +24,8 @@
                 class="assay-avatar"
               />
               <div class="assay-header">
-                <div class="assay-name text-h5">{{ item.screen }} - {{ item.screen_full }}</div>
-                <div class="assay-text-agents">{{ item.test_agents }}</div>
+                <div class="prism-text-title-large">{{ item.screen }} - {{ item.screen_full }}</div>
+                <div class="prism-text-body-large text-grey-darken-1">{{ item.test_agents }}</div>
               </div>
               <div class="assay-time-point">{{ item.time_point }}</div>
             </v-row>
@@ -33,14 +33,16 @@
           <v-expansion-panel-text class="assay-panel__text py-4">
             <v-row class="assay-panel__content pb-0" align="start" justify="space-around">
               <v-col cols="12" md="10">
-                <div class="section-title mb-0">{{ item.screen }} Workflow</div>
+                <div class="prism-text-title-medium font-weight-bold mb-0">
+                  {{ item.screen }} Workflow
+                </div>
               </v-col>
               <div class="media">
                 <img :src="imgPath + item.image" class="media__img" />
               </div>
               <v-col cols="12" md="10">
-                <div class="section-title">Details</div>
-                <p class="text-body-2 mb-0" v-html="item.description"></p>
+                <div class="prism-text-title-medium font-weight-bold">Details</div>
+                <p class="prism-text-body-large mb-0" v-html="item.description"></p>
               </v-col>
             </v-row>
 
@@ -49,11 +51,11 @@
                 <v-row justify="start">
                   <v-col cols="auto" md="6">
                     <div class="label">Dose scheme</div>
-                    <div class="text-body-2" v-html="item.dose_scheme"></div>
+                    <div class="prism-text-body-large" v-html="item.dose_scheme"></div>
                   </v-col>
                   <v-col cols="auto">
                     <div class="label">Cell lines</div>
-                    <div class="text-body-2">{{ item.num_cell_lines }}</div>
+                    <div class="prism-text-body-large">{{ item.num_cell_lines }}</div>
                   </v-col>
                 </v-row>
               </v-col>
@@ -120,15 +122,15 @@
 
 <style scoped>
   .assay-panel {
-    --assay-time-point-color: var(--v-cyan-darken-1);
-    --assay-time-point-color: var(--v-primary-darken-2);
-    --assay-time-point-color: var(--v-secondary-darken-2);
-    --assay-time-point-color: var(--v-grey);
-    --assay-time-point-color: var(--v-blue-lighten-2);
+    --assay-time-point-color: var(--prism-color-cyan-darken-1);
+    --assay-time-point-color: var(--prism-color-primary-darken-2);
+    --assay-time-point-color: var(--prism-color-secondary-darken-2);
+    --assay-time-point-color: var(--prism-color-grey);
+    --assay-time-point-color: var(--prism-color-blue-lighten-2);
 
     --assay-time-point-font-size: 0.9rem;
     --assay-time-point-font-weight: 400;
-    --assay-label-color: var(--v-grey-darken-1);
+    --assay-label-color: var(--prism-color-grey-darken-1);
     --assay-avatar-size: 65px;
     --assay-avatar-pad: 4px;
     --assay-pad: 16px 32px 16px 12px;
@@ -188,35 +190,13 @@
     object-fit: contain;
     padding: var(--assay-avatar-pad);
   }
-  .assay-name {
-    font-size: 1.1rem;
-    line-height: 1.4em;
-    font-weight: 600;
-    margin-bottom: 0.25em;
-  }
-  .assay-text-agents {
-    font-size: 1rem;
-    line-height: 1.4em;
-    font-weight: 400;
-    color: var(--v-grey-darken-1);
-  }
+
   .assay-time-point {
-    color: var(--v-primary-darken-1);
+    color: var(--prism-color-blue-lighten-2);
     font-size: 0.95rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-  }
-  .section-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0 0 10px;
-  }
-
-  .description {
-    font-size: 1rem;
-    line-height: 1.65;
-    margin: 0;
   }
 
   .media-title {
@@ -257,11 +237,6 @@
     text-align: right;
   }
   @media (max-width: 960px) {
-    .assay-panel__title,
-    .assay-panel__content {
-      /* padding: 12px 24px 12px 6px; */
-      /* padding:12px; */
-    }
   }
   @media (max-width: 600px) {
   }

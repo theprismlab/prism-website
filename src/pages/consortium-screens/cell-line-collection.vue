@@ -2,7 +2,7 @@
   <page>
     <app-container narrow>
       <prism-page-title>Cell line collection</prism-page-title>
-      <p class="prism-text-body-xlarge">
+      <p class="prism-text-body-large">
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45
         major types of cancer and wide genomic diversity. Among them, our collection includes a
         significant number of pediatric cancer cell lines, as well as over 100 hematopoietic cell
@@ -21,7 +21,7 @@
       <app-container class="text-center">
         <section-overline>Methodology</section-overline>
         <prism-section-title>Cell line barcoding and pooling workflow</prism-section-title>
-        <p class="prism-text-body-xlarge mx-auto mb-8" style="max-width: 560px">
+        <p class="prism-text-body-large mx-auto mb-8" style="max-width: 560px">
           Each cell line is individually DNA-barcoded, quality-controlled, and mixed by doubling
           time into pools for use in high-throughput PRISM screens.
         </p>
@@ -48,7 +48,7 @@
 
     <app-container narrow class="my-6">
       <prism-section-title>Cell sets in PRISM screens</prism-section-title>
-      <p class="prism-text-body-xlarge">
+      <p class="prism-text-body-large">
         PRISM’s collection of over 900 cell lines is screened for all standard PRISM experiments and
         is divided into two cell sets:
       </p>
@@ -67,7 +67,7 @@
           </div>
         </v-col>
       </v-row>
-      <p class="prism-text-body-xlarge text-medium-emphasis mb-4">
+      <p class="prism-text-body-large text-medium-emphasis mb-4">
         All 40 pools are used in our 5-day consortium screens
       </p>
       <v-btn
