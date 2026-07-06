@@ -61,15 +61,9 @@ export function parseFormDataForApi(formData, screenType, screenName) {
       // API expects boolean; form uses 'Yes'/'No'.
       health_hazard: base.health_hazard === 'Yes',
       // Fields no longer collected by the form — hardcoded to satisfy the API contract.
-      full_brd: 'BRD-K12345678-001-01-0', // FAKE FOR SUBMISSION API
-      // structure_smiles: '',
-      supplier: 'Testing. Field to be removed.',
-      supplier_catalog_name: 'Testing. Field to be removed.',
-      // qc_last_six_months: true,
-      // cancer_cell_lines: '',
-      // target_moa: '',
-      // sds_available: true,
-      // acutely_toxic: false,
+      full_brd: '',
+      supplier: 'Broad Institute of MIT and Harvard',
+      supplier_catalog_name: 'Broad Institute of MIT and Harvard',
     };
   });
 
