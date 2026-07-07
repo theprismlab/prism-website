@@ -6,9 +6,8 @@
         If you have a test agent you want to screen in PRISM, participate in one of our PRISM
         Consortium Screens. These screens are run four times a year, with specific dates available
         on the
-        <a href="https://www.theprismlab.org/portal/submissions" target="_blank" class="text-link"
-          >PRISM Submission Hub</a
-        >. Data for each screen is returned in approximately 4 months. <br /><br />
+        <a href="/submission-hub">PRISM Submission Hub</a>. Data for each screen is returned in
+        approximately 4 months. <br /><br />
         <a href="/contact-us">Contact us</a> to receive updates on our screen offerings, submission
         windows, and costs!
       </p>
@@ -57,7 +56,7 @@
     data() {
       return {
         steps: [
-          'Complete the forms on the <a href="https://www.theprismlab.org/portal/submissions" target="_blank" class="text-link">PRISM Submission Hub</a> during our 2-week submission window.',
+          'Complete the forms on the <a href="/submission-hub">PRISM Submission Hub</a> during our 2-week submission window.',
           'Approve and fund a quote for your PRISM submission',
           'Ship a stock solution of your test agent(s) to the PRISM lab before the submission window deadline!',
           'Data will be released on the PRISM Portal approximately 4 months after the submission window closes',

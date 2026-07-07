@@ -37,7 +37,6 @@
 
   .hero-overlay {
     place-self: center;
-    margin-top: 80px;
     max-width: 1000px;
     padding: 0 24px;
     z-index: 1;

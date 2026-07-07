@@ -34,9 +34,9 @@
       </app-container>
     </page-section>
 
-    <app-container narrow class="my-6">
+    <app-container narrow class="my-4">
       <prism-section-title>All of our cell lines are:</prism-section-title>
-      <v-list class="mt-2 checklist-list">
+      <v-list class="checklist-list">
         <v-list-item v-for="item in checklist" :key="item">
           <template v-slot:prepend>
             <v-icon class="text-teal-accent-4 mr-1">mdi-check-circle-outline</v-icon>
@@ -46,7 +46,7 @@
       </v-list>
     </app-container>
 
-    <app-container narrow class="my-6">
+    <app-container narrow class="my-4">
       <prism-section-title>Cell sets in PRISM screens</prism-section-title>
       <p class="prism-text-body-large">
         PRISM’s collection of over 900 cell lines is screened for all standard PRISM experiments and
@@ -70,15 +70,19 @@
       <p class="prism-text-body-large text-medium-emphasis mb-4">
         All 40 pools are used in our 5-day consortium screens
       </p>
-      <v-btn
-        variant="outlined"
-        color="primary"
-        rounded
-        href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx"
-        target="_blank"
-        prepend-icon="mdi-download"
-        >PRISM barcoded cell lines</v-btn
-      >
+      <p class="prism-text-body-large text-medium-emphasis mb-2">
+        Download our full annotated list:
+        <v-btn
+          variant="outlined"
+          color="primary"
+          rounded
+          href="https://assets.clue.io/prism/PRISM-PR2025-Cell-Line-Info_1-21-25.xlsx"
+          target="_blank"
+          size="small"
+          prepend-icon="mdi-download"
+          >PRISM barcoded cell lines</v-btn
+        >
+      </p>
     </app-container>
   </page>
 </template>

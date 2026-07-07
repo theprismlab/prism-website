@@ -32,7 +32,7 @@
         // body: 'Securely browse and discover insights from your screening results with interactive visualizations and integrated genomic context.',
         body: 'Securely browse and discover insights from your screening results with interactive visualizations.',
         button: {
-          text: 'Explore the PRISM portal',
+          text: 'PRISM portal',
           link: 'https://theprismlab.org/portal/projects',
         },
         image: 'macbook-portal.png',
