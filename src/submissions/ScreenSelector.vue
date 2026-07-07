@@ -16,7 +16,11 @@
             <span
               v-if="screenStatusFor(item.raw)"
               class="screen-selector__status"
-              :class="screenStatusFor(item.raw) === 'OPEN' ? 'screen-selector__status--open' : 'screen-selector__status--closed'"
+              :class="
+                screenStatusFor(item.raw) === 'OPEN'
+                  ? 'screen-selector__status--open'
+                  : 'screen-selector__status--closed'
+              "
               >({{ screenStatusFor(item.raw) }})</span
             ></span
           >
@@ -128,10 +132,10 @@
   }
 
   .screen-selector__status--open {
-    color: #4caf50;
+    color: var(--prism-color-teal-accent-4);
   }
 
   .screen-selector__status--closed {
-    color: #f44336;
+    color: var(--prism-color-red-accent-4);
   }
 </style>

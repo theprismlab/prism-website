@@ -43,7 +43,10 @@
         />
       </template>
     </v-list>
-    <div v-if="screenSelected" class="submissions-nav-cta-container">
+    <div
+      v-if="screenSelected && screenStatusFor(screenType) === 'OPEN'"
+      class="submissions-nav-cta-container"
+    >
       <v-btn
         v-if="resolvedScreenName"
         :to="`/submission-hub/forms/${screenType}/${resolvedScreenName}`"
@@ -152,6 +155,9 @@
     },
     methods: {
       flattenOutline,
+      screenStatusFor(screenType) {
+        return this.screenStatusStore.statusFor(screenType)?.status ?? null;
+      },
       isGroupActive(item) {
         return this.$route.path.includes(`/${item.id}`);
       },

@@ -25,9 +25,6 @@ export const useScreenStatusStore = defineStore('screenStatus', {
     // stripSeqSuffix) are the canonical list of known screen types.
     isValidType: (state) => (screenType) =>
       !!screenType && Object.prototype.hasOwnProperty.call(state.statuses, screenType.toUpperCase()),
-    messageFor() {
-      return (screenType) => this.statusFor(screenType);
-    },
     // Is this exact screen name valid to submit against for this type? { status: null } means
     // valid; { status: 'INVALID', message } means not. Two independent checks: screenName must
     // be the type's current screen (identity, from prism_screens), AND the type's submission
@@ -41,7 +38,7 @@ export const useScreenStatusStore = defineStore('screenStatus', {
         if (!screenName || !screenType) return invalid;
         const s = this.statusFor(screenType);
         if (!s || s.name !== screenName) return invalid;
-        if (s.status !== 'OPEN') return invalid;
+        if (s.status !== 'OPEN') return { status: 'INVALID', message: s.message };
         return { status: null, message: null };
       };
     },

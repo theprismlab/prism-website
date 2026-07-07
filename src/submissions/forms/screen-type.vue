@@ -10,10 +10,6 @@
           Fill test data
         </v-btn>
       </div> -->
-      <v-alert v-if="apiStatus?.message" variant="tonal" density="compact" class="mb-4">{{
-        apiStatus.message
-      }}</v-alert>
-
       <v-alert
         v-if="screenValidation?.status === 'INVALID'"
         type="error"
@@ -133,9 +129,6 @@
       screenValidation() {
         if (!this.screenStatusStore.loaded) return null;
         return this.screenStatusStore.validationFor(this.screenName, this.screenType);
-      },
-      apiStatus() {
-        return this.screenStatusStore.messageFor(this.screenType);
       },
       isDev() {
         return import.meta.env.DEV;
