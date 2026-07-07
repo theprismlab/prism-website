@@ -20,6 +20,13 @@
         </template>
       </v-list-item>
     </template>
+
+    <template v-if="isFormsRoute" #selection="{ item }">
+      {{ item.raw }}
+      <span v-if="screenNameFor(item.raw)" class="screen-selector__name"
+        >{{ screenNameFor(item.raw) }}
+      </span>
+    </template>
   </v-select>
 </template>
 
