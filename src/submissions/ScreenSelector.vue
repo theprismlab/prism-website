@@ -7,16 +7,19 @@
     v-model:menu="menuOpen"
     @update:model-value="onScreenChange"
   >
-    <!-- <template #item="{ item, props }">
+    <template v-if="isFormsRoute" #item="{ item, props }">
       <v-list-item v-bind="props">
         <template #title>
           {{ item.raw }}
-          <span v-if="screenNameFor(item.raw)" class="screen-selector__name">{{
-            screenNameFor(item.raw)
-          }}</span>
+          <span v-if="screenNameFor(item.raw)" class="screen-selector__name"
+            >{{ screenNameFor(item.raw) }}
+            <span v-if="screenStatusFor(item.raw)" class="screen-selector__status"
+              >({{ screenStatusFor(item.raw) }})</span
+            ></span
+          >
         </template>
       </v-list-item>
-    </template> -->
+    </template>
   </v-select>
 </template>
 
@@ -57,6 +60,9 @@
           ? type
           : null;
       },
+      isFormsRoute() {
+        return this.$route.path.startsWith('/submission-hub/forms');
+      },
     },
     mounted() {
       this.screenStatusStore.load(import.meta.env.VITE_API_URL);
@@ -69,6 +75,9 @@
     methods: {
       screenNameFor(screenType) {
         return this.screenStatusStore.activeScreenNameFor(screenType);
+      },
+      screenStatusFor(screenType) {
+        return this.screenStatusStore.statusFor(screenType)?.status ?? null;
       },
       async onScreenChange(screen) {
         // The forms route needs a resolved :screen segment after the type (unlike
@@ -101,5 +110,9 @@
   .screen-selector__name {
     margin-left: 8px;
     color: rgba(var(--v-theme-on-surface), 0.55);
+  }
+
+  .screen-selector__status {
+    margin-left: 4px;
   }
 </style>
