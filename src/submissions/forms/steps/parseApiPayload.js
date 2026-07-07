@@ -18,7 +18,7 @@ export function parseFormDataForApi(formData, screenType, screenName) {
     collaboratorTypeKey;
 
   const managers = (collaborator[COLLABORATOR_FIELDS.DATA_ACCESS_MANAGERS.key] ?? []).filter(
-    (m) => m.name || m.email,
+    (m) => m.name && m.email,
   );
 
   const fundingInst = [
