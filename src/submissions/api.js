@@ -10,9 +10,11 @@ async function getTempApiKey(apiURL) {
 
 async function authedGet(apiURL, path) {
   const userKey = await getTempApiKey(apiURL);
-  const res = await axios.get(apiURL + path, {
+  const url = apiURL + path;
+  const res = await axios.get(url, {
     headers: { ...JSON_HEADERS, user_key: userKey },
   });
+  console.log('[api] GET', url, res.data);
   return res.data;
 }
 
@@ -39,6 +41,7 @@ export async function postSubmission(apiURL, payload) {
       user_key: userKey,
     },
   });
+  console.log('[api] POST', url, payload, res.data);
   return res.data;
 }
 

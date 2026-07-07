@@ -42,13 +42,13 @@
   import SubDrawer from '../SubDrawer.vue';
   import ScreenSelector from '../ScreenSelector.vue';
   import { FORM_STEPS, useFormProgressStore } from '../store.js';
-  import { useActiveScreenStore } from '../active-screen-store.js';
+  import { useScreenStatusStore } from '../screen-status-store.js';
 
   export default {
     name: 'FormsSubDrawer',
     components: { SubDrawer, ScreenSelector },
     setup() {
-      return { formStore: useFormProgressStore(), activeScreenStore: useActiveScreenStore() };
+      return { formStore: useFormProgressStore(), screenStatusStore: useScreenStatusStore() };
     },
     data() {
       return { steps: FORM_STEPS };
@@ -73,12 +73,12 @@
       // and :screen segments exist in the URL, which a stale/bogus deep link would still have.
       screenSelected() {
         if (!this.screenType || !this.screenName) return false;
-        if (!this.activeScreenStore.loaded) return true; // avoid flashing hidden while loading
-        return this.activeScreenStore.validationFor(this.screenName, this.screenType).status === null;
+        if (!this.screenStatusStore.loaded) return true; // avoid flashing hidden while loading
+        return this.screenStatusStore.validationFor(this.screenName, this.screenType).status === null;
       },
     },
     mounted() {
-      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
+      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
     },
     methods: {
       stepStatus(i) {

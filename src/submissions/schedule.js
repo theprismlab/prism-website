@@ -64,15 +64,24 @@ function todayET() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 }
 
-// activeScreenNameFor: optional (screenType) => name|null lookup, e.g.
-// activeScreenStore.activeScreenNameFor, resolving the newest ACTIVE screen the API
-// currently reports for a type. When the schedule entry IS that screen, the API is
-// treated as ground truth and the window-date estimate below is overridden to OPEN.
-export function computedStatus(item, activeScreenNameFor) {
-  if (activeScreenNameFor?.(item.screen_type) === item.screen_name) return 'OPEN';
+// validationFor: optional (screenName, screenType) => { status, message } lookup, e.g.
+// screenStatusStore.validationFor. Checks both that this schedule entry IS the type's current
+// screen (identity, from prism_screens) AND that the type's submission window is currently OPEN
+// (accessibility, from prism_submission_window_message) — matching name alone isn't enough,
+// since a screen can be the current one for its type while its window is closed/at capacity.
+// When both hold, the API is treated as ground truth and the window-date estimate below is
+// overridden to OPEN.
+export function computedStatus(item, validationFor) {
+  const validation = validationFor?.(item.screen_name, item.screen_type);
+  console.log('[schedule] computedStatus', {
+    screen_type: item.screen_type,
+    screen_name: item.screen_name,
+    validation,
+  });
+  if (validation?.status === null) return 'OPEN';
   const today = todayET();
   if (today < item.window_start) return 'SCHEDULED';
-  if (today <= item.window_end) return 'OPEN';
+  if (today <= item.window_end) return 'OPEN'; // NEVER DEFINE OPEN, API NEEDS TO BE USED
   return 'IN-PROGRESS';
 }
 
@@ -92,8 +101,8 @@ export function formatWindow(item) {
 }
 
 // Decorates a raw SCHEDULE entry with derived display fields.
-export function enrichEntry(item, activeScreenNameFor) {
-  const status = computedStatus(item, activeScreenNameFor);
+export function enrichEntry(item, validationFor) {
+  const status = computedStatus(item, validationFor);
   return {
     ...item,
     status,
@@ -103,8 +112,8 @@ export function enrichEntry(item, activeScreenNameFor) {
 }
 
 // Convenience: enrich all SCHEDULE entries (useful for table displays).
-export function enrichedSchedule(activeScreenNameFor) {
-  return SCHEDULE.map((item) => enrichEntry(item, activeScreenNameFor));
+export function enrichedSchedule(validationFor) {
+  return SCHEDULE.map((item) => enrichEntry(item, validationFor));
 }
 
 export const FIELD_LABELS = {

@@ -25,14 +25,14 @@
 
 <script>
   import { useFormProgressStore } from './store';
-  import { useActiveScreenStore } from './active-screen-store.js';
+  import { useScreenStatusStore } from './screen-status-store.js';
 
   export default {
     name: 'SubmissionsDrawer',
     setup() {
       return {
         formStore: useFormProgressStore(),
-        activeScreenStore: useActiveScreenStore(),
+        screenStatusStore: useScreenStatusStore(),
       };
     },
     data() {
@@ -41,7 +41,7 @@
       };
     },
     mounted() {
-      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
+      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
       '$route.params.screenType': {
@@ -62,7 +62,7 @@
         return this.$route.params.screenType || this.formStore.lastScreenType;
       },
       resolvedScreenName() {
-        return this.activeScreenStore.activeScreenNameFor(this.screenType);
+        return this.screenStatusStore.activeScreenNameFor(this.screenType);
       },
       isSubSection() {
         const path = this.$route.path;
