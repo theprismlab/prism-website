@@ -48,5 +48,9 @@ export const useActiveScreenStore = defineStore('activeScreen', {
   // up-to-the-second data (e.g. re-validating a screen right before submitting a form).
   actions: loadableActions(async function (apiUrl) {
     this.screens = await findScreens(apiUrl);
+    console.log(
+      '[activeScreenStore] fetched screens',
+      this.screens.map((s) => ({ screen_type: s.screen_type, name: s.name, status: s.status })),
+    );
   }),
 });

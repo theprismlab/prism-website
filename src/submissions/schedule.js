@@ -69,10 +69,16 @@ function todayET() {
 // currently reports for a type. When the schedule entry IS that screen, the API is
 // treated as ground truth and the window-date estimate below is overridden to OPEN.
 export function computedStatus(item, activeScreenNameFor) {
-  if (activeScreenNameFor?.(item.screen_type) === item.screen_name) return 'OPEN';
+  const apiActiveName = activeScreenNameFor?.(item.screen_type);
+  console.log('[schedule] computedStatus', {
+    screen_type: item.screen_type,
+    screen_name: item.screen_name,
+    apiActiveName,
+  });
+  if (apiActiveName === item.screen_name) return 'OPEN';
   const today = todayET();
   if (today < item.window_start) return 'SCHEDULED';
-  if (today <= item.window_end) return 'OPEN';
+  if (today <= item.window_end) return 'OPEN'; // NEVER DEFINE OPEN, API NEEDS TO BE USED
   return 'IN-PROGRESS';
 }
 
