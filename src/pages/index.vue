@@ -27,7 +27,7 @@
           biomarkers associated with these responses</span
         >.
       </p>
-      <HomeOverviewCards class="mt-10"></HomeOverviewCards>
+      <HomeOverviewCards class="mt-4"></HomeOverviewCards>
     </app-container>
 
     <page-section background="blue-indigo-dark">
@@ -37,23 +37,21 @@
     </page-section>
 
     <app-container class="my-10">
-      <section class="text-center mb-12">
-        <h2 class="prism-text-overline text-amber-accent-4 mb-2">Impact</h2>
-        <h3 class="prism-text-display-large mb-8">Dedicated to advancing oncology research</h3>
-        <p class="prism-text-body-large text-center" style="max-width: 720px; margin: auto">
-          Working with pharmaceutical and biotech companies and academics to improve the outcome for
-          cancer patients worldwide.
-        </p>
-      </section>
-      <HomeImpactCards></HomeImpactCards>
+      <h2 class="prism-text-overline text-amber-accent-4 mb-2 text-center">Impact</h2>
+      <h3 class="prism-text-display-large mb-8 text-center">
+        Dedicated to advancing oncology research
+      </h3>
+      <p class="prism-text-body-large text-center" style="max-width: 720px; margin: auto">
+        Working with pharmaceutical and biotech companies and academics to improve the outcome for
+        cancer patients worldwide.
+      </p>
+      <HomeImpactCards class="mt-4"></HomeImpactCards>
     </app-container>
 
     <app-container class="my-10">
-      <section class="text-center mb-12">
-        <h2 class="prism-text-overline text-amber-accent-4 mb-2">Testimonials</h2>
-        <h3 class="prism-text-display-large mb-8">What our collaborators say</h3>
-      </section>
-      <HomeTestimonialCards class="pt-8"></HomeTestimonialCards>
+      <h2 class="prism-text-overline text-amber-accent-4 mb-2 text-center">Testimonials</h2>
+      <h3 class="prism-text-display-large text-center">What our collaborators say</h3>
+      <HomeTestimonialCards class="mt-4"></HomeTestimonialCards>
     </app-container>
   </page>
 </template>

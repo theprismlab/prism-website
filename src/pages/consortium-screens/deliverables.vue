@@ -11,7 +11,7 @@
       <section class="page-section">
         <h2 class="prism-text-display-small mb-4">Test agent data</h2>
         <deliverable-card
-          class="mt-8"
+          class="mb-2"
           title="Standard deliverables"
           :icon="{ path: mdiChartBoxOutline, size: 28 }"
         >
@@ -27,7 +27,7 @@
           </ul>
         </deliverable-card>
         <deliverable-card
-          class="mb-8"
+          class="mb-2"
           title="Combination deliverables"
           :icon="{ path: mdiChartBoxMultipleOutline, size: 28 }"
         >

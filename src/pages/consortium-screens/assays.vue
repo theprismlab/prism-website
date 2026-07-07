@@ -1,5 +1,5 @@
 <template>
-  <page id="" class="mb-0">
+  <page>
     <app-container narrow>
       <prism-page-title>Assays</prism-page-title>
       <p class="prism-text-body-large">
@@ -8,7 +8,7 @@
         data, validation compounds are run on each assay plate.
       </p>
     </app-container>
-    <app-container class="mb-12">
+    <app-container>
       <v-expansion-panels v-model="expandedRows" variant="accordion" class="assays-accordion">
         <v-expansion-panel
           v-for="item in table.items"
@@ -30,19 +30,17 @@
               <div class="assay-time-point">{{ item.time_point }}</div>
             </v-row>
           </v-expansion-panel-title>
-          <v-expansion-panel-text class="assay-panel__text py-4">
-            <v-row class="assay-panel__content pb-0" align="start" justify="space-around">
+          <v-expansion-panel-text>
+            <v-row class="assay-panel__content" align="start" justify="space-around">
               <v-col cols="12" md="10">
-                <div class="prism-text-title-medium font-weight-bold mb-0">
-                  {{ item.screen }} Workflow
-                </div>
+                <h4 class="prism-text-headline-xs mb-2">{{ item.screen }} Workflow</h4>
               </v-col>
               <div class="media">
                 <img :src="imgPath + item.image" class="media__img" />
               </div>
               <v-col cols="12" md="10">
-                <div class="prism-text-title-medium font-weight-bold">Details</div>
-                <p class="prism-text-body-large mb-0" v-html="item.description"></p>
+                <h4 class="prism-text-headline-xs mb-2">Details</h4>
+                <p class="prism-text-body-large" v-html="item.description"></p>
               </v-col>
             </v-row>
 
@@ -50,11 +48,11 @@
               <v-col cols="12" md="10">
                 <v-row justify="start">
                   <v-col cols="auto" md="6">
-                    <div class="label">Dose scheme</div>
+                    <h5 class="prism-text-overline prism-font-weight-semibold"">Dose scheme</h5>
                     <div class="prism-text-body-large" v-html="item.dose_scheme"></div>
                   </v-col>
                   <v-col cols="auto">
-                    <div class="label">Cell lines</div>
+                    <h5 class="prism-text-overline prism-font-weight-semibold">Cell lines</h5>
                     <div class="prism-text-body-large">{{ item.num_cell_lines }}</div>
                   </v-col>
                 </v-row>
