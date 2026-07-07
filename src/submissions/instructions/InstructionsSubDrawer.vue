@@ -44,7 +44,7 @@
       </template>
     </v-list>
     <div
-      v-if="screenSelected && screenStatusFor(screenType) === 'OPEN'"
+      v-if="screenSelected && screenStatusStore.statusFor(screenType)?.status === 'OPEN'"
       class="submissions-nav-cta-container"
     >
       <v-btn
@@ -93,8 +93,7 @@
       // way FormsSubDrawer.vue rejects a bogus :screen (via screen-status-store's validationFor).
       screenSelected() {
         if (!this.screenType) return false;
-        if (!this.screenStatusStore.loaded) return true; // avoid flashing hidden while loading
-        return this.screenStatusStore.isValidType(this.screenType);
+        return this.screenStatusStore.typeStateFor(this.screenType).status !== 'invalid';
       },
       resolvedScreenName() {
         return this.screenStatusStore.activeScreenNameFor(this.screenType);
@@ -155,9 +154,6 @@
     },
     methods: {
       flattenOutline,
-      screenStatusFor(screenType) {
-        return this.screenStatusStore.statusFor(screenType)?.status ?? null;
-      },
       isGroupActive(item) {
         return this.$route.path.includes(`/${item.id}`);
       },

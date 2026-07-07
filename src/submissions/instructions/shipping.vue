@@ -5,17 +5,23 @@
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Shipping Instructions'
       }}</prism-page-title> -->
-      <v-alert v-if="invalidScreenType" type="error" variant="tonal" density="compact" class="mb-4">
-        {{ invalidScreenTypeMsg }}
+      <v-alert
+        v-if="screenState.status === 'invalid'"
+        type="error"
+        variant="tonal"
+        density="compact"
+        class="mb-4"
+      >
+        {{ screenState.message }}
       </v-alert>
-      <iframe v-if="!invalidScreenType" :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
+      <iframe v-if="screenState.status !== 'invalid'" :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
     </app-container>
   </page>
 </template>
 
 <script>
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
-  import { useScreenStatusStore, invalidScreenTypeMessage } from '../screen-status-store.js';
+  import { useScreenStatusStore } from '../screen-status-store.js';
 
   export default {
     name: 'ShippingInstructions',
@@ -29,17 +35,10 @@
       screenType() {
         return this.$route.params.screenType;
       },
-      // Only claim invalidity once the store has actually loaded — otherwise we'd flash the
-      // error before we've had a chance to check. Shipping instructions are the same PDF for
-      // every type, but a bogus/typo'd :screenType shouldn't still show a legitimate-looking
-      // PDF under a nonsense header.
-      invalidScreenType() {
-        if (!this.screenType) return false;
-        if (!this.screenStatusStore.loaded) return false;
-        return !this.screenStatusStore.isValidType(this.screenType);
-      },
-      invalidScreenTypeMsg() {
-        return invalidScreenTypeMessage(this.screenType);
+      // Shipping instructions are the same PDF for every type, but a bogus/typo'd :screenType
+      // shouldn't still show a legitimate-looking PDF under a nonsense header.
+      screenState() {
+        return this.screenStatusStore.typeStateFor(this.screenType);
       },
       flatPages() {
         return flattenOutline(this.pages);

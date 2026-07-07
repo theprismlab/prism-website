@@ -42,6 +42,29 @@ export const useScreenStatusStore = defineStore('screenStatus', {
         return { status: null, message: null };
       };
     },
+    // Loading-aware wrapper for bare :screenType checks (instructions routes have no :screen
+    // segment to further validate). `status` stays 'loading' until the store has fetched at
+    // least once, so callers stop duplicating their own `!this.loaded` guard to avoid flashing
+    // an error before data arrives.
+    typeStateFor() {
+      return (screenType) => {
+        if (!this.loaded) return { status: 'loading', message: null };
+        const valid = this.isValidType(screenType);
+        return {
+          status: valid ? 'valid' : 'invalid',
+          message: valid ? null : invalidScreenTypeMessage(screenType),
+        };
+      };
+    },
+    // Same shape as typeStateFor, for :screenType + :screen pairs (forms routes) — wraps
+    // validationFor with an explicit loading state.
+    screenStateFor() {
+      return (screenName, screenType) => {
+        if (!this.loaded) return { status: 'loading', message: null };
+        const v = this.validationFor(screenName, screenType);
+        return { status: v.status === null ? 'valid' : 'invalid', message: v.message };
+      };
+    },
   },
   actions: loadableActions(async function (apiUrl) {
     const [screens, messages] = await Promise.all([findScreens(apiUrl), fetchSubmissionMessage(apiUrl)]);

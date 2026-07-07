@@ -11,17 +11,17 @@
         </v-btn>
       </div> -->
       <v-alert
-        v-if="screenValidation?.status === 'INVALID'"
+        v-if="screenState.status === 'invalid'"
         type="error"
         variant="tonal"
         density="compact"
         class="mb-4"
-        >{{ screenValidation.message }}</v-alert
+        >{{ screenState.message }}</v-alert
       >
 
       <!-- Default to not showing the form until we've actually confirmed the screen is
-           valid — screenValidation is null while screen-status-store is still loading. -->
-      <div v-else-if="!screenValidation" class="d-flex justify-center pa-8">
+           valid — screenState is 'loading' until screen-status-store's first fetch resolves. -->
+      <div v-else-if="screenState.status === 'loading'" class="d-flex justify-center pa-8">
         <v-progress-circular indeterminate color="primary" />
       </div>
 
@@ -123,12 +123,11 @@
       screenName() {
         return this.$route.params.screen ?? this.screenType;
       },
-      // Reactive read of the shared store — no manual fetch-then-assign dance. Stays null
-      // (rendering neither the alert nor its absence as a verdict) until the store has
-      // actually loaded, so we don't flash an INVALID state before data arrives.
-      screenValidation() {
-        if (!this.screenStatusStore.loaded) return null;
-        return this.screenStatusStore.validationFor(this.screenName, this.screenType);
+      // Reactive read of the shared store — no manual fetch-then-assign dance. Status stays
+      // 'loading' until the store has actually loaded, so we don't flash an invalid state
+      // before data arrives.
+      screenState() {
+        return this.screenStatusStore.screenStateFor(this.screenName, this.screenType);
       },
       isDev() {
         return import.meta.env.DEV;
