@@ -13,7 +13,10 @@
           {{ item.raw }}
           <span v-if="screenNameFor(item.raw)" class="screen-selector__name"
             >{{ screenNameFor(item.raw) }}
-            <span v-if="screenStatusFor(item.raw)" class="screen-selector__status"
+            <span
+              v-if="screenStatusFor(item.raw)"
+              class="screen-selector__status"
+              :class="screenStatusFor(item.raw) === 'OPEN' ? 'screen-selector__status--open' : 'screen-selector__status--closed'"
               >({{ screenStatusFor(item.raw) }})</span
             ></span
           >
@@ -23,8 +26,8 @@
 
     <template v-if="isFormsRoute" #selection="{ item }">
       {{ item.raw }}
-      <span v-if="screenNameFor(item.raw)" class="screen-selector__name"
-        >{{ screenNameFor(item.raw) }}
+      <span v-if="screenNameFor(item.raw)" class="screen-selector__name">
+        {{ screenNameFor(item.raw) }}
       </span>
     </template>
   </v-select>
@@ -121,5 +124,14 @@
 
   .screen-selector__status {
     margin-left: 4px;
+    font-size: 0.7rem;
+  }
+
+  .screen-selector__status--open {
+    color: #4caf50;
+  }
+
+  .screen-selector__status--closed {
+    color: #f44336;
   }
 </style>
