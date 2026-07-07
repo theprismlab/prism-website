@@ -73,8 +73,10 @@
       // and :screen segments exist in the URL, which a stale/bogus deep link would still have.
       screenSelected() {
         if (!this.screenType || !this.screenName) return false;
-        if (!this.screenStatusStore.loaded) return true; // avoid flashing hidden while loading
-        return this.screenStatusStore.validationFor(this.screenName, this.screenType).status === null;
+        return (
+          this.screenStatusStore.screenStateFor(this.screenName, this.screenType).status !==
+          'invalid'
+        );
       },
     },
     mounted() {

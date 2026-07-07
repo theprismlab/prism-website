@@ -25,9 +25,6 @@ export const useScreenStatusStore = defineStore('screenStatus', {
     // stripSeqSuffix) are the canonical list of known screen types.
     isValidType: (state) => (screenType) =>
       !!screenType && Object.prototype.hasOwnProperty.call(state.statuses, screenType.toUpperCase()),
-    messageFor() {
-      return (screenType) => this.statusFor(screenType);
-    },
     // Is this exact screen name valid to submit against for this type? { status: null } means
     // valid; { status: 'INVALID', message } means not. Two independent checks: screenName must
     // be the type's current screen (identity, from prism_screens), AND the type's submission
@@ -41,8 +38,31 @@ export const useScreenStatusStore = defineStore('screenStatus', {
         if (!screenName || !screenType) return invalid;
         const s = this.statusFor(screenType);
         if (!s || s.name !== screenName) return invalid;
-        if (s.status !== 'OPEN') return invalid;
+        if (s.status !== 'OPEN') return { status: 'INVALID', message: s.message };
         return { status: null, message: null };
+      };
+    },
+    // Loading-aware wrapper for bare :screenType checks (instructions routes have no :screen
+    // segment to further validate). `status` stays 'loading' until the store has fetched at
+    // least once, so callers stop duplicating their own `!this.loaded` guard to avoid flashing
+    // an error before data arrives.
+    typeStateFor() {
+      return (screenType) => {
+        if (!this.loaded) return { status: 'loading', message: null };
+        const valid = this.isValidType(screenType);
+        return {
+          status: valid ? 'valid' : 'invalid',
+          message: valid ? null : invalidScreenTypeMessage(screenType),
+        };
+      };
+    },
+    // Same shape as typeStateFor, for :screenType + :screen pairs (forms routes) — wraps
+    // validationFor with an explicit loading state.
+    screenStateFor() {
+      return (screenName, screenType) => {
+        if (!this.loaded) return { status: 'loading', message: null };
+        const v = this.validationFor(screenName, screenType);
+        return { status: v.status === null ? 'valid' : 'invalid', message: v.message };
       };
     },
   },

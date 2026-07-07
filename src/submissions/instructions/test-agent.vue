@@ -5,8 +5,14 @@
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Test Agent Instructions'
       }}</prism-page-title> -->
-      <v-alert v-if="invalidScreenType" type="error" variant="tonal" density="compact" class="mb-4">
-        {{ invalidScreenTypeMsg }}
+      <v-alert
+        v-if="screenState.status === 'invalid'"
+        type="error"
+        variant="tonal"
+        density="compact"
+        class="mb-4"
+      >
+        {{ screenState.message }}
       </v-alert>
       <iframe v-if="pdfUrl" :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
     </app-container>
@@ -15,7 +21,7 @@
 
 <script>
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
-  import { useScreenStatusStore, invalidScreenTypeMessage } from '../screen-status-store.js';
+  import { useScreenStatusStore } from '../screen-status-store.js';
 
   export default {
     name: 'TestAgentInstructions',
@@ -29,15 +35,8 @@
       screenType() {
         return this.$route.params.screenType;
       },
-      // Only claim invalidity once the store has actually loaded — otherwise we'd flash the
-      // error before we've had a chance to check.
-      invalidScreenType() {
-        if (!this.screenType) return false;
-        if (!this.screenStatusStore.loaded) return false;
-        return !this.screenStatusStore.isValidType(this.screenType);
-      },
-      invalidScreenTypeMsg() {
-        return invalidScreenTypeMessage(this.screenType);
+      screenState() {
+        return this.screenStatusStore.typeStateFor(this.screenType);
       },
       pdfPath() {
         return this.screenType ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null) : null;
