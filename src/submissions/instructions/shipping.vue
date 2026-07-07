@@ -15,12 +15,12 @@
 
 <script>
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
-  import { useWindowStatusStore, invalidScreenTypeMessage } from '../window-status-store.js';
+  import { useScreenStatusStore, invalidScreenTypeMessage } from '../screen-status-store.js';
 
   export default {
     name: 'ShippingInstructions',
     setup() {
-      return { windowStatusStore: useWindowStatusStore() };
+      return { screenStatusStore: useScreenStatusStore() };
     },
     data() {
       return { pages: [] };
@@ -35,8 +35,8 @@
       // PDF under a nonsense header.
       invalidScreenType() {
         if (!this.screenType) return false;
-        if (!this.windowStatusStore.loaded) return false;
-        return !this.windowStatusStore.isValidType(this.screenType);
+        if (!this.screenStatusStore.loaded) return false;
+        return !this.screenStatusStore.isValidType(this.screenType);
       },
       invalidScreenTypeMsg() {
         return invalidScreenTypeMessage(this.screenType);
@@ -60,7 +60,7 @@
       this.pages = await loadPdfOutline(PDF_PATHS.SHIPPING);
     },
     mounted() {
-      this.windowStatusStore.load(import.meta.env.VITE_API_URL);
+      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
     },
   };
 </script>

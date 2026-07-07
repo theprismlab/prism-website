@@ -63,16 +63,14 @@
   import SubDrawer from '../SubDrawer.vue';
   import ScreenSelector from '../ScreenSelector.vue';
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline.js';
-  import { useActiveScreenStore } from '../active-screen-store.js';
-  import { useWindowStatusStore } from '../window-status-store.js';
+  import { useScreenStatusStore } from '../screen-status-store.js';
 
   export default {
     name: 'InstructionsSubDrawer',
     components: { SubDrawer, ScreenSelector },
     setup() {
       return {
-        activeScreenStore: useActiveScreenStore(),
-        windowStatusStore: useWindowStatusStore(),
+        screenStatusStore: useScreenStatusStore(),
       };
     },
     data() {
@@ -87,16 +85,16 @@
         return this.$route.params.screenType;
       },
       // Instructions have no :screen segment to resolve — only whether screenType itself is a
-      // real, known type matters here. windowStatusStore.isValidType is keyed by the API's own
+      // real, known type matters here. screenStatusStore.isValidType is keyed by the API's own
       // (SEQ-stripped) submission types, so this rejects a bogus/typo'd :screenType the same
-      // way FormsSubDrawer.vue rejects a bogus :screen (via active-screen-store's validationFor).
+      // way FormsSubDrawer.vue rejects a bogus :screen (via screen-status-store's validationFor).
       screenSelected() {
         if (!this.screenType) return false;
-        if (!this.windowStatusStore.loaded) return true; // avoid flashing hidden while loading
-        return this.windowStatusStore.isValidType(this.screenType);
+        if (!this.screenStatusStore.loaded) return true; // avoid flashing hidden while loading
+        return this.screenStatusStore.isValidType(this.screenType);
       },
       resolvedScreenName() {
-        return this.activeScreenStore.activeScreenNameFor(this.screenType);
+        return this.screenStatusStore.activeScreenNameFor(this.screenType);
       },
       testAgentPdf() {
         return this.screenType
@@ -150,8 +148,7 @@
       },
     },
     mounted() {
-      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
-      this.windowStatusStore.load(import.meta.env.VITE_API_URL);
+      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
     },
     methods: {
       flattenOutline,

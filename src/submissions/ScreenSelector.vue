@@ -21,15 +21,13 @@
 </template>
 
 <script>
-  import { useActiveScreenStore } from './active-screen-store.js';
-  import { useWindowStatusStore } from './window-status-store.js';
+  import { useScreenStatusStore } from './screen-status-store.js';
 
   export default {
     name: 'ScreenSelector',
     setup() {
       return {
-        activeScreenStore: useActiveScreenStore(),
-        windowStatusStore: useWindowStatusStore(),
+        screenStatusStore: useScreenStatusStore(),
       };
     },
     data() {
@@ -48,21 +46,20 @@
         const type = this.$route.params.screenType;
         if (!type) return null;
         // Instructions routes only carry :screenType, no :screen to validate against —
-        // windowStatusStore's keys are the canonical list of known types for that check.
+        // screenStatusStore's keys are the canonical list of known types for that check.
         if (!this.$route.path.startsWith('/submission-hub/forms')) {
-          if (!this.windowStatusStore.loaded) return type; // avoid flashing unselected while loading
-          return this.windowStatusStore.isValidType(type) ? type : null;
+          if (!this.screenStatusStore.loaded) return type; // avoid flashing unselected while loading
+          return this.screenStatusStore.isValidType(type) ? type : null;
         }
         // Don't flash "unselected" while the store is still loading for the first time.
-        if (!this.activeScreenStore.loaded) return type;
-        return this.activeScreenStore.activeScreenNameFor(type) === this.$route.params.screen
+        if (!this.screenStatusStore.loaded) return type;
+        return this.screenStatusStore.activeScreenNameFor(type) === this.$route.params.screen
           ? type
           : null;
       },
     },
     mounted() {
-      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
-      this.windowStatusStore.load(import.meta.env.VITE_API_URL);
+      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
       if (!this.$route.params.screenType) {
         this.$nextTick(() => {
           this.menuOpen = true;
@@ -71,7 +68,7 @@
     },
     methods: {
       screenNameFor(screenType) {
-        return this.activeScreenStore.activeScreenNameFor(screenType);
+        return this.screenStatusStore.activeScreenNameFor(screenType);
       },
       async onScreenChange(screen) {
         // The forms route needs a resolved :screen segment after the type (unlike
@@ -79,8 +76,8 @@
         // an existing forms/:type/:screen route or picking a type for the first time from
         // the bare /submission-hub/forms page.
         if (this.$route.path.startsWith('/submission-hub/forms')) {
-          await this.activeScreenStore.load(import.meta.env.VITE_API_URL);
-          const activeName = this.activeScreenStore.activeScreenNameFor(screen);
+          await this.screenStatusStore.load(import.meta.env.VITE_API_URL);
+          const activeName = this.screenStatusStore.activeScreenNameFor(screen);
           this.$router.push(
             activeName ? `/submission-hub/forms/${screen}/${activeName}` : '/submission-hub/forms',
           );

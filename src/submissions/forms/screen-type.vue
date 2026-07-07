@@ -24,7 +24,7 @@
       >
 
       <!-- Default to not showing the form until we've actually confirmed the screen is
-           valid — screenValidation is null while active-screen-store is still loading. -->
+           valid — screenValidation is null while screen-status-store is still loading. -->
       <div v-else-if="!screenValidation" class="d-flex justify-center pa-8">
         <v-progress-circular indeterminate color="primary" />
       </div>
@@ -89,8 +89,7 @@
 
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
-  import { useWindowStatusStore } from '@/submissions/window-status-store.js';
-  import { useActiveScreenStore } from '@/submissions/active-screen-store.js';
+  import { useScreenStatusStore } from '@/submissions/screen-status-store.js';
   import { getTestData } from './testFixtures.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
@@ -111,8 +110,7 @@
     setup() {
       return {
         formStore: useFormProgressStore(),
-        windowStore: useWindowStatusStore(),
-        activeScreenStore: useActiveScreenStore(),
+        screenStatusStore: useScreenStatusStore(),
       };
     },
     data() {
@@ -133,11 +131,11 @@
       // (rendering neither the alert nor its absence as a verdict) until the store has
       // actually loaded, so we don't flash an INVALID state before data arrives.
       screenValidation() {
-        if (!this.activeScreenStore.loaded) return null;
-        return this.activeScreenStore.validationFor(this.screenName, this.screenType);
+        if (!this.screenStatusStore.loaded) return null;
+        return this.screenStatusStore.validationFor(this.screenName, this.screenType);
       },
       apiStatus() {
-        return this.windowStore.messageFor(this.screenType);
+        return this.screenStatusStore.messageFor(this.screenType);
       },
       isDev() {
         return import.meta.env.DEV;
@@ -180,8 +178,7 @@
       },
     },
     mounted() {
-      this.windowStore.load(import.meta.env.VITE_API_URL);
-      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
+      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
       screenName() {

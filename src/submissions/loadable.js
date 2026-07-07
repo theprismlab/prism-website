@@ -1,6 +1,6 @@
 // Shared "load once, share in-flight fetches, refresh on demand" scaffolding for Pinia stores
-// whose state is built from a single cached API fetch. Used by active-screen-store.js and
-// window-status-store.js so the load/cache bookkeeping only lives in one place.
+// whose state is built from a single cached API fetch. Used by screen-status-store.js so the
+// load/cache bookkeeping only lives in one place.
 
 export function loadableState() {
   return { loaded: false, _loadPromise: null };

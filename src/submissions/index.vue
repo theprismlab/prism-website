@@ -102,12 +102,12 @@
 <script>
   import { ASSAYS } from '@/utils/assays';
   import { enrichedSchedule, FIELD_LABELS, TABLE_FIELD_KEYS } from './schedule.js';
-  import { useActiveScreenStore } from './active-screen-store.js';
+  import { useScreenStatusStore } from './screen-status-store.js';
 
   export default {
     name: 'SubmissionsOverview',
     setup() {
-      return { activeScreenStore: useActiveScreenStore() };
+      return { screenStatusStore: useScreenStatusStore() };
     },
     data() {
       return {
@@ -126,14 +126,15 @@
     },
     computed: {
       schedule() {
-        // Reuses the same "newest ACTIVE screen per type" resolution the rest of the app
-        // uses (form validation, nav drawers) instead of a separate ad-hoc active-name check,
-        // so a SCHEDULE entry only overrides to OPEN when it's the one the app treats as current.
-        return enrichedSchedule(this.activeScreenStore.activeScreenNameFor);
+        // Reuses the same identity-AND-accessibility check the rest of the app uses (form
+        // validation, nav drawers) instead of a separate ad-hoc active-name check, so a
+        // SCHEDULE entry only overrides to OPEN when it's both the type's current screen and
+        // that type's submission window is actually OPEN per prism_submission_window_message.
+        return enrichedSchedule(this.screenStatusStore.validationFor);
       },
     },
     mounted() {
-      this.activeScreenStore.load(import.meta.env.VITE_API_URL);
+      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
     },
   };
 </script>
