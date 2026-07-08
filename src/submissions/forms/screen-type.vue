@@ -2,7 +2,7 @@
   <page>
     <app-container wide>
       <prism-page-title>
-        {{ screenType }} Submission Form —<br>
+        {{ screenType }} Submission Form —<br />
         {{ screenName }}
       </prism-page-title>
       <!-- <div v-if="isDev" class="mb-4">
@@ -10,14 +10,8 @@
           Fill test data
         </v-btn>
       </div> -->
-      <screen-gate
-        :screen-type="screenType"
-        :screen-name="screenName"
-      >
-        <v-expansion-panels
-          v-model="openPanel"
-          elevation="0"
-        >
+      <screen-gate :screen-type="screenType" :screen-name="screenName">
+        <v-expansion-panels v-model="openPanel" elevation="0">
           <v-expansion-panel
             v-for="(step, i) in steps"
             :key="step.id"
@@ -25,12 +19,7 @@
             :disabled="i > maxOpenIndex"
           >
             <v-expansion-panel-title :class="{ 'is-completed': isCompleted(i) }">
-              <v-icon
-                v-if="isCompleted(i)"
-                class="step-icon mr-2"
-                color="teal-accent-4"
-                size="26"
-              >
+              <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26">
                 mdi-check-circle
               </v-icon>
               <v-icon
@@ -40,6 +29,12 @@
                 :icon="`mdi-numeric-${i + 1}-circle-outline`"
               />
               <span>{{ step.title }}</span>
+              <v-icon
+                v-if="i > maxOpenIndex"
+                class="step-lock ml-auto"
+                size="20"
+                icon="mdi-lock-outline"
+              />
             </v-expansion-panel-title>
 
             <v-expansion-panel-text>
@@ -77,16 +72,9 @@
 
               <div
                 v-if="step.id !== 'review'"
-                class="d-flex align-center justify-end mt-4 gap-3"
+                class="d-flex align-center justify-center mt-4 gap-3"
               >
-                <v-btn
-                  color="primary-base"
-                  flat
-                  rounded
-                  @click="completeStep(i)"
-                >
-                  Continue
-                </v-btn>
+                <v-btn color="primary" flat rounded @click="completeStep(i)"> Continue </v-btn>
               </div>
             </v-expansion-panel-text>
           </v-expansion-panel>
@@ -253,17 +241,47 @@
     color: var(--prism-color-primary);
   }
   .v-expansion-panel-title.v-expansion-panel-title--active {
-    background-color: rgba(var(--v-theme-on-surface), 0.03);
+    background-color: rgba(var(--v-theme-primary), 0.05);
+    border-left: 3px solid var(--prism-color-primary);
+  }
+  .v-expansion-panel-title.v-expansion-panel-title--active.is-completed {
+    background-color: rgba(29, 233, 182, 0.08);
+    border-left: 3px solid rgb(29, 233, 182);
+  }
+  .v-expansion-panel-title:not(.v-expansion-panel-title--active):not(.is-completed):hover {
+    background-color: rgba(var(--v-theme-on-surface), 0.02);
   }
   .v-expansion-panel {
     margin-top: -1px;
-    /* margin-top: 8px;
-    margin-bottom: 8px; */
     border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
     box-shadow: none !important;
   }
   .v-expansion-panel:not(:first-child)::after {
     display: none;
+  }
+
+  /* ── Locked steps ─────────────────────────────────────────── */
+  .v-expansion-panel--disabled {
+    background-color: rgb(var(--v-theme-surface));
+  }
+  .v-expansion-panel--disabled :deep(.v-expansion-panel-title__overlay) {
+    opacity: 0 !important;
+  }
+  .v-expansion-panel--disabled .v-expansion-panel-title {
+    cursor: not-allowed;
+  }
+  .v-expansion-panel--disabled .step-number {
+    color: rgba(var(--v-theme-on-surface), 0.22);
+  }
+  .v-expansion-panel--disabled .v-expansion-panel-title span {
+    color: rgba(var(--v-theme-on-surface), 0.4) !important;
+  }
+  .v-expansion-panel--disabled :deep(.v-expansion-panel-title__icon) {
+    margin-inline-start: 0;
+  }
+  .step-lock {
+    flex-shrink: 0;
+    color: rgba(var(--v-theme-on-surface), 0.3);
   }
 
   /* ── Step footer ──────────────────────────────────────────── */
