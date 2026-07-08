@@ -3,7 +3,11 @@
     <screen-selector />
     <div v-if="screenSelected" class="form-stepper pt-4 pb-2 px-4">
       <div v-for="(step, i) in steps" :key="step.id">
-        <div class="d-flex align-start step-clickable" @click="handleStepClick(i)">
+        <div
+          class="d-flex align-start"
+          :class="stepStatus(i) === 'locked' ? 'step-locked' : 'step-clickable'"
+          @click="handleStepClick(i)"
+        >
           <div class="step-track mr-3">
             <v-icon v-if="stepStatus(i) === 'completed'" color="teal-accent-4" size="22"
               >mdi-check-circle</v-icon
@@ -74,7 +78,7 @@
       screenSelected() {
         if (!this.screenType || !this.screenName) return false;
         return (
-          this.screenStatusStore.screenStateFor(this.screenName, this.screenType).status !==
+          this.screenStatusStore.screenRouteStateFor(this.screenName, this.screenType).status !==
           'invalid'
         );
       },
@@ -87,6 +91,7 @@
         return this.formStore.stepStatus(this.screenName, i);
       },
       handleStepClick(i) {
+        if (this.stepStatus(i) === 'locked') return;
         this.formStore.setOpenPanel(this.screenName, this.screenType, i);
       },
       connectorClass(i) {
@@ -141,5 +146,9 @@
 
   .step-clickable {
     cursor: pointer;
+  }
+
+  .step-locked {
+    cursor: not-allowed;
   }
 </style>

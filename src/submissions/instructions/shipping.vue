@@ -1,44 +1,37 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>Instructions — {{ this.screenType }}</prism-page-title>
+      <prism-page-title>Instructions — {{ screenType }}</prism-page-title>
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Shipping Instructions'
       }}</prism-page-title> -->
-      <v-alert
-        v-if="screenState.status === 'invalid'"
-        type="error"
-        variant="tonal"
-        density="compact"
-        class="mb-4"
+      <screen-gate
+        :screen-type="screenType"
+        optimistic
       >
-        {{ screenState.message }}
-      </v-alert>
-      <iframe v-if="screenState.status !== 'invalid'" :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
+        <iframe
+          :key="iframeKey"
+          :src="pdfUrl"
+          class="pdf-embed"
+        />
+      </screen-gate>
     </app-container>
   </page>
 </template>
 
 <script>
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
-  import { useScreenStatusStore } from '../screen-status-store.js';
+  import ScreenGate from '../ScreenGate.vue';
 
   export default {
     name: 'ShippingInstructions',
-    setup() {
-      return { screenStatusStore: useScreenStatusStore() };
-    },
+    components: { ScreenGate },
     data() {
       return { pages: [] };
     },
     computed: {
       screenType() {
         return this.$route.params.screenType;
-      },
-      // Shipping instructions are the same PDF for every type, but a bogus/typo'd :screenType
-      // shouldn't still show a legitimate-looking PDF under a nonsense header.
-      screenState() {
-        return this.screenStatusStore.typeStateFor(this.screenType);
       },
       flatPages() {
         return flattenOutline(this.pages);
@@ -57,9 +50,6 @@
     },
     async created() {
       this.pages = await loadPdfOutline(PDF_PATHS.SHIPPING);
-    },
-    mounted() {
-      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
     },
   };
 </script>

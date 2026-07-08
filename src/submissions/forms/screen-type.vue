@@ -1,91 +1,93 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title
-        >{{ screenType }} Submission Form —<br />
-        {{ screenName }}</prism-page-title
-      >
+      <prism-page-title>
+        {{ screenType }} Submission Form —<br />
+        {{ screenName }}
+      </prism-page-title>
       <!-- <div v-if="isDev" class="mb-4">
         <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
           Fill test data
         </v-btn>
       </div> -->
-      <v-alert
-        v-if="screenState.status === 'invalid'"
-        type="error"
-        variant="tonal"
-        density="compact"
-        class="mb-4"
-        >{{ screenState.message }}</v-alert
-      >
+      <screen-gate :screen-type="screenType" :screen-name="screenName">
+        <v-expansion-panels v-model="openPanel" elevation="0">
+          <v-expansion-panel
+            v-for="(step, i) in steps"
+            :key="step.id"
+            :value="i"
+            :disabled="i > maxOpenIndex"
+            :class="{ 'is-completed': isCompleted(i) }"
+          >
+            <v-expansion-panel-title :class="{ 'is-completed': isCompleted(i) }">
+              <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26">
+                mdi-check-circle
+              </v-icon>
+              <v-icon
+                v-else
+                class="step-number mr-2"
+                size="26"
+                :icon="`mdi-numeric-${i + 1}-circle-outline`"
+              />
+              <span>{{ step.title }}</span>
+              <v-icon
+                v-if="i > maxOpenIndex"
+                class="step-lock ml-auto"
+                size="20"
+                icon="mdi-lock-outline"
+              />
+            </v-expansion-panel-title>
 
-      <!-- Default to not showing the form until we've actually confirmed the screen is
-           valid — screenState is 'loading' until screen-status-store's first fetch resolves. -->
-      <div v-else-if="screenState.status === 'loading'" class="d-flex justify-center pa-8">
-        <v-progress-circular indeterminate color="primary" />
-      </div>
+            <v-expansion-panel-text>
+              <collaborator-step
+                v-if="step.id === 'collaborator'"
+                :data="fd.collaborator"
+                :errors="stepErrors.collaborator || {}"
+              />
+              <institution-step
+                v-else-if="step.id === 'institution'"
+                :data="fd.institution"
+                :errors="stepErrors.institution || {}"
+              />
+              <test-agent-step
+                v-else-if="step.id === 'testAgent'"
+                :data="fd.testAgent"
+                :errors="stepErrors.testAgent || {}"
+                :screen-type="screenType"
+                :submitted="attemptedSteps[i] ?? 0"
+              />
+              <acknowledgments-step
+                v-else-if="step.id === 'acknowledgments'"
+                :data="fd.acknowledgments"
+                :errors="stepErrors.acknowledgments || {}"
+                :screen-type="screenType"
+              />
+              <review-step
+                v-else-if="step.id === 'review'"
+                :data="fd.review"
+                :form-data="fd"
+                :errors="stepErrors.review || {}"
+                :screen-type="screenType"
+                :screen-name="screenName"
+              />
 
-      <v-expansion-panels v-else v-model="openPanel" elevation="0">
-        <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
-          <v-expansion-panel-title :class="{ 'is-completed': isCompleted(i) }">
-            <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26"
-              >mdi-check-circle</v-icon
-            >
-            <v-icon
-              v-else
-              class="step-number mr-2"
-              size="26"
-              :icon="`mdi-numeric-${i + 1}-circle-outline`"
-            />
-            <span>{{ step.title }}</span>
-          </v-expansion-panel-title>
-
-          <v-expansion-panel-text>
-            <collaborator-step
-              v-if="step.id === 'collaborator'"
-              :data="fd.collaborator"
-              :errors="stepErrors.collaborator || {}"
-            />
-            <institution-step
-              v-else-if="step.id === 'institution'"
-              :data="fd.institution"
-              :errors="stepErrors.institution || {}"
-            />
-            <test-agent-step
-              v-else-if="step.id === 'testAgent'"
-              :data="fd.testAgent"
-              :errors="stepErrors.testAgent || {}"
-              :screen-type="screenType"
-              :submitted="attemptedSteps[i] ?? 0"
-            />
-            <acknowledgments-step
-              v-else-if="step.id === 'acknowledgments'"
-              :data="fd.acknowledgments"
-              :errors="stepErrors.acknowledgments || {}"
-              :screen-type="screenType"
-            />
-            <review-step
-              v-else-if="step.id === 'review'"
-              :data="fd.review"
-              :form-data="fd"
-              :errors="stepErrors.review || {}"
-              :screen-type="screenType"
-              :screen-name="screenName"
-            />
-
-            <div v-if="step.id !== 'review'" class="d-flex align-center justify-end mt-4 gap-3">
-              <v-btn color="primary-base" flat rounded @click="completeStep(i)">Continue</v-btn>
-            </div>
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-      </v-expansion-panels>
+              <div
+                v-if="step.id !== 'review'"
+                class="d-flex align-center justify-center mt-4 gap-3"
+              >
+                <v-btn color="primary" flat rounded @click="completeStep(i)"> Continue </v-btn>
+              </div>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </screen-gate>
     </app-container>
   </page>
 </template>
 
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
-  import { useScreenStatusStore } from '@/submissions/screen-status-store.js';
+  import ScreenGate from '@/submissions/ScreenGate.vue';
   import { getTestData } from './testFixtures.js';
   import { STEP_REGISTRY } from './steps/registry';
   import CollaboratorStep from './steps/CollaboratorStep.vue';
@@ -97,6 +99,7 @@
   export default {
     name: 'FormsScreen',
     components: {
+      ScreenGate,
       CollaboratorStep,
       InstitutionStep,
       TestAgentStep,
@@ -106,7 +109,6 @@
     setup() {
       return {
         formStore: useFormProgressStore(),
-        screenStatusStore: useScreenStatusStore(),
       };
     },
     data() {
@@ -122,12 +124,6 @@
       },
       screenName() {
         return this.$route.params.screen ?? this.screenType;
-      },
-      // Reactive read of the shared store — no manual fetch-then-assign dance. Status stays
-      // 'loading' until the store has actually loaded, so we don't flash an invalid state
-      // before data arrives.
-      screenState() {
-        return this.screenStatusStore.screenStateFor(this.screenName, this.screenType);
       },
       isDev() {
         return import.meta.env.DEV;
@@ -146,6 +142,9 @@
         if (!this.screenType || !this.screenName) return null;
         this.formStore._ensure(this.screenName, this.screenType);
         return this.formStore.screens[this.screenName].formData;
+      },
+      maxOpenIndex() {
+        return this.screenName ? this.formStore.maxOpenIndex(this.screenName) : 0;
       },
       stepErrors() {
         if (!this.fd) return {};
@@ -168,9 +167,6 @@
           ]),
         );
       },
-    },
-    mounted() {
-      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
     },
     watch: {
       screenName() {
@@ -246,17 +242,55 @@
     color: var(--prism-color-primary);
   }
   .v-expansion-panel-title.v-expansion-panel-title--active {
-    background-color: rgba(var(--v-theme-on-surface), 0.03);
+    background-color: rgba(var(--v-theme-on-surface), 0.02);
+    /* background-color: rgba(var(--v-theme-primary), 0.05);
+    border-left: 3px solid var(--prism-color-primary); */
   }
+  /* .v-expansion-panel-title.v-expansion-panel-title--active.is-completed {
+    background-color: rgba(var(--v-theme-teal-accent-4), 0.08);
+    border-left: 3px solid var(--prism-color-teal-accent-4);
+  } */
+  /* .v-expansion-panel-title:not(.v-expansion-panel-title--active):not(.is-completed):hover {
+    background-color: rgba(var(--v-theme-on-surface), 0.02);
+  } */
   .v-expansion-panel {
     margin-top: -1px;
-    /* margin-top: 8px;
-    margin-bottom: 8px; */
     border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
     box-shadow: none !important;
   }
   .v-expansion-panel:not(:first-child)::after {
     display: none;
+  }
+  .v-expansion-panel.is-completed.v-expansion-panel--active {
+    border-color: rgba(var(--v-theme-teal-accent-4), 0.4);
+  }
+  .v-expansion-panel--active:not(.is-completed) {
+    border-color: var(--prism-color-primary);
+  }
+
+  /* ── Locked steps ─────────────────────────────────────────── */
+  .v-expansion-panel--disabled {
+    background-color: rgb(var(--v-theme-surface));
+    border-color: rgba(var(--v-theme-on-surface), 0.08);
+  }
+  .v-expansion-panel--disabled :deep(.v-expansion-panel-title__overlay) {
+    opacity: 0 !important;
+  }
+  .v-expansion-panel--disabled .v-expansion-panel-title {
+    cursor: not-allowed;
+  }
+  .v-expansion-panel--disabled .step-number {
+    color: rgba(var(--v-theme-on-surface), 0.22);
+  }
+  .v-expansion-panel--disabled .v-expansion-panel-title span {
+    color: rgba(var(--v-theme-on-surface), 0.4) !important;
+  }
+  .v-expansion-panel--disabled :deep(.v-expansion-panel-title__icon) {
+    margin-inline-start: 0;
+  }
+  .step-lock {
+    flex-shrink: 0;
+    color: rgba(var(--v-theme-on-surface), 0.3);
   }
 
   /* ── Step footer ──────────────────────────────────────────── */

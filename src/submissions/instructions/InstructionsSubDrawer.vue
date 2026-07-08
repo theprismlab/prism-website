@@ -44,7 +44,7 @@
       </template>
     </v-list>
     <div
-      v-if="screenSelected && screenStatusStore.statusFor(screenType)?.status === 'OPEN'"
+      v-if="screenSelected && screenStatusStore.windowStatusFor(screenType)?.status === 'OPEN'"
       class="submissions-nav-cta-container"
     >
       <v-btn
@@ -90,10 +90,10 @@
       // Instructions have no :screen segment to resolve — only whether screenType itself is a
       // real, known type matters here. screenStatusStore.isValidType is keyed by the API's own
       // (SEQ-stripped) submission types, so this rejects a bogus/typo'd :screenType the same
-      // way FormsSubDrawer.vue rejects a bogus :screen (via screen-status-store's validationFor).
+      // way FormsSubDrawer.vue rejects a bogus :screen (via screen-status-store's isValidScreen).
       screenSelected() {
         if (!this.screenType) return false;
-        return this.screenStatusStore.typeStateFor(this.screenType).status !== 'invalid';
+        return this.screenStatusStore.typeRouteStateFor(this.screenType).status !== 'invalid';
       },
       resolvedScreenName() {
         return this.screenStatusStore.activeScreenNameFor(this.screenType);

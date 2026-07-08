@@ -140,9 +140,20 @@ the right initial form shape (schemas key off the type, not the specific screen 
 | `completeStep(screenName, screenType, i)` | Marks step `i` complete and advances `openPanel` |
 | `uncompleteStep(screenName, i)` | Removes step `i` from `completed` (called when live validation detects a regression) |
 | `markStepValid(screenName, screenType, i)` | Marks a step complete without advancing the panel |
-| `setOpenPanel(screenName, screenType, i)` | Manually opens a panel (accordion click) |
+| `setOpenPanel(screenName, screenType, i)` | Manually opens a panel (accordion click), but only if `i` is not beyond the first incomplete step — see below |
 
 `screen-type.vue` runs a deep watcher on `formData` to auto-complete or auto-invalidate steps as the user types, so the "Done" chip stays in sync without requiring the user to click Continue.
+
+### Step ordering
+
+Steps must be completed in order. `maxOpenIndex(screenName)` (a getter) returns the index of
+the first not-yet-completed step — the furthest step currently reachable. `setOpenPanel` is a
+no-op for any index beyond that, so clicking ahead on the accordion title or the sidebar
+(`FormsSubDrawer.vue`) does nothing. `screen-type.vue` also disables (`:disabled`) any
+`v-expansion-panel` beyond `maxOpenIndex`, and `stepStatus` returns `'locked'` (instead of
+`'available'`) for those steps so the sidebar can grey them out and skip the click handler.
+Moving forward via `completeStep` is unaffected — it advances `openPanel` directly by exactly
+one step, which is always allowed.
 
 ## Validation helpers (`validationHelpers.js`)
 

@@ -158,10 +158,9 @@
       async getData() {
         const loaders = Object.entries(TYPE_CONFIG).map(([type, cfg]) => {
           const url = `${dataPath}${cfg.file}`;
-          console.log(`[publications] fetching ${type} from: ${url}`);
+
           return d3
             .csv(url, (d, i) => {
-              if (i === 0) console.log(`[publications] ${type} first row keys:`, Object.keys(d));
               return {
                 title: d.Title,
                 type,
@@ -176,10 +175,6 @@
             });
         });
         const groups = await Promise.all(loaders);
-        groups.forEach((group, i) => {
-          const type = Object.keys(TYPE_CONFIG)[i];
-          console.log(`[publications] loaded ${group.length} rows for ${type}`, group[0]);
-        });
         return groups.flat().sort((a, b) => +b.year - +a.year);
       },
       getLinks(item) {

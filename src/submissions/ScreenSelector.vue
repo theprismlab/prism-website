@@ -1,36 +1,46 @@
 <template>
   <v-select
+    v-model:menu="menuOpen"
     :model-value="selectedScreenType"
     :items="screens"
     :placeholder="selectedScreenType ? undefined : 'Select screen'"
     hide-details
-    v-model:menu="menuOpen"
     @update:model-value="onScreenChange"
   >
-    <template v-if="isFormsRoute" #item="{ item, props }">
+    <template
+      v-if="isFormsRoute"
+      #item="{ item, props }"
+    >
       <v-list-item v-bind="props">
         <template #title>
           {{ item.raw }}
-          <span v-if="screenNameFor(item.raw)" class="screen-selector__name"
-            >{{ screenNameFor(item.raw) }}
+          <span
+            v-if="screenNameFor(item.raw)"
+            class="screen-selector__name"
+          >{{ screenNameFor(item.raw) }}
             <span
-              v-if="screenStatusStore.statusFor(item.raw)?.status"
+              v-if="screenStatusStore.windowStatusFor(item.raw)?.status"
               class="screen-selector__status"
-              :class="
-                screenStatusStore.statusFor(item.raw)?.status === 'OPEN'
-                  ? 'screen-selector__status--open'
-                  : 'screen-selector__status--closed'
-              "
-              >({{ screenStatusStore.statusFor(item.raw)?.status }})</span
-            ></span
-          >
+              :style="{
+                color: statusColors[screenStatusStore.windowStatusFor(item.raw)?.status],
+              }"
+            >
+              ({{ formattedWindowStatusFor(item.raw) }})
+            </span>
+          </span>
         </template>
       </v-list-item>
     </template>
 
-    <template v-if="isFormsRoute" #selection="{ item }">
+    <template
+      v-if="isFormsRoute"
+      #selection="{ item }"
+    >
       {{ item.raw }}
-      <span v-if="screenNameFor(item.raw)" class="screen-selector__name">
+      <span
+        v-if="screenNameFor(item.raw)"
+        class="screen-selector__name"
+      >
         {{ screenNameFor(item.raw) }}
       </span>
     </template>
@@ -39,6 +49,12 @@
 
 <script>
   import { useScreenStatusStore } from './screen-status-store.js';
+
+  // Preferred display order for the dropdown. Not the source of truth for which types are
+  // valid — that's screenStatusStore's statuses map (populated from the API). This just orders
+  // whatever the store knows about; a type the API stops returning drops out automatically, and
+  // one the store starts returning that isn't listed here still shows up (appended).
+  const SCREEN_ORDER = ['MTS', 'CPS', 'APS', 'EPS', 'AIR'];
 
   export default {
     name: 'ScreenSelector',
@@ -49,11 +65,27 @@
     },
     data() {
       return {
-        screens: ['MTS', 'CPS', 'APS', 'EPS', 'AIR'],
         menuOpen: false,
       };
     },
     computed: {
+      // Before the store has loaded, statuses is empty — fall back to SCREEN_ORDER so the
+      // dropdown isn't blank while the first fetch is in flight.
+      screens() {
+        const known = Object.keys(this.screenStatusStore.statuses);
+        if (!known.length) return SCREEN_ORDER;
+        return [
+          ...SCREEN_ORDER.filter((type) => known.includes(type)),
+          ...known.filter((type) => !SCREEN_ORDER.includes(type)),
+        ];
+      },
+      statusColors() {
+        return {
+          OPEN: 'var(--prism-color-teal-accent-4)',
+          MAX_CAPACITY: 'var(--prism-color-orange-accent-4)',
+          CLOSE: 'var(--prism-color-red-accent-3)',
+        };
+      },
       // Only reports the type as "selected" when the URL's specific :screen segment is the
       // one currently valid for that type — not merely because a screenType segment exists.
       // Otherwise a stale/bogus screen name (e.g. a since-closed screen, or a typo) would
@@ -65,7 +97,7 @@
         // Instructions routes only carry :screenType, no :screen to validate against —
         // screenStatusStore's keys are the canonical list of known types for that check.
         if (!this.$route.path.startsWith('/submission-hub/forms')) {
-          return this.screenStatusStore.typeStateFor(type).status !== 'invalid' ? type : null;
+          return this.screenStatusStore.typeRouteStateFor(type).status !== 'invalid' ? type : null;
         }
         // Don't flash "unselected" while the store is still loading for the first time.
         if (!this.screenStatusStore.loaded) return type;
@@ -86,6 +118,14 @@
       }
     },
     methods: {
+      formattedWindowStatusFor(screenType) {
+        // parse status CLOSE to CLOSED, "_" to " "
+        const status = this.screenStatusStore.windowStatusFor(screenType)?.status;
+        if (status === 'CLOSE') {
+          return 'CLOSED';
+        }
+        return status ? status.replace('_', ' ') : '';
+      },
       screenNameFor(screenType) {
         return this.screenStatusStore.activeScreenNameFor(screenType);
       },
@@ -125,13 +165,5 @@
   .screen-selector__status {
     margin-left: 4px;
     font-size: 0.7rem;
-  }
-
-  .screen-selector__status--open {
-    color: var(--prism-color-teal-accent-4);
-  }
-
-  .screen-selector__status--closed {
-    color: var(--prism-color-red-accent-4);
   }
 </style>

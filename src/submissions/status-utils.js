@@ -14,6 +14,16 @@ export const STATUS_META = {
     label: 'Scheduled',
     color: 'grey',
   },
+  MAX_CAPACITY: {
+    key: 'max-capacity',
+    label: 'Max Capacity',
+    color: 'orange',
+  },
+  CLOSE: {
+    key: 'closed',
+    label: 'Closed',
+    color: 'red',
+  },
 };
 
 export function statusMeta(status) {

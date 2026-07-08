@@ -4,13 +4,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 export const PDF_PATHS = {
   TEST_AGENT: {
-    AIR: '/pdfs/instructions/PRISM_AIR_Submission_Information.pdf',
-    APS: '/pdfs/instructions/PRISM_APS_Submission_Information.pdf',
-    MTS: '/pdfs/instructions/PRISM_MTS_Submission_Information.pdf',
-    CPS: '/pdfs/instructions/PRISM_CPS_Submission_Information.pdf',
-    EPS: '/pdfs/instructions/PRISM_EPS_Submission_Information.pdf',
+    AIR: '/pdfs/instructions/PRISM AIR _ Submission Information (7.2026).pdf',
+    APS: '/pdfs/instructions/PRISM APS _ Submission Information (7.2026).pdf',
+    MTS: '/pdfs/instructions/PRISM MTS _ Submission Information (7.2026).pdf',
+    CPS: '/pdfs/instructions/PRISM CPS _ Submission Information (7.2026).pdf',
+    EPS: '/pdfs/instructions/PRISM EPS _ Submission Information (7.2026).pdf',
   },
-  SHIPPING: '/pdfs/instructions/Shipping_Information_for_PRISM_Screens.pdf',
+  SHIPPING: '/pdfs/instructions/Shipping Information for PRISM Screens (7.2026).pdf',
 };
 
 const cache = new Map();
@@ -145,9 +145,7 @@ async function resolveDest(pdf, dest, namedDestIndex) {
   const pageEntries = namedDestIndex.byPage.get(pageKey);
   if (pageEntries?.length) {
     const y = dest[3] ?? 0;
-    const closest = pageEntries.reduce((a, b) =>
-      Math.abs(a.y - y) <= Math.abs(b.y - y) ? a : b,
-    );
+    const closest = pageEntries.reduce((a, b) => (Math.abs(a.y - y) <= Math.abs(b.y - y) ? a : b));
     return { key: closest.name, hash: `nameddest=${encodeURIComponent(closest.name)}` };
   }
 

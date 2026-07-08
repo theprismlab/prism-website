@@ -130,7 +130,7 @@
         // validation, nav drawers) instead of a separate ad-hoc active-name check, so a
         // SCHEDULE entry only overrides to OPEN when it's both the type's current screen and
         // that type's submission window is actually OPEN per prism_submission_window_message.
-        return enrichedSchedule(this.screenStatusStore.validationFor);
+        return enrichedSchedule(this.screenStatusStore.screenRouteStateFor);
       },
     },
     mounted() {
