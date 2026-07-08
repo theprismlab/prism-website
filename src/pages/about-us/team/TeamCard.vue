@@ -1,18 +1,11 @@
 <template>
-  <v-card elevation="0" class="fill-height" align="center" justify="center">
+  <v-card elevation="0" flat class="fill-height" align="center" justify="center">
     <v-card-item>
       <div class="avatar-bg" :class="gradientClass">
-        <v-img
-          eager
-          :src="image"
-          height="160"
-          width="160"
-          aspect-ratio="1/1"
-          class="rounded-circle"
-        ></v-img>
+        <v-img eager :src="image" aspect-ratio="1/1" class="rounded-circle avatar-img"></v-img>
       </div>
-      <h3 class="prism-text-title-large mb-1 mt-4">{{ name }}</h3>
-      <p class="prism-text-body-xlarge text-grey-darken-1" style="line-height: 1.3em">
+      <h3 class="prism-text-title-medium mb-1 mt-4">{{ name }}</h3>
+      <p class="prism-text-body-medium text-grey-darken-1" style="line-height: 1.3em">
         {{ title }}
       </p>
     </v-card-item>
@@ -64,28 +57,23 @@
 
 <style scoped>
   .v-card {
-    max-width: 300px;
-    min-width: 200px;
-  }
-  .v-card-title {
-    font-size: 1.15rem !important;
-  }
-  .v-card-subtitle {
-    font-size: 0.9rem !important;
-    line-height: 1.3rem !important;
-    margin-top: 4px;
+    width: var(--team-card-width);
   }
 
   .avatar-bg {
-    width: 160px;
-    height: 160px;
+    width: var(--team-avatar-size);
+    height: var(--team-avatar-size);
     border-radius: 50%;
     padding: 0px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
     margin: 0 auto;
+  }
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
   }
 
   .gradient-sunrise {

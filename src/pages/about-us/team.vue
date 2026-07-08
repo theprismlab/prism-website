@@ -1,25 +1,25 @@
 <template>
   <page>
-    <app-container>
-      <prism-page-title class="text-center">Team</prism-page-title>
-      <div class="team-grid team-grid--first-row">
+    <app-container wide>
+      <prism-page-title class="text-center">Meet our team</prism-page-title>
+      <div class="team-grid">
         <TeamCard
-          v-for="(individual, index) in firstRow"
+          v-for="(individual, index) in teamBosses"
           :key="index"
           :name="individual.name"
           :title="individual.title"
           :image="`${imgPath}${individual.image}`"
-          :index="index"
+          :index="individual.index"
         ></TeamCard>
       </div>
-      <div class="team-grid team-grid--rest">
+      <div class="team-grid">
         <TeamCard
-          v-for="(individual, index) in rest"
-          :key="firstRow.length + index"
+          v-for="(individual, index) in teamMembers"
+          :key="index"
           :name="individual.name"
           :title="individual.title"
           :image="`${imgPath}${individual.image}`"
-          :index="firstRow.length + index"
+          :index="individual.index"
         ></TeamCard>
       </div>
     </app-container>
@@ -27,7 +27,7 @@
 </template>
 <script>
   import * as d3 from 'd3';
-  import TeamCard from '@/components/TeamCard.vue';
+  import TeamCard from './team/TeamCard.vue';
   import { assetUrl } from '@/utils/assets';
   const dataPath = import.meta.env.BASE_URL + 'data/';
   const dataFile = 'Website Content - 2025  - Team Page.csv';
@@ -35,6 +35,7 @@
   export default {
     data() {
       return {
+        teamBosses: [],
         teamMembers: [],
       };
     },
@@ -45,26 +46,22 @@
       imgPath() {
         return assetUrl('team_headshots_png/');
       },
-      firstRow() {
-        return this.teamMembers.slice(0, 3);
-      },
-      rest() {
-        return this.teamMembers.slice(3);
-      },
     },
     methods: {
       async getData() {
         const self = this;
         Promise.all([
-          d3.csv(`${dataPath}${dataFile}`, function (d) {
+          d3.csv(`${dataPath}${dataFile}`, function (d, i) {
             return {
               name: d['Team Member'],
               title: d['Title'],
               image: `${d['Team Member']}.png`,
+              index: i,
             };
           }),
         ]).then((response) => {
-          this.teamMembers = response[0];
+          this.teamBosses = response[0].filter((member, i) => i < 3);
+          this.teamMembers = response[0].filter((member, i) => i >= 3);
         });
       },
     },
@@ -74,17 +71,34 @@
 
 <style scoped>
   .team-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 260px));
+    --team-card-width: 260px;
+    --team-avatar-size: 200px;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 48px 32px;
-  }
-
-  .team-grid--first-row {
+    gap: 14px 14px;
     margin-top: 48px;
   }
-
-  .team-grid--rest {
-    margin-top: 32px;
+  /* ipad size */
+  @media (max-width: 960px) {
+    .team-grid {
+      --team-card-width: 200px;
+      --team-avatar-size: 160px;
+      gap: 14px 14px;
+    }
+  }
+  @media (max-width: 768px) {
+    .team-grid {
+      --team-card-width: 200px;
+      --team-avatar-size: 160px;
+      gap: 14px 14px;
+    }
+  }
+  @media (max-width: 500px) {
+    .team-grid {
+      --team-card-width: 260px;
+      --team-avatar-size: 200px;
+      gap: 10px 10px;
+    }
   }
 </style>
