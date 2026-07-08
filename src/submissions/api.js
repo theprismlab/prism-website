@@ -55,3 +55,5 @@ export async function findScreens(apiURL) {
 export function stripSeqSuffix(type) {
   return type?.endsWith('_SEQ') ? type.replace('_SEQ', '') : type;
 }
+
+export async function getSubbmissionScreenInfo(apiUrl) {}
