@@ -5,8 +5,8 @@
         <v-img
           eager
           :src="image"
-          height="auto"
-          width="90%"
+          height="160"
+          width="160"
           aspect-ratio="1/1"
           class="rounded-circle"
         ></v-img>
@@ -77,14 +77,15 @@
   }
 
   .avatar-bg {
-    width: 90%;
-    aspect-ratio: 1 / 1;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
     padding: 0px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+    margin: 0 auto;
   }
 
   .gradient-sunrise {

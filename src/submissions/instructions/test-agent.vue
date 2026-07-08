@@ -2,19 +2,8 @@
   <page>
     <app-container wide>
       <prism-page-title>Instructions — {{ screenType }}</prism-page-title>
-      <!-- <prism-page-title>{{
-        currentPage ? currentPage.title : 'Test Agent Instructions'
-      }}</prism-page-title> -->
-      <screen-gate
-        :screen-type="screenType"
-        optimistic
-      >
-        <iframe
-          v-if="pdfUrl"
-          :key="iframeKey"
-          :src="pdfUrl"
-          class="pdf-embed"
-        />
+      <screen-gate :screen-type="screenType" optimistic>
+        <iframe v-if="pdfUrl" :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
       </screen-gate>
     </app-container>
   </page>
@@ -35,7 +24,9 @@
         return this.$route.params.screenType;
       },
       pdfPath() {
-        return this.screenType ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null) : null;
+        return this.screenType
+          ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null)
+          : null;
       },
       flatPages() {
         return flattenOutline(this.pages);
