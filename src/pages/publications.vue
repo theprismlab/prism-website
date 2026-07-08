@@ -1,10 +1,8 @@
 <template>
   <page id="publication-page">
-    <container-md>
-      <page-title>Publications</page-title>
-    </container-md>
+    <app-container wide>
+      <prism-page-title>Publications</prism-page-title>
 
-    <container-md>
       <h2 class="text-overline">Featured</h2>
       <v-row justify="center" class="mb-12">
         <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
@@ -16,7 +14,7 @@
           />
         </v-col>
       </v-row>
-    </container-md>
+    </app-container>
 
     <publications-explorer :items="data" :type-styles="typeStyles" :get-links="getLinks" />
   </page>
@@ -27,7 +25,7 @@
   import PublicationCard from '@/components/PublicationCard.vue';
   import PublicationsExplorer from '@/components/PublicationsExplorer.vue';
 
-  const dataPath = import.meta.env.PROD ? import.meta.env.BASE_URL + 'data/' : '../public/data/';
+  const dataPath = import.meta.env.BASE_URL + 'data/';
   const whitepaperDateFormatter = new Intl.DateTimeFormat(undefined, {
     month: 'long',
     day: 'numeric',
@@ -158,15 +156,24 @@
     },
     methods: {
       async getData() {
-        const loaders = Object.entries(TYPE_CONFIG).map(([type, cfg]) =>
-          d3.csv(`${dataPath}${cfg.file}`, (d, i) => ({
-            title: d.Title,
-            type,
-            id: `${cfg.idPrefix}-${i}`,
-            featured: d.Featured,
-            ...cfg.parseRow(d),
-          })),
-        );
+        const loaders = Object.entries(TYPE_CONFIG).map(([type, cfg]) => {
+          const url = `${dataPath}${cfg.file}`;
+
+          return d3
+            .csv(url, (d, i) => {
+              return {
+                title: d.Title,
+                type,
+                id: `${cfg.idPrefix}-${i}`,
+                featured: d.Featured,
+                ...cfg.parseRow(d),
+              };
+            })
+            .catch((err) => {
+              console.error(`[publications] failed to load ${type} CSV (${url}):`, err);
+              return [];
+            });
+        });
         const groups = await Promise.all(loaders);
         return groups.flat().sort((a, b) => +b.year - +a.year);
       },

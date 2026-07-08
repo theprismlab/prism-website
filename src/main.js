@@ -5,16 +5,20 @@
  */
 
 // Plugins
-import { registerPlugins } from '@/plugins'
+import { registerPlugins } from '@/plugins';
+import Prism from './lib/prism.js';
+import './lib/prism.css';
 
 // Components
-import App from './App.vue'
+import App from './App.vue';
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
 
 // Composables
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 
-const app = createApp(App)
+const app = createApp(App);
+app.component('Breadcrumbs', Breadcrumbs);
+app.use(Prism);
+registerPlugins(app);
 
-registerPlugins(app)
-
-app.mount('#app')
+app.mount('#app');

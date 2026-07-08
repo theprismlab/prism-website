@@ -1,27 +1,15 @@
 <template>
-  <AppBar/>
   <v-main>
-    <!-- <AACRBanner v-if="showBanner"></AACRBanner> -->
+    <!-- <app-container v-if="$route.meta.breadcrumbs">
+      <breadcrumbs />
+    </app-container> -->
     <router-view />
   </v-main>
   <AppFooter />
 </template>
 
 <script>
-// import AACRBanner from '@/components/AACRBanner.vue';
-
-export default {
-  name: 'Default',
-  components: {
-    // AACRBanner
-  },
-  data: function() {
-    return {
-    //  showBanner: true
-    }
-  }
-}
+  export default {
+    name: 'Default',
+  };
 </script>
-<style scoped>
-
-</style>

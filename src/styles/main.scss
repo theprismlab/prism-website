@@ -1,81 +1,104 @@
-       // font-family: TWK Lausanne, sans-serif;
-
-.text-emphasize{
-    font-weight: 600;
-    color: var(--base-color-gray--900);
-}
-p {
-    max-width:800px;
-    margin: 12px 0 24px 0; // not sure is this is needed
+.text-emphasize {
+  font-weight: 600;
+  color: var(--base-color-gray--900);
 }
 
-.v-container{
-    width: 100% !important;
-    max-width: var(--container-md-max-width) !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+.page-section {
+  margin-top: 36px;
+  margin-bottom: 36px;
+}
+.v-container {
+  width: 100% !important;
+  max-width: var(--container-md-max-width) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.text-rainbow-gradient {
+  // background: linear-gradient(90deg, #f97794, #c471ed, #12c2e9, #43e97b, #f9c74f, #f97794);
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.text-gradient-plasma {
+  background: var(--gradient-plasma);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.text-gradient-blue {
+  --gradient-start: var(--v-indigo-accent-2);
+  --gradient-end: var(--v-indigo-darken-1);
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.text-gradient-cool {
+  background: var(--gradient-cool);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.background-gradient-light-blue {
+  background: linear-gradient(180deg, #d4eaf6, #f9f9f9 75%, #fff);
 }
 
-.elevation-1{
-    box-shadow: 2px 4px 12px #00000014 !important;
-  }
-
-a{
-    text-decoration: none !important;
-    color: var(--v-primary-base);
-}
-a:hover{
-    opacity: 0.85;
-}
-// a:not(button){
-//     text-decoration: none !important;
-//     border-bottom:0.25px solid var(--v-primary);
-//     cursor: pointer;
-// }
-.no-border{
-    border: none !important;
+a {
+  text-decoration: none !important;
+  color: var(--prism-color-primary);
 }
 
-ul{
-    padding-inline-start: 1.25em;
-    
-  }
-  li{
-    line-height:1.6em;
-    margin-bottom: 0.65em;
-    padding-left:6px;
-  }
-
-
-// xxl 
-@media (min-width:  2560px) {
-
+ul {
+  padding-inline-start: 1.25em;
 }
-// xl
-@media (min-width: 1920px) and (max-width: 2560px) {
-
+li {
+  line-height: 1.6em;
+  margin-bottom: 0.65em;
+  padding-left: 6px;
 }
-// lg
-@media (min-width: 1280px) and (max-width: 1920px) {
-
+// Below are classes to add to prism-component-lib (once finalized)
+.prism-text-form-group-label {
+  font-size: 1.025rem;
+  margin-top: 24px;
+  font-weight: 600;
+  color: var(--base-color-gray--900);
+  letter-spacing: 0.03em;
 }
+.prism-text-form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--base-color-gray--900);
+  letter-spacing: 0.03em;
+}
+.prism-text-form-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.03125em;
+  margin-bottom: 0.5rem;
+}
+
 // md
 @media (min-width: 960px) and (max-width: 1280px) {
-    .v-container{
-        max-width: 92% !important;
-    }
+  .v-container {
+    max-width: 92% !important;
+  }
 }
 
 // sm
 @media (min-width: 600px) and (max-width: 960px) {
-    .v-container{
-        max-width: 92% !important;
-    }
+  .v-container {
+    max-width: 92% !important;
+  }
 }
 // xs
 @media (max-width: 600px) {
-    .v-container{
-        max-width: 96% !important;
-    }
-
+  .v-container {
+    max-width: 96% !important;
+  }
 }

@@ -1,84 +1,77 @@
 // Plugins
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import Fonts from 'unplugin-fonts/vite'
-import Layouts from 'vite-plugin-vue-layouts'
-import Vue from '@vitejs/plugin-vue'
-import VueRouter from 'unplugin-vue-router/vite'
-import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import AutoImport from 'unplugin-auto-import/vite';
+import Components from 'unplugin-vue-components/vite';
+import Fonts from 'unplugin-fonts/vite';
+import Layouts from 'vite-plugin-vue-layouts';
+import Vue from '@vitejs/plugin-vue';
+import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 
 // Utilities
-import { defineConfig } from 'vite'
-import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vite';
+import { fileURLToPath, URL } from 'node:url';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    VueRouter(),
     Layouts(),
     Vue({
-      template: { transformAssetUrls }
+      template: { transformAssetUrls },
     }),
     // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
     Vuetify({
       autoImport: true,
       styles: {
         configFile: 'src/styles/variables.scss',
-        
       },
     }),
-    Components(),
+    Components({ dirs: ['src/components', 'src/pages'] }),
     Fonts({
       google: {
         families: [
           {
-          name: 'Roboto',
-          styles: 'wght@100;300;400;500;700;900',
-        }, 
-        {
-          name: 'Inter',
-          styles: 'wght@100;200;300;400;500;600;700;800;900',
-        },
-        {
-          name: 'Inter Tight',
-          styles: 'wght@100;200;300;400;500;600;700;800;900',
-        },
-        {
-          name: 'Playfair Display',
-          styles: 'wght@100;200;300;400;500;600;700;800;900',
-        },
-        {
-          name: 'Sorts Mill Goudy',
-          styles: 'wght@400;500;600;700;800;900',
-        },
-      ],
+            name: 'Roboto',
+            styles: 'wght@100;300;400;500;700;900',
+          },
+          {
+            name: 'Inter',
+            styles: 'wght@100;200;300;400;500;600;700;800;900',
+          },
+          {
+            name: 'Inter Tight',
+            styles: 'wght@100;200;300;400;500;600;700;800;900',
+          },
+          {
+            name: 'Archivo Expanded',
+            styles: 'wght@400;500;600;700;800;900',
+          },
+        ],
+      },
+      custom: {
+        families: [],
+        // EOT is an IE-only format with no valid preload MIME type; strip it to avoid browser warnings.
+        linkFilter: (tags) => tags.filter((tag) => tag.attrs?.type !== 'font/eot'),
       },
     }),
     AutoImport({
-      imports: [
-        'vue',
-        'vue-router',
-      ],
+      imports: ['vue', 'vue-router'],
       eslintrc: {
         enabled: true,
       },
       vueTemplate: true,
     }),
+    {
+      name: 'remove-mdi-font-preloads',
+      transformIndexHtml(html) {
+        return html.replace(/<link rel="preload" as="font"[^>]*materialdesignicons[^>]*>\n?/g, '');
+      },
+    },
   ],
   define: { 'process.env': {} },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
-    extensions: [
-      '.js',
-      '.json',
-      '.jsx',
-      '.mjs',
-      '.ts',
-      '.tsx',
-      '.vue',
-    ],
+    extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
   },
   server: {
     port: 3000,
@@ -90,4 +83,4 @@ export default defineConfig({
       },
     },
   },
-})
+});
