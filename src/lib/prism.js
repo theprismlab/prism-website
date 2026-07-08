@@ -752,7 +752,7 @@ const ne = { marketing: "", portal: "/portal" }, re = [
     title: "Resources",
     children: [
       { title: "Publications", route: "/publications", id: "publications", site: "marketing" },
-      { title: "FAQ", route: "/faq", id: "faq", site: "marketing" },
+      // { title: 'FAQ', route: '/faq', id: 'faq', site: 'marketing' },
       { title: "Webinars", route: "/webinars", id: "webinars", site: "marketing" }
     ]
   },
@@ -1137,7 +1137,7 @@ function xe(e, t, r, f, c, i) {
     })
   ]);
 }
-const x = /* @__PURE__ */ m(le, [["render", xe], ["__scopeId", "data-v-1cbfbd53"]]);
+const x = /* @__PURE__ */ m(le, [["render", xe], ["__scopeId", "data-v-9cb7cef8"]]);
 x.install = function(t) {
   t.component(x.name, x);
 };
