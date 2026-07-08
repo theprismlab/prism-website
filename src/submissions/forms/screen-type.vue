@@ -26,7 +26,12 @@
       </div>
 
       <v-expansion-panels v-else v-model="openPanel" elevation="0">
-        <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
+        <v-expansion-panel
+          v-for="(step, i) in steps"
+          :key="step.id"
+          :value="i"
+          :disabled="i > maxOpenIndex"
+        >
           <v-expansion-panel-title :class="{ 'is-completed': isCompleted(i) }">
             <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26"
               >mdi-check-circle</v-icon
@@ -146,6 +151,9 @@
         if (!this.screenType || !this.screenName) return null;
         this.formStore._ensure(this.screenName, this.screenType);
         return this.formStore.screens[this.screenName].formData;
+      },
+      maxOpenIndex() {
+        return this.screenName ? this.formStore.maxOpenIndex(this.screenName) : 0;
       },
       stepErrors() {
         if (!this.fd) return {};
