@@ -1,37 +1,16 @@
 <template>
-<page>
-  <container-sm>
-    <page-title>Contact us</page-title>
-    <page-section>
-      <p class="body-1">HubSpot form to be integrated here</p>
-    </page-section>
-  </container-sm>
-</page>
+  <page>
+    <app-container narrow>
+      <prism-page-title>Contact us</prism-page-title>
+      <section>
+        <hubspot-form></hubspot-form>
+      </section>
+    </app-container>
+  </page>
 </template>
-
 <script>
   export default {
-    data() {
-      return {
-
-      }
-    },
-    mounted() {
-
-      },
-      beforeDestroy() {
-       
-      },
-
-    computed: {
-
-   
-    },
-    methods: {
-    
-    },
-    watch: {
-
-    }
-  }
+    mounted() {},
+  };
 </script>
+<style scoped></style>

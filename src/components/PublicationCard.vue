@@ -1,99 +1,265 @@
 <template>
-    <v-card :class="`elevation-${elevation} ${classes}`" max-width="1000px">
-        <v-row>
-            <v-col v-if="image" cols="12" xs="12" sm="3" md="3" lg="3" xl="3">
-                <v-img style="border-radius:10px;" max-width="250px" :src="image" cover></v-img>
-            </v-col>
-            <v-col>
-                <!-- <h3 v-if="suptitle" class="v-card-subtitle font-weight-bold text-overline" v-html="suptitle"></h3> -->
-                <v-card-item v-if="suptitle" class="pt-0">
-                    <card-overline class="text-grey" v-html="suptitle"></card-overline>
-                </v-card-item>
- 
-                <h2 v-if="title" :class="`v-card-title text-size-${titleSize}`" v-html="title"></h2>
-                <h3 v-if="subtitle" class="v-card-subtitle" v-html="subtitle"></h3>
-                <p v-if="text" :class="`v-card-text text-size-${textSize}`" v-html="text"></p>
-                <v-btn v-if="button" :color="button.color || 'primary-accent-2'" :variant="button.variant || 'outlined'" v-html="button.text" :href="button.url" target="_blank" rounded></v-btn>
-              
-            </v-col>
-        </v-row>
-    </v-card>
-  </template>
+  <v-card
+    class="pub-card-minimal"
+    :class="[featured ? 'pub-card-minimal--featured h-100' : 'mb-3']"
+    variant="flat"
+    elevation="0"
+    :style="{ '--type-color': typeStyle.bg }"
+  >
+    <!-- Thin colored accent stripe on the left -->
+    <span class="pub-card-minimal__accent" :style="{ backgroundColor: typeStyle.bg }" />
+
+    <div class="pub-card-minimal__body">
+      <div v-if="featured" class="pub-card-minimal__eyebrow">
+        <v-icon
+          class="pub-card-minimal__eyebrow-icon"
+          color="white"
+          size="18"
+          :title="item.type"
+          :aria-label="item.type"
+        >
+          {{ typeStyle.icon }}
+        </v-icon>
+        <span class="pub-card-minimal__eyebrow-label">{{ item.type }}</span>
+      </div>
+
+      <h3 v-if="featured" class="pub-card-minimal__title">{{ item.title }}</h3>
+
+      <div v-else>
+        <h3 class="pub-card-minimal__title">
+          <span class="ml-1">{{ item.title }}</span>
+        </h3>
+      </div>
+
+      <div v-if="item.author || item.publisher" class="pub-card-minimal__meta">
+        <span v-if="item.author">{{ item.author }}, et al., </span>
+        <span v-if="item.publisher"
+          ><i>{{ item.publisher }}, </i></span
+        >
+        <span v-if="item.date || item.year">
+          {{ item.date || item.year }}
+        </span>
+      </div>
+
+      <div v-if="links.length || item.date || item.year" class="pub-card-minimal__footer">
+        <div v-if="links.length" class="pub-card-minimal__links">
+          <a
+            v-for="link in links"
+            :key="link.field"
+            class="pub-card-minimal__link"
+            :href="link.href"
+            target="_blank"
+          >
+            {{ link.label }}
+            <v-icon size="14" class="pub-card-minimal__link-icon">mdi-arrow-top-right</v-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+  </v-card>
+</template>
+
 <script>
-
-import CardOverline from '@/components/CardOverline.vue'
-export default {
-    name: "PublicationCard",
-    props: {    
-        size: {
-            type: String,
-            required: false,
-            default: "md"
-        },
-        classes: {
-            type: String,
-            required: false
-        },
-        elevation: {
-            type: Number,
-            required: false,
-            default: 0
-        },
-        image: {
-            type: String,
-            required: false
-        },
-        subtitle: {
-            type: String,
-            required: false
-        },
-        suptitle: {
-            type: String,
-            required: false
-        },
-        title: {
-            type: String,
-            required: false
-        },
-        text: {
-            type: String,
-            required: false
-        },
-        button: {
-            type: Object,
-            required: false
-        },
-        link: {
-            type: String,
-            required: false
-        }
-
+  export default {
+    name: 'PublicationCard',
+    props: {
+      item: { type: Object, required: true },
+      typeStyle: { type: Object, required: true },
+      links: { type: Array, default: () => [] },
+      featured: { type: Boolean, default: false },
     },
-    computed: {
-        titleSize(){
-            return this.size === "lg" ? "h4" : this.size === "md" ? "h5" : "h6"
-        },
-        textSize(){
-            return this.size === "lg" ? "body-1" : this.size === "md" ? "body-1" : "body-2"
-        }
-    },
-    mounted(){
-        console.log(this.elevation)
-    }
-}
+  };
 </script>
+
 <style scoped>
-.text-overline{
-    line-height: normal !important;
-}
-/* To do: remove this, make a class for specifying the type of link (ie: title link) */
-.v-card-title > * {
-    text-decoration: none !important;
-    border-bottom: 1px solid #cccccc !important;
-} 
-/* .v-chip{
+  /* ---------- Shared base ---------- */
+  .pub-card-minimal {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+    padding: 1rem 2rem;
+    box-shadow:
+      0 1px 2px rgba(20, 30, 60, 0.06),
+      0 3px 8px rgba(20, 30, 60, 0.07);
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+    border-color: color-mix(in srgb, var(--type-color, #000) 10%, transparent);
+  }
+
+  .pub-card-minimal:hover {
+    border-color: color-mix(in srgb, var(--type-color, #000) 45%, transparent);
+    box-shadow:
+      0 2px 4px rgba(20, 30, 60, 0.07),
+      0 10px 24px rgba(20, 30, 60, 0.11);
+  }
+
+  /* Thin colored accent stripe on the left edge */
+  .pub-card-minimal__accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 16px;
+    opacity: 100%;
+  }
+
+  /* ---------- Type icon tile ---------- */
+  .pub-card-minimal__type-tile {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    /* border-radius: 8px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ---------- Body ---------- */
+  .pub-card-minimal__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .pub-card-minimal__title {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.35;
     font-weight: 600;
-} */
+    color: rgb(23, 23, 23);
+    letter-spacing: -0.005em;
+  }
 
+  .pub-card-minimal__meta {
+    font-size: 0.85rem;
+    color: rgb(120, 126, 140);
+    line-height: 1.4;
+  }
+
+  /* ---------- Footer: links + date ---------- */
+  .pub-card-minimal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.25rem;
+  }
+
+  .pub-card-minimal__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .pub-card-minimal__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.825rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    transition: opacity 150ms ease;
+  }
+
+  .pub-card-minimal__link:hover {
+    opacity: 0.8;
+  }
+
+  .pub-card-minimal__link-icon {
+    transition: transform 150ms ease;
+  }
+
+  .pub-card-minimal__link:hover .pub-card-minimal__link-icon {
+    transform: translate(1px, -1px);
+  }
+
+  .pub-card-minimal__date {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgb(140, 146, 158);
+    white-space: nowrap;
+    margin-left: auto;
+  }
+
+  /* ---------- Featured-only ---------- */
+  .pub-card-minimal--featured {
+    padding: 1.25rem 1.35rem 1.25rem 2rem;
+    gap: 1.15rem;
+  }
+
+  .pub-card-minimal--featured .pub-card-minimal__type-tile {
+    width: 44px;
+    height: 44px;
+    border-radius: 9px;
+  }
+
+  /* .pub-card-minimal--featured .pub-card-minimal__title {
+    font-size: 1.18rem;
+    line-height: 1.3;
+    gap: 0.55rem;
+  } */
+
+  .pub-card-minimal--featured .pub-card-minimal__body {
+    gap: 0.55rem;
+  }
+
+  .pub-card-minimal--featured .pub-card-minimal__eyebrow {
+    font-size: 0.78rem;
+    gap: 0.5rem;
+    /* Break out of the card's padding so the colored bar spans the
+       full width. Negative margins must match the featured card's
+       top/left/right padding values. */
+    margin: -1.25rem -1.35rem 0.75rem;
+    padding: 0.5rem 1.35rem;
+    border-radius: 0;
+    align-self: stretch;
+    background-color: var(--type-color, #000);
+    color: #ffffff;
+  }
+
+  /* When the eyebrow is acting as a colored pill (featured),
+     the parent card no longer needs the left accent stripe. */
+  .pub-card-minimal--featured .pub-card-minimal__accent {
+    display: none;
+  }
+
+  .pub-card-minimal--featured {
+    padding-left: 1.35rem;
+  }
+
+  /* ---------- Featured eyebrow (type label above title) ---------- */
+  .pub-card-minimal__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    margin-bottom: 0.15rem;
+    /* slightly muted version of the type color so it doesn't shout */
+    color: color-mix(in srgb, var(--type-color, #000) 98%, rgb(60, 65, 80));
+  }
+
+  .pub-card-minimal__eyebrow-icon {
+    flex-shrink: 0;
+  }
+
+  .pub-card-minimal__eyebrow-label {
+    /* subtle separator beneath the label for editorial feel */
+    padding-bottom: 1px;
+  }
 </style>
-

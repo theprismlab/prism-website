@@ -7,14 +7,19 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix",
+    "postinstall": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.js"
   },
   "dependencies": {
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/font": "7.4.47",
     "@mdi/js": "^7.4.47",
+    "axios": "^1.18.0",
+    "crossfilter2": "^1.5.4",
     "d3": "^7.9.0",
+    "pdfjs-dist": "^6.0.227",
     "roboto-fontface": "*",
+    "three": "^0.173.0",
     "unplugin-fonts": "^1.1.1",
     "vue": "^3.4.31",
     "vuetify": "^3.6.14"
@@ -29,6 +34,7 @@
     "eslint-plugin-promise": "^6.4.0",
     "eslint-plugin-vue": "^9.30.0",
     "pinia": "^2.1.7",
+    "prettier": "^3.8.3",
     "sass": "1.77.8",
     "sass-embedded": "^1.77.8",
     "unplugin-auto-import": "^0.17.6",
