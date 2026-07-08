@@ -76,7 +76,6 @@ export const useScreenStatusStore = defineStore('screenStatus', {
   },
   actions: loadableActions(async function (apiUrl) {
     const data = await getSubbmissionScreenInfo(apiUrl);
-    console.log('[screenStatusStore] fetching statuses', data);
     const map = {};
     // Response is now an object keyed by screen_type (e.g. { AIR: {...}, MTS: {...} }),
     // rather than an array of rows carrying their own submission_type field.
@@ -85,7 +84,6 @@ export const useScreenStatusStore = defineStore('screenStatus', {
       if (key) map[key] = info;
     }
     this.statuses = map;
-    console.log('[screenStatusStore] resolved statuses', this.statuses);
   }),
 });
 

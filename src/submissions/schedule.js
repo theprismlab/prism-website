@@ -73,11 +73,6 @@ function todayET() {
 // estimate below is overridden to OPEN.
 export function computedStatus(item, screenRouteStateFor) {
   const validation = screenRouteStateFor?.(item.screen_name, item.screen_type);
-  console.log('[schedule] computedStatus', {
-    screen_type: item.screen_type,
-    screen_name: item.screen_name,
-    validation,
-  });
   if (validation?.status === 'valid') return 'OPEN';
   const today = todayET();
   if (today < item.window_start) return 'SCHEDULED';

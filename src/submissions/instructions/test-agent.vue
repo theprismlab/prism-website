@@ -14,7 +14,12 @@
       >
         {{ screenState.message }}
       </v-alert>
-      <iframe v-if="pdfUrl" :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
+      <iframe
+        v-if="pdfUrl && screenState.status !== 'invalid'"
+        :key="iframeKey"
+        :src="pdfUrl"
+        class="pdf-embed"
+      />
     </app-container>
   </page>
 </template>

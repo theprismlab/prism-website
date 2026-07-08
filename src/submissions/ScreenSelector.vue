@@ -20,7 +20,7 @@
                 color: statusColors[screenStatusStore.windowStatusFor(item.raw)?.status],
               }"
             >
-              ({{ windowStatusFor(item.raw) }})
+              ({{ formattedWindowStatusFor(item.raw) }})
             </span>
           </span>
         </template>
@@ -39,6 +39,12 @@
 <script>
   import { useScreenStatusStore } from './screen-status-store.js';
 
+  // Preferred display order for the dropdown. Not the source of truth for which types are
+  // valid — that's screenStatusStore's statuses map (populated from the API). This just orders
+  // whatever the store knows about; a type the API stops returning drops out automatically, and
+  // one the store starts returning that isn't listed here still shows up (appended).
+  const SCREEN_ORDER = ['MTS', 'CPS', 'APS', 'EPS', 'AIR'];
+
   export default {
     name: 'ScreenSelector',
     setup() {
@@ -48,11 +54,20 @@
     },
     data() {
       return {
-        screens: ['MTS', 'CPS', 'APS', 'EPS', 'AIR'],
         menuOpen: false,
       };
     },
     computed: {
+      // Before the store has loaded, statuses is empty — fall back to SCREEN_ORDER so the
+      // dropdown isn't blank while the first fetch is in flight.
+      screens() {
+        const known = Object.keys(this.screenStatusStore.statuses);
+        if (!known.length) return SCREEN_ORDER;
+        return [
+          ...SCREEN_ORDER.filter((type) => known.includes(type)),
+          ...known.filter((type) => !SCREEN_ORDER.includes(type)),
+        ];
+      },
       statusColors() {
         return {
           OPEN: 'var(--prism-color-teal-accent-4)',
@@ -92,7 +107,7 @@
       }
     },
     methods: {
-      windowStatusFor(screenType) {
+      formattedWindowStatusFor(screenType) {
         // parse status CLOSE to CLOSED, "_" to " "
         const status = this.screenStatusStore.windowStatusFor(screenType)?.status;
         if (status === 'CLOSE') {
