@@ -94,9 +94,12 @@
       hide-details="auto"
     />
 
-    <div class="d-flex justify-end mt-4">
+    <div class="d-flex justify-center mt-6">
       <v-btn
         color="primary"
+        rounded
+        flat
+        size="large"
         :disabled="!data.reviewed || !allStepsValid"
         :loading="submitting"
         @click="submitForm"
