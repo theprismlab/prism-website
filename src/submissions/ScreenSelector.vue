@@ -16,14 +16,13 @@
             <span
               v-if="screenStatusStore.windowStatusFor(item.raw)?.status"
               class="screen-selector__status"
-              :class="
-                screenStatusStore.windowStatusFor(item.raw)?.status === 'OPEN'
-                  ? 'screen-selector__status--open'
-                  : 'screen-selector__status--closed'
-              "
-              >({{ screenStatusStore.windowStatusFor(item.raw)?.status }})</span
-            ></span
-          >
+              :style="{
+                color: statusColors[screenStatusStore.windowStatusFor(item.raw)?.status],
+              }"
+            >
+              ({{ windowStatusFor(item.raw) }})
+            </span>
+          </span>
         </template>
       </v-list-item>
     </template>
@@ -54,6 +53,13 @@
       };
     },
     computed: {
+      statusColors() {
+        return {
+          OPEN: 'var(--prism-color-teal-accent-4)',
+          MAX_CAPACITY: 'var(--prism-color-orange-accent-4)',
+          CLOSE: 'var(--prism-color-red-accent-3)',
+        };
+      },
       // Only reports the type as "selected" when the URL's specific :screen segment is the
       // one currently valid for that type — not merely because a screenType segment exists.
       // Otherwise a stale/bogus screen name (e.g. a since-closed screen, or a typo) would
@@ -86,6 +92,14 @@
       }
     },
     methods: {
+      windowStatusFor(screenType) {
+        // parse status CLOSE to CLOSED, "_" to " "
+        const status = this.screenStatusStore.windowStatusFor(screenType)?.status;
+        if (status === 'CLOSE') {
+          return 'CLOSED';
+        }
+        return status ? status.replace('_', ' ') : '';
+      },
       screenNameFor(screenType) {
         return this.screenStatusStore.activeScreenNameFor(screenType);
       },
@@ -125,13 +139,5 @@
   .screen-selector__status {
     margin-left: 4px;
     font-size: 0.7rem;
-  }
-
-  .screen-selector__status--open {
-    color: var(--prism-color-teal-accent-4);
-  }
-
-  .screen-selector__status--closed {
-    color: var(--prism-color-red-accent-4);
   }
 </style>
