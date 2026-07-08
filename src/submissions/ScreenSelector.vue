@@ -14,14 +14,14 @@
           <span v-if="screenNameFor(item.raw)" class="screen-selector__name"
             >{{ screenNameFor(item.raw) }}
             <span
-              v-if="screenStatusStore.statusFor(item.raw)?.status"
+              v-if="screenStatusStore.windowStatusFor(item.raw)?.status"
               class="screen-selector__status"
               :class="
-                screenStatusStore.statusFor(item.raw)?.status === 'OPEN'
+                screenStatusStore.windowStatusFor(item.raw)?.status === 'OPEN'
                   ? 'screen-selector__status--open'
                   : 'screen-selector__status--closed'
               "
-              >({{ screenStatusStore.statusFor(item.raw)?.status }})</span
+              >({{ screenStatusStore.windowStatusFor(item.raw)?.status }})</span
             ></span
           >
         </template>
@@ -65,7 +65,7 @@
         // Instructions routes only carry :screenType, no :screen to validate against —
         // screenStatusStore's keys are the canonical list of known types for that check.
         if (!this.$route.path.startsWith('/submission-hub/forms')) {
-          return this.screenStatusStore.typeStateFor(type).status !== 'invalid' ? type : null;
+          return this.screenStatusStore.typeRouteStateFor(type).status !== 'invalid' ? type : null;
         }
         // Don't flash "unselected" while the store is still loading for the first time.
         if (!this.screenStatusStore.loaded) return type;

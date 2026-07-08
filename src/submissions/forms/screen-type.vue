@@ -127,7 +127,7 @@
       // 'loading' until the store has actually loaded, so we don't flash an invalid state
       // before data arrives.
       screenState() {
-        return this.screenStatusStore.screenStateFor(this.screenName, this.screenType);
+        return this.screenStatusStore.screenRouteStateFor(this.screenName, this.screenType);
       },
       isDev() {
         return import.meta.env.DEV;

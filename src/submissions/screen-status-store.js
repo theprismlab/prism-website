@@ -15,38 +15,42 @@ export const useScreenStatusStore = defineStore('screenStatus', {
     ...loadableState(),
   }),
   getters: {
-    statusFor: (state) => (screenType) =>
+    // Raw merged record for a screenType — accessibility status/message from
+    // prism_submission_window_message plus the resolved screenName. Named "window" for the
+    // submission window it comes from, so it doesn't collide with the API's own `.status`
+    // field or the derived route-state vocabulary below.
+    windowStatusFor: (state) => (screenType) =>
       screenType ? (state.statuses[screenType.toUpperCase()] ?? null) : null,
     // Convenience wrapper — just the current screen's name, tolerates a falsy screenType.
     activeScreenNameFor() {
-      return (screenType) => this.statusFor(screenType)?.name ?? null;
+      return (screenType) => this.windowStatusFor(screenType)?.name ?? null;
     },
     // fetchSubmissionMessage returns one row per real submission type, so its keys (after
     // stripSeqSuffix) are the canonical list of known screen types.
     isValidType: (state) => (screenType) =>
       !!screenType && Object.prototype.hasOwnProperty.call(state.statuses, screenType.toUpperCase()),
-    // Is this exact screen name valid to submit against for this type? { status: null } means
-    // valid; { status: 'INVALID', message } means not. Two independent checks: screenName must
-    // be the type's current screen (identity, from prism_screens), AND the type's submission
-    // window must currently be OPEN (accessibility, from prism_submission_window_message).
-    validationFor() {
+    // Is this exact screen name valid to submit against for this type? Two independent checks:
+    // screenName must be the type's current screen (identity, from prism_screens), AND the
+    // type's submission window must currently be OPEN (accessibility, from
+    // prism_submission_window_message).
+    isValidScreen() {
       return (screenName, screenType) => {
         const invalid = {
-          status: 'INVALID',
+          valid: false,
           message: `Screen '${screenName}' is not associated with submission type '${screenType}'`,
         };
         if (!screenName || !screenType) return invalid;
-        const s = this.statusFor(screenType);
+        const s = this.windowStatusFor(screenType);
         if (!s || s.name !== screenName) return invalid;
-        if (s.status !== 'OPEN') return { status: 'INVALID', message: s.message };
-        return { status: null, message: null };
+        if (s.status !== 'OPEN') return { valid: false, message: s.message };
+        return { valid: true, message: null };
       };
     },
     // Loading-aware wrapper for bare :screenType checks (instructions routes have no :screen
     // segment to further validate). `status` stays 'loading' until the store has fetched at
     // least once, so callers stop duplicating their own `!this.loaded` guard to avoid flashing
     // an error before data arrives.
-    typeStateFor() {
+    typeRouteStateFor() {
       return (screenType) => {
         if (!this.loaded) return { status: 'loading', message: null };
         const valid = this.isValidType(screenType);
@@ -56,13 +60,13 @@ export const useScreenStatusStore = defineStore('screenStatus', {
         };
       };
     },
-    // Same shape as typeStateFor, for :screenType + :screen pairs (forms routes) — wraps
-    // validationFor with an explicit loading state.
-    screenStateFor() {
+    // Same shape as typeRouteStateFor, for :screenType + :screen pairs (forms routes) — wraps
+    // isValidScreen with an explicit loading state.
+    screenRouteStateFor() {
       return (screenName, screenType) => {
         if (!this.loaded) return { status: 'loading', message: null };
-        const v = this.validationFor(screenName, screenType);
-        return { status: v.status === null ? 'valid' : 'invalid', message: v.message };
+        const v = this.isValidScreen(screenName, screenType);
+        return { status: v.valid ? 'valid' : 'invalid', message: v.message };
       };
     },
   },

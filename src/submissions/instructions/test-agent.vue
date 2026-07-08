@@ -36,7 +36,7 @@
         return this.$route.params.screenType;
       },
       screenState() {
-        return this.screenStatusStore.typeStateFor(this.screenType);
+        return this.screenStatusStore.typeRouteStateFor(this.screenType);
       },
       pdfPath() {
         return this.screenType ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null) : null;

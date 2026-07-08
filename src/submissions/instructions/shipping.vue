@@ -38,7 +38,7 @@
       // Shipping instructions are the same PDF for every type, but a bogus/typo'd :screenType
       // shouldn't still show a legitimate-looking PDF under a nonsense header.
       screenState() {
-        return this.screenStatusStore.typeStateFor(this.screenType);
+        return this.screenStatusStore.typeRouteStateFor(this.screenType);
       },
       flatPages() {
         return flattenOutline(this.pages);

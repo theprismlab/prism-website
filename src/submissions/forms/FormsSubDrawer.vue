@@ -74,7 +74,7 @@
       screenSelected() {
         if (!this.screenType || !this.screenName) return false;
         return (
-          this.screenStatusStore.screenStateFor(this.screenName, this.screenType).status !==
+          this.screenStatusStore.screenRouteStateFor(this.screenName, this.screenType).status !==
           'invalid'
         );
       },
