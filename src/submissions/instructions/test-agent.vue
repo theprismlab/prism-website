@@ -1,47 +1,38 @@
 <template>
   <page>
     <app-container wide>
-      <prism-page-title>Instructions — {{ this.screenType }}</prism-page-title>
+      <prism-page-title>Instructions — {{ screenType }}</prism-page-title>
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Test Agent Instructions'
       }}</prism-page-title> -->
-      <v-alert
-        v-if="screenState.status === 'invalid'"
-        type="error"
-        variant="tonal"
-        density="compact"
-        class="mb-4"
+      <screen-gate
+        :screen-type="screenType"
+        optimistic
       >
-        {{ screenState.message }}
-      </v-alert>
-      <iframe
-        v-if="pdfUrl && screenState.status !== 'invalid'"
-        :key="iframeKey"
-        :src="pdfUrl"
-        class="pdf-embed"
-      />
+        <iframe
+          v-if="pdfUrl"
+          :key="iframeKey"
+          :src="pdfUrl"
+          class="pdf-embed"
+        />
+      </screen-gate>
     </app-container>
   </page>
 </template>
 
 <script>
   import { loadPdfOutline, flattenOutline, PDF_PATHS } from './pdf-outline';
-  import { useScreenStatusStore } from '../screen-status-store.js';
+  import ScreenGate from '../ScreenGate.vue';
 
   export default {
     name: 'TestAgentInstructions',
-    setup() {
-      return { screenStatusStore: useScreenStatusStore() };
-    },
+    components: { ScreenGate },
     data() {
       return { pages: [] };
     },
     computed: {
       screenType() {
         return this.$route.params.screenType;
-      },
-      screenState() {
-        return this.screenStatusStore.typeRouteStateFor(this.screenType);
       },
       pdfPath() {
         return this.screenType ? (PDF_PATHS.TEST_AGENT[this.screenType.toUpperCase()] ?? null) : null;
@@ -73,9 +64,6 @@
           this.pages = url ? await loadPdfOutline(url) : [];
         },
       },
-    },
-    mounted() {
-      this.screenStatusStore.load(import.meta.env.VITE_API_URL);
     },
   };
 </script>

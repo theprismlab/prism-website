@@ -1,18 +1,23 @@
 <template>
   <v-select
+    v-model:menu="menuOpen"
     :model-value="selectedScreenType"
     :items="screens"
     :placeholder="selectedScreenType ? undefined : 'Select screen'"
     hide-details
-    v-model:menu="menuOpen"
     @update:model-value="onScreenChange"
   >
-    <template v-if="isFormsRoute" #item="{ item, props }">
+    <template
+      v-if="isFormsRoute"
+      #item="{ item, props }"
+    >
       <v-list-item v-bind="props">
         <template #title>
           {{ item.raw }}
-          <span v-if="screenNameFor(item.raw)" class="screen-selector__name"
-            >{{ screenNameFor(item.raw) }}
+          <span
+            v-if="screenNameFor(item.raw)"
+            class="screen-selector__name"
+          >{{ screenNameFor(item.raw) }}
             <span
               v-if="screenStatusStore.windowStatusFor(item.raw)?.status"
               class="screen-selector__status"
@@ -27,9 +32,15 @@
       </v-list-item>
     </template>
 
-    <template v-if="isFormsRoute" #selection="{ item }">
+    <template
+      v-if="isFormsRoute"
+      #selection="{ item }"
+    >
       {{ item.raw }}
-      <span v-if="screenNameFor(item.raw)" class="screen-selector__name">
+      <span
+        v-if="screenNameFor(item.raw)"
+        class="screen-selector__name"
+      >
         {{ screenNameFor(item.raw) }}
       </span>
     </template>
