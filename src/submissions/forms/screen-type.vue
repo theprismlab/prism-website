@@ -17,6 +17,7 @@
             :key="step.id"
             :value="i"
             :disabled="i > maxOpenIndex"
+            :class="{ 'is-completed': isCompleted(i) }"
           >
             <v-expansion-panel-title :class="{ 'is-completed': isCompleted(i) }">
               <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26">
@@ -245,8 +246,8 @@
     border-left: 3px solid var(--prism-color-primary);
   }
   .v-expansion-panel-title.v-expansion-panel-title--active.is-completed {
-    background-color: rgba(29, 233, 182, 0.08);
-    border-left: 3px solid rgb(29, 233, 182);
+    background-color: rgba(var(--v-theme-teal-accent-4), 0.08);
+    border-left: 3px solid var(--prism-color-teal-accent-4);
   }
   .v-expansion-panel-title:not(.v-expansion-panel-title--active):not(.is-completed):hover {
     background-color: rgba(var(--v-theme-on-surface), 0.02);
@@ -259,10 +260,17 @@
   .v-expansion-panel:not(:first-child)::after {
     display: none;
   }
+  .v-expansion-panel.is-completed {
+    border-color: rgba(var(--v-theme-teal-accent-4), 0.4);
+  }
+  .v-expansion-panel--active:not(.is-completed) {
+    border-color: var(--prism-color-primary);
+  }
 
   /* ── Locked steps ─────────────────────────────────────────── */
   .v-expansion-panel--disabled {
     background-color: rgb(var(--v-theme-surface));
+    border-color: rgba(var(--v-theme-on-surface), 0.08);
   }
   .v-expansion-panel--disabled :deep(.v-expansion-panel-title__overlay) {
     opacity: 0 !important;
