@@ -40,7 +40,6 @@ export async function postSubmission(apiURL, payload) {
       user_key: userKey,
     },
   });
-  console.log('[api] POST', url, payload, res.data);
   return res.data;
 }
 
