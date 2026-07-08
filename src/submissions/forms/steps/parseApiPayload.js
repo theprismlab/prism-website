@@ -46,6 +46,22 @@ export function parseFormDataForApi(formData, screenType, screenName) {
     }
   }
 
+  // Omit main_contact/main_contact_email entirely when no managers were provided, rather than
+  // sending them as empty strings.
+  const mainContactFields =
+    managers.length > 0
+      ? {
+          main_contact: managers
+            .map((m) => m.name)
+            .filter(Boolean)
+            .join(', '),
+          main_contact_email: managers
+            .map((m) => m.email)
+            .filter(Boolean)
+            .join(', '),
+        }
+      : {};
+
   const compoundFields = buildTestAgentFields(screenType);
 
   //  // const compounds below will be used when api is updated/removes previously required fields
@@ -75,14 +91,7 @@ export function parseFormDataForApi(formData, screenType, screenName) {
       submitter_name: collaborator[COLLABORATOR_FIELDS.YOUR_NAME.key] ?? '',
       investigator_email: collaborator[COLLABORATOR_FIELDS.INVESTIGATOR_EMAIL.key] ?? '',
       investigator_name: collaborator[COLLABORATOR_FIELDS.INVESTIGATOR_NAME.key] ?? '',
-      main_contact: managers
-        .map((m) => m.name)
-        .filter(Boolean)
-        .join(', '),
-      main_contact_email: managers
-        .map((m) => m.email)
-        .filter(Boolean)
-        .join(', '),
+      ...mainContactFields,
       home_institution: institution[INSTITUTION_FIELDS.INSTITUTION_NAME.key] ?? '',
       total_num_cpds: String((testAgent.rows ?? []).length),
       collaboration_type: collaboratorTypeLabel ?? '',
