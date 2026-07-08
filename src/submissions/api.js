@@ -11,10 +11,9 @@ async function getTempApiKey(apiURL) {
 async function authedGet(apiURL, path) {
   const userKey = await getTempApiKey(apiURL);
   const url = apiURL + path;
-  const res = await axios.get(url, {
-    headers: { ...JSON_HEADERS, user_key: userKey },
-  });
-  console.log('[api] GET', url, res.data);
+  const headers = { ...JSON_HEADERS, user_key: userKey };
+  const res = await axios.get(url, { headers });
+
   return res.data;
 }
 
@@ -56,4 +55,19 @@ export function stripSeqSuffix(type) {
   return type?.endsWith('_SEQ') ? type.replace('_SEQ', '') : type;
 }
 
-export async function getSubbmissionScreenInfo(apiUrl) {}
+// this is a new endpoint that will replace the fetchSubmissionMessage + screenName from findScreens
+// export async function getSubbmissionScreenInfo(apiUrl, submission_type) {
+//   let path = 'prism_screens/submission-screen-info';
+//   if (submission_type) {
+//     path += '?submission_type=' + encodeURIComponent(submission_type);
+//   }
+//   return authedGet(apiUrl, path);
+// }
+
+export async function getSubbmissionScreenInfo(apiURL, submission_type) {
+  let path = 'prism_screens/submission-screen-info';
+  if (submission_type) {
+    path += '?filter=' + JSON.stringify({ where: { submission_type } });
+  }
+  return authedGet(apiURL, path);
+}
