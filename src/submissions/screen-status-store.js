@@ -29,10 +29,11 @@ export const useScreenStatusStore = defineStore('screenStatus', {
     // stripSeqSuffix) are the canonical list of known screen types.
     isValidType: (state) => (screenType) =>
       !!screenType && Object.prototype.hasOwnProperty.call(state.statuses, screenType.toUpperCase()),
-    // Is this exact screen name valid to submit against for this type? Two independent checks:
-    // screenName must be the type's current screen (identity, from prism_screens), AND the
-    // type's submission window must currently be OPEN (accessibility, from
-    // prism_submission_window_message).
+    // Does this screenName even exist as the type's current screen? Pure identity check (from
+    // prism_screens) — `valid` says nothing about accessibility. Whether that screen's window is
+    // currently OPEN, CLOSED, or at MAX_CAPACITY lives on the type record itself
+    // (windowStatusFor(screenType).status), not here — keeping the two questions separate
+    // instead of collapsing them into one "valid" boolean.
     isValidScreen() {
       return (screenName, screenType) => {
         const invalid = {
@@ -42,7 +43,6 @@ export const useScreenStatusStore = defineStore('screenStatus', {
         if (!screenName || !screenType) return invalid;
         const s = this.windowStatusFor(screenType);
         if (!s || s.name !== screenName) return invalid;
-        if (s.status !== 'OPEN') return { valid: false, message: s.message };
         return { valid: true, message: null };
       };
     },
@@ -60,13 +60,17 @@ export const useScreenStatusStore = defineStore('screenStatus', {
         };
       };
     },
-    // Same shape as typeRouteStateFor, for :screenType + :screen pairs (forms routes) — wraps
-    // isValidScreen with an explicit loading state.
+    // Same shape as typeRouteStateFor, for :screenType + :screen pairs (forms routes) — combines
+    // isValidScreen's identity check with the type's window status/message (OPEN vs.
+    // CLOSED/MAX_CAPACITY/etc.), so callers get one tri-state answer for "should this render."
     screenRouteStateFor() {
       return (screenName, screenType) => {
         if (!this.loaded) return { status: 'loading', message: null };
-        const v = this.isValidScreen(screenName, screenType);
-        return { status: v.valid ? 'valid' : 'invalid', message: v.message };
+        const identity = this.isValidScreen(screenName, screenType);
+        if (!identity.valid) return { status: 'invalid', message: identity.message };
+        const w = this.windowStatusFor(screenType);
+        if (w?.status !== 'OPEN') return { status: 'invalid', message: w?.message };
+        return { status: 'valid', message: null };
       };
     },
   },
