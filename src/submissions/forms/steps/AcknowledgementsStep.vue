@@ -19,7 +19,7 @@
   import { getFields } from './acknowledgementsSchema.js';
 
   export default {
-    name: 'AcknowledgmentsStep',
+    name: 'AcknowledgementsStep',
     props: {
       data: { type: Object, required: true },
       errors: { type: Object, default: () => ({}) },

@@ -9,11 +9,10 @@
       </p>
     </app-container>
     <app-container>
-      <v-expansion-panels v-model="expandedRows" variant="accordion" class="assays-accordion">
+      <v-expansion-panels flat>
         <v-expansion-panel
           v-for="item in table.items"
           :key="item.id"
-          :value="item.id"
           class="assay-panel"
         >
           <v-expansion-panel-title>
@@ -72,7 +71,6 @@
     name: 'Assays',
     data() {
       return {
-        expandedRows: null,
         table: {
           // groupBy:  [{ key: 'screen', order: 'asc' }],
           headers: [
@@ -119,74 +117,30 @@
 </script>
 
 <style scoped>
-  .assay-panel {
-    --assay-time-point-color: var(--prism-color-cyan-darken-1);
-    --assay-time-point-color: var(--prism-color-primary-darken-2);
-    --assay-time-point-color: var(--prism-color-secondary-darken-2);
-    --assay-time-point-color: var(--prism-color-grey);
-    --assay-time-point-color: var(--prism-color-blue-lighten-2);
 
-    --assay-time-point-font-size: 0.9rem;
-    --assay-time-point-font-weight: 400;
-    --assay-label-color: var(--prism-color-grey-darken-1);
-    --assay-avatar-size: 65px;
-    --assay-avatar-pad: 4px;
-    --assay-pad: 16px 32px 16px 12px;
-    --assay-gap: 0px;
-    --assay-border: 1px solid rgba(240, 240, 240, 1);
-    --assay-bg: linear-gradient(0deg, rgb(250, 250, 250) 0%, rgb(252, 252, 252) 40%);
-    --assay-bg-dark: linear-gradient(0deg, rgb(243, 243, 243) 0%, rgb(246, 246, 246) 40%);
-    border: var(--assay-border);
-    background: var(--assay-bg);
-    overflow: hidden;
-    box-shadow: 0 10px 24px rgba(50, 50, 50, 0.08);
+  .v-expansion-panel {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top:6px;
   }
 
-  .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-    background: var(--assay-bg);
-    border-bottom: var(--assay-border);
-    border-left: var(--assay-border);
-    border-right: var(--assay-border);
+  .v-expansion-panel.v-expansion-panel--active {
+    border: 1px solid rgba(0, 0, 0, 0.2);
   }
 
-  .v-expansion-panel--active > .v-expansion-panel-title:not(.v-expansion-panel-title--static) {
-    background: var(--assay-bg-dark);
-    border-bottom: var(--assay-border);
-  }
-
-  /* spacing between panel buttons */
-  .assay-panel + .assay-panel {
-    margin-top: 8px;
+  .v-expansion-panel-title.v-expansion-panel-title--active {
+    background-color: rgba(var(--v-theme-on-surface), 0.03);
   }
 
   .assay-panel__content,
   .assay-panel__title {
-    padding: var(--assay-pad);
-  }
-
-  .assay-panel__title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .label {
-    font-weight: 400;
-    color: var(--assay-label-color);
-    font-size: 0.9rem !important;
-    text-transform: uppercase !important;
-  }
-
-  .value {
-    font-size: 0.95rem;
-    line-height: 1.4;
+    padding: 12px;
   }
 
   .assay-avatar {
-    width: var(--assay-avatar-size);
-    height: var(--assay-avatar-size);
+    width: 64px;
+    height: 64px;
     object-fit: contain;
-    padding: var(--assay-avatar-pad);
+    padding: 12px;
   }
 
   .assay-time-point {
@@ -195,6 +149,7 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+    padding-right:6px;
   }
 
   .media-title {
@@ -219,7 +174,7 @@
 
   /* Fixed size — won't grow or shrink */
   .assay-avatar {
-    flex: 0 0 65px; /* flex-grow: 0, flex-shrink: 0, flex-basis: 65px */
+    flex: 0 0 64px; /* flex-grow: 0, flex-shrink: 0, flex-basis: 64px */
   }
 
   /* Fills remaining space */
