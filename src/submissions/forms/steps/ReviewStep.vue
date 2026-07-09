@@ -38,8 +38,8 @@
         </template>
       </template>
 
-      <!-- Acknowledgments: grouped checklist -->
-      <template v-else-if="step.id === 'acknowledgments'">
+      <!-- Acknowledgements: grouped checklist -->
+      <template v-else-if="step.id === 'acknowledgements'">
         <div
           v-for="(items, section) in groupedAcknowledgments"
           :key="section"
@@ -64,7 +64,7 @@
           v-if="stepSummary(step.id).length === 0"
           class="text-medium-emphasis font-italic text-body-2"
         >
-          No acknowledgments confirmed
+          No acknowledgements confirmed
         </p>
       </template>
 
@@ -188,7 +188,7 @@
       },
       groupedAcknowledgments() {
         void this.nonReviewSnapshot; // ensure deep reactivity when checkboxes change
-        const items = this.stepSummary('acknowledgments');
+        const items = this.stepSummary('acknowledgements');
         return items.reduce((groups, item) => {
           const key = item.section ?? 'General';
           if (!groups[key]) groups[key] = [];
@@ -269,7 +269,7 @@
     font-size: 0.85rem;
   }
 
-  /* Acknowledgments checklist */
+  /* Acknowledgements checklist */
   .ack-section-label {
     font-size: 0.7rem;
     font-weight: 600;

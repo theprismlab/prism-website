@@ -5,7 +5,7 @@ export const FORM_STEPS = [
   { id: 'collaborator', title: 'Collaborator', icon: 'mdi-account-outline' },
   { id: 'institution', title: 'Institution', icon: 'mdi-office-building' },
   { id: 'testAgent', title: 'Test Agent', icon: 'mdi-flask-outline' },
-  { id: 'acknowledgments', title: 'Acknowledgments', icon: 'mdi-handshake-outline' },
+  { id: 'acknowledgements', title: 'Acknowledgements', icon: 'mdi-handshake-outline' },
   { id: 'review', title: 'Review & Submit', icon: 'mdi-check-circle-outline' },
 ];
 
@@ -48,7 +48,7 @@ export const useFormProgressStore = defineStore('formProgress', {
           openPanel: 0,
           completed: [],
           formData: Object.fromEntries(
-            FORM_STEPS.map((s) => [s.id, STEP_REGISTRY[s.id].getInitialData(screenType)])
+            FORM_STEPS.map((s) => [s.id, STEP_REGISTRY[s.id].getInitialData(screenType)]),
           ),
         };
       }

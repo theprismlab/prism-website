@@ -63,7 +63,7 @@ export function getTestData(screenType) {
       rows: [getTestAgentRow(screenType)],
       combinations: [],
     },
-    acknowledgments: {
+    acknowledgements: {
       acknowledgement1: true,
       acknowledgement2: true,
       acknowledgement3: true,
