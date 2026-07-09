@@ -41,7 +41,7 @@
       <!-- Acknowledgements: grouped checklist -->
       <template v-else-if="step.id === 'acknowledgements'">
         <div
-          v-for="(items, section) in groupedAcknowledgments"
+          v-for="(items, section) in groupedAcknowledgements"
           :key="section"
           class="ack-group mb-3"
         >
@@ -191,7 +191,7 @@
       allStepsValid() {
         return Object.values(this.stepValidity).every((v) => v);
       },
-      groupedAcknowledgments() {
+      groupedAcknowledgements() {
         void this.nonReviewSnapshot; // ensure deep reactivity when checkboxes change
         const items = this.stepSummary('acknowledgements');
         return items.reduce((groups, item) => {

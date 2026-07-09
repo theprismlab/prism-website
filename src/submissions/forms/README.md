@@ -23,7 +23,7 @@ submissions/
 │       ├── InstitutionStep.vue
 │       ├── TestAgentStep.vue
 │       ├── TestAgentTable.vue
-│       ├── AcknowledgmentsStep.vue
+│       ├── AcknowledgementsStep.vue
 │       └── ReviewStep.vue
 ```
 
@@ -91,7 +91,7 @@ rows — see the table below). `collaboratorSchema.js` and `reviewSchema.js` don
 institution fields for every screen. `acknowledgementsSchema.js` also doesn't take it: every
 screen shares the same acknowledgement fields, so unlike `testAgentSchema.js`'s
 `buildScreenFields(screenType)`, it exports a plain `getFields()` with no per-screen selection.
-(`screenType` is still passed as a _prop_ to `AcknowledgmentsStep.vue`, but only to build the
+(`screenType` is still passed as a _prop_ to `AcknowledgementsStep.vue`, but only to build the
 links into screen-specific instructions pages inside the acknowledgement text — not to choose
 which fields render.)
 

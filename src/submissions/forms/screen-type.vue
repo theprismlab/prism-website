@@ -93,7 +93,7 @@
   import CollaboratorStep from './steps/CollaboratorStep.vue';
   import InstitutionStep from './steps/InstitutionStep.vue';
   import TestAgentStep from './steps/TestAgentStep.vue';
-  import AcknowledgmentsStep from './steps/AcknowledgmentsStep.vue';
+  import AcknowledgementsStep from './steps/AcknowledgementsStep.vue';
   import ReviewStep from './steps/ReviewStep.vue';
 
   export default {
@@ -103,7 +103,7 @@
       CollaboratorStep,
       InstitutionStep,
       TestAgentStep,
-      AcknowledgmentsStep,
+      AcknowledgementsStep,
       ReviewStep,
     },
     setup() {
