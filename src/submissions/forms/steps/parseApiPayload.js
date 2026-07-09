@@ -101,10 +101,15 @@ export function parseFormDataForApi(formData, screenType, screenName) {
       project_goals: 'Testing. Field to be removed.', // to be removed
       supplier: 'Testing. Field to be removed.',
       supplier_catalog_name: 'Testing. Field to be removed.',
-      quote_acknowledgement: institution[INSTITUTION_FIELDS.QUOTE_ACKNOWLEDGEMENT.key] ?? '',
+      quote_acknowledgement:
+        institution[INSTITUTION_FIELDS.QUOTE_ACKNOWLEDGEMENT.key] === true
+          ? 'I acknowledge and agree'
+          : '',
       commercial_use: institution[INSTITUTION_FIELDS.COMMERCIAL_USE.key] ?? '',
       commercial_use_acknowledgement:
-        institution[INSTITUTION_FIELDS.COMMERCIAL_USE_ACKNOWLEDGEMENT.key] ?? '',
+        institution[INSTITUTION_FIELDS.COMMERCIAL_USE_ACKNOWLEDGEMENT.key] === true
+          ? 'I acknowledge and agree'
+          : '',
     },
     compounds,
     combinations:
@@ -116,6 +121,5 @@ export function parseFormDataForApi(formData, screenType, screenName) {
           )
         : [],
   };
-  // console.log(results);
   return results;
 }
