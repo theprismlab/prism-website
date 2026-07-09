@@ -82,8 +82,7 @@ export function parseFormDataForApi(formData, screenType, screenName) {
       supplier_catalog_name: 'Broad Institute of MIT and Harvard',
     };
   });
-
-  return {
+  const results = {
     compoundInfo: {
       screen: screenName,
       submission_type: screenType,
@@ -113,4 +112,5 @@ export function parseFormDataForApi(formData, screenType, screenName) {
           )
         : [],
   };
+  return results;
 }
