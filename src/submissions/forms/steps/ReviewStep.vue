@@ -45,14 +45,14 @@
           :key="section"
           class="ack-group mb-3"
         >
-          <p class="ack-section-label text-medium-emphasis mb-1">{{ section }}</p>
+          <p class="prism-text-body-medium font-weight-bold mb-1">{{ section }}</p>
           <div v-for="item in items" :key="item.label" class="ack-item mb-2">
-            <p class="text-body-2 mb-0">{{ item.label }}</p>
+            <p class="prism-text-body-medium text-medium-emphasis mb-1">{{ item.label }}</p>
             <p
-              class="text-caption font-weight-medium mb-0"
+              class="prism-text-body-medium mt-1 mb-4 ml-2"
               :class="
-                item.value === 'Confirmed'
-                  ? 'text-teal-accent-4'
+                item.value === 'I acknowledge and agree'
+                  ? 'text-teal'
                   : 'text-medium-emphasis font-italic'
               "
             >

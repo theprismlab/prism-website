@@ -89,7 +89,7 @@ export function getSummary(data) {
     .map((f) => {
       const raw = data[f.key];
       let value;
-      if (raw === true) value = 'Confirmed';
+      if (raw === true) value = 'I acknowledge and agree';
       else if (raw === false || raw === '' || raw == null) value = 'No response';
       else value = f.format ? (f.format(raw) ?? String(raw)) : String(raw);
       return { label: f.label, value };

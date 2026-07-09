@@ -83,7 +83,7 @@ export function getSummary(data) {
   return getFields().map((f) => ({
     section: f.section,
     label: f.description.replace(/<[^>]+>/g, ''),
-    value: data[f.key] ? 'Confirmed' : 'No response',
+    value: data[f.key] ? 'I acknowledge and agree' : 'No response',
   }));
 }
 
