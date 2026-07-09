@@ -9,7 +9,7 @@ import { getFields as getAcknowledgementFields } from './acknowledgementsSchema.
 export function parseFormDataForApi(formData, screenType, screenName) {
   const collaborator = formData.collaborator ?? {};
   const institution = formData.institution ?? {};
-  const acknowledgments = formData.acknowledgments ?? {};
+  const acknowledgements = formData.acknowledgements ?? {};
   const testAgent = formData.testAgent ?? { rows: [], combinations: [] };
 
   const collaboratorTypeKey = institution[INSTITUTION_FIELDS.INSTITUTION_TYPE.key];
@@ -38,7 +38,7 @@ export function parseFormDataForApi(formData, screenType, screenName) {
   const ackFields = getAcknowledgementFields();
   const agreements = {};
   for (const f of ackFields) {
-    if (acknowledgments[f.key]) {
+    if (acknowledgements[f.key]) {
       const cleanDesc = f.description
         .replace(/<[^>]+>/g, '')
         .replace(/\{screenType\}/g, screenType);

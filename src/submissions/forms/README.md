@@ -31,13 +31,13 @@ submissions/
 
 Steps are defined in `store.js` as `FORM_STEPS` (ordered array) and wired up in `steps/registry.js`:
 
-| Step ID          | Title            | Schema file                  |
-|------------------|------------------|------------------------------|
-| `collaborator`   | Collaborator     | `collaboratorSchema.js`      |
-| `institution`    | Institution      | `institutionSchema.js`       |
-| `testAgent`      | Test Agent       | `testAgentSchema.js`         |
-| `acknowledgments`| Acknowledgments  | `acknowledgementsSchema.js`  |
-| `review`         | Review & Submit  | `reviewSchema.js`            |
+| Step ID            | Title            | Schema file                 |
+| ------------------ | ---------------- | --------------------------- |
+| `collaborator`     | Collaborator     | `collaboratorSchema.js`     |
+| `institution`      | Institution      | `institutionSchema.js`      |
+| `testAgent`        | Test Agent       | `testAgentSchema.js`        |
+| `acknowledgements` | Acknowledgements | `acknowledgementsSchema.js` |
+| `review`           | Review & Submit  | `reviewSchema.js`           |
 
 The review step behaves differently from the others — it owns its own Submit button and does not use the shared Continue button rendered by `screen-type.vue`.
 
@@ -46,6 +46,7 @@ The review step behaves differently from the others — it owns its own Submit b
 `ReviewStep.vue` renders a summary of all previous steps, a confirmation checkbox, and a Submit button.
 
 **Flow:**
+
 1. User reads the summary tables (pulled from each step's `getSummary`).
 2. User checks "I have reviewed my submission and confirm it is correct." — this sets `data.reviewed = true`, which causes the live-validation watcher to mark the step Done.
 3. User clicks Submit. The button is disabled until the checkbox is checked.
@@ -90,7 +91,7 @@ rows — see the table below). `collaboratorSchema.js` and `reviewSchema.js` don
 institution fields for every screen. `acknowledgementsSchema.js` also doesn't take it: every
 screen shares the same acknowledgement fields, so unlike `testAgentSchema.js`'s
 `buildScreenFields(screenType)`, it exports a plain `getFields()` with no per-screen selection.
-(`screenType` is still passed as a *prop* to `AcknowledgmentsStep.vue`, but only to build the
+(`screenType` is still passed as a _prop_ to `AcknowledgmentsStep.vue`, but only to build the
 links into screen-specific instructions pages inside the acknowledgement text — not to choose
 which fields render.)
 
@@ -108,13 +109,13 @@ form steps documented here — see [../SCREEN_STATUS_MIGRATION.md](../SCREEN_STA
 
 **Test agent requirements by screen type** (`SCREEN_CONFIG` in `testAgentSchema.js`):
 
-| Type | Solvent | Stock multiplier | Min amount | Notes |
-|------|---------|-----------------|------------|-------|
-| MTS  | DMSO    | 1000×           | 150 uL     | —     |
-| CPS  | DMSO    | 1000×           | 150 uL solo / 400 uL × combo slots | Supports Drug A/B combination rows |
-| EPS  | DMSO    | 1000×           | 600 uL (≥3× dilution) / 720 uL (2×) | Dilution factor field |
-| APS  | Aqueous | 250×            | 1000 uL    | Unit pairs: uM→mM, ug/mL→mg/mL |
-| AIR  | Aqueous | 500×            | 500 uL     | Top dose capped at 2 ug/mL |
+| Type | Solvent | Stock multiplier | Min amount                          | Notes                              |
+| ---- | ------- | ---------------- | ----------------------------------- | ---------------------------------- |
+| MTS  | DMSO    | 1000×            | 150 uL                              | —                                  |
+| CPS  | DMSO    | 1000×            | 150 uL solo / 400 uL × combo slots  | Supports Drug A/B combination rows |
+| EPS  | DMSO    | 1000×            | 600 uL (≥3× dilution) / 720 uL (2×) | Dilution factor field              |
+| APS  | Aqueous | 250×             | 1000 uL                             | Unit pairs: uM→mM, ug/mL→mg/mL     |
+| AIR  | Aqueous | 500×             | 500 uL                              | Top dose capped at 2 ug/mL         |
 
 ## State management (`store.js`)
 
@@ -127,20 +128,20 @@ draft.
 store.screens[screenName] = {
   openPanel: number,       // which accordion panel is expanded
   completed: number[],     // indices of steps that passed validation
-  formData: { collaborator, institution, testAgent, acknowledgments, review }
+  formData: { collaborator, institution, testAgent, acknowledgements, review }
 }
 ```
 
 Key store actions — `screenType` is only needed the first time a screen is touched, to build
 the right initial form shape (schemas key off the type, not the specific screen name):
 
-| Action | Effect |
-|--------|--------|
-| `_ensure(screenName, screenType)` | Initialises state for a screen if not already present |
-| `completeStep(screenName, screenType, i)` | Marks step `i` complete and advances `openPanel` |
-| `uncompleteStep(screenName, i)` | Removes step `i` from `completed` (called when live validation detects a regression) |
-| `markStepValid(screenName, screenType, i)` | Marks a step complete without advancing the panel |
-| `setOpenPanel(screenName, screenType, i)` | Manually opens a panel (accordion click), but only if `i` is not beyond the first incomplete step — see below |
+| Action                                     | Effect                                                                                                        |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `_ensure(screenName, screenType)`          | Initialises state for a screen if not already present                                                         |
+| `completeStep(screenName, screenType, i)`  | Marks step `i` complete and advances `openPanel`                                                              |
+| `uncompleteStep(screenName, i)`            | Removes step `i` from `completed` (called when live validation detects a regression)                          |
+| `markStepValid(screenName, screenType, i)` | Marks a step complete without advancing the panel                                                             |
+| `setOpenPanel(screenName, screenType, i)`  | Manually opens a panel (accordion click), but only if `i` is not beyond the first incomplete step — see below |
 
 `screen-type.vue` runs a deep watcher on `formData` to auto-complete or auto-invalidate steps as the user types, so the "Done" chip stays in sync without requiring the user to click Continue.
 
@@ -158,14 +159,15 @@ one step, which is always allowed.
 ## Validation helpers (`validationHelpers.js`)
 
 ```js
-required(val)      // → 'Required' | undefined
-validEmail(val)    // → 'Invalid email address' | undefined
-validNumber(val)   // → 'Must be a number' | undefined
+required(val); // → 'Required' | undefined
+validEmail(val); // → 'Invalid email address' | undefined
+validNumber(val); // → 'Must be a number' | undefined
 ```
 
 Chain validators with `||`:
+
 ```js
-required(val) || validEmail(val)
+required(val) || validEmail(val);
 ```
 
 ## Adding a new step

@@ -5,7 +5,7 @@ export const FORM_STEPS = [
   { id: 'collaborator', title: 'Collaborator', icon: 'mdi-account-outline' },
   { id: 'institution', title: 'Institution', icon: 'mdi-office-building' },
   { id: 'testAgent', title: 'Test Agent', icon: 'mdi-flask-outline' },
-  { id: 'acknowledgments', title: 'Acknowledgments', icon: 'mdi-handshake-outline' },
+  { id: 'acknowledgements', title: 'Acknowledgements', icon: 'mdi-handshake-outline' },
   { id: 'review', title: 'Review & Submit', icon: 'mdi-check-circle-outline' },
 ];
 
@@ -48,7 +48,7 @@ export const useFormProgressStore = defineStore('formProgress', {
           openPanel: 0,
           completed: [],
           formData: Object.fromEntries(
-            FORM_STEPS.map((s) => [s.id, STEP_REGISTRY[s.id].getInitialData(screenType)])
+            FORM_STEPS.map((s) => [s.id, STEP_REGISTRY[s.id].getInitialData(screenType)]),
           ),
         };
       }
@@ -79,6 +79,11 @@ export const useFormProgressStore = defineStore('formProgress', {
       this._ensure(screenName, screenType);
       const s = this.screens[screenName];
       if (!s.completed.includes(index)) s.completed.push(index);
+    },
+    // Called after a successful submission so a revisit of this screen starts from a blank form
+    // instead of showing the just-submitted (and now stale) responses.
+    resetScreen(screenName) {
+      delete this.screens[screenName];
     },
   },
 });

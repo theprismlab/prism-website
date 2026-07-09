@@ -38,8 +38,8 @@
         </template>
       </template>
 
-      <!-- Acknowledgments: grouped checklist -->
-      <template v-else-if="step.id === 'acknowledgments'">
+      <!-- Acknowledgements: grouped checklist -->
+      <template v-else-if="step.id === 'acknowledgements'">
         <div
           v-for="(items, section) in groupedAcknowledgments"
           :key="section"
@@ -64,7 +64,7 @@
           v-if="stepSummary(step.id).length === 0"
           class="text-medium-emphasis font-italic text-body-2"
         >
-          No acknowledgments confirmed
+          No acknowledgements confirmed
         </p>
       </template>
 
@@ -126,7 +126,7 @@
 </template>
 
 <script>
-  import { FORM_STEPS } from '@/submissions/store';
+  import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { STEP_REGISTRY } from './registry';
   import { buildScreenFields, buildCombinationFields } from './testAgentSchema.js';
   import { parseFormDataForApi } from './parseApiPayload.js';
@@ -140,6 +140,11 @@
       errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
       screenName: { type: String, default: null },
+    },
+    setup() {
+      return {
+        formStore: useFormProgressStore(),
+      };
     },
     mounted() {
       if (!this.allStepsValid && this.data.reviewed) {
@@ -188,7 +193,7 @@
       },
       groupedAcknowledgments() {
         void this.nonReviewSnapshot; // ensure deep reactivity when checkboxes change
-        const items = this.stepSummary('acknowledgments');
+        const items = this.stepSummary('acknowledgements');
         return items.reduce((groups, item) => {
           const key = item.section ?? 'General';
           if (!groups[key]) groups[key] = [];
@@ -241,6 +246,7 @@
       closeDialog() {
         this.showDialog = false;
         if (this.dialogSuccess) {
+          this.formStore.resetScreen(this.screenName);
           this.$router.push('/submission-hub/overview');
         }
       },
@@ -269,7 +275,7 @@
     font-size: 0.85rem;
   }
 
-  /* Acknowledgments checklist */
+  /* Acknowledgements checklist */
   .ack-section-label {
     font-size: 0.7rem;
     font-weight: 600;

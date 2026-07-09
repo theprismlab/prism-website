@@ -18,10 +18,7 @@ import {
   getSummary as acknowledgementsSummary,
   validate as acknowledgementsValidate,
 } from './acknowledgementsSchema.js';
-import {
-  getInitialData as reviewInit,
-  validate as reviewValidate,
-} from './reviewSchema.js';
+import { getInitialData as reviewInit, validate as reviewValidate } from './reviewSchema.js';
 
 export const STEP_REGISTRY = {
   collaborator: {
@@ -39,7 +36,7 @@ export const STEP_REGISTRY = {
     getSummary: testAgentSummary,
     validate: testAgentValidate,
   },
-  acknowledgments: {
+  acknowledgements: {
     getInitialData: acknowledgementsInit,
     getSummary: acknowledgementsSummary,
     validate: acknowledgementsValidate,

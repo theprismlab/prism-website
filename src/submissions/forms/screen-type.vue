@@ -56,10 +56,10 @@
                 :screen-type="screenType"
                 :submitted="attemptedSteps[i] ?? 0"
               />
-              <acknowledgments-step
-                v-else-if="step.id === 'acknowledgments'"
-                :data="fd.acknowledgments"
-                :errors="stepErrors.acknowledgments || {}"
+              <acknowledgements-step
+                v-else-if="step.id === 'acknowledgements'"
+                :data="fd.acknowledgements"
+                :errors="stepErrors.acknowledgements || {}"
                 :screen-type="screenType"
               />
               <review-step
