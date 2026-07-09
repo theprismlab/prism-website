@@ -126,7 +126,7 @@
 </template>
 
 <script>
-  import { FORM_STEPS } from '@/submissions/store';
+  import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { STEP_REGISTRY } from './registry';
   import { buildScreenFields, buildCombinationFields } from './testAgentSchema.js';
   import { parseFormDataForApi } from './parseApiPayload.js';
@@ -140,6 +140,11 @@
       errors: { type: Object, default: () => ({}) },
       screenType: { type: String, default: null },
       screenName: { type: String, default: null },
+    },
+    setup() {
+      return {
+        formStore: useFormProgressStore(),
+      };
     },
     mounted() {
       if (!this.allStepsValid && this.data.reviewed) {
@@ -241,6 +246,7 @@
       closeDialog() {
         this.showDialog = false;
         if (this.dialogSuccess) {
+          this.formStore.resetScreen(this.screenName);
           this.$router.push('/submission-hub/overview');
         }
       },

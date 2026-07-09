@@ -80,5 +80,10 @@ export const useFormProgressStore = defineStore('formProgress', {
       const s = this.screens[screenName];
       if (!s.completed.includes(index)) s.completed.push(index);
     },
+    // Called after a successful submission so a revisit of this screen starts from a blank form
+    // instead of showing the just-submitted (and now stale) responses.
+    resetScreen(screenName) {
+      delete this.screens[screenName];
+    },
   },
 });
