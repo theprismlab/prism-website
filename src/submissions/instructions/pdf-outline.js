@@ -1,16 +1,18 @@
 import * as pdfjsLib from 'pdfjs-dist';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
-
+// Same-origin path, proxied to assets.clue.io by vite.config.mjs (dev) and
+// website.conf (prod nginx) — see the comment on fetchOutline() below for why.
+const PDF_BASE_URL = '/pdf-assets/prism/compound-submission/';
 export const PDF_PATHS = {
   TEST_AGENT: {
-    AIR: '/pdfs/instructions/PRISM AIR _ Submission Information (7.2026).pdf',
-    APS: '/pdfs/instructions/PRISM APS _ Submission Information (7.2026).pdf',
-    MTS: '/pdfs/instructions/PRISM MTS _ Submission Information (7.2026).pdf',
-    CPS: '/pdfs/instructions/PRISM CPS _ Submission Information (7.2026).pdf',
-    EPS: '/pdfs/instructions/PRISM EPS _ Submission Information (7.2026).pdf',
+    AIR: `${PDF_BASE_URL}PRISM-AIR-Submission-Information.pdf`,
+    APS: `${PDF_BASE_URL}PRISM-APS-Submission-Information.pdf`,
+    MTS: `${PDF_BASE_URL}PRISM-MTS-Submission-Information.pdf`,
+    CPS: `${PDF_BASE_URL}PRISM-CPS-Submission-Information.pdf`,
+    EPS: `${PDF_BASE_URL}PRISM-EPS-Submission-Information.pdf`,
   },
-  SHIPPING: '/pdfs/instructions/Shipping Information for PRISM Screens (7.2026).pdf',
+  SHIPPING: `${PDF_BASE_URL}Shipping-Information-for-PRISM-Screens.pdf`,
 };
 
 const cache = new Map();
@@ -54,8 +56,17 @@ export function flattenOutline(items) {
   return out;
 }
 
+// assets.clue.io's CloudFront distribution intermittently serves cached PDF
+// responses missing Access-Control-Allow-Origin — its cache key doesn't vary
+// on the Origin request header, so whichever request first populated the
+// cache for a given PDF "wins" for everyone afterward regardless of whether
+// their own request carried an Origin header. That's sticky per edge node,
+// not random per-request, so there's no reliable per-request fix (retries,
+// cache-busting query params) — hence PDF_BASE_URL routing this same-origin
+// through our own proxy instead of hitting assets.clue.io directly from the
+// browser, sidestepping CORS entirely.
 async function fetchOutline(url) {
-  const pdf = await pdfjsLib.getDocument({ url }).promise;
+  const pdf = await pdfjsLib.getDocument({ url, disableRange: true, disableStream: true }).promise;
   const outline = await pdf.getOutline();
   if (!outline || outline.length === 0) return [];
   const namedDestIndex = await buildNamedDestIndex(pdf);

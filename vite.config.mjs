@@ -75,6 +75,16 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    proxy: {
+      // Proxied same-origin so pdf.js's outline-extraction fetch() never hits
+      // assets.clue.io directly — see the comment on PDF_BASE_URL in
+      // src/submissions/instructions/pdf-outline.js for why.
+      '/pdf-assets': {
+        target: 'https://assets.clue.io',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/pdf-assets/, ''),
+      },
+    },
   },
   css: {
     preprocessorOptions: {

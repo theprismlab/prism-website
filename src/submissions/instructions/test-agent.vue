@@ -37,12 +37,8 @@
       },
       pdfUrl() {
         if (!this.pdfPath) return null;
-        const encoded = this.pdfPath
-          .split('/')
-          .map((s) => encodeURIComponent(s))
-          .join('/');
         const hash = this.currentPage ? this.currentPage.hash : '';
-        return hash ? `${encoded}#${hash}` : encoded;
+        return hash ? `${this.pdfPath}#${hash}` : this.pdfPath;
       },
       iframeKey() {
         return this.currentPage ? this.currentPage.key : 'default';
