@@ -317,11 +317,11 @@
         this.$nextTick(() => this.updateScrollToResultsButtonVisibility());
       },
       getLayoutTopOffset() {
-        return (
-          parseFloat(
-            getComputedStyle(document.documentElement).getPropertyValue('--v-toolbar-height'),
-          ) || 0
-        );
+        const rootStyles = getComputedStyle(document.documentElement);
+        const appBarHeight = parseFloat(rootStyles.getPropertyValue('--app-bar-height')) || 0;
+        const topBannerHeight =
+          parseFloat(rootStyles.getPropertyValue('--prism-top-banner-height')) || 0;
+        return appBarHeight + topBannerHeight;
       },
       openFilterPanel() {
         this.syncDraftFromApplied();
@@ -428,7 +428,9 @@
 <style scoped>
   .publications-explorer {
     position: relative;
-    --publications-layout-top: var(--v-toolbar-height, 0px);
+    --publications-layout-top: calc(
+      var(--app-bar-height, 0px) + var(--prism-top-banner-height, 0px)
+    );
     --publications-banner-height: 70px;
     --publications-layout-padding-top: 1.5rem;
     --publications-layout-padding-bottom: 3rem;

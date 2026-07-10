@@ -1,24 +1,29 @@
 <template>
   <v-app :style="cssProps">
-    <TheAppBar />
+    <TheAppBanner v-if="showBanner" @dismiss="showBanner = false" />
+    <TheAppBar :has-banner="showBanner" />
     <router-view />
   </v-app>
 </template>
 
 <script>
-import TheAppBar from '@/components/TheAppBar.vue';
-
-export default {
-  components: { TheAppBar },
-  computed: {
-    cssProps() {
-      var themeColors = {};
-      Object.keys(this.$vuetify.theme.themes.light.colors).forEach((color) => {
-        themeColors[`--v-${color}`] = this.$vuetify.theme.themes.light.colors[color];
-      });
-      return themeColors;
+  import TheAppBar from '@/components/TheAppBar.vue';
+  import TheAppBanner from '@/components/TheAppBanner.vue';
+  export default {
+    components: { TheAppBar, TheAppBanner },
+    data() {
+      return {
+        showBanner: true,
+      };
     },
-  },
-};
+    computed: {
+      cssProps() {
+        var themeColors = {};
+        Object.keys(this.$vuetify.theme.themes.light.colors).forEach((color) => {
+          themeColors[`--v-${color}`] = this.$vuetify.theme.themes.light.colors[color];
+        });
+        return themeColors;
+      },
+    },
+  };
 </script>
-

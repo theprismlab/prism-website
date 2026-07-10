@@ -1,18 +1,23 @@
 <template>
   <v-app-bar app clipped-left color="white" elevation="0" height="64">
-    <prism-app-bar site="marketing" :base-url="baseUrl" />
+    <prism-app-bar site="marketing" :base-url="baseUrl" :has-banner="hasBanner" />
   </v-app-bar>
 </template>
 
 <script>
   export default {
     name: 'TheAppBar',
+    props: {
+      hasBanner: {
+        type: Boolean,
+        default: false,
+      },
+    },
     data() {
       return {
         baseUrl: window.location.origin,
       };
     },
-    computed: {},
   };
 </script>
 
@@ -41,6 +46,20 @@
   .v-app-bar,
   .v-app-bar .v-toolbar__content {
     overflow: visible !important;
+  }
+
+  /*
+ * v-app-bar is always position:fixed at top:0 with a z-index well above
+ * prism-top-banner's, so it paints over the banner regardless of DOM
+ * order. Reuse the height var prism-top-banner already maintains to push
+ * the bar (and v-main, so page content isn't tucked underneath it) down
+ * by the banner's height, and back to 0 once it's dismissed.
+ */
+  .v-app-bar {
+    top: var(--prism-top-banner-height, 0px) !important;
+  }
+  .v-main {
+    margin-top: var(--prism-top-banner-height, 0px);
   }
 
   /* Z-index scale: 100 = mobile nav backdrop, 110 = mobile nav drawer panel */
