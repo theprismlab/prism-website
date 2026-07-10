@@ -48,19 +48,6 @@
     overflow: visible !important;
   }
 
-  /*
- * v-app-bar is always position:fixed at top:0 with a z-index well above
- * prism-top-banner's, so it paints over the banner regardless of DOM
- * order. Reuse the height var prism-top-banner already maintains to push
- * the bar down by the banner's height, and back to 0 once it's dismissed.
- * v-main needs no equivalent offset: the banner is a normal in-flow
- * sibling before it, so v-main already starts right below it — adding
- * margin-top here would double-count the banner's height.
- */
-  .v-app-bar {
-    top: var(--prism-top-banner-height, 0px) !important;
-  }
-
   /* Z-index scale: 100 = mobile nav backdrop, 110 = mobile nav drawer panel */
   .prism-nav-drawer__backdrop {
     z-index: 100 !important;

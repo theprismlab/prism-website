@@ -317,11 +317,11 @@
         this.$nextTick(() => this.updateScrollToResultsButtonVisibility());
       },
       getLayoutTopOffset() {
-        const rootStyles = getComputedStyle(document.documentElement);
-        const appBarHeight = parseFloat(rootStyles.getPropertyValue('--app-bar-height')) || 0;
-        const topBannerHeight =
-          parseFloat(rootStyles.getPropertyValue('--prism-top-banner-height')) || 0;
-        return appBarHeight + topBannerHeight;
+        // --v-layout-top is set via inline style on .v-main by Vuetify's layout
+        // system, so it's only visible to .v-main's descendants — this.$el
+        // qualifies (this component renders inside <router-view> inside
+        // <v-main>), but document.documentElement, an ancestor, would not.
+        return parseFloat(getComputedStyle(this.$el).getPropertyValue('--v-layout-top')) || 0;
       },
       openFilterPanel() {
         this.syncDraftFromApplied();
@@ -428,9 +428,7 @@
 <style scoped>
   .publications-explorer {
     position: relative;
-    --publications-layout-top: calc(
-      var(--app-bar-height, 0px) + var(--prism-top-banner-height, 0px)
-    );
+    --publications-layout-top: var(--v-layout-top, 0px);
     --publications-banner-height: 70px;
     --publications-layout-padding-top: 1.5rem;
     --publications-layout-padding-bottom: 3rem;

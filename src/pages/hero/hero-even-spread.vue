@@ -27,7 +27,7 @@ export default {
 .hero-section {
   display: grid;
   margin-bottom: 100px;
-  height: calc(100dvh - var(--app-bar-height) - var(--prism-top-banner-height, 0px));
+  height: calc(100dvh - var(--v-layout-top));
   overflow: hidden;
   > * {
     grid-area: 1 / 1;
