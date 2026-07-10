@@ -66,7 +66,7 @@ export function flattenOutline(items) {
 // through our own proxy instead of hitting assets.clue.io directly from the
 // browser, sidestepping CORS entirely.
 async function fetchOutline(url) {
-  const pdf = await pdfjsLib.getDocument({ url, disableRange: true, disableStream: true }).promise;
+  const pdf = await pdfjsLib.getDocument({ url }).promise;
   const outline = await pdf.getOutline();
   if (!outline || outline.length === 0) return [];
   const namedDestIndex = await buildNamedDestIndex(pdf);
