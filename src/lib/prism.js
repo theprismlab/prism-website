@@ -1145,7 +1145,7 @@ function xe(e, t, r, f, d, i) {
     })
   ], 2);
 }
-const x = /* @__PURE__ */ m(de, [["render", xe], ["__scopeId", "data-v-261f17b0"]]);
+const x = /* @__PURE__ */ m(de, [["render", xe], ["__scopeId", "data-v-045b520e"]]);
 x.install = function(t) {
   t.component(x.name, x);
 };

@@ -30,7 +30,7 @@
   }
   #hero-section {
     display: grid;
-    height: calc(100vh - var(--app-bar-height));
+    height: calc(100vh - var(--app-bar-height) - var(--prism-top-banner-height, 0px));
     overflow: hidden;
     margin: 0px;
   }
