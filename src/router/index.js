@@ -39,6 +39,10 @@ const routes = [
     },
   },
   {
+    path: '/consortium-screens/assays2',
+    component: () => import('@/pages/consortium-screens/assays2.vue'),
+  },
+  {
     path: '/consortium-screens/cell-line-collection',
     component: () => import('@/pages/consortium-screens/cell-line-collection.vue'),
     meta: {
@@ -200,7 +204,10 @@ const routes = [
 
 const redirects = [
   { path: '/submissions', redirect: '/submission-hub/overview' },
-  { path: '/submissions/:pathMatch(.*)*', redirect: (to) => `/submission-hub/${[].concat(to.params.pathMatch).join('/')}` },
+  {
+    path: '/submissions/:pathMatch(.*)*',
+    redirect: (to) => `/submission-hub/${[].concat(to.params.pathMatch).join('/')}`,
+  },
   { path: '/submission-hub', redirect: '/submission-hub/overview' },
   { path: '/research/white-papers', redirect: '/publications' },
   { path: '/research/conference-abstracts', redirect: '/publications' },
