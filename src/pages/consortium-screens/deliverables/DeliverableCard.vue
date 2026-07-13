@@ -24,8 +24,8 @@
     },
     props: {
       title: {
-        type: Object,
-        default: () => {},
+        type: String,
+        default: '',
       },
       icon: {
         type: Object,
