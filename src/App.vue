@@ -16,7 +16,8 @@
     components: { TheAppBar, TheAppBanner },
     data() {
       return {
-        showBanner: localStorage.getItem(SHOW_BANNER_KEY) !== 'false',
+        // showBanner: localStorage.getItem(SHOW_BANNER_KEY) !== 'false',
+        showBanner: sessionStorage.getItem(SHOW_BANNER_KEY) !== 'false',
       };
     },
     computed: {
@@ -28,24 +29,26 @@
         return themeColors;
       },
     },
-    mounted() {
-      window.addEventListener('storage', this.onStorageChange);
-    },
-    beforeUnmount() {
-      window.removeEventListener('storage', this.onStorageChange);
-    },
+    // mounted() {
+    //   window.addEventListener('storage', this.onStorageChange);
+    // },
+    // beforeUnmount() {
+    //   window.removeEventListener('storage', this.onStorageChange);
+    // },
     methods: {
       dismissBanner() {
         this.showBanner = false;
-        localStorage.setItem(SHOW_BANNER_KEY, 'false');
+        // localStorage.setItem(SHOW_BANNER_KEY, 'false');
+        sessionStorage.setItem(SHOW_BANNER_KEY, 'false');
       },
       // 'storage' only fires for changes made in *other* tabs/apps, so this
       // is what lets a dismissal there propagate here without a reload.
-      onStorageChange(event) {
-        if (event.key === SHOW_BANNER_KEY) {
-          this.showBanner = event.newValue !== 'false';
-        }
-      },
+      // Not usable with sessionStorage (it's per-tab), so this listener is disabled.
+      // onStorageChange(event) {
+      //   if (event.key === SHOW_BANNER_KEY) {
+      //     this.showBanner = event.newValue !== 'false';
+      //   }
+      // },
     },
   };
 </script>

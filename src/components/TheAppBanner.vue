@@ -1,10 +1,12 @@
 <template>
   <v-system-bar :height="bannerHeight" color="transparent">
     <prism-top-banner ref="bannerContent" variant="primary" @dismiss="$emit('dismiss')">
-      <p class="prism-text-body-xlarge">
+      <p class="prism-text-title-large py-2">
         The submission window for MTS033 is now open! Visit our
         <a href="/submission-hub" target="_blank" rel="noopener noreferrer">
-          Submission Hub<v-icon size="small" color="#ffe5ad">mdi-arrow-top-right</v-icon>
+          Submission Hub<v-icon size="1.5rem" color="#ffe5ad" style="margin-right: 4px"
+            >mdi-arrow-top-right</v-icon
+          >
         </a>
         for more information.
       </p>
