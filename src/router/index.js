@@ -38,10 +38,10 @@ const routes = [
       ],
     },
   },
-  {
-    path: '/consortium-screens/assays2',
-    component: () => import('@/pages/consortium-screens/assays2.vue'),
-  },
+  // {
+  //   path: '/consortium-screens/assays2',
+  //   component: () => import('@/pages/consortium-screens/assays2.vue'),
+  // },
   {
     path: '/consortium-screens/cell-line-collection',
     component: () => import('@/pages/consortium-screens/cell-line-collection.vue'),
@@ -85,16 +85,16 @@ const routes = [
 
   { path: '/contact-us', component: () => import('@/pages/contact-us.vue') },
 
-  {
-    path: '/faq',
-    component: () => import('@/pages/faq.vue'),
-    meta: {
-      breadcrumbs: () => [
-        { title: 'Resources', disabled: true },
-        { title: 'FAQ', disabled: true },
-      ],
-    },
-  },
+  // {
+  //   path: '/faq',
+  //   component: () => import('@/pages/faq.vue'),
+  //   meta: {
+  //     breadcrumbs: () => [
+  //       { title: 'Resources', disabled: true },
+  //       { title: 'FAQ', disabled: true },
+  //     ],
+  //   },
+  // },
   {
     path: '/webinars',
     component: () => import('@/pages/webinars.vue'),
