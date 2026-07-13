@@ -34,8 +34,16 @@
         this.bannerHeight = contentEl.getBoundingClientRect().height;
       });
       this._resizeObserver.observe(contentEl);
+      // On a hard page load, web fonts can still be loading when the measurement
+      // above runs, locking in a too-small height (the box doesn't resize again on
+      // its own, so the ResizeObserver never corrects it). Re-measure once fonts
+      // are actually ready to catch that case.
+      document.fonts?.ready?.then(() => {
+        if (!this._unmounted) this.bannerHeight = contentEl.getBoundingClientRect().height;
+      });
     },
     beforeUnmount() {
+      this._unmounted = true;
       this._resizeObserver?.disconnect();
     },
   };
