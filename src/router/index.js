@@ -38,6 +38,10 @@ const routes = [
       ],
     },
   },
+  // {
+  //   path: '/consortium-screens/assays2',
+  //   component: () => import('@/pages/consortium-screens/assays2.vue'),
+  // },
   {
     path: '/consortium-screens/cell-line-collection',
     component: () => import('@/pages/consortium-screens/cell-line-collection.vue'),
@@ -81,16 +85,16 @@ const routes = [
 
   { path: '/contact-us', component: () => import('@/pages/contact-us.vue') },
 
-  {
-    path: '/faq',
-    component: () => import('@/pages/faq.vue'),
-    meta: {
-      breadcrumbs: () => [
-        { title: 'Resources', disabled: true },
-        { title: 'FAQ', disabled: true },
-      ],
-    },
-  },
+  // {
+  //   path: '/faq',
+  //   component: () => import('@/pages/faq.vue'),
+  //   meta: {
+  //     breadcrumbs: () => [
+  //       { title: 'Resources', disabled: true },
+  //       { title: 'FAQ', disabled: true },
+  //     ],
+  //   },
+  // },
   {
     path: '/webinars',
     component: () => import('@/pages/webinars.vue'),
@@ -200,7 +204,10 @@ const routes = [
 
 const redirects = [
   { path: '/submissions', redirect: '/submission-hub/overview' },
-  { path: '/submissions/:pathMatch(.*)*', redirect: (to) => `/submission-hub/${[].concat(to.params.pathMatch).join('/')}` },
+  {
+    path: '/submissions/:pathMatch(.*)*',
+    redirect: (to) => `/submission-hub/${[].concat(to.params.pathMatch).join('/')}`,
+  },
   { path: '/submission-hub', redirect: '/submission-hub/overview' },
   { path: '/research/white-papers', redirect: '/publications' },
   { path: '/research/conference-abstracts', redirect: '/publications' },

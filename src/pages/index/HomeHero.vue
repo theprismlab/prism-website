@@ -30,7 +30,7 @@
   }
   #hero-section {
     display: grid;
-    height: calc(100vh - var(--v-layout-top, 64px));
+    height: calc(100vh - var(--v-layout-top));
     overflow: hidden;
     margin: 0px;
   }

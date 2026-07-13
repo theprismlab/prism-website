@@ -1,7 +1,7 @@
 export const STATUS_META = {
   OPEN: {
     key: 'open',
-    label: 'Open Window',
+    label: 'Window Open',
     color: 'teal-accent-4',
   },
   'IN-PROGRESS': {

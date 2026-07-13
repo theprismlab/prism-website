@@ -1,18 +1,23 @@
 <template>
   <v-app-bar app clipped-left color="white" elevation="0" height="64">
-    <prism-app-bar site="marketing" :base-url="baseUrl" />
+    <prism-app-bar site="marketing" :base-url="baseUrl" :has-banner="hasBanner" />
   </v-app-bar>
 </template>
 
 <script>
   export default {
     name: 'TheAppBar',
+    props: {
+      hasBanner: {
+        type: Boolean,
+        default: false,
+      },
+    },
     data() {
       return {
         baseUrl: window.location.origin,
       };
     },
-    computed: {},
   };
 </script>
 
