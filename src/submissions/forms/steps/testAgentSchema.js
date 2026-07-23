@@ -368,6 +368,7 @@ export function getSummary(data) {
 
 export function validate(data, screenType) {
   const rows = data.rows ?? [];
+  const compoundNames = rows.map((r) => r.compound_name).filter(Boolean);
   const errors = {};
 
   // Validate each compound row individually
@@ -400,12 +401,10 @@ export function validate(data, screenType) {
         }
       }
 
-      // Every test agent must be used as Drug A or Drug B in at least one combination
-      const usedInCombination = data.combinations.some(
-        (r) => r.druga === row.compound_name || r.drugb === row.compound_name,
-      );
+      // Every test agent must be used as Drug A in at least one combination
+      const usedInCombination = data.combinations.some((r) => r.druga === row.compound_name);
       if (!usedInCombination) {
-        screenErrors.compound_name = 'Must be used as Drug A or Drug B in a combination below';
+        screenErrors.compound_name = 'Must be used as Drug A in a combination below';
       }
     }
 
@@ -416,15 +415,19 @@ export function validate(data, screenType) {
     errors.rows = rowErrors;
   }
 
-  // CPS requires at least 2 test agents to form a combination
-  if (screenType === 'CPS' && rows.length < 2) {
-    errors.general = ['At least 2 test agents are required to form a combination.'];
+  // CPS requires at least one combination with a Drug A matching a submitted test agent
+  if (screenType === 'CPS') {
+    const hasValidCombo = (data.combinations ?? []).some(
+      (r) => r.druga && compoundNames.includes(r.druga),
+    );
+    if (!hasValidCombo) {
+      errors.general = ['The combination table must have at least 1 entry with Drug A matching a submitted test agent.'];
+    }
   }
 
   // Combination validation
   const combinationFields = buildCombinationFields(screenType);
   if (combinationFields.length > 0 && data.combinations) {
-    const compoundNames = rows.map((r) => r.compound_name).filter(Boolean);
     const seenPairs = new Map();
 
     const combinationErrors = data.combinations.map((comboRow, i) => {
@@ -445,9 +448,16 @@ export function validate(data, screenType) {
         comboErrors.druga = `Must be one of the submitted test agents: ${compoundNames.join(', ')}`;
       }
 
-      // Drug B must be one of the submitted compound names
-      if (comboRow.drugb && compoundNames.length > 0 && !compoundNames.includes(comboRow.drugb)) {
-        comboErrors.drugb = `Must be one of the submitted test agents: ${compoundNames.join(', ')}`;
+      // Drug A Top Dose must match the Top Screening Dose of that agent in the table above
+      if (comboRow.druga && comboRow.druga_top_dose) {
+        const matchRow = rows.find((r) => r.compound_name === comboRow.druga);
+        if (
+          matchRow?.top_dose &&
+          Math.abs(Number(comboRow.druga_top_dose) - Number(matchRow.top_dose)) > 0.001
+        ) {
+          const unit = matchRow.top_dose_unit ? ` ${matchRow.top_dose_unit}` : '';
+          comboErrors.druga_top_dose = `Must match Top Screening Dose (${matchRow.top_dose}${unit}) for ${comboRow.druga}`;
+        }
       }
 
       // Drug B cannot be the same as Drug A
