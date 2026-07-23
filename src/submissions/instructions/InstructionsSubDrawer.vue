@@ -196,39 +196,39 @@
   }
 
   /* Child outline items inside an accordion group */
-  ::v-deep .v-list-group__items .v-list-item {
+  :deep(.v-list-group__items .v-list-item) {
     color: var(--prism-color-text-muted);
     font-weight: var(--prism-font-weight-regular);
     border-left: none;
     padding-inline-start: var(--prism-space-8) !important;
   }
 
-  ::v-deep .v-list-group__items .v-list-item .v-list-item-title {
+  :deep(.v-list-group__items .v-list-item .v-list-item-title) {
     font-size: var(--prism-text-caption-size);
   }
 
-  ::v-deep .v-list-group__items .v-list-item:hover {
+  :deep(.v-list-group__items .v-list-item:hover) {
     background-color: var(--prism-color-primary-lighter);
     color: var(--prism-color-primary);
   }
 
-  ::v-deep .v-list-group__items .v-list-item.v-list-item--active {
+  :deep(.v-list-group__items .v-list-item.v-list-item--active) {
     color: var(--prism-color-primary) !important;
     background-color: transparent !important;
     border-left-color: transparent !important;
   }
 
-  ::v-deep .v-list-group__items .v-list-item.v-list-item--active .v-list-item-title {
+  :deep(.v-list-group__items .v-list-item.v-list-item--active .v-list-item-title) {
     font-weight: var(--prism-font-weight-medium);
   }
 
-  ::v-deep .menu-group-activator .v-list-item__prepend > .v-icon ~ .v-list-item__spacer {
+  :deep(.menu-group-activator .v-list-item__prepend > .v-icon ~ .v-list-item__spacer) {
     width: 12px;
   }
 
-  ::v-deep .v-list-item--active > .v-list-item__overlay,
-  ::v-deep .v-list-item--active:hover > .v-list-item__overlay,
-  ::v-deep .v-list-item--active:focus-visible > .v-list-item__overlay {
+  :deep(.v-list-item--active > .v-list-item__overlay),
+  :deep(.v-list-item--active:hover > .v-list-item__overlay),
+  :deep(.v-list-item--active:focus-visible > .v-list-item__overlay) {
     opacity: 0 !important;
     pointer-events: none !important;
   }

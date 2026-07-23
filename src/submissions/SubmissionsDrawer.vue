@@ -120,10 +120,10 @@
     background-color: var(--prism-color-primary-lighter);
     color: var(--prism-color-primary);
   }
-  ::v-deep .v-list-item--nav:hover > .v-list-item__overlay {
+  :deep(.v-list-item--nav:hover > .v-list-item__overlay) {
     opacity: 0 !important;
   }
-  ::v-deep .v-list-item__prepend > .v-icon ~ .v-list-item__spacer {
+  :deep(.v-list-item__prepend > .v-icon ~ .v-list-item__spacer) {
     width: 12px !important;
   }
 </style>
