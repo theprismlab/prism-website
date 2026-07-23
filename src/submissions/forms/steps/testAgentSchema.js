@@ -399,6 +399,14 @@ export function validate(data, screenType) {
           screenErrors.amount = `Minimum ${requiredVolume} uL required (${n} combination slot${n > 1 ? 's' : ''} × ${comboAmountPerSlotUL} uL)`;
         }
       }
+
+      // Every test agent must be used as Drug A or Drug B in at least one combination
+      const usedInCombination = data.combinations.some(
+        (r) => r.druga === row.compound_name || r.drugb === row.compound_name,
+      );
+      if (!usedInCombination) {
+        screenErrors.compound_name = 'Must be used as Drug A or Drug B in a combination below';
+      }
     }
 
     return { ...rErrors, ...screenErrors };
@@ -406,6 +414,11 @@ export function validate(data, screenType) {
 
   if (rowErrors.some((e) => Object.keys(e).length > 0)) {
     errors.rows = rowErrors;
+  }
+
+  // CPS requires at least 2 test agents to form a combination
+  if (screenType === 'CPS' && rows.length < 2) {
+    errors.general = ['At least 2 test agents are required to form a combination.'];
   }
 
   // Combination validation

@@ -5,82 +5,79 @@
         {{ screenType }} Submission Form —<br />
         {{ screenName }}
       </prism-page-title>
-      <!-- <div v-if="isDev" class="mb-4">
+      <div v-if="isDev" class="mb-4">
         <v-btn size="small" variant="outlined" color="warning" @click="fillTestData">
           Fill test data
         </v-btn>
-      </div> -->
-      <screen-gate :screen-type="screenType" :screen-name="screenName">
-        <v-expansion-panels v-model="openPanel" elevation="0">
-          <v-expansion-panel
-            v-for="(step, i) in steps"
-            :key="step.id"
-            :value="i"
-            :disabled="i > maxOpenIndex"
-            :class="{ 'is-completed': isCompleted(i) }"
-          >
-            <v-expansion-panel-title :class="{ 'is-completed': isCompleted(i) }">
-              <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26">
-                mdi-check-circle
-              </v-icon>
-              <v-icon
-                v-else
-                class="step-number mr-2"
-                size="26"
-                :icon="`mdi-numeric-${i + 1}-circle-outline`"
-              />
-              <span>{{ step.title }}</span>
-              <v-icon
-                v-if="i > maxOpenIndex"
-                class="step-lock ml-auto"
-                size="20"
-                icon="mdi-lock-outline"
-              />
-            </v-expansion-panel-title>
+      </div>
+      <!-- <screen-gate :screen-type="screenType" :screen-name="screenName"> -->
+      <v-expansion-panels v-model="openPanel" elevation="0">
+        <v-expansion-panel
+          v-for="(step, i) in steps"
+          :key="step.id"
+          :value="i"
+          :disabled="i > maxOpenIndex"
+          :class="{ 'is-completed': isCompleted(i) }"
+        >
+          <v-expansion-panel-title :class="{ 'is-completed': isCompleted(i) }">
+            <v-icon v-if="isCompleted(i)" class="step-icon mr-2" color="teal-accent-4" size="26">
+              mdi-check-circle
+            </v-icon>
+            <v-icon
+              v-else
+              class="step-number mr-2"
+              size="26"
+              :icon="`mdi-numeric-${i + 1}-circle-outline`"
+            />
+            <span>{{ step.title }}</span>
+            <v-icon
+              v-if="i > maxOpenIndex"
+              class="step-lock ml-auto"
+              size="20"
+              icon="mdi-lock-outline"
+            />
+          </v-expansion-panel-title>
 
-            <v-expansion-panel-text>
-              <collaborator-step
-                v-if="step.id === 'collaborator'"
-                :data="fd.collaborator"
-                :errors="stepErrors.collaborator || {}"
-              />
-              <institution-step
-                v-else-if="step.id === 'institution'"
-                :data="fd.institution"
-                :errors="stepErrors.institution || {}"
-              />
-              <test-agent-step
-                v-else-if="step.id === 'testAgent'"
-                :data="fd.testAgent"
-                :errors="stepErrors.testAgent || {}"
-                :screen-type="screenType"
-                :submitted="attemptedSteps[i] ?? 0"
-              />
-              <acknowledgements-step
-                v-else-if="step.id === 'acknowledgements'"
-                :data="fd.acknowledgements"
-                :errors="stepErrors.acknowledgements || {}"
-                :screen-type="screenType"
-              />
-              <review-step
-                v-else-if="step.id === 'review'"
-                :data="fd.review"
-                :form-data="fd"
-                :errors="stepErrors.review || {}"
-                :screen-type="screenType"
-                :screen-name="screenName"
-              />
+          <v-expansion-panel-text>
+            <collaborator-step
+              v-if="step.id === 'collaborator'"
+              :data="fd.collaborator"
+              :errors="stepErrors.collaborator || {}"
+            />
+            <institution-step
+              v-else-if="step.id === 'institution'"
+              :data="fd.institution"
+              :errors="stepErrors.institution || {}"
+            />
+            <test-agent-step
+              v-else-if="step.id === 'testAgent'"
+              :data="fd.testAgent"
+              :errors="stepErrors.testAgent || {}"
+              :screen-type="screenType"
+              :submitted="attemptedSteps[i] ?? 0"
+            />
+            <acknowledgements-step
+              v-else-if="step.id === 'acknowledgements'"
+              :data="fd.acknowledgements"
+              :errors="stepErrors.acknowledgements || {}"
+              :screen-type="screenType"
+            />
+            <review-step
+              v-else-if="step.id === 'review'"
+              :data="fd.review"
+              :form-data="fd"
+              :errors="stepErrors.review || {}"
+              :screen-type="screenType"
+              :screen-name="screenName"
+            />
 
-              <div
-                v-if="step.id !== 'review'"
-                class="d-flex align-center justify-center mt-4 gap-3"
-              >
-                <v-btn color="primary" flat rounded @click="completeStep(i)"> Continue </v-btn>
-              </div>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
-      </screen-gate>
+            <div v-if="step.id !== 'review'" class="d-flex align-center justify-center mt-4 gap-3">
+              <v-btn color="primary" flat rounded @click="completeStep(i)"> Continue </v-btn>
+            </div>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
+      <!-- </screen-gate> -->
     </app-container>
   </page>
 </template>

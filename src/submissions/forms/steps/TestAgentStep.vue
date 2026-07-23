@@ -1,5 +1,14 @@
 <template>
   <div class="mt-4">
+    <v-alert
+      v-if="submitted > 0 && generalErrors.length"
+      type="error"
+      variant="tonal"
+      density="compact"
+      class="mb-4"
+    >
+      <div v-for="(msg, i) in generalErrors" :key="i">{{ msg }}</div>
+    </v-alert>
     <test-agent-table
       :fields="screenFields"
       :rows="rows"
@@ -61,6 +70,9 @@
       },
       combinationErrors() {
         return this.errors.combinations ?? [];
+      },
+      generalErrors() {
+        return this.errors.general ?? [];
       },
     },
     methods: {
