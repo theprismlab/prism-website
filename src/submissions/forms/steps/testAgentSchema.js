@@ -108,7 +108,7 @@ const SCREENS = {
         validate: validNumber,
       },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
-      { key: 'drugb', label: 'Drug B Compound Name', tooltip: 'Select "None" if Drug A is tested alone' },
+      { key: 'drugb', label: 'Drug B Compound Name' },
       {
         key: 'drugb_dose',
         label: 'Drug B Dose',
@@ -313,6 +313,8 @@ function buildTooltips(screenType) {
     tooltips.amount = `Dilution factor ${cfg.minDilutionFactor} to <${cfg.dilutionThreshold}: minimum ${cfg.minAmountLowDilutionUL} uL. Dilution factor ${cfg.dilutionThreshold}+: minimum ${cfg.minAmountHighDilutionUL} uL`;
   } else if (screenType === 'CPS') {
     tooltips.amount = `Minimum ${cfg.minAmountUL} uL solo. If in combinations: ${cfg.comboAmountPerSlotUL} uL × number of combination slots`;
+    tooltips.compound_name =
+      'Must be used as Drug A or Drug B in at least one row of the combination table below';
   } else if (cfg.minAmountUL !== undefined) {
     tooltips.amount = `Minimum ${cfg.minAmountUL} uL required`;
   }
@@ -338,9 +340,27 @@ export function buildScreenFields(screenType) {
   return screen.fields.map((f) => ({ required: true, ...f, tooltip: tooltips[f.key] }));
 }
 
+function buildCombinationTooltips(screenType) {
+  if (screenType !== 'CPS') return {};
+  return {
+    druga: 'Must match the Test Agent Name of a compound in the table above',
+    druga_top_dose: 'Must match the Top Screening Dose of the selected Drug A',
+    drugb:
+      'Must match the Test Agent Name of a compound in the table above, or "None" if Drug A is tested alone. Every Drug A used in a combination also needs a solo ("None") entry, and every solo entry needs a matching combination entry',
+    drugb_dose:
+      'Must match the Top Screening Dose of the selected Drug B. Not required when Drug B is "None"',
+    drugb_dose_unit: 'Not required when Drug B is "None"',
+  };
+}
+
 export function buildCombinationFields(screenType, compoundNames = []) {
   const fields = SCREENS[screenType]?.combinationFields ?? [];
-  return fields.map((f) => (f.key === 'drugb' ? { ...f, options: [...compoundNames, NONE] } : f));
+  const tooltips = buildCombinationTooltips(screenType);
+  return fields.map((f) => ({
+    ...f,
+    tooltip: tooltips[f.key] ?? f.tooltip,
+    ...(f.key === 'drugb' ? { options: [...compoundNames, NONE] } : {}),
+  }));
 }
 
 export function getInitialCombinationRow(screenType) {
