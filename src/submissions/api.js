@@ -28,7 +28,9 @@ export async function fetchSubmissionMessage(apiURL, submission_type) {
 export async function getCollaboratorList(apiURL) {
   return authedGet(apiURL, 'mts_institutions');
 }
-
+export async function getCellLines(apiURL) {
+  return authedGet(apiURL, 'cell-db/cell-lines');
+}
 export async function postSubmission(apiURL, payload) {
   const url = apiURL + 'mts_compound_submissions/createSubmission';
   const userKey = await getTempApiKey(apiURL);

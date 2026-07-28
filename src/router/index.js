@@ -53,6 +53,10 @@ const routes = [
     },
   },
   {
+    path: '/consortium-screens/cell-line-explorer',
+    component: () => import('@/pages/consortium-screens/cell-line-explorer/index.vue'),
+  },
+  {
     path: '/consortium-screens/collaborating',
     component: () => import('@/pages/consortium-screens/collaborating.vue'),
     meta: {
