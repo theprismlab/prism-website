@@ -215,7 +215,7 @@ function checkConcMatchesTopDose(row, concMultiplier) {
   return undefined;
 }
 
-function validateMTS(row) {
+function validateMTSTestAgentRow(row) {
   const { concMultiplier, minAmountUL } = SCREEN_CONFIG.MTS;
   const errors = {};
 
@@ -226,14 +226,41 @@ function validateMTS(row) {
   return errors;
 }
 
-// Solo mode uses MTS-equivalent rules. Combo flow will extend this with 400 uL × n logic.
-function validateCPS(row) {
-  const { concMultiplier, minAmountUL } = SCREEN_CONFIG.CPS;
+// ── CPS: Test Agent row + Combination row ──────────────────────────────────
+// CPS is the only screen with two row types: a Test Agent row (like every other screen) and
+// a Combination row (Drug A / Drug B pairing). One function per row type, below.
+
+// Every rule for a single CPS Test Agent row: solo amount/conc business rules (same as MTS),
+// plus the combo-slot amount requirement and the "must appear as Drug A or Drug B somewhere"
+// rule — both need `combinations` to cross-reference against the combination table.
+function validateCPSTestAgentRow(row, combinations) {
+  const { concMultiplier, minAmountUL, comboAmountPerSlotUL } = SCREEN_CONFIG.CPS;
   const errors = {};
 
   if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
   const concError = checkConcMatchesTopDose(row, concMultiplier);
   if (concError) errors.conc = concError;
+
+  if (combinations?.length > 0 && row.compound_name) {
+    // Amount must cover 400 uL × slots this compound appears in (real or solo)
+    const n = combinations
+      .filter((r) => r.druga || r.drugb)
+      .filter((r) => r.druga === row.compound_name || r.drugb === row.compound_name).length;
+    if (n > 0) {
+      const requiredVolume = n * comboAmountPerSlotUL;
+      if (Number(row.amount) < requiredVolume) {
+        errors.amount = `Minimum ${requiredVolume} uL required (${n} combination slot${n > 1 ? 's' : ''} × ${comboAmountPerSlotUL} uL)`;
+      }
+    }
+
+    // Every test agent must be used as Drug A or Drug B in at least one combination
+    const usedInCombination = combinations.some(
+      (r) => r.druga === row.compound_name || r.drugb === row.compound_name,
+    );
+    if (!usedInCombination) {
+      errors.compound_name = 'Must be used as Drug A or Drug B in a combination below';
+    }
+  }
 
   return errors;
 }
@@ -315,7 +342,66 @@ function validateCPSCombinationRow(comboRow, i, { rows, compoundNames, combinati
   return comboErrors;
 }
 
-function validateEPS(row) {
+// Table-level rules for CPS: minimum counts on both tables, at least one valid combo entry,
+// and the solo/real-combination pairing invariant (every Drug A needs both a combo entry and
+// a solo entry, and vice versa). Returns the general-error strings, or [] if the table is valid.
+function validateCPSTable(data, compoundNames) {
+  const rows = data.rows ?? [];
+  const combos = data.combinations ?? [];
+  const messages = [];
+
+  // CPS requires at least 2 test agents and at least 2 combination entries
+  const nonBlankRowCount = rows.filter((r) => !isBlankRow(r)).length;
+  if (nonBlankRowCount < 2) messages.push('At least 2 test agent entries are required.');
+
+  const nonBlankComboCount = combos.filter((r) => !isBlankRow(r)).length;
+  if (nonBlankComboCount < 2) messages.push('At least 2 combination entries are required.');
+
+  // CPS requires at least one combination with a Drug A matching a submitted test agent
+  const hasValidCombo = combos.some((r) => r.druga && compoundNames.includes(r.druga));
+  if (!hasValidCombo) {
+    messages.push(
+      'The combination table must have at least 1 entry with Drug A matching a submitted test agent.',
+    );
+  }
+
+  const realCombos = combos.filter((r) => r.druga && r.drugb && r.drugb !== NONE);
+  const soloCombos = combos.filter((r) => r.druga && r.drugb === NONE);
+
+  // Every Drug A used in a real combination must also have a solo entry (Drug B = "None").
+  // Restricted to known compound names — an invalid Drug A is already flagged by the
+  // "must be one of the submitted test agents" check in validateCPSCombinationRow.
+  const drugAValues = [...new Set(realCombos.map((r) => r.druga))].filter((druga) =>
+    compoundNames.includes(druga),
+  );
+  const missingNoneEntries = drugAValues.filter(
+    (druga) => !soloCombos.some((r) => r.druga === druga),
+  );
+  messages.push(
+    ...missingNoneEntries.map(
+      (druga) => `${druga} needs an additional combination entry with Drug B set to "${NONE}"`,
+    ),
+  );
+
+  // Every solo entry (Drug B = "None") must also have a corresponding real combination entry.
+  // Same restriction to known compound names as above.
+  const soloDrugAValues = [...new Set(soloCombos.map((r) => r.druga))].filter((druga) =>
+    compoundNames.includes(druga),
+  );
+  const missingComboEntries = soloDrugAValues.filter(
+    (druga) => !realCombos.some((r) => r.druga === druga),
+  );
+  messages.push(
+    ...missingComboEntries.map(
+      (druga) =>
+        `${druga}'s solo entry (Drug B = "${NONE}") needs a corresponding combination entry with an actual Drug B`,
+    ),
+  );
+
+  return messages;
+}
+
+function validateEPSTestAgentRow(row) {
   const {
     concMultiplier,
     minDilutionFactor,
@@ -340,7 +426,7 @@ function validateEPS(row) {
   return errors;
 }
 
-function validateAPS(row) {
+function validateAPSTestAgentRow(row) {
   const { concMultiplier, minAmountUL, unitPairs } = SCREEN_CONFIG.APS;
   const errors = {};
 
@@ -356,7 +442,7 @@ function validateAPS(row) {
   return errors;
 }
 
-function validateAIR(row) {
+function validateAIRTestAgentRow(row) {
   const { concMultiplier, minAmountUL, maxTopDoseUgML } = SCREEN_CONFIG.AIR;
   const errors = {};
 
@@ -371,11 +457,11 @@ function validateAIR(row) {
 }
 
 const SCREEN_VALIDATORS = {
-  MTS: validateMTS,
-  CPS: validateCPS,
-  EPS: validateEPS,
-  APS: validateAPS,
-  AIR: validateAIR,
+  MTS: validateMTSTestAgentRow,
+  CPS: validateCPSTestAgentRow,
+  EPS: validateEPSTestAgentRow,
+  APS: validateAPSTestAgentRow,
+  AIR: validateAIRTestAgentRow,
 };
 
 // ── Step lifecycle helpers ─────────────────────────────────────────────────
@@ -507,29 +593,7 @@ export function validate(data, screenType) {
       }
     }
 
-    const screenErrors = SCREEN_VALIDATORS[screenType]?.(row) ?? {};
-
-    // CPS with combinations: amount must cover 400 uL × slots this compound appears in
-    if (screenType === 'CPS' && data.combinations?.length > 0 && row.compound_name) {
-      const { comboAmountPerSlotUL } = SCREEN_CONFIG.CPS;
-      const n = data.combinations
-        .filter((r) => r.druga || r.drugb)
-        .filter((r) => r.druga === row.compound_name || r.drugb === row.compound_name).length;
-      if (n > 0) {
-        const requiredVolume = n * comboAmountPerSlotUL;
-        if (Number(row.amount) < requiredVolume) {
-          screenErrors.amount = `Minimum ${requiredVolume} uL required (${n} combination slot${n > 1 ? 's' : ''} × ${comboAmountPerSlotUL} uL)`;
-        }
-      }
-
-      // Every test agent must be used as Drug A or Drug B in at least one combination
-      const usedInCombination = data.combinations.some(
-        (r) => r.druga === row.compound_name || r.drugb === row.compound_name,
-      );
-      if (!usedInCombination) {
-        screenErrors.compound_name = 'Must be used as Drug A or Drug B in a combination below';
-      }
-    }
+    const screenErrors = SCREEN_VALIDATORS[screenType]?.(row, data.combinations) ?? {};
 
     const merged = { ...rErrors, ...screenErrors };
 
@@ -548,65 +612,8 @@ export function validate(data, screenType) {
   }
 
   if (screenType === 'CPS') {
-    const combos = data.combinations ?? [];
-
-    // CPS requires at least 2 test agents and at least 2 combination entries
-    const nonBlankRowCount = rows.filter((r) => !isBlankRow(r)).length;
-    if (nonBlankRowCount < 2) {
-      errors.general = [...(errors.general ?? []), 'At least 2 test agent entries are required.'];
-    }
-    const nonBlankComboCount = combos.filter((r) => !isBlankRow(r)).length;
-    if (nonBlankComboCount < 2) {
-      errors.general = [...(errors.general ?? []), 'At least 2 combination entries are required.'];
-    }
-
-    // CPS requires at least one combination with a Drug A matching a submitted test agent
-    const hasValidCombo = combos.some((r) => r.druga && compoundNames.includes(r.druga));
-    if (!hasValidCombo) {
-      errors.general = [
-        ...(errors.general ?? []),
-        'The combination table must have at least 1 entry with Drug A matching a submitted test agent.',
-      ];
-    }
-
-    const realCombos = combos.filter((r) => r.druga && r.drugb && r.drugb !== NONE);
-    const soloCombos = combos.filter((r) => r.druga && r.drugb === NONE);
-
-    // Every Drug A used in a real combination must also have a solo entry (Drug B = "None").
-    // Restricted to known compound names — an invalid Drug A is already flagged by the
-    // "must be one of the submitted test agents" check below; no need to compound that error.
-    const drugAValues = [...new Set(realCombos.map((r) => r.druga))].filter((druga) =>
-      compoundNames.includes(druga),
-    );
-    const missingNoneEntries = drugAValues.filter(
-      (druga) => !soloCombos.some((r) => r.druga === druga),
-    );
-    if (missingNoneEntries.length > 0) {
-      errors.general = [
-        ...(errors.general ?? []),
-        ...missingNoneEntries.map(
-          (druga) => `${druga} needs an additional combination entry with Drug B set to "${NONE}"`,
-        ),
-      ];
-    }
-
-    // Every solo entry (Drug B = "None") must also have a corresponding real combination entry.
-    // Same restriction to known compound names as above.
-    const soloDrugAValues = [...new Set(soloCombos.map((r) => r.druga))].filter((druga) =>
-      compoundNames.includes(druga),
-    );
-    const missingComboEntries = soloDrugAValues.filter(
-      (druga) => !realCombos.some((r) => r.druga === druga),
-    );
-    if (missingComboEntries.length > 0) {
-      errors.general = [
-        ...(errors.general ?? []),
-        ...missingComboEntries.map(
-          (druga) =>
-            `${druga}'s solo entry (Drug B = "${NONE}") needs a corresponding combination entry with an actual Drug B`,
-        ),
-      ];
-    }
+    const messages = validateCPSTable(data, compoundNames);
+    if (messages.length > 0) errors.general = [...(errors.general ?? []), ...messages];
   } else if (rows.filter((r) => !isBlankRow(r)).length < 1) {
     errors.general = ['At least 1 test agent entry is required.'];
   }
