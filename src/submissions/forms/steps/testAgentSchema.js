@@ -205,15 +205,14 @@ const SCREENS = {
 // Call them directly in unit tests with a plain row object.
 
 // Shared across all screens: stock conc must equal top dose × (concMultiplier / 1000).
+// Returns the errors.conc message, or undefined if the row is valid (or top_dose is empty).
 function checkConcMatchesTopDose(row, concMultiplier) {
-  if (!row.top_dose) return {};
+  if (!row.top_dose) return undefined;
   const expected = Number(row.top_dose) * (concMultiplier / 1000);
   if (Math.abs(Number(row.conc) - expected) > 0.001) {
-    return {
-      conc: `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`,
-    };
+    return `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
   }
-  return {};
+  return undefined;
 }
 
 function validateMTS(row) {
@@ -221,8 +220,10 @@ function validateMTS(row) {
   const errors = {};
 
   if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
+  const concError = checkConcMatchesTopDose(row, concMultiplier);
+  if (concError) errors.conc = concError;
 
-  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
+  return errors;
 }
 
 // Solo mode uses MTS-equivalent rules. Combo flow will extend this with 400 uL × n logic.
@@ -231,8 +232,10 @@ function validateCPS(row) {
   const errors = {};
 
   if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
+  const concError = checkConcMatchesTopDose(row, concMultiplier);
+  if (concError) errors.conc = concError;
 
-  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
+  return errors;
 }
 
 function validateEPS(row) {
@@ -254,7 +257,10 @@ function validateEPS(row) {
   if (Number(row.amount) < minAmount)
     errors.amount = `Minimum ${minAmount} uL required (${dilutionFactor >= dilutionThreshold ? `≥${dilutionThreshold}` : `2–${dilutionThreshold}`}-fold dilution)`;
 
-  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
+  const concError = checkConcMatchesTopDose(row, concMultiplier);
+  if (concError) errors.conc = concError;
+
+  return errors;
 }
 
 function validateAPS(row) {
@@ -267,7 +273,10 @@ function validateAPS(row) {
   if (expectedUnit && expectedUnit !== row.conc_unit)
     errors.conc_unit = `Must be ${expectedUnit} when top dose unit is ${row.top_dose_unit}`;
 
-  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
+  const concError = checkConcMatchesTopDose(row, concMultiplier);
+  if (concError) errors.conc = concError;
+
+  return errors;
 }
 
 function validateAIR(row) {
@@ -278,8 +287,10 @@ function validateAIR(row) {
     errors.top_dose = `Max top dose for AIR submissions is ${maxTopDoseUgML} ug/mL`;
 
   if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
+  const concError = checkConcMatchesTopDose(row, concMultiplier);
+  if (concError) errors.conc = concError;
 
-  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
+  return errors;
 }
 
 const SCREEN_VALIDATORS = {
