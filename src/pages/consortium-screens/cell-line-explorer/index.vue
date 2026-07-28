@@ -80,11 +80,25 @@
       lineageOptions() {
         return [...new Set(this.cellLines.map((d) => d.cell_lineage))].filter(Boolean).sort();
       },
+      // Disease options are scoped to the currently selected lineage(s).
       diseaseOptions() {
-        return [...new Set(this.cellLines.map((d) => d.primary_disease))].filter(Boolean).sort();
+        const rows = this.selectedLineages.length
+          ? this.cellLines.filter((d) => this.selectedLineages.includes(d.cell_lineage))
+          : this.cellLines;
+        return [...new Set(rows.map((d) => d.primary_disease))].filter(Boolean).sort();
       },
+      // Cell line options are scoped to the currently selected lineage(s) and disease(s).
       cellLineOptions() {
-        return [...new Set(this.cellLines.map((d) => d.cell_line))].filter(Boolean).sort();
+        const rows = this.cellLines.filter((d) => {
+          if (this.selectedLineages.length && !this.selectedLineages.includes(d.cell_lineage)) {
+            return false;
+          }
+          if (this.selectedDiseases.length && !this.selectedDiseases.includes(d.primary_disease)) {
+            return false;
+          }
+          return true;
+        });
+        return [...new Set(rows.map((d) => d.cell_line))].filter(Boolean).sort();
       },
       filteredCellLines() {
         return this.cellLines.filter((d) => {
@@ -106,9 +120,21 @@
     },
     watch: {
       selectedLineages() {
+        // Selecting/removing a lineage can invalidate diseases and cell
+        // lines chosen further down the hierarchy - drop anything that's
+        // no longer a valid option.
+        this.selectedDiseases = this.pruneToOptions(this.selectedDiseases, this.diseaseOptions);
+        this.selectedCellLineNames = this.pruneToOptions(
+          this.selectedCellLineNames,
+          this.cellLineOptions,
+        );
         this.rebuild();
       },
       selectedDiseases() {
+        this.selectedCellLineNames = this.pruneToOptions(
+          this.selectedCellLineNames,
+          this.cellLineOptions,
+        );
         this.rebuild();
       },
       selectedCellLineNames() {
@@ -124,6 +150,13 @@
       }
     },
     methods: {
+      // Drops values no longer present in `options`; returns the same array
+      // reference when nothing changes, so callers don't trigger a watcher
+      // over a no-op reassignment.
+      pruneToOptions(selected, options) {
+        const filtered = selected.filter((v) => options.includes(v));
+        return filtered.length === selected.length ? selected : filtered;
+      },
       async loadData() {
         try {
           const response = await getCellLines(import.meta.env.VITE_API_URL);
