@@ -10,7 +10,7 @@
                 <template #activator="{ props }">
                   <v-icon
                     v-bind="props"
-                    size="x-small"
+                    size="medium"
                     icon="mdi-information-outline"
                     class="th-info-icon"
                   />
@@ -75,6 +75,7 @@
       size="small"
       variant="text"
       class="mt-1"
+      color="var(--prism-color-primary)"
       @click="$emit('add-row')"
     >
       {{ addLabel }}
@@ -167,12 +168,12 @@
   .perturbation-table :deep(.v-field) {
     border-radius: 0;
     font-size: 0.75rem;
-    --v-field-input-min-height: 32px;
+    --v-field-input-min-height: 34px;
   }
   .perturbation-table :deep(.v-field__input) {
     font-size: 0.75rem;
     padding-inline: 8px;
-    min-height: 32px;
+    min-height: 34px;
     align-items: center;
   }
   .perturbation-table :deep(input) {

@@ -1,14 +1,5 @@
 <template>
   <div class="mt-4">
-    <v-alert
-      v-if="submitted > 0 && generalErrors.length"
-      type="error"
-      variant="tonal"
-      density="compact"
-      class="mb-4"
-    >
-      <div v-for="(msg, i) in generalErrors" :key="i">{{ msg }}</div>
-    </v-alert>
     <test-agent-table
       :fields="compoundFields"
       :rows="compoundRows"
@@ -31,6 +22,17 @@
       @add-row="addCombinationRow"
       @remove-row="removeCombinationRow"
     />
+    <v-alert
+      v-if="submitted > 0 && generalErrors.length"
+      type="error"
+      variant="tonal"
+      density="compact"
+      class="my-4"
+    >
+      <div v-for="(msg, i) in generalErrors" :key="i" class="text-body-2">
+        {{ msg }}
+      </div>
+    </v-alert>
   </div>
 </template>
 
