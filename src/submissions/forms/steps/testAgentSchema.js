@@ -2,7 +2,7 @@
 // Pure JS — no Vue dependencies — so it can be unit-tested and reused
 // outside the component (e.g. server-side validation, CSV import, review step).
 
-import { validNumber } from './validationHelpers';
+import { validPositiveNumber } from './validationHelpers';
 
 const YES_NO = ['Yes', 'No'];
 const STORAGE_OPTIONS = ['Room temperature', '4°C', '-20°C'];
@@ -29,18 +29,28 @@ export const FIELDS = {
     key: 'top_dose',
     label: 'Top Screening Dose',
     inputmode: 'decimal',
-    validate: validNumber,
+    validate: validPositiveNumber,
   },
   TOP_DOSE_UNIT: { key: 'top_dose_unit', label: 'Top Dose Unit' },
-  CONC: { key: 'conc', label: 'Stock Concentration', inputmode: 'decimal', validate: validNumber },
+  CONC: {
+    key: 'conc',
+    label: 'Stock Concentration',
+    inputmode: 'decimal',
+    validate: validPositiveNumber,
+  },
   CONC_UNIT: { key: 'conc_unit', label: 'Stock Conc. Unit' },
   DILUTION_FACTOR: {
     key: 'dilution_factor',
     label: 'Dilution Factor',
     inputmode: 'decimal',
-    validate: validNumber,
+    validate: validPositiveNumber,
   },
-  CONC_AMOUNT: { key: 'amount', label: 'Amount', inputmode: 'decimal', validate: validNumber },
+  CONC_AMOUNT: {
+    key: 'amount',
+    label: 'Amount',
+    inputmode: 'decimal',
+    validate: validPositiveNumber,
+  },
   CONC_AMOUNT_UNIT: { key: 'amount_unit', label: 'Amount Unit', options: AMOUNT_UNITS },
   STORAGE_CONDITIONS: {
     key: 'storage_conditions',
@@ -105,7 +115,7 @@ const SCREENS = {
         key: 'druga_top_dose',
         label: 'Drug A Top Dose',
         inputmode: 'decimal',
-        validate: validNumber,
+        validate: validPositiveNumber,
       },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
       { key: 'drugb', label: 'Drug B Compound Name' },
@@ -113,7 +123,7 @@ const SCREENS = {
         key: 'drugb_dose',
         label: 'Drug B Dose',
         inputmode: 'decimal',
-        validate: validNumber,
+        validate: validPositiveNumber,
         disabled: (row) => row.drugb === NONE,
       },
       {
@@ -307,7 +317,7 @@ function buildTooltips(screenType) {
   const divisor = 1000 / cfg.concMultiplier;
 
   tooltips.compound_name =
-    'Must be unique. Testing the same compound at multiple doses? Use a distinct name for each entry (e.g. append "-2")';
+    'Must be unique. For testing the same compound at multiple top doses, use a distinct name for each entry (e.g. append "-2")';
 
   if (cfg.maxTopDoseUgML !== undefined) tooltips.top_dose = `Maximum ${cfg.maxTopDoseUgML} ug/mL`;
 
@@ -349,7 +359,8 @@ function buildCombinationTooltips(screenType) {
     druga:
       'Must match the Test Agent Name of a compound in the table above. Each Drug A compound needs both a combination entry (with a real Drug B) and a solo entry (Drug B = "None")',
     druga_top_dose: 'Must match the Top Screening Dose of the selected Drug A in the table above.',
-    drugb: 'Must match the Test Agent Name of a compound in the table above, or "None" if Drug A is tested alone',
+    drugb:
+      'Must match the Test Agent Name of a compound in the table above, or "None" if Drug A is tested alone',
     drugb_dose:
       'Must match the Top Screening Dose of the selected Drug B in the table above. Not required when Drug B is "None"',
     drugb_dose_unit: 'Not required when Drug B is "None"',
@@ -476,10 +487,7 @@ export function validate(data, screenType) {
     }
     const nonBlankComboCount = combos.filter((r) => !isBlankRow(r)).length;
     if (nonBlankComboCount < 2) {
-      errors.general = [
-        ...(errors.general ?? []),
-        'At least 2 combination entries are required.',
-      ];
+      errors.general = [...(errors.general ?? []), 'At least 2 combination entries are required.'];
     }
 
     // CPS requires at least one combination with a Drug A matching a submitted test agent
@@ -494,8 +502,12 @@ export function validate(data, screenType) {
     const realCombos = combos.filter((r) => r.druga && r.drugb && r.drugb !== NONE);
     const soloCombos = combos.filter((r) => r.druga && r.drugb === NONE);
 
-    // Every Drug A used in a real combination must also have a solo entry (Drug B = "None")
-    const drugAValues = [...new Set(realCombos.map((r) => r.druga))];
+    // Every Drug A used in a real combination must also have a solo entry (Drug B = "None").
+    // Restricted to known compound names — an invalid Drug A is already flagged by the
+    // "must be one of the submitted test agents" check below; no need to compound that error.
+    const drugAValues = [...new Set(realCombos.map((r) => r.druga))].filter((druga) =>
+      compoundNames.includes(druga),
+    );
     const missingNoneEntries = drugAValues.filter(
       (druga) => !soloCombos.some((r) => r.druga === druga),
     );
@@ -508,8 +520,11 @@ export function validate(data, screenType) {
       ];
     }
 
-    // Every solo entry (Drug B = "None") must also have a corresponding real combination entry
-    const soloDrugAValues = [...new Set(soloCombos.map((r) => r.druga))];
+    // Every solo entry (Drug B = "None") must also have a corresponding real combination entry.
+    // Same restriction to known compound names as above.
+    const soloDrugAValues = [...new Set(soloCombos.map((r) => r.druga))].filter((druga) =>
+      compoundNames.includes(druga),
+    );
     const missingComboEntries = soloDrugAValues.filter(
       (druga) => !realCombos.some((r) => r.druga === druga),
     );

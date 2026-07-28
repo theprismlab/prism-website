@@ -13,6 +13,9 @@ export const validEmail = (val) =>
 
 export const validNumber = (val) => (!val || !isNaN(Number(val)) ? undefined : 'Must be a number');
 
+export const validPositiveNumber = (val) =>
+  !val || (!isNaN(Number(val)) && Number(val) > 0) ? undefined : 'Must be a positive number';
+
 // do we validate this in old submission hub? if not, remove it.
 export const institutionalEmail = (val) =>
   !val || /\.(edu|org)$/i.test(val)
