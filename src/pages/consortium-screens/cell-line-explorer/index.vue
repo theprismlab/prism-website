@@ -9,7 +9,11 @@
         Pack
       </button>
     </div>
-    <div class="chart-container" :style="{ height: computedHeight + 'px' }">
+    <div
+      class="chart-container"
+      :class="vizType"
+      :style="vizType === 'tree' ? { height: computedHeight + 'px' } : {}"
+    >
       <svg ref="chart" id="cell-line-explorer-svg" font-family="sans-serif"></svg>
     </div>
   </div>
@@ -223,16 +227,16 @@
         this.packWidth = width;
         this.packRoot = root;
         this.packFocus = root;
-        this.computedHeight = height;
 
+        // No width/height attrs: the container's CSS (a square via
+        // aspect-ratio) sizes the element, and the viewBox scales the
+        // pack's internal coordinate system to fit it.
         const svg = d3
           .select(this.$refs.chart)
           .attr('viewBox', `${-width / 2} ${-height / 2} ${width} ${height}`)
-          .attr('width', width)
-          .attr('height', height)
           .attr(
             'style',
-            `max-width: 100%; height: auto; display: block; background: ${color(0)}; cursor: pointer;`,
+            `width: 100%; height: 100%; display: block; background: ${color(0)}; cursor: pointer;`,
           );
 
         this.packNode = svg
@@ -351,5 +355,10 @@
 
   .chart-container svg {
     display: block;
+  }
+
+  .chart-container.pack {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
   }
 </style>
