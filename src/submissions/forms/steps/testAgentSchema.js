@@ -108,7 +108,7 @@ const SCREENS = {
         validate: validNumber,
       },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
-      { key: 'drugb', label: 'Drug B Compound Name', placeholder: 'Enter "None" if Drug A is tested alone' },
+      { key: 'drugb', label: 'Drug B Compound Name', tooltip: 'Select "None" if Drug A is tested alone' },
       {
         key: 'drugb_dose',
         label: 'Drug B Dose',
@@ -332,8 +332,9 @@ export function buildScreenFields(screenType) {
   return screen.fields.map((f) => ({ required: true, ...f, tooltip: tooltips[f.key] }));
 }
 
-export function buildCombinationFields(screenType) {
-  return SCREENS[screenType]?.combinationFields ?? [];
+export function buildCombinationFields(screenType, compoundNames = []) {
+  const fields = SCREENS[screenType]?.combinationFields ?? [];
+  return fields.map((f) => (f.key === 'drugb' ? { ...f, options: [...compoundNames, NONE] } : f));
 }
 
 export function getInitialCombinationRow(screenType) {

@@ -57,7 +57,8 @@
         return buildScreenFields(this.screenType);
       },
       combinationFields() {
-        return buildCombinationFields(this.screenType);
+        const compoundNames = this.rows.map((r) => r.compound_name).filter(Boolean);
+        return buildCombinationFields(this.screenType, compoundNames);
       },
       rows() {
         return this.data.rows ?? [];
