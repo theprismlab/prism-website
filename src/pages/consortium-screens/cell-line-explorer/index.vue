@@ -1,6 +1,14 @@
 <template>
   <div>
     <prism-page-title>Cell Line Explorer</prism-page-title>
+    <div class="viz-toggle">
+      <button type="button" :class="{ active: vizType === 'tree' }" @click="setViz('tree')">
+        Tree
+      </button>
+      <button type="button" :class="{ active: vizType === 'pack' }" @click="setViz('pack')">
+        Pack
+      </button>
+    </div>
     <div class="chart-container" :style="{ height: computedHeight + 'px' }">
       <svg ref="chart" id="cell-line-explorer-svg" font-family="sans-serif"></svg>
     </div>
@@ -11,7 +19,7 @@
   import * as d3 from 'd3';
 
   const DURATION = 250;
-  const MARGIN = { top: 10, right: 160, bottom: 10, left: 40 };
+  const TREE_MARGIN = { top: 10, right: 160, bottom: 10, left: 40 };
 
   export default {
     name: 'CellLineExplorer',
@@ -20,20 +28,48 @@
         cellLines: [],
         chartWidth: 1000,
         computedHeight: 600,
+        vizType: 'tree',
       };
     },
     async mounted() {
       try {
         await this.loadData();
-        const groups = d3.group(
+        this.groups = d3.group(
           this.cellLines,
           (d) => d.cell_lineage,
           (d) => d.primary_disease,
-          (d) => d.subtype,
+          (d) => d.cell_line,
         );
-        const root = d3.hierarchy([null, groups], ([, values]) =>
+        this.renderTree();
+      } catch (err) {
+        console.error('Error building/rendering hierarchy:', err);
+      }
+    },
+    methods: {
+      async loadData() {
+        try {
+          const response = await getCellLines(import.meta.env.VITE_API_URL);
+          this.cellLines = response;
+        } catch (error) {
+          console.error('Error loading data:', error);
+        }
+      },
+      buildHierarchy() {
+        return d3.hierarchy([null, this.groups], ([, values]) =>
           values instanceof Map ? Array.from(values) : null,
         );
+      },
+      setViz(type) {
+        if (this.vizType === type) return;
+        this.vizType = type;
+        const svg = d3.select(this.$refs.chart);
+        svg.selectAll('*').remove();
+        svg.attr('style', null).attr('text-anchor', null).on('click', null);
+        if (type === 'tree') this.renderTree();
+        else this.renderPack();
+      },
+      renderTree() {
+        const root = this.buildHierarchy();
 
         // Fixed vertical spacing between sibling nodes; horizontal spacing is
         // derived from chartWidth so depth always fits within it.
@@ -66,18 +102,6 @@
         this.gNode = svg.append('g').attr('pointer-events', 'all');
 
         this.update(this.rootNode);
-      } catch (err) {
-        console.error('Error building/rendering hierarchy:', err);
-      }
-    },
-    methods: {
-      async loadData() {
-        try {
-          const response = await getCellLines(import.meta.env.VITE_API_URL);
-          this.cellLines = response;
-        } catch (error) {
-          console.error('Error loading data:', error);
-        }
       },
       update(source) {
         const nodes = this.rootNode.descendants().reverse();
@@ -91,14 +115,14 @@
           if (d.x < left.x) left = d;
           if (d.x > right.x) right = d;
         });
-        const height = right.x - left.x + MARGIN.top + MARGIN.bottom;
+        const height = right.x - left.x + TREE_MARGIN.top + TREE_MARGIN.bottom;
         this.computedHeight = height;
 
         const svg = d3.select(this.$refs.chart);
         const transition = svg
           .transition()
           .duration(DURATION)
-          .attr('viewBox', [-MARGIN.left, left.x - MARGIN.top, this.chartWidth, height])
+          .attr('viewBox', [-TREE_MARGIN.left, left.x - TREE_MARGIN.top, this.chartWidth, height])
           .attr('width', this.chartWidth)
           .attr('height', height);
 
@@ -179,11 +203,147 @@
           d.y0 = d.y;
         });
       },
+      renderPack() {
+        const width = this.chartWidth;
+        const height = width;
+        const format = d3.format(',d');
+
+        const root = d3.pack().size([width, height]).padding(3)(
+          this.buildHierarchy()
+            .sum(([, values]) => (Array.isArray(values) ? values.length : 0))
+            .sort((a, b) => b.value - a.value),
+        );
+
+        const color = d3
+          .scaleLinear()
+          .domain([0, root.height || 1])
+          .range(['hsl(152,80%,80%)', 'hsl(228,30%,40%)'])
+          .interpolate(d3.interpolateHcl);
+
+        this.packWidth = width;
+        this.packRoot = root;
+        this.packFocus = root;
+        this.computedHeight = height;
+
+        const svg = d3
+          .select(this.$refs.chart)
+          .attr('viewBox', `${-width / 2} ${-height / 2} ${width} ${height}`)
+          .attr('width', width)
+          .attr('height', height)
+          .attr(
+            'style',
+            `max-width: 100%; height: auto; display: block; background: ${color(0)}; cursor: pointer;`,
+          );
+
+        this.packNode = svg
+          .append('g')
+          .selectAll('circle')
+          .data(root.descendants().slice(1))
+          .join('circle')
+          .attr('fill', (d) => (d.children ? color(d.depth) : 'white'))
+          .attr('pointer-events', (d) => (!d.children ? 'none' : null))
+          .on('mouseover', function () {
+            d3.select(this).attr('stroke', '#000');
+          })
+          .on('mouseout', function () {
+            d3.select(this).attr('stroke', null);
+          })
+          .on('click', (event, d) => {
+            if (this.packFocus !== d) {
+              this.zoomPack(event, d);
+              event.stopPropagation();
+            }
+          });
+
+        this.packNode.append('title').text((d) => format(d.value));
+
+        this.packLabel = svg
+          .append('g')
+          .style('font', '10px sans-serif')
+          .attr('pointer-events', 'none')
+          .attr('text-anchor', 'middle')
+          .selectAll('text')
+          .data(root.descendants())
+          .join('text')
+          .style('fill-opacity', (d) => (d.parent === root ? 1 : 0))
+          .style('display', (d) => (d.parent === root ? 'inline' : 'none'))
+          .text((d) => d.data[0] ?? '');
+
+        svg.on('click', (event) => this.zoomPack(event, root));
+
+        this.updatePack([root.x, root.y, root.r * 2]);
+      },
+      // Repositions/rescales nodes+labels for the given view box [x, y, diameter].
+      updatePack(v) {
+        const k = this.packWidth / v[2];
+        this.packView = v;
+
+        this.packLabel.attr(
+          'transform',
+          (d) => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`,
+        );
+        this.packNode.attr(
+          'transform',
+          (d) => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`,
+        );
+        this.packNode.attr('r', (d) => d.r * k);
+      },
+      // Animates the zoom from the current focus to node `d`.
+      zoomPack(event, d) {
+        this.packFocus = d;
+
+        const svg = d3.select(this.$refs.chart);
+        const transition = svg
+          .transition()
+          .duration(event?.altKey ? 7500 : 750)
+          .tween('zoom', () => {
+            const i = d3.interpolateZoom(this.packView, [
+              this.packFocus.x,
+              this.packFocus.y,
+              this.packFocus.r * 2,
+            ]);
+            return (t) => this.updatePack(i(t));
+          });
+
+        const focus = this.packFocus;
+        this.packLabel
+          .filter(function (d) {
+            return d.parent === focus || this.style.display === 'inline';
+          })
+          .transition(transition)
+          .style('fill-opacity', (d) => (d.parent === focus ? 1 : 0))
+          .on('start', function (d) {
+            if (d.parent === focus) this.style.display = 'inline';
+          })
+          .on('end', function (d) {
+            if (d.parent !== focus) this.style.display = 'none';
+          });
+      },
     },
     computed: {},
   };
 </script>
 <style scoped>
+  .viz-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .viz-toggle button {
+    padding: 4px 12px;
+    border: 1px solid #999;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  .viz-toggle button.active {
+    background: steelblue;
+    border-color: steelblue;
+    color: #fff;
+  }
+
   .chart-container {
     width: 100%;
     overflow-x: auto;
