@@ -343,12 +343,12 @@ export function buildScreenFields(screenType) {
 function buildCombinationTooltips(screenType) {
   if (screenType !== 'CPS') return {};
   return {
-    druga: 'Must match the Test Agent Name of a compound in the table above',
-    druga_top_dose: 'Must match the Top Screening Dose of the selected Drug A',
-    drugb:
-      'Must match the Test Agent Name of a compound in the table above, or "None" if Drug A is tested alone. Every Drug A used in a combination also needs a solo ("None") entry, and every solo entry needs a matching combination entry',
+    druga:
+      'Must match the Test Agent Name of a compound in the table above. Each Drug A compound needs both a combination entry (with a real Drug B) and a solo entry (Drug B = "None")',
+    druga_top_dose: 'Must match the Top Screening Dose of the selected Drug A in the table above.',
+    drugb: 'Must match the Test Agent Name of a compound in the table above, or "None" if Drug A is tested alone',
     drugb_dose:
-      'Must match the Top Screening Dose of the selected Drug B. Not required when Drug B is "None"',
+      'Must match the Top Screening Dose of the selected Drug B in the table above. Not required when Drug B is "None"',
     drugb_dose_unit: 'Not required when Drug B is "None"',
   };
 }
@@ -451,7 +451,9 @@ export function validate(data, screenType) {
       (r) => r.druga && compoundNames.includes(r.druga),
     );
     if (!hasValidCombo) {
-      errors.general = ['The combination table must have at least 1 entry with Drug A matching a submitted test agent.'];
+      errors.general = [
+        'The combination table must have at least 1 entry with Drug A matching a submitted test agent.',
+      ];
     }
 
     const combos = data.combinations ?? [];
@@ -481,7 +483,8 @@ export function validate(data, screenType) {
       errors.general = [
         ...(errors.general ?? []),
         ...missingComboEntries.map(
-          (druga) => `${druga}'s solo entry (Drug B = "${NONE}") needs a corresponding combination entry with an actual Drug B`,
+          (druga) =>
+            `${druga}'s solo entry (Drug B = "${NONE}") needs a corresponding combination entry with an actual Drug B`,
         ),
       ];
     }
@@ -567,7 +570,6 @@ export function validate(data, screenType) {
     if (combinationErrors.some((e) => Object.keys(e).length > 0)) {
       errors.combinations = combinationErrors;
     }
-
   }
 
   return errors;
