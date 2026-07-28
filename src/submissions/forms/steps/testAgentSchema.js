@@ -13,7 +13,7 @@ const MOLECULE_TYPES = [
   'Small Molecule',
 ];
 const AMOUNT_UNITS = ['uL'];
-const NONE = 'None'; // sentinel for CPS combination rows testing Drug A alone
+export const NONE = 'None'; // sentinel for CPS combination rows testing Drug A alone
 
 // ── Compound field registry ─────────────────────────────────────────────────
 // Canonical field definitions for the Compound Table — the main per-screen

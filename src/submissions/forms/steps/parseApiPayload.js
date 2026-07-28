@@ -4,6 +4,7 @@ import {
   buildCombinationFields,
   buildCompoundFields as buildTestAgentFields,
   isBlankRow,
+  NONE,
 } from './testAgentSchema.js';
 import { getFields as getAcknowledgementFields } from './acknowledgementsSchema.js';
 
@@ -121,7 +122,10 @@ export function parseFormDataForApi(formData, screenType, screenName) {
             .filter((row) => !isBlankRow(row))
             .map((row) =>
               Object.fromEntries(
-                buildCombinationFields(screenType).map((f) => [f.key, row[f.key] ?? '']),
+                buildCombinationFields(screenType).map((f) => [
+                  f.key,
+                  f.key === 'drugb' && row[f.key] === NONE ? '' : (row[f.key] ?? ''),
+                ]),
               ),
             )
         : [],
