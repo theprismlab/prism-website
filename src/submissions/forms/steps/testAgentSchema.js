@@ -114,8 +114,14 @@ const SCREENS = {
         label: 'Drug B Dose',
         inputmode: 'decimal',
         validate: validNumber,
+        disabled: (row) => row.drugb === NONE,
       },
-      { key: 'drugb_dose_unit', label: 'Drug B Dose Unit', options: ['uM'] },
+      {
+        key: 'drugb_dose_unit',
+        label: 'Drug B Dose Unit',
+        options: ['uM'],
+        disabled: (row) => row.drugb === NONE,
+      },
     ],
     fields: [
       FIELDS.COMPOUND_NAME,

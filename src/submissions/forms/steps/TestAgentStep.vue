@@ -76,6 +76,20 @@
         return this.errors.general ?? [];
       },
     },
+    watch: {
+      combinations: {
+        deep: true,
+        handler(rows) {
+          rows.forEach((row) => {
+            this.combinationFields.forEach((f) => {
+              if (typeof f.disabled === 'function' && f.disabled(row) && row[f.key]) {
+                row[f.key] = '';
+              }
+            });
+          });
+        },
+      },
+    },
     methods: {
       addCompoundRow() {
         this.data.rows.push(getInitialRow());

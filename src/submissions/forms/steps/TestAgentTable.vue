@@ -33,6 +33,7 @@
                 density="compact"
                 single-line
                 hide-details
+                :disabled="isDisabled(row, f)"
                 :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
               />
@@ -44,6 +45,7 @@
                 density="compact"
                 single-line
                 hide-details
+                :disabled="isDisabled(row, f)"
                 :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
               />
@@ -106,6 +108,9 @@
       hasError(row, i, fieldKey) {
         if (!this.submittedRows.includes(row)) return false;
         return !!this.errors[i]?.[fieldKey];
+      },
+      isDisabled(row, f) {
+        return typeof f.disabled === 'function' ? f.disabled(row) : false;
       },
     },
   };
