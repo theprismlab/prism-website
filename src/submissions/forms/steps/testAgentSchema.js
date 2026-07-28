@@ -306,6 +306,9 @@ function buildTooltips(screenType) {
   const tooltips = {};
   const divisor = 1000 / cfg.concMultiplier;
 
+  tooltips.compound_name =
+    'Must be unique. Testing the same compound at multiple doses? Use a distinct name for each entry (e.g. append "-2")';
+
   if (cfg.maxTopDoseUgML !== undefined) tooltips.top_dose = `Maximum ${cfg.maxTopDoseUgML} ug/mL`;
 
   if (screenType === 'EPS') {
@@ -313,8 +316,8 @@ function buildTooltips(screenType) {
     tooltips.amount = `Dilution factor ${cfg.minDilutionFactor} to <${cfg.dilutionThreshold}: minimum ${cfg.minAmountLowDilutionUL} uL. Dilution factor ${cfg.dilutionThreshold}+: minimum ${cfg.minAmountHighDilutionUL} uL`;
   } else if (screenType === 'CPS') {
     tooltips.amount = `Minimum ${cfg.minAmountUL} uL solo. If in combinations: ${cfg.comboAmountPerSlotUL} uL × number of combination slots`;
-    tooltips.compound_name =
-      'Must be used as Drug A or Drug B in at least one row of the combination table below';
+    tooltips.compound_name +=
+      '. Must also be used as Drug A or Drug B in at least one row of the combination table below';
   } else if (cfg.minAmountUL !== undefined) {
     tooltips.amount = `Minimum ${cfg.minAmountUL} uL required`;
   }
@@ -397,6 +400,10 @@ export function getSummary(data) {
 export function validate(data, screenType) {
   const rows = data.rows ?? [];
   const compoundNames = rows.map((r) => r.compound_name).filter(Boolean);
+  const nameCounts = compoundNames.reduce((acc, name) => {
+    acc[name] = (acc[name] ?? 0) + 1;
+    return acc;
+  }, {});
   const errors = {};
 
   // Validate each compound row individually
@@ -438,7 +445,16 @@ export function validate(data, screenType) {
       }
     }
 
-    return { ...rErrors, ...screenErrors };
+    const merged = { ...rErrors, ...screenErrors };
+
+    // Test Agent Name must be unique — matching by name elsewhere (combinations,
+    // amount-per-slot) becomes ambiguous otherwise
+    if (row.compound_name && nameCounts[row.compound_name] > 1) {
+      merged.compound_name =
+        'Test Agent Name must be unique. Testing the same compound at multiple doses? Use a distinct name for each entry (e.g. append "-2")';
+    }
+
+    return merged;
   });
 
   if (rowErrors.some((e) => Object.keys(e).length > 0)) {
