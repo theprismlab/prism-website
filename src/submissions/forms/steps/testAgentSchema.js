@@ -440,7 +440,9 @@ export function validate(data, screenType) {
     if (missingNoneEntries.length > 0) {
       errors.general = [
         ...(errors.general ?? []),
-        `Each Drug A compound needs an additional combination entry with Drug B set to "${NONE}": ${missingNoneEntries.join(', ')}`,
+        ...missingNoneEntries.map(
+          (druga) => `${druga} needs an additional combination entry with Drug B set to "${NONE}"`,
+        ),
       ];
     }
 
@@ -452,7 +454,9 @@ export function validate(data, screenType) {
     if (missingComboEntries.length > 0) {
       errors.general = [
         ...(errors.general ?? []),
-        `Each solo entry (Drug B = "${NONE}") must also have a corresponding combination entry with an actual Drug B: ${missingComboEntries.join(', ')}`,
+        ...missingComboEntries.map(
+          (druga) => `${druga}'s solo entry (Drug B = "${NONE}") needs a corresponding combination entry with an actual Drug B`,
+        ),
       ];
     }
   }
