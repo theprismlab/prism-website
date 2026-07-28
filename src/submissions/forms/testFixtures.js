@@ -1,3 +1,43 @@
+// CPS needs 3 unique test agents plus combination rows: each Drug A used in a
+// real combo also needs a solo entry (Drug B = "None"), and vice versa.
+function getCPSTestAgentData() {
+  const compound = (name, top_dose) => ({
+    compound_name: name,
+    molecule_type: '',
+    solvent: '',
+    top_dose,
+    top_dose_unit: 'uM',
+    dilution_factor: '',
+    amount: '1200',
+    amount_unit: 'uL',
+    conc: top_dose,
+    conc_unit: 'mM',
+    storage_conditions: 'Room temperature',
+    health_hazard: 'No',
+  });
+
+  const combo = (druga, druga_top_dose, drugb, drugb_dose) => ({
+    druga,
+    druga_top_dose,
+    druga_top_dose_unit: 'uM',
+    drugb,
+    drugb_dose,
+    drugb_dose_unit: drugb_dose ? 'uM' : '',
+  });
+
+  return {
+    rows: [compound('Compound A', '10'), compound('Compound B', '20'), compound('Compound C', '30')],
+    combinations: [
+      combo('Compound A', '10', 'Compound B', '20'),
+      combo('Compound B', '20', 'Compound C', '30'),
+      combo('Compound C', '30', 'Compound A', '10'),
+      combo('Compound A', '10', 'None', ''),
+      combo('Compound B', '20', 'None', ''),
+      combo('Compound C', '30', 'None', ''),
+    ],
+  };
+}
+
 function getTestAgentRow(screenType) {
   const base = {
     compound_name: 'Test Compound',
@@ -59,10 +99,13 @@ export function getTestData(screenType) {
       billingInvoiceContactEmail: '',
       comments: '',
     },
-    testAgent: {
-      rows: [getTestAgentRow(screenType)],
-      combinations: [],
-    },
+    testAgent:
+      screenType === 'CPS'
+        ? getCPSTestAgentData()
+        : {
+            rows: [getTestAgentRow(screenType)],
+            combinations: [],
+          },
     acknowledgements: {
       acknowledgement1: true,
       acknowledgement2: true,

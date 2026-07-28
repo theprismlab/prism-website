@@ -13,6 +13,7 @@ const MOLECULE_TYPES = [
   'Small Molecule',
 ];
 const AMOUNT_UNITS = ['uL'];
+const NONE = 'None'; // sentinel for CPS combination rows testing Drug A alone
 
 // ── Field registry ─────────────────────────────────────────────────────────
 // Canonical definitions: key, label, type, default options.
@@ -107,7 +108,7 @@ const SCREENS = {
         validate: validNumber,
       },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
-      { key: 'drugb', label: 'Drug B Compound Name' },
+      { key: 'drugb', label: 'Drug B Compound Name', placeholder: 'Enter "None" if Drug A is tested alone' },
       {
         key: 'drugb_dose',
         label: 'Drug B Dose',
@@ -401,10 +402,12 @@ export function validate(data, screenType) {
         }
       }
 
-      // Every test agent must be used as Drug A in at least one combination
-      const usedInCombination = data.combinations.some((r) => r.druga === row.compound_name);
+      // Every test agent must be used as Drug A or Drug B in at least one combination
+      const usedInCombination = data.combinations.some(
+        (r) => r.druga === row.compound_name || r.drugb === row.compound_name,
+      );
       if (!usedInCombination) {
-        screenErrors.compound_name = 'Must be used as Drug A in a combination below';
+        screenErrors.compound_name = 'Must be used as Drug A or Drug B in a combination below';
       }
     }
 
@@ -423,6 +426,34 @@ export function validate(data, screenType) {
     if (!hasValidCombo) {
       errors.general = ['The combination table must have at least 1 entry with Drug A matching a submitted test agent.'];
     }
+
+    const combos = data.combinations ?? [];
+    const realCombos = combos.filter((r) => r.druga && r.drugb && r.drugb !== NONE);
+    const soloCombos = combos.filter((r) => r.druga && r.drugb === NONE);
+
+    // Every Drug A used in a real combination must also have a solo entry (Drug B = "None")
+    const drugAValues = [...new Set(realCombos.map((r) => r.druga))];
+    const missingNoneEntries = drugAValues.filter(
+      (druga) => !soloCombos.some((r) => r.druga === druga),
+    );
+    if (missingNoneEntries.length > 0) {
+      errors.general = [
+        ...(errors.general ?? []),
+        `Each Drug A compound needs an additional combination entry with Drug B set to "${NONE}": ${missingNoneEntries.join(', ')}`,
+      ];
+    }
+
+    // Every solo entry (Drug B = "None") must also have a corresponding real combination entry
+    const soloDrugAValues = [...new Set(soloCombos.map((r) => r.druga))];
+    const missingComboEntries = soloDrugAValues.filter(
+      (druga) => !realCombos.some((r) => r.druga === druga),
+    );
+    if (missingComboEntries.length > 0) {
+      errors.general = [
+        ...(errors.general ?? []),
+        `Each solo entry (Drug B = "${NONE}") must also have a corresponding combination entry with an actual Drug B: ${missingComboEntries.join(', ')}`,
+      ];
+    }
   }
 
   // Combination validation
@@ -432,7 +463,9 @@ export function validate(data, screenType) {
 
     const combinationErrors = data.combinations.map((comboRow, i) => {
       const comboErrors = {};
+      const isSolo = comboRow.drugb === NONE; // Drug A tested alone: no Drug B dose to validate
       for (const f of combinationFields) {
+        if (isSolo && (f.key === 'drugb_dose' || f.key === 'drugb_dose_unit')) continue;
         const val = comboRow[f.key];
         if (f.required !== false && !val) {
           comboErrors[f.key] = 'Required';
@@ -448,6 +481,16 @@ export function validate(data, screenType) {
         comboErrors.druga = `Must be one of the submitted test agents: ${compoundNames.join(', ')}`;
       }
 
+      // Drug B must be one of the submitted compound names, or "None" (Drug A tested alone)
+      if (
+        comboRow.drugb &&
+        !isSolo &&
+        compoundNames.length > 0 &&
+        !compoundNames.includes(comboRow.drugb)
+      ) {
+        comboErrors.drugb = `Must be one of the submitted test agents, or "${NONE}": ${compoundNames.join(', ')}`;
+      }
+
       // Drug A Top Dose must match the Top Screening Dose of that agent in the table above
       if (comboRow.druga && comboRow.druga_top_dose) {
         const matchRow = rows.find((r) => r.compound_name === comboRow.druga);
@@ -457,6 +500,18 @@ export function validate(data, screenType) {
         ) {
           const unit = matchRow.top_dose_unit ? ` ${matchRow.top_dose_unit}` : '';
           comboErrors.druga_top_dose = `Must match Top Screening Dose (${matchRow.top_dose}${unit}) for ${comboRow.druga}`;
+        }
+      }
+
+      // Drug B Dose must match the Top Screening Dose of that agent in the table above
+      if (!isSolo && comboRow.drugb && comboRow.drugb_dose) {
+        const matchRow = rows.find((r) => r.compound_name === comboRow.drugb);
+        if (
+          matchRow?.top_dose &&
+          Math.abs(Number(comboRow.drugb_dose) - Number(matchRow.top_dose)) > 0.001
+        ) {
+          const unit = matchRow.top_dose_unit ? ` ${matchRow.top_dose_unit}` : '';
+          comboErrors.drugb_dose = `Must match Top Screening Dose (${matchRow.top_dose}${unit}) for ${comboRow.drugb}`;
         }
       }
 
