@@ -179,4 +179,7 @@
   .perturbation-table :deep(input) {
     font-size: 0.75rem;
   }
+  .perturbation-table :deep(td) {
+    border-bottom: none !important;
+  }
 </style>

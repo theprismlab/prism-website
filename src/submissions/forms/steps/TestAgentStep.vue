@@ -1,27 +1,32 @@
 <template>
-  <div class="mt-4">
-    <test-agent-table
-      :fields="compoundFields"
-      :rows="compoundRows"
-      :errors="compoundRowErrors"
-      :submitted="submitted"
-      multi-row
-      add-label="Add test agent"
-      @add-row="addCompoundRow"
-      @remove-row="removeCompoundRow"
-    />
-    <test-agent-table
-      v-if="combinationFields.length"
-      :fields="combinationFields"
-      :rows="combinations"
-      :errors="combinationErrors"
-      :submitted="submitted"
-      multi-row
-      add-label="Add combination"
-      class="mt-4"
-      @add-row="addCombinationRow"
-      @remove-row="removeCombinationRow"
-    />
+  <div>
+    <div class="my-4">
+      <h3 class="prism-text-form-group-label mb-4">Test Agent Details:</h3>
+      <test-agent-table
+        :fields="compoundFields"
+        :rows="compoundRows"
+        :errors="compoundRowErrors"
+        :submitted="submitted"
+        multi-row
+        add-label="Add test agent"
+        @add-row="addCompoundRow"
+        @remove-row="removeCompoundRow"
+      />
+    </div>
+
+    <div v-if="combinationFields.length" class="my-4">
+      <h3 class="prism-text-form-group-label mb-4">Combination Details:</h3>
+      <test-agent-table
+        :fields="combinationFields"
+        :rows="combinations"
+        :errors="combinationErrors"
+        :submitted="submitted"
+        multi-row
+        add-label="Add combination"
+        @add-row="addCombinationRow"
+        @remove-row="removeCombinationRow"
+      />
+    </div>
     <v-alert
       v-if="submitted > 0 && generalErrors.length"
       type="error"

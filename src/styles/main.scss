@@ -63,8 +63,9 @@ li {
 }
 // Below are classes to add to prism-component-lib (once finalized)
 .prism-text-form-group-label {
-  font-size: 1.025rem;
-  margin-top: 24px;
+  font-size: 1rem;
+  margin-top: 12px;
+  margin-bottom: 6px;
   font-weight: 600;
   color: var(--base-color-gray--900);
   letter-spacing: 0.03em;

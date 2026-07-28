@@ -3,7 +3,7 @@
     <v-col cols="12">
       <h3 class="prism-text-form-group-label">Your information</h3>
     </v-col>
-    <v-col cols="12" sm="5">
+    <v-col cols="12" md="5">
       <!-- <h4 class="prism-text-form-label">{{ F.YOUR_NAME.label }}</h4> -->
       <v-text-field
         v-model="data[F.YOUR_NAME.key]"
@@ -13,7 +13,7 @@
         :error-messages="errors[F.YOUR_NAME.key]"
       />
     </v-col>
-    <v-col cols="12" sm="7">
+    <v-col cols="12" md="7">
       <v-text-field
         :model-value="data[F.YOUR_EMAIL.key]"
         :label="F.YOUR_EMAIL.label"
@@ -30,7 +30,7 @@
     <v-col cols="12">
       <h3 class="prism-text-form-group-label">Investigator information</h3>
     </v-col>
-    <v-col cols="12" sm="5">
+    <v-col cols="12" md="5">
       <v-text-field
         v-model="data[F.INVESTIGATOR_NAME.key]"
         :label="F.INVESTIGATOR_NAME.label"
@@ -39,7 +39,7 @@
         :error-messages="errors[F.INVESTIGATOR_NAME.key]"
       />
     </v-col>
-    <v-col cols="12" sm="7">
+    <v-col cols="12" md="7">
       <v-text-field
         :model-value="data[F.INVESTIGATOR_EMAIL.key]"
         :label="F.INVESTIGATOR_EMAIL.label"
@@ -55,15 +55,13 @@
   <v-row dense>
     <v-col cols="12">
       <h3 class="prism-text-form-group-label">Data Access Managers</h3>
-      <p class="prism-text-body-large">
+      <p class="prism-text-body-medium mb-4" style="max-width: 800px">
         All contacts included in this form will be assigned Data Access Managers for the dataset and
         manage access to others once it is delivered. Please include any additional contacts in the
         fields below.
       </p>
-    </v-col>
-    <v-col cols="12">
       <v-row v-for="(manager, i) in data[F.DATA_ACCESS_MANAGERS.key]" :key="i" dense align="start">
-        <v-col cols="12" sm="5">
+        <v-col cols="12" md="5">
           <v-text-field
             v-model="manager.name"
             :label="F.DATA_ACCESS_MANAGERS.nameLabel"
@@ -72,7 +70,7 @@
             :error-messages="errors[`dataAccessManagers_${i}_name`]"
           />
         </v-col>
-        <v-col cols="12" sm="6">
+        <v-col cols="12" md="6">
           <v-text-field
             :model-value="manager.email"
             :label="F.DATA_ACCESS_MANAGERS.emailLabel"
@@ -96,7 +94,9 @@
       </v-row>
       <v-row dense>
         <v-col>
-          <v-btn variant="text" size="small" @click="addManager">+ Add</v-btn>
+          <v-btn variant="text" size="small" @click="addManager" color="var(--prism-color-primary)"
+            >+ Add</v-btn
+          >
         </v-col>
       </v-row>
     </v-col>
