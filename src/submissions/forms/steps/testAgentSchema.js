@@ -413,7 +413,6 @@ export function validate(data, screenType) {
 
   // Validate each compound row individually
   const rowErrors = rows.map((row) => {
-    if (isBlankRow(row)) return {};
     const rErrors = {};
     for (const f of buildScreenFields(screenType)) {
       const val = row[f.key];
@@ -467,18 +466,31 @@ export function validate(data, screenType) {
     errors.rows = rowErrors;
   }
 
-  // CPS requires at least one combination with a Drug A matching a submitted test agent
   if (screenType === 'CPS') {
-    const hasValidCombo = (data.combinations ?? []).some(
-      (r) => r.druga && compoundNames.includes(r.druga),
-    );
+    const combos = data.combinations ?? [];
+
+    // CPS requires at least 2 test agents and at least 2 combination entries
+    const nonBlankRowCount = rows.filter((r) => !isBlankRow(r)).length;
+    if (nonBlankRowCount < 2) {
+      errors.general = [...(errors.general ?? []), 'At least 2 test agent entries are required.'];
+    }
+    const nonBlankComboCount = combos.filter((r) => !isBlankRow(r)).length;
+    if (nonBlankComboCount < 2) {
+      errors.general = [
+        ...(errors.general ?? []),
+        'At least 2 combination entries are required.',
+      ];
+    }
+
+    // CPS requires at least one combination with a Drug A matching a submitted test agent
+    const hasValidCombo = combos.some((r) => r.druga && compoundNames.includes(r.druga));
     if (!hasValidCombo) {
       errors.general = [
+        ...(errors.general ?? []),
         'The combination table must have at least 1 entry with Drug A matching a submitted test agent.',
       ];
     }
 
-    const combos = data.combinations ?? [];
     const realCombos = combos.filter((r) => r.druga && r.drugb && r.drugb !== NONE);
     const soloCombos = combos.filter((r) => r.druga && r.drugb === NONE);
 
@@ -510,6 +522,8 @@ export function validate(data, screenType) {
         ),
       ];
     }
+  } else if (rows.filter((r) => !isBlankRow(r)).length < 1) {
+    errors.general = ['At least 1 test agent entry is required.'];
   }
 
   // Combination validation
@@ -518,7 +532,6 @@ export function validate(data, screenType) {
     const seenPairs = new Map();
 
     const combinationErrors = data.combinations.map((comboRow, i) => {
-      if (isBlankRow(comboRow)) return {};
       const comboErrors = {};
       const isSolo = comboRow.drugb === NONE; // Drug A tested alone: no Drug B dose to validate
       for (const f of combinationFields) {
