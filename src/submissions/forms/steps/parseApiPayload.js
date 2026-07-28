@@ -2,7 +2,9 @@ import { FIELDS as COLLABORATOR_FIELDS } from './collaboratorSchema.js';
 import { FIELDS as INSTITUTION_FIELDS, COLLABORATOR_TYPE_OPTIONS } from './institutionSchema.js';
 import {
   buildCombinationFields,
-  buildScreenFields as buildTestAgentFields,
+  buildCompoundFields as buildTestAgentFields,
+  isBlankRow,
+  NONE,
 } from './testAgentSchema.js';
 import { getFields as getAcknowledgementFields } from './acknowledgementsSchema.js';
 
@@ -70,18 +72,20 @@ export function parseFormDataForApi(formData, screenType, screenName) {
   // );
 
   // This work-around will be depricated once the API no longer requires previously hardcoded fields.
-  const compounds = (testAgent.rows ?? []).map((row) => {
-    const base = Object.fromEntries(compoundFields.map((f) => [f.key, row[f.key] ?? '']));
-    return {
-      ...base,
-      // API expects boolean; form uses 'Yes'/'No'.
-      health_hazard: base.health_hazard === 'Yes',
-      // Fields no longer collected by the form — hardcoded to satisfy the API contract.
-      full_brd: '',
-      supplier: 'Broad Institute of MIT and Harvard',
-      supplier_catalog_name: 'Broad Institute of MIT and Harvard',
-    };
-  });
+  const compounds = (testAgent.rows ?? [])
+    .filter((row) => !isBlankRow(row))
+    .map((row) => {
+      const base = Object.fromEntries(compoundFields.map((f) => [f.key, row[f.key] ?? '']));
+      return {
+        ...base,
+        // API expects boolean; form uses 'Yes'/'No'.
+        health_hazard: base.health_hazard === 'Yes',
+        // Fields no longer collected by the form — hardcoded to satisfy the API contract.
+        full_brd: '',
+        supplier: 'Broad Institute of MIT and Harvard',
+        supplier_catalog_name: 'Broad Institute of MIT and Harvard',
+      };
+    });
   const results = {
     compoundInfo: {
       screen: screenName,
@@ -92,7 +96,7 @@ export function parseFormDataForApi(formData, screenType, screenName) {
       investigator_name: collaborator[COLLABORATOR_FIELDS.INVESTIGATOR_NAME.key] ?? '',
       ...mainContactFields,
       home_institution: institution[INSTITUTION_FIELDS.INSTITUTION_NAME.key] ?? '',
-      total_num_cpds: String((testAgent.rows ?? []).length),
+      total_num_cpds: String(compounds.length),
       collaboration_type: collaboratorTypeLabel ?? '',
       agreements,
       funding_comments: institution[INSTITUTION_FIELDS.COMMENTS.key] ?? '',
@@ -114,11 +118,16 @@ export function parseFormDataForApi(formData, screenType, screenName) {
     compounds,
     combinations:
       buildCombinationFields(screenType).length > 0
-        ? (testAgent.combinations ?? []).map((row) =>
-            Object.fromEntries(
-              buildCombinationFields(screenType).map((f) => [f.key, row[f.key] ?? '']),
-            ),
-          )
+        ? (testAgent.combinations ?? [])
+            .filter((row) => !isBlankRow(row))
+            .map((row) =>
+              Object.fromEntries(
+                buildCombinationFields(screenType).map((f) => [
+                  f.key,
+                  f.key === 'drugb' && row[f.key] === NONE ? '' : (row[f.key] ?? ''),
+                ]),
+              ),
+            )
         : [],
   };
   return results;

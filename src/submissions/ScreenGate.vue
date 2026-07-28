@@ -12,15 +12,9 @@
     v-else-if="!optimistic && screenState.status === 'loading'"
     class="d-flex justify-center pa-8"
   >
-    <v-progress-circular
-      indeterminate
-      color="primary"
-    />
+    <v-progress-circular indeterminate color="primary" />
   </div>
-  <slot
-    v-else
-    :screen-state="screenState"
-  />
+  <slot v-else :screen-state="screenState" />
 </template>
 
 <script>
