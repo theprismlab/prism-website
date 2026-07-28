@@ -128,7 +128,7 @@
 <script>
   import { FORM_STEPS, useFormProgressStore } from '@/submissions/store';
   import { STEP_REGISTRY } from './registry';
-  import { buildScreenFields, buildCombinationFields } from './testAgentSchema.js';
+  import { buildCompoundFields, buildCombinationFields } from './testAgentSchema.js';
   import { parseFormDataForApi } from './parseApiPayload.js';
   import * as api from '@/submissions/api';
 
@@ -164,7 +164,7 @@
         return JSON.stringify(rest);
       },
       agentFields() {
-        return buildScreenFields(this.screenType);
+        return buildCompoundFields(this.screenType);
       },
       combinationFields() {
         return buildCombinationFields(this.screenType);

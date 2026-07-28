@@ -2,7 +2,7 @@ import { FIELDS as COLLABORATOR_FIELDS } from './collaboratorSchema.js';
 import { FIELDS as INSTITUTION_FIELDS, COLLABORATOR_TYPE_OPTIONS } from './institutionSchema.js';
 import {
   buildCombinationFields,
-  buildScreenFields as buildTestAgentFields,
+  buildCompoundFields as buildTestAgentFields,
   isBlankRow,
 } from './testAgentSchema.js';
 import { getFields as getAcknowledgementFields } from './acknowledgementsSchema.js';

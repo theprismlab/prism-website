@@ -10,9 +10,9 @@
       <div v-for="(msg, i) in generalErrors" :key="i">{{ msg }}</div>
     </v-alert>
     <test-agent-table
-      :fields="screenFields"
-      :rows="rows"
-      :errors="rowErrors"
+      :fields="compoundFields"
+      :rows="compoundRows"
+      :errors="compoundRowErrors"
       :submitted="submitted"
       multi-row
       add-label="Add test agent"
@@ -38,9 +38,9 @@
   import TestAgentTable from './TestAgentTable.vue';
   import {
     buildCombinationFields,
-    buildScreenFields,
+    buildCompoundFields,
     getInitialCombinationRow,
-    getInitialRow,
+    getInitialCompoundRow,
   } from './testAgentSchema.js';
 
   export default {
@@ -53,20 +53,20 @@
       submitted: { type: Number, default: 0 },
     },
     computed: {
-      screenFields() {
-        return buildScreenFields(this.screenType);
+      compoundFields() {
+        return buildCompoundFields(this.screenType);
       },
       combinationFields() {
-        const compoundNames = this.rows.map((r) => r.compound_name).filter(Boolean);
+        const compoundNames = this.compoundRows.map((r) => r.compound_name).filter(Boolean);
         return buildCombinationFields(this.screenType, compoundNames);
       },
-      rows() {
+      compoundRows() {
         return this.data.rows ?? [];
       },
       combinations() {
         return this.data.combinations ?? [];
       },
-      rowErrors() {
+      compoundRowErrors() {
         return this.errors.rows ?? [];
       },
       combinationErrors() {
@@ -92,7 +92,7 @@
     },
     methods: {
       addCompoundRow() {
-        this.data.rows.push(getInitialRow());
+        this.data.rows.push(getInitialCompoundRow());
       },
       removeCompoundRow(index) {
         this.data.rows.splice(index, 1);
