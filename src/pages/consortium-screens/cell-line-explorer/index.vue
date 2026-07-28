@@ -1,11 +1,11 @@
 <template>
   <div>
     <prism-page-title>Cell Line Explorer</prism-page-title>
-    <div class="chart-container">
+    <div class="chart-container" :style="{ height: chartHeight + 'px' }">
       <svg
         id="cell-line-explorer-svg"
         ref="chart"
-        viewBox="0 0 800 600"
+        :viewBox="`0 0 ${chartWidth} ${chartHeight}`"
         preserveAspectRatio="xMidYMid meet"
       ></svg>
     </div>
@@ -20,6 +20,8 @@
       return {
         cellLines: [],
         // hierarchy: ['cell_lineage', 'primary_disease', 'subtype', 'cell_line'],
+        chartWidth: 1000,
+        chartHeight: 3500,
       };
     },
     async mounted() {
@@ -57,11 +59,9 @@
         }
       },
       renderHierarchy(hierarchy) {
-        const viewWidth = 800;
-        const viewHeight = 600;
         const margin = { top: 20, right: 100, bottom: 20, left: 20 };
-        const innerWidth = viewWidth - margin.left - margin.right;
-        const innerHeight = viewHeight - margin.top - margin.bottom;
+        const innerWidth = this.chartWidth - margin.left - margin.right;
+        const innerHeight = this.chartHeight - margin.top - margin.bottom;
 
         const svg = d3
           .select(this.$refs.chart)
@@ -69,7 +69,7 @@
           .attr('transform', `translate(${margin.left},${margin.top})`);
 
         // x = breadth (top-to-bottom), y = depth (left-to-right)
-        const treeLayout = d3.tree().size([innerHeight, innerWidth]);
+        const treeLayout = d3.cluster().size([innerHeight, innerWidth]);
         const root = treeLayout(hierarchy);
         // Render nodes and links
         svg
@@ -100,6 +100,7 @@
           .attr('y', (d) => d.x)
           .attr('dy', '0.35em')
           .attr('text-anchor', 'start')
+          .attr('font-size', '9px')
           .text((d) => d.data[0]);
       },
     },
@@ -109,7 +110,6 @@
 <style scoped>
   .chart-container {
     width: 100%;
-    height: 80vh;
   }
 
   .chart-container svg {
