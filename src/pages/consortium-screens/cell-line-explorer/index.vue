@@ -5,7 +5,9 @@
       <v-col cols="12" sm="4">
         <v-autocomplete
           v-model="selectedLineages"
-          :items="lineageOptions"
+          :items="lineageOptionsWithCounts"
+          item-title="title"
+          item-value="value"
           label="Cell Lineage"
           multiple
           chips
@@ -17,7 +19,9 @@
       <v-col cols="12" sm="4">
         <v-autocomplete
           v-model="selectedDiseases"
-          :items="diseaseOptions"
+          :items="diseaseOptionsWithCounts"
+          item-title="title"
+          item-value="value"
           label="Primary Disease"
           multiple
           chips
@@ -29,7 +33,9 @@
       <v-col cols="12" sm="4">
         <v-autocomplete
           v-model="selectedCellLineNames"
-          :items="cellLineOptions"
+          :items="cellLineOptionsWithCounts"
+          item-title="title"
+          item-value="value"
           label="Cell Line"
           multiple
           chips
@@ -80,25 +86,31 @@
       lineageOptions() {
         return [...new Set(this.cellLines.map((d) => d.cell_lineage))].filter(Boolean).sort();
       },
-      // Disease options are scoped to the currently selected lineage(s).
       diseaseOptions() {
-        const rows = this.selectedLineages.length
-          ? this.cellLines.filter((d) => this.selectedLineages.includes(d.cell_lineage))
-          : this.cellLines;
-        return [...new Set(rows.map((d) => d.primary_disease))].filter(Boolean).sort();
+        return [...new Set(this.cellLines.map((d) => d.primary_disease))].filter(Boolean).sort();
       },
-      // Cell line options are scoped to the currently selected lineage(s) and disease(s).
       cellLineOptions() {
-        const rows = this.cellLines.filter((d) => {
-          if (this.selectedLineages.length && !this.selectedLineages.includes(d.cell_lineage)) {
-            return false;
-          }
-          if (this.selectedDiseases.length && !this.selectedDiseases.includes(d.primary_disease)) {
-            return false;
-          }
-          return true;
-        });
-        return [...new Set(rows.map((d) => d.cell_line))].filter(Boolean).sort();
+        return [...new Set(this.cellLines.map((d) => d.cell_line))].filter(Boolean).sort();
+      },
+      // Full option lists annotated with how many rows match under the
+      // *other* active filters, non-zero counts first (each alphabetical).
+      lineageOptionsWithCounts() {
+        return this.optionsWithCounts(this.lineageOptions, (d) => d.cell_lineage, [
+          { selected: this.selectedDiseases, getField: (d) => d.primary_disease },
+          { selected: this.selectedCellLineNames, getField: (d) => d.cell_line },
+        ]);
+      },
+      diseaseOptionsWithCounts() {
+        return this.optionsWithCounts(this.diseaseOptions, (d) => d.primary_disease, [
+          { selected: this.selectedLineages, getField: (d) => d.cell_lineage },
+          { selected: this.selectedCellLineNames, getField: (d) => d.cell_line },
+        ]);
+      },
+      cellLineOptionsWithCounts() {
+        return this.optionsWithCounts(this.cellLineOptions, (d) => d.cell_line, [
+          { selected: this.selectedLineages, getField: (d) => d.cell_lineage },
+          { selected: this.selectedDiseases, getField: (d) => d.primary_disease },
+        ]);
       },
       filteredCellLines() {
         return this.cellLines.filter((d) => {
@@ -120,21 +132,9 @@
     },
     watch: {
       selectedLineages() {
-        // Selecting/removing a lineage can invalidate diseases and cell
-        // lines chosen further down the hierarchy - drop anything that's
-        // no longer a valid option.
-        this.selectedDiseases = this.pruneToOptions(this.selectedDiseases, this.diseaseOptions);
-        this.selectedCellLineNames = this.pruneToOptions(
-          this.selectedCellLineNames,
-          this.cellLineOptions,
-        );
         this.rebuild();
       },
       selectedDiseases() {
-        this.selectedCellLineNames = this.pruneToOptions(
-          this.selectedCellLineNames,
-          this.cellLineOptions,
-        );
         this.rebuild();
       },
       selectedCellLineNames() {
@@ -150,12 +150,27 @@
       }
     },
     methods: {
-      // Drops values no longer present in `options`; returns the same array
-      // reference when nothing changes, so callers don't trigger a watcher
-      // over a no-op reassignment.
-      pruneToOptions(selected, options) {
-        const filtered = selected.filter((v) => options.includes(v));
-        return filtered.length === selected.length ? selected : filtered;
+      // Annotates each option with a count of matching rows given the
+      // *other* filters' current selections (not this option's own field),
+      // and sorts zero-count options to the bottom.
+      optionsWithCounts(values, getField, otherFilters) {
+        const counts = new Map();
+        this.cellLines.forEach((row) => {
+          for (const { selected, getField: getOtherField } of otherFilters) {
+            if (selected.length && !selected.includes(getOtherField(row))) return;
+          }
+          const key = getField(row);
+          counts.set(key, (counts.get(key) || 0) + 1);
+        });
+        return values
+          .map((value) => {
+            const count = counts.get(value) || 0;
+            return { value, count, title: `${value} (${count})` };
+          })
+          .sort((a, b) => {
+            if ((a.count === 0) !== (b.count === 0)) return a.count === 0 ? 1 : -1;
+            return a.value.localeCompare(b.value);
+          });
       },
       async loadData() {
         try {
