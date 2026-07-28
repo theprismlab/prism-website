@@ -238,6 +238,83 @@ function validateCPS(row) {
   return errors;
 }
 
+// Every rule for a single CPS combination-table row: required/format fields, Drug A/B name
+// matching against the Test Agent table, dose matching, same-name check, duplicate-pair
+// detection. `seenPairs` is a Map shared across all rows in one validate() call — the caller
+// owns it so duplicates are tracked across the whole combinations array, not per-row.
+function validateCPSCombinationRow(comboRow, i, { rows, compoundNames, combinationFields, seenPairs }) {
+  const comboErrors = {};
+  const isSolo = comboRow.drugb === NONE; // Drug A tested alone: no Drug B dose to validate
+
+  for (const f of combinationFields) {
+    if (isSolo && (f.key === 'drugb_dose' || f.key === 'drugb_dose_unit')) continue;
+    const val = comboRow[f.key];
+    if (f.required !== false && !val) {
+      comboErrors[f.key] = 'Required';
+    }
+    if (f.validate && val) {
+      const msg = f.validate(val, comboRow);
+      if (msg) comboErrors[f.key] = msg;
+    }
+  }
+
+  // Drug A must be one of the submitted compound names
+  if (comboRow.druga && compoundNames.length > 0 && !compoundNames.includes(comboRow.druga)) {
+    comboErrors.druga = `Must be one of the submitted test agents: ${compoundNames.join(', ')}`;
+  }
+
+  // Drug B must be one of the submitted compound names, or "None" (Drug A tested alone)
+  if (
+    comboRow.drugb &&
+    !isSolo &&
+    compoundNames.length > 0 &&
+    !compoundNames.includes(comboRow.drugb)
+  ) {
+    comboErrors.drugb = `Must be one of the submitted test agents, or "${NONE}": ${compoundNames.join(', ')}`;
+  }
+
+  // Drug A Top Dose must match the Top Screening Dose of that agent in the table above
+  if (comboRow.druga && comboRow.druga_top_dose) {
+    const matchRow = rows.find((r) => r.compound_name === comboRow.druga);
+    if (
+      matchRow?.top_dose &&
+      Math.abs(Number(comboRow.druga_top_dose) - Number(matchRow.top_dose)) > 0.001
+    ) {
+      const unit = matchRow.top_dose_unit ? ` ${matchRow.top_dose_unit}` : '';
+      comboErrors.druga_top_dose = `Must match Top Screening Dose (${matchRow.top_dose}${unit}) for ${comboRow.druga}`;
+    }
+  }
+
+  // Drug B Dose must match the Top Screening Dose of that agent in the table above
+  if (!isSolo && comboRow.drugb && comboRow.drugb_dose) {
+    const matchRow = rows.find((r) => r.compound_name === comboRow.drugb);
+    if (
+      matchRow?.top_dose &&
+      Math.abs(Number(comboRow.drugb_dose) - Number(matchRow.top_dose)) > 0.001
+    ) {
+      const unit = matchRow.top_dose_unit ? ` ${matchRow.top_dose_unit}` : '';
+      comboErrors.drugb_dose = `Must match Top Screening Dose (${matchRow.top_dose}${unit}) for ${comboRow.drugb}`;
+    }
+  }
+
+  // Drug B cannot be the same as Drug A
+  if (comboRow.drugb && comboRow.druga && comboRow.drugb === comboRow.druga) {
+    comboErrors.drugb = 'Drug B cannot be the same as Drug A';
+  }
+
+  // Duplicate (Drug A, Drug B) pair
+  const pairKey = `${comboRow.druga}|${comboRow.drugb ?? ''}`;
+  if (comboRow.druga) {
+    if (seenPairs.has(pairKey)) {
+      comboErrors.druga = comboErrors.druga ?? 'Duplicate combination row';
+    } else {
+      seenPairs.set(pairKey, i);
+    }
+  }
+
+  return comboErrors;
+}
+
 function validateEPS(row) {
   const {
     concMultiplier,
@@ -538,78 +615,11 @@ export function validate(data, screenType) {
   const combinationFields = buildCombinationFields(screenType);
   if (combinationFields.length > 0 && data.combinations) {
     const seenPairs = new Map();
+    const ctx = { rows, compoundNames, combinationFields, seenPairs };
 
-    const combinationErrors = data.combinations.map((comboRow, i) => {
-      const comboErrors = {};
-      const isSolo = comboRow.drugb === NONE; // Drug A tested alone: no Drug B dose to validate
-      for (const f of combinationFields) {
-        if (isSolo && (f.key === 'drugb_dose' || f.key === 'drugb_dose_unit')) continue;
-        const val = comboRow[f.key];
-        if (f.required !== false && !val) {
-          comboErrors[f.key] = 'Required';
-        }
-        if (f.validate && val) {
-          const msg = f.validate(val, comboRow);
-          if (msg) comboErrors[f.key] = msg;
-        }
-      }
-
-      // Drug A must be one of the submitted compound names
-      if (comboRow.druga && compoundNames.length > 0 && !compoundNames.includes(comboRow.druga)) {
-        comboErrors.druga = `Must be one of the submitted test agents: ${compoundNames.join(', ')}`;
-      }
-
-      // Drug B must be one of the submitted compound names, or "None" (Drug A tested alone)
-      if (
-        comboRow.drugb &&
-        !isSolo &&
-        compoundNames.length > 0 &&
-        !compoundNames.includes(comboRow.drugb)
-      ) {
-        comboErrors.drugb = `Must be one of the submitted test agents, or "${NONE}": ${compoundNames.join(', ')}`;
-      }
-
-      // Drug A Top Dose must match the Top Screening Dose of that agent in the table above
-      if (comboRow.druga && comboRow.druga_top_dose) {
-        const matchRow = rows.find((r) => r.compound_name === comboRow.druga);
-        if (
-          matchRow?.top_dose &&
-          Math.abs(Number(comboRow.druga_top_dose) - Number(matchRow.top_dose)) > 0.001
-        ) {
-          const unit = matchRow.top_dose_unit ? ` ${matchRow.top_dose_unit}` : '';
-          comboErrors.druga_top_dose = `Must match Top Screening Dose (${matchRow.top_dose}${unit}) for ${comboRow.druga}`;
-        }
-      }
-
-      // Drug B Dose must match the Top Screening Dose of that agent in the table above
-      if (!isSolo && comboRow.drugb && comboRow.drugb_dose) {
-        const matchRow = rows.find((r) => r.compound_name === comboRow.drugb);
-        if (
-          matchRow?.top_dose &&
-          Math.abs(Number(comboRow.drugb_dose) - Number(matchRow.top_dose)) > 0.001
-        ) {
-          const unit = matchRow.top_dose_unit ? ` ${matchRow.top_dose_unit}` : '';
-          comboErrors.drugb_dose = `Must match Top Screening Dose (${matchRow.top_dose}${unit}) for ${comboRow.drugb}`;
-        }
-      }
-
-      // Drug B cannot be the same as Drug A
-      if (comboRow.drugb && comboRow.druga && comboRow.drugb === comboRow.druga) {
-        comboErrors.drugb = 'Drug B cannot be the same as Drug A';
-      }
-
-      // Duplicate (Drug A, Drug B) pair
-      const pairKey = `${comboRow.druga}|${comboRow.drugb ?? ''}`;
-      if (comboRow.druga) {
-        if (seenPairs.has(pairKey)) {
-          comboErrors.druga = comboErrors.druga ?? 'Duplicate combination row';
-        } else {
-          seenPairs.set(pairKey, i);
-        }
-      }
-
-      return comboErrors;
-    });
+    const combinationErrors = data.combinations.map((comboRow, i) =>
+      validateCPSCombinationRow(comboRow, i, ctx),
+    );
 
     if (combinationErrors.some((e) => Object.keys(e).length > 0)) {
       errors.combinations = combinationErrors;
