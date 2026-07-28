@@ -1,7 +1,14 @@
 <template>
   <div>
     <prism-page-title>Cell Line Explorer</prism-page-title>
-    <svg id="cell-line-explorer-svg" ref="chart" width="800" height="600"></svg>
+    <div class="chart-container">
+      <svg
+        id="cell-line-explorer-svg"
+        ref="chart"
+        viewBox="0 0 800 600"
+        preserveAspectRatio="xMidYMid meet"
+      ></svg>
+    </div>
   </div>
 </template>
 <script>
@@ -50,14 +57,19 @@
         }
       },
       renderHierarchy(hierarchy) {
-        console.log('Rendering hierarchy:', hierarchy.descendants().length, 'nodes');
-        // Implement your D3 rendering logic here
-        let svg = d3
+        const viewWidth = 800;
+        const viewHeight = 600;
+        const margin = { top: 20, right: 100, bottom: 20, left: 20 };
+        const innerWidth = viewWidth - margin.left - margin.right;
+        const innerHeight = viewHeight - margin.top - margin.bottom;
+
+        const svg = d3
           .select(this.$refs.chart)
           .append('g')
-          .attr('transform', 'translate(40,40)');
-        // Example: Create a simple tree layout
-        const treeLayout = d3.tree().size([800, 600]);
+          .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // x = breadth (top-to-bottom), y = depth (left-to-right)
+        const treeLayout = d3.tree().size([innerHeight, innerWidth]);
         const root = treeLayout(hierarchy);
         // Render nodes and links
         svg
@@ -65,18 +77,18 @@
           .data(root.links())
           .enter()
           .append('line')
-          .attr('x1', (d) => d.source.x)
-          .attr('y1', (d) => d.source.y)
-          .attr('x2', (d) => d.target.x)
-          .attr('y2', (d) => d.target.y)
+          .attr('x1', (d) => d.source.y)
+          .attr('y1', (d) => d.source.x)
+          .attr('x2', (d) => d.target.y)
+          .attr('y2', (d) => d.target.x)
           .attr('stroke', 'black');
         svg
           .selectAll('circle')
           .data(root.descendants())
           .enter()
           .append('circle')
-          .attr('cx', (d) => d.x)
-          .attr('cy', (d) => d.y)
+          .attr('cx', (d) => d.y)
+          .attr('cy', (d) => d.x)
           .attr('r', 5)
           .attr('fill', 'blue');
         svg
@@ -84,11 +96,25 @@
           .data(root.descendants())
           .enter()
           .append('text')
-          .attr('x', (d) => d.x + 10)
-          .attr('y', (d) => d.y)
+          .attr('x', (d) => d.y + 10)
+          .attr('y', (d) => d.x)
+          .attr('dy', '0.35em')
+          .attr('text-anchor', 'start')
           .text((d) => d.data[0]);
       },
     },
     computed: {},
   };
 </script>
+<style scoped>
+  .chart-container {
+    width: 100%;
+    height: 80vh;
+  }
+
+  .chart-container svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
