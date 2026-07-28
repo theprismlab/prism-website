@@ -60,7 +60,7 @@
               />
             </td>
           </tr>
-          <tr v-if="fields.some(f => hasError(row, i, f.key))" class="error-row">
+          <tr v-if="fields.some((f) => hasError(row, i, f.key))" class="error-row">
             <td v-for="f in fields" :key="f.key" class="error-cell">
               <span v-if="hasError(row, i, f.key)" class="field-error">{{ errors[i][f.key] }}</span>
             </td>
@@ -99,9 +99,10 @@
     },
     watch: {
       submitted(val) {
-        if (val > 0) this.rows.forEach(r => {
-          if (!this.submittedRows.includes(r)) this.submittedRows.push(r);
-        });
+        if (val > 0)
+          this.rows.forEach((r) => {
+            if (!this.submittedRows.includes(r)) this.submittedRows.push(r);
+          });
       },
     },
     methods: {

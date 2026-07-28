@@ -366,6 +366,11 @@ export function buildCombinationFields(screenType, compoundNames = []) {
   }));
 }
 
+// A row the user added but never filled in — skip validation and drop from the submitted payload.
+export function isBlankRow(row) {
+  return Object.values(row).every((v) => !v);
+}
+
 export function getInitialCombinationRow(screenType) {
   return Object.fromEntries(buildCombinationFields(screenType).map((f) => [f.key, '']));
 }
@@ -408,6 +413,7 @@ export function validate(data, screenType) {
 
   // Validate each compound row individually
   const rowErrors = rows.map((row) => {
+    if (isBlankRow(row)) return {};
     const rErrors = {};
     for (const f of buildScreenFields(screenType)) {
       const val = row[f.key];
@@ -512,6 +518,7 @@ export function validate(data, screenType) {
     const seenPairs = new Map();
 
     const combinationErrors = data.combinations.map((comboRow, i) => {
+      if (isBlankRow(comboRow)) return {};
       const comboErrors = {};
       const isSolo = comboRow.drugb === NONE; // Drug A tested alone: no Drug B dose to validate
       for (const f of combinationFields) {
