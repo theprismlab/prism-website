@@ -204,19 +204,25 @@ const SCREENS = {
 // Each function takes a row and returns { fieldKey: errorMessage }.
 // Call them directly in unit tests with a plain row object.
 
+// Shared across all screens: stock conc must equal top dose × (concMultiplier / 1000).
+function checkConcMatchesTopDose(row, concMultiplier) {
+  if (!row.top_dose) return {};
+  const expected = Number(row.top_dose) * (concMultiplier / 1000);
+  if (Math.abs(Number(row.conc) - expected) > 0.001) {
+    return {
+      conc: `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`,
+    };
+  }
+  return {};
+}
+
 function validateMTS(row) {
   const { concMultiplier, minAmountUL } = SCREEN_CONFIG.MTS;
   const errors = {};
 
   if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
 
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
-  return errors;
+  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
 }
 
 // Solo mode uses MTS-equivalent rules. Combo flow will extend this with 400 uL × n logic.
@@ -226,13 +232,7 @@ function validateCPS(row) {
 
   if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
 
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
-  return errors;
+  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
 }
 
 function validateEPS(row) {
@@ -254,13 +254,7 @@ function validateEPS(row) {
   if (Number(row.amount) < minAmount)
     errors.amount = `Minimum ${minAmount} uL required (${dilutionFactor >= dilutionThreshold ? `≥${dilutionThreshold}` : `2–${dilutionThreshold}`}-fold dilution)`;
 
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
-  return errors;
+  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
 }
 
 function validateAPS(row) {
@@ -269,17 +263,11 @@ function validateAPS(row) {
 
   if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
 
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
   const expectedUnit = unitPairs[row.top_dose_unit];
   if (expectedUnit && expectedUnit !== row.conc_unit)
     errors.conc_unit = `Must be ${expectedUnit} when top dose unit is ${row.top_dose_unit}`;
 
-  return errors;
+  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
 }
 
 function validateAIR(row) {
@@ -291,13 +279,7 @@ function validateAIR(row) {
 
   if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
 
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
-  return errors;
+  return { ...errors, ...checkConcMatchesTopDose(row, concMultiplier) };
 }
 
 const SCREEN_VALIDATORS = {
