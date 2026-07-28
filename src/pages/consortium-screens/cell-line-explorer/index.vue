@@ -1,6 +1,44 @@
 <template>
   <div>
     <prism-page-title>Cell Line Explorer</prism-page-title>
+    <v-row>
+      <v-col cols="12" sm="4">
+        <v-autocomplete
+          v-model="selectedLineages"
+          :items="lineageOptions"
+          label="Cell Lineage"
+          multiple
+          chips
+          clearable
+          closable-chips
+          hide-details
+        />
+      </v-col>
+      <v-col cols="12" sm="4">
+        <v-autocomplete
+          v-model="selectedDiseases"
+          :items="diseaseOptions"
+          label="Primary Disease"
+          multiple
+          chips
+          clearable
+          closable-chips
+          hide-details
+        />
+      </v-col>
+      <v-col cols="12" sm="4">
+        <v-autocomplete
+          v-model="selectedCellLineNames"
+          :items="cellLineOptions"
+          label="Cell Line"
+          multiple
+          chips
+          clearable
+          closable-chips
+          hide-details
+        />
+      </v-col>
+    </v-row>
     <div class="viz-toggle">
       <button type="button" :class="{ active: vizType === 'tree' }" @click="setViz('tree')">
         Tree
@@ -33,18 +71,54 @@
         chartWidth: 1000,
         computedHeight: 600,
         vizType: 'tree',
+        selectedLineages: [],
+        selectedDiseases: [],
+        selectedCellLineNames: [],
       };
+    },
+    computed: {
+      lineageOptions() {
+        return [...new Set(this.cellLines.map((d) => d.cell_lineage))].filter(Boolean).sort();
+      },
+      diseaseOptions() {
+        return [...new Set(this.cellLines.map((d) => d.primary_disease))].filter(Boolean).sort();
+      },
+      cellLineOptions() {
+        return [...new Set(this.cellLines.map((d) => d.cell_line))].filter(Boolean).sort();
+      },
+      filteredCellLines() {
+        return this.cellLines.filter((d) => {
+          if (this.selectedLineages.length && !this.selectedLineages.includes(d.cell_lineage)) {
+            return false;
+          }
+          if (this.selectedDiseases.length && !this.selectedDiseases.includes(d.primary_disease)) {
+            return false;
+          }
+          if (
+            this.selectedCellLineNames.length &&
+            !this.selectedCellLineNames.includes(d.cell_line)
+          ) {
+            return false;
+          }
+          return true;
+        });
+      },
+    },
+    watch: {
+      selectedLineages() {
+        this.rebuild();
+      },
+      selectedDiseases() {
+        this.rebuild();
+      },
+      selectedCellLineNames() {
+        this.rebuild();
+      },
     },
     async mounted() {
       try {
         await this.loadData();
-        this.groups = d3.group(
-          this.cellLines,
-          (d) => d.cell_lineage,
-          (d) => d.primary_disease,
-          (d) => d.cell_line,
-        );
-        this.renderTree();
+        this.rebuild();
       } catch (err) {
         console.error('Error building/rendering hierarchy:', err);
       }
@@ -63,12 +137,28 @@
           values instanceof Map ? Array.from(values) : null,
         );
       },
-      setViz(type) {
-        if (this.vizType === type) return;
-        this.vizType = type;
+      clearChart() {
         const svg = d3.select(this.$refs.chart);
         svg.selectAll('*').remove();
         svg.attr('style', null).attr('text-anchor', null).on('click', null);
+      },
+      // Rebuilds the grouped hierarchy from the currently filtered cell
+      // lines and redraws whichever visualization is active.
+      rebuild() {
+        this.groups = d3.group(
+          this.filteredCellLines,
+          (d) => d.cell_lineage,
+          (d) => d.primary_disease,
+          (d) => d.cell_line,
+        );
+        this.clearChart();
+        if (this.vizType === 'tree') this.renderTree();
+        else this.renderPack();
+      },
+      setViz(type) {
+        if (this.vizType === type) return;
+        this.vizType = type;
+        this.clearChart();
         if (type === 'tree') this.renderTree();
         else this.renderPack();
       },
@@ -324,7 +414,6 @@
           });
       },
     },
-    computed: {},
   };
 </script>
 <style scoped>
