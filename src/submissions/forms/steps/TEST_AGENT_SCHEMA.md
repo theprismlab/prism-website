@@ -20,6 +20,25 @@ Column headers with validation rules now show an info icon (ⓘ) with a tooltip 
 
 ---
 
+## What changed (July 2026)
+
+Internal refactor of `testAgentSchema.js` — no field, validation, or column changes. Each screen's fields, validators, and tooltips were consolidated into one `SCREEN_DEFINITIONS[screenType]` object per screen (previously spread across separate `SCREENS`, `SCREEN_VALIDATORS`, and `buildTooltips()` maps), and the generic property names were renamed to make explicit which table they describe: the **Compound Table** (every screen's main table) vs. the **Combination Table** (CPS's second table).
+
+| Old name | New name | Belongs to |
+|---|---|---|
+| `FIELDS` | `COMPOUND_FIELDS` | Compound Table |
+| `SCREEN_DEFINITIONS[x].fields` | `.compoundFields` | Compound Table |
+| `SCREEN_DEFINITIONS[x].validateRow` | `.validateCompoundRow` | Compound Table |
+| `SCREEN_DEFINITIONS[x].tooltips` | `.compoundTooltips` | Compound Table |
+| `buildScreenFields()` | `buildCompoundFields()` | Compound Table |
+| `getInitialRow()` | `getInitialCompoundRow()` | Compound Table |
+| `validateCPSTable` (standalone function) | `SCREEN_DEFINITIONS.CPS.getTableMessages` | Cross-table (CPS only) |
+| *(unchanged)* `.combinationFields`, `.validateCombinationRow`, `.combinationTooltips` | same | Combination Table (CPS only) |
+
+`isBlankRow()` was kept table-agnostic on purpose — the same function applies to a Compound Table row or a Combination Table row. Data-shape keys consumed by the Vue components and the API payload builder (`data.rows`, `data.combinations`, `errors.rows`, `errors.combinations`) were **not** renamed, since they cross into props and the submitted payload rather than staying internal to this file.
+
+---
+
 ## MTS — Multiplexed Treatment Screen (DMSO)
 
 | Column | Type | Options |

@@ -10,7 +10,7 @@
                 <template #activator="{ props }">
                   <v-icon
                     v-bind="props"
-                    size="x-small"
+                    size="medium"
                     icon="mdi-information-outline"
                     class="th-info-icon"
                   />
@@ -33,6 +33,7 @@
                 density="compact"
                 single-line
                 hide-details
+                :disabled="isDisabled(row, f)"
                 :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
               />
@@ -44,6 +45,7 @@
                 density="compact"
                 single-line
                 hide-details
+                :disabled="isDisabled(row, f)"
                 :error="hasError(row, i, f.key)"
                 class="perturbation-table-field"
               />
@@ -58,7 +60,7 @@
               />
             </td>
           </tr>
-          <tr v-if="fields.some(f => hasError(row, i, f.key))" class="error-row">
+          <tr v-if="fields.some((f) => hasError(row, i, f.key))" class="error-row">
             <td v-for="f in fields" :key="f.key" class="error-cell">
               <span v-if="hasError(row, i, f.key)" class="field-error">{{ errors[i][f.key] }}</span>
             </td>
@@ -73,6 +75,7 @@
       size="small"
       variant="text"
       class="mt-1"
+      color="var(--prism-color-primary)"
       @click="$emit('add-row')"
     >
       {{ addLabel }}
@@ -97,15 +100,19 @@
     },
     watch: {
       submitted(val) {
-        if (val > 0) this.rows.forEach(r => {
-          if (!this.submittedRows.includes(r)) this.submittedRows.push(r);
-        });
+        if (val > 0)
+          this.rows.forEach((r) => {
+            if (!this.submittedRows.includes(r)) this.submittedRows.push(r);
+          });
       },
     },
     methods: {
       hasError(row, i, fieldKey) {
         if (!this.submittedRows.includes(row)) return false;
         return !!this.errors[i]?.[fieldKey];
+      },
+      isDisabled(row, f) {
+        return typeof f.disabled === 'function' ? f.disabled(row) : false;
       },
     },
   };
@@ -161,15 +168,18 @@
   .perturbation-table :deep(.v-field) {
     border-radius: 0;
     font-size: 0.75rem;
-    --v-field-input-min-height: 32px;
+    --v-field-input-min-height: 34px;
   }
   .perturbation-table :deep(.v-field__input) {
     font-size: 0.75rem;
     padding-inline: 8px;
-    min-height: 32px;
+    min-height: 34px;
     align-items: center;
   }
   .perturbation-table :deep(input) {
     font-size: 0.75rem;
+  }
+  .perturbation-table :deep(td) {
+    border-bottom: none !important;
   }
 </style>

@@ -2,7 +2,7 @@
 // Pure JS — no Vue dependencies — so it can be unit-tested and reused
 // outside the component (e.g. server-side validation, CSV import, review step).
 
-import { validNumber } from './validationHelpers';
+import { validPositiveNumber } from './validationHelpers';
 
 const YES_NO = ['Yes', 'No'];
 const STORAGE_OPTIONS = ['Room temperature', '4°C', '-20°C'];
@@ -13,14 +13,18 @@ const MOLECULE_TYPES = [
   'Small Molecule',
 ];
 const AMOUNT_UNITS = ['uL'];
+export const NONE = 'None'; // sentinel for CPS combination rows testing Drug A alone
 
-// ── Field registry ─────────────────────────────────────────────────────────
-// Canonical definitions: key, label, type, default options.
+// ── Compound field registry ─────────────────────────────────────────────────
+// Canonical field definitions for the Compound Table — the main per-screen
+// table every screen has (CPS's second table, the Combination Table, defines
+// its own fields inline on CPS below, since none of them are shared).
 // All fields required by default; set required: false to opt out.
 // Validators here are for format/pattern checks only (e.g. BRD regex).
-// Business rule validation (conc, amount) lives in the per-screen validators below.
+// Business rule validation (conc, amount) lives in each screen's
+// validateCompoundRow below.
 
-export const FIELDS = {
+export const COMPOUND_FIELDS = {
   COMPOUND_NAME: { key: 'compound_name', label: 'Test Agent Name' },
   MOLECULE_TYPE: { key: 'molecule_type', label: 'Molecule Type', options: MOLECULE_TYPES },
   SOLVENT: { key: 'solvent', label: 'Solvent' },
@@ -28,18 +32,28 @@ export const FIELDS = {
     key: 'top_dose',
     label: 'Top Screening Dose',
     inputmode: 'decimal',
-    validate: validNumber,
+    validate: validPositiveNumber,
   },
   TOP_DOSE_UNIT: { key: 'top_dose_unit', label: 'Top Dose Unit' },
-  CONC: { key: 'conc', label: 'Stock Concentration', inputmode: 'decimal', validate: validNumber },
+  CONC: {
+    key: 'conc',
+    label: 'Stock Concentration',
+    inputmode: 'decimal',
+    validate: validPositiveNumber,
+  },
   CONC_UNIT: { key: 'conc_unit', label: 'Stock Conc. Unit' },
   DILUTION_FACTOR: {
     key: 'dilution_factor',
     label: 'Dilution Factor',
     inputmode: 'decimal',
-    validate: validNumber,
+    validate: validPositiveNumber,
   },
-  CONC_AMOUNT: { key: 'amount', label: 'Amount', inputmode: 'decimal', validate: validNumber },
+  CONC_AMOUNT: {
+    key: 'amount',
+    label: 'Amount',
+    inputmode: 'decimal',
+    validate: validPositiveNumber,
+  },
   CONC_AMOUNT_UNIT: { key: 'amount_unit', label: 'Amount Unit', options: AMOUNT_UNITS },
   STORAGE_CONDITIONS: {
     key: 'storage_conditions',
@@ -49,12 +63,16 @@ export const FIELDS = {
   HEALTH_HAZARD: { key: 'health_hazard', label: 'Health Hazard?', options: YES_NO },
 };
 
-// Keyed by data key for O(1) lookups in getSummary and getInitialData.
-const FIELDS_BY_KEY = Object.fromEntries(Object.values(FIELDS).map((f) => [f.key, f]));
+// Keyed by data key for O(1) lookups in getSummary and getInitialCompoundRow.
+const COMPOUND_FIELDS_BY_KEY = Object.fromEntries(
+  Object.values(COMPOUND_FIELDS).map((f) => [f.key, f]),
+);
 
 // ── Screen config ──────────────────────────────────────────────────────────
 // Exported so UI copy, instructions, and tests can reference these values
-// directly without duplicating them.
+// directly without duplicating them. Kept as one flat table (rather than
+// nested under SCREEN_DEFINITIONS below) so the numeric rules for all five
+// screens can be compared at a glance.
 
 export const SCREEN_CONFIG = {
   MTS: { concMultiplier: 1000, minAmountUL: 150 },
@@ -75,24 +93,88 @@ export const SCREEN_CONFIG = {
 // EPS: concAmountUnit must be uL (microliters)
 // APS: concAmountUnit must match Top Dose Unit (ug/mL or )
 
-// ── Screen field lists ─────────────────────────────────────────────────────
-// Pure structure: field order, options, required overrides.
-// No validators here — business rules live in the per-screen validators below.
+// ── Shared row rules ────────────────────────────────────────────────────────
+// Each returns an errors-object fragment ({} when the row is valid), so
+// per-screen validators below can compose them with object spread.
 
-const SCREENS = {
+// Shared across all screens: stock conc must equal top dose × (concMultiplier / 1000).
+function checkConcMatchesTopDose(row, concMultiplier) {
+  if (!row.top_dose) return {};
+  const expected = Number(row.top_dose) * (concMultiplier / 1000);
+  if (Math.abs(Number(row.conc) - expected) > 0.001) {
+    return {
+      conc: `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`,
+    };
+  }
+  return {};
+}
+
+// Shared by every screen with a flat minimum-volume rule (MTS, CPS solo, APS, AIR).
+// EPS's minimum depends on dilution factor and CPS's combo slots have their own
+// rule on top of this, so both keep their own logic inline below.
+function checkMinAmount(row, minAmountUL) {
+  if (Number(row.amount) < minAmountUL) return { amount: `Minimum ${minAmountUL} uL required` };
+  return {};
+}
+
+// Shared tooltip defaults: compound name uniqueness note, the conc/top-dose
+// example sentence, the optional top-dose cap, and the optional unit-pairing
+// note. `unitOverrides` lets AIR (ug/mL → mg/mL) swap in its own units/example
+// instead of the default DMSO-screen uM → mM.
+function commonTooltips(cfg, unitOverrides = {}) {
+  const { topUnit = 'uM', stockUnit = 'mM', exampleTopDose = 10 } = unitOverrides;
+  const tooltips = {};
+
+  tooltips.compound_name =
+    'Must be unique. For testing the same compound at multiple top doses, use a distinct name for each entry (e.g. append "-2")';
+
+  if (cfg.maxTopDoseUgML !== undefined) tooltips.top_dose = `Maximum ${cfg.maxTopDoseUgML} ug/mL`;
+
+  const divisor = 1000 / cfg.concMultiplier;
+  const divisorText = divisor === 1 ? 'numerically' : `÷ ${divisor}`;
+  tooltips.conc = `Must equal Top Screening Dose ${divisorText} (e.g. ${exampleTopDose} ${topUnit} → ${exampleTopDose / divisor} ${stockUnit} stock)`;
+
+  if (cfg.unitPairs)
+    tooltips.conc_unit = `Must pair with Top Dose Unit: ${Object.entries(cfg.unitPairs)
+      .map(([k, v]) => `${k} → ${v}`)
+      .join(', ')}`;
+
+  return tooltips;
+}
+
+// ── Screen definitions ──────────────────────────────────────────────────────
+// One entry per screen type, holding everything needed to render and validate
+// that screen's table(s). Property names spell out which table they describe:
+//   compoundFields / validateCompoundRow / compoundTooltips   → Compound Table (every screen)
+//   combinationFields / validateCombinationRow / combinationTooltips → Combination Table (CPS only)
+// CPS additionally has getTableMessages for cross-table rules that don't
+// belong to either single table. Every screen defines its validator(s) inline
+// here — including CPS's four — so reading one screen top-to-bottom always
+// means reading one object, never jumping to standalone named functions
+// elsewhere.
+
+export const SCREEN_DEFINITIONS = {
   // DMSO-based. Stock = 1000× top dose (N uM assay → N mM stock). Min 150 uL.
   MTS: {
-    fields: [
-      FIELDS.COMPOUND_NAME,
-      FIELDS.TOP_DOSE,
-      { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      FIELDS.CONC_AMOUNT,
-      FIELDS.CONC_AMOUNT_UNIT,
-      FIELDS.STORAGE_CONDITIONS,
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM'] },
-      FIELDS.HEALTH_HAZARD,
+    compoundFields: [
+      COMPOUND_FIELDS.COMPOUND_NAME,
+      COMPOUND_FIELDS.TOP_DOSE,
+      { ...COMPOUND_FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
+      COMPOUND_FIELDS.CONC_AMOUNT,
+      COMPOUND_FIELDS.CONC_AMOUNT_UNIT,
+      COMPOUND_FIELDS.STORAGE_CONDITIONS,
+      COMPOUND_FIELDS.CONC,
+      { ...COMPOUND_FIELDS.CONC_UNIT, options: ['mM'] },
+      COMPOUND_FIELDS.HEALTH_HAZARD,
     ],
+    validateCompoundRow: (row) => ({
+      ...checkMinAmount(row, SCREEN_CONFIG.MTS.minAmountUL),
+      ...checkConcMatchesTopDose(row, SCREEN_CONFIG.MTS.concMultiplier),
+    }),
+    compoundTooltips: () => ({
+      ...commonTooltips(SCREEN_CONFIG.MTS),
+      amount: `Minimum ${SCREEN_CONFIG.MTS.minAmountUL} uL required`,
+    }),
   },
 
   // DMSO-based. Solo: same rules as MTS. Combo: 400 uL × n combinations.
@@ -104,7 +186,7 @@ const SCREENS = {
         key: 'druga_top_dose',
         label: 'Drug A Top Dose',
         inputmode: 'decimal',
-        validate: validNumber,
+        validate: validPositiveNumber,
       },
       { key: 'druga_top_dose_unit', label: 'Drug A Top Dose Unit', options: ['uM'] },
       { key: 'drugb', label: 'Drug B Compound Name' },
@@ -112,311 +194,76 @@ const SCREENS = {
         key: 'drugb_dose',
         label: 'Drug B Dose',
         inputmode: 'decimal',
-        validate: validNumber,
+        validate: validPositiveNumber,
+        disabled: (row) => row.drugb === NONE,
       },
-      { key: 'drugb_dose_unit', label: 'Drug B Dose Unit', options: ['uM'] },
-    ],
-    fields: [
-      FIELDS.COMPOUND_NAME,
-      FIELDS.TOP_DOSE,
-      { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      FIELDS.CONC_AMOUNT,
-      FIELDS.CONC_AMOUNT_UNIT,
-      FIELDS.STORAGE_CONDITIONS,
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM'] },
-      FIELDS.HEALTH_HAZARD,
-    ],
-  },
-
-  // DMSO-based. Includes dilution factor (min 2). Amount: 2 to <3 → 720 uL, 3+× → 600 uL.
-  EPS: {
-    fields: [
-      FIELDS.COMPOUND_NAME,
-      FIELDS.TOP_DOSE,
-      { ...FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      FIELDS.DILUTION_FACTOR,
-      FIELDS.CONC_AMOUNT,
-      FIELDS.CONC_AMOUNT_UNIT,
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM'] },
-      FIELDS.STORAGE_CONDITIONS,
-      FIELDS.HEALTH_HAZARD,
-    ],
-  },
-
-  // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 1000 uL. Stock = top dose / 4.
-  APS: {
-    fields: [
-      FIELDS.COMPOUND_NAME,
       {
-        ...FIELDS.MOLECULE_TYPE,
-        options: ['Antibody', 'Aqueous Small Molecule', 'Antibody Drug Conjugate (ADC)', 'Other'],
+        key: 'drugb_dose_unit',
+        label: 'Drug B Dose Unit',
+        options: ['uM'],
+        disabled: (row) => row.drugb === NONE,
       },
-      FIELDS.TOP_DOSE,
-      { ...FIELDS.TOP_DOSE_UNIT, options: ['uM', 'ug/mL'] },
-      FIELDS.SOLVENT,
-      FIELDS.CONC_AMOUNT,
-      FIELDS.CONC_AMOUNT_UNIT,
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mM', 'mg/mL'] },
-      FIELDS.STORAGE_CONDITIONS,
-      FIELDS.HEALTH_HAZARD,
     ],
-  },
-
-  // Aqueous in reagent. Antibody only. Top dose capped at 2 ug/mL. Min 500 uL. Stock = top dose / 2.
-  AIR: {
-    fields: [
-      FIELDS.COMPOUND_NAME,
-      { ...FIELDS.MOLECULE_TYPE, options: ['Antibody'] },
-      FIELDS.TOP_DOSE,
-      { ...FIELDS.TOP_DOSE_UNIT, options: ['ug/mL'] },
-      FIELDS.SOLVENT,
-      FIELDS.CONC_AMOUNT,
-      FIELDS.CONC_AMOUNT_UNIT,
-      FIELDS.CONC,
-      { ...FIELDS.CONC_UNIT, options: ['mg/mL'] },
-      FIELDS.STORAGE_CONDITIONS,
-      FIELDS.HEALTH_HAZARD,
+    compoundFields: [
+      COMPOUND_FIELDS.COMPOUND_NAME,
+      COMPOUND_FIELDS.TOP_DOSE,
+      { ...COMPOUND_FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
+      COMPOUND_FIELDS.CONC_AMOUNT,
+      COMPOUND_FIELDS.CONC_AMOUNT_UNIT,
+      COMPOUND_FIELDS.STORAGE_CONDITIONS,
+      COMPOUND_FIELDS.CONC,
+      { ...COMPOUND_FIELDS.CONC_UNIT, options: ['mM'] },
+      COMPOUND_FIELDS.HEALTH_HAZARD,
     ],
-  },
-};
 
-// ── Per-screen validators ──────────────────────────────────────────────────
-// Each function takes a row and returns { fieldKey: errorMessage }.
-// Call them directly in unit tests with a plain row object.
+    // Every rule for a single CPS Compound Table row: solo amount/conc business rules (same
+    // as MTS), plus the combo-slot amount requirement and the "must appear as Drug A or Drug B
+    // somewhere" rule — both need `combinations` to cross-reference against the Combination Table.
+    validateCompoundRow: (row, combinations) => {
+      const { concMultiplier, minAmountUL, comboAmountPerSlotUL } = SCREEN_CONFIG.CPS;
+      const errors = {
+        ...checkMinAmount(row, minAmountUL),
+        ...checkConcMatchesTopDose(row, concMultiplier),
+      };
 
-function validateMTS(row) {
-  const { concMultiplier, minAmountUL } = SCREEN_CONFIG.MTS;
-  const errors = {};
+      if (combinations?.length > 0 && row.compound_name) {
+        // Amount must cover 400 uL × slots this compound appears in (real or solo)
+        const n = combinations
+          .filter((r) => r.druga || r.drugb)
+          .filter((r) => r.druga === row.compound_name || r.drugb === row.compound_name).length;
+        if (n > 0) {
+          const requiredVolume = n * comboAmountPerSlotUL;
+          if (Number(row.amount) < requiredVolume) {
+            errors.amount = `Minimum ${requiredVolume} uL required (${n} combination slot${n > 1 ? 's' : ''} × ${comboAmountPerSlotUL} uL)`;
+          }
+        }
 
-  if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
-
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
-  return errors;
-}
-
-// Solo mode uses MTS-equivalent rules. Combo flow will extend this with 400 uL × n logic.
-function validateCPS(row) {
-  const { concMultiplier, minAmountUL } = SCREEN_CONFIG.CPS;
-  const errors = {};
-
-  if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
-
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
-  return errors;
-}
-
-function validateEPS(row) {
-  const {
-    concMultiplier,
-    minDilutionFactor,
-    minAmountHighDilutionUL,
-    minAmountLowDilutionUL,
-    dilutionThreshold,
-  } = SCREEN_CONFIG.EPS;
-  const errors = {};
-
-  const dilutionFactor = Number(row.dilution_factor) || 0;
-  if (row.dilution_factor && dilutionFactor < minDilutionFactor)
-    errors.dilution_factor = `Minimum dilution factor is ${minDilutionFactor}`;
-
-  const minAmount =
-    dilutionFactor >= dilutionThreshold ? minAmountHighDilutionUL : minAmountLowDilutionUL;
-  if (Number(row.amount) < minAmount)
-    errors.amount = `Minimum ${minAmount} uL required (${dilutionFactor >= dilutionThreshold ? `≥${dilutionThreshold}` : `2–${dilutionThreshold}`}-fold dilution)`;
-
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
-  return errors;
-}
-
-function validateAPS(row) {
-  const { concMultiplier, minAmountUL, unitPairs } = SCREEN_CONFIG.APS;
-  const errors = {};
-
-  if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
-
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
-  const expectedUnit = unitPairs[row.top_dose_unit];
-  if (expectedUnit && expectedUnit !== row.conc_unit)
-    errors.conc_unit = `Must be ${expectedUnit} when top dose unit is ${row.top_dose_unit}`;
-
-  return errors;
-}
-
-function validateAIR(row) {
-  const { concMultiplier, minAmountUL, maxTopDoseUgML } = SCREEN_CONFIG.AIR;
-  const errors = {};
-
-  if (Number(row.top_dose) > maxTopDoseUgML)
-    errors.top_dose = `Max top dose for AIR submissions is ${maxTopDoseUgML} ug/mL`;
-
-  if (Number(row.amount) < minAmountUL) errors.amount = `Minimum ${minAmountUL} uL required`;
-
-  if (row.top_dose) {
-    const expected = Number(row.top_dose) * (concMultiplier / 1000);
-    if (Math.abs(Number(row.conc) - expected) > 0.001)
-      errors.conc = `Must equal ${concMultiplier}× top dose (expected ${expected.toFixed(3)} ${row.conc_unit || ''})`;
-  }
-
-  return errors;
-}
-
-const SCREEN_VALIDATORS = {
-  MTS: validateMTS,
-  CPS: validateCPS,
-  EPS: validateEPS,
-  APS: validateAPS,
-  AIR: validateAIR,
-};
-
-// ── Step lifecycle helpers ─────────────────────────────────────────────────
-
-function buildTooltips(screenType) {
-  const cfg = SCREEN_CONFIG[screenType];
-  if (!cfg) return {};
-  const tooltips = {};
-  const divisor = 1000 / cfg.concMultiplier;
-
-  if (cfg.maxTopDoseUgML !== undefined) tooltips.top_dose = `Maximum ${cfg.maxTopDoseUgML} ug/mL`;
-
-  if (screenType === 'EPS') {
-    tooltips.dilution_factor = `Minimum ${cfg.minDilutionFactor}`;
-    tooltips.amount = `Dilution factor ${cfg.minDilutionFactor} to <${cfg.dilutionThreshold}: minimum ${cfg.minAmountLowDilutionUL} uL. Dilution factor ${cfg.dilutionThreshold}+: minimum ${cfg.minAmountHighDilutionUL} uL`;
-  } else if (screenType === 'CPS') {
-    tooltips.amount = `Minimum ${cfg.minAmountUL} uL solo. If in combinations: ${cfg.comboAmountPerSlotUL} uL × number of combination slots`;
-  } else if (cfg.minAmountUL !== undefined) {
-    tooltips.amount = `Minimum ${cfg.minAmountUL} uL required`;
-  }
-
-  const exampleTopDose = screenType === 'AIR' ? 1 : 10;
-  const divisorText = divisor === 1 ? 'numerically' : `÷ ${divisor}`;
-  const topUnit = screenType === 'AIR' ? 'ug/mL' : 'uM';
-  const stockUnit = screenType === 'AIR' ? 'mg/mL' : 'mM';
-  tooltips.conc = `Must equal Top Screening Dose ${divisorText} (e.g. ${exampleTopDose} ${topUnit} → ${exampleTopDose / divisor} ${stockUnit} stock)`;
-
-  if (cfg.unitPairs)
-    tooltips.conc_unit = `Must pair with Top Dose Unit: ${Object.entries(cfg.unitPairs)
-      .map(([k, v]) => `${k} → ${v}`)
-      .join(', ')}`;
-
-  return tooltips;
-}
-
-export function buildScreenFields(screenType) {
-  const screen = SCREENS[screenType];
-  if (!screen) return [];
-  const tooltips = buildTooltips(screenType);
-  return screen.fields.map((f) => ({ required: true, ...f, tooltip: tooltips[f.key] }));
-}
-
-export function buildCombinationFields(screenType) {
-  return SCREENS[screenType]?.combinationFields ?? [];
-}
-
-export function getInitialCombinationRow(screenType) {
-  return Object.fromEntries(buildCombinationFields(screenType).map((f) => [f.key, '']));
-}
-
-export function getInitialRow() {
-  return Object.fromEntries(Object.keys(FIELDS_BY_KEY).map((k) => [k, '']));
-}
-
-export function getInitialData(screenType) {
-  const data = { rows: [getInitialRow()] };
-  if (buildCombinationFields(screenType).length > 0) {
-    data.combinations = [getInitialCombinationRow(screenType)];
-  }
-  return data;
-}
-
-export function getSummary(data) {
-  const rows = data.rows ?? [];
-  const prefix = rows.length > 1;
-  return rows.flatMap((row, i) =>
-    Object.entries(row)
-      .filter(([, v]) => v)
-      .map(([key, value]) => ({
-        label: prefix
-          ? `[Agent ${i + 1}] ${FIELDS_BY_KEY[key]?.label ?? key}`
-          : (FIELDS_BY_KEY[key]?.label ?? key),
-        value,
-      })),
-  );
-}
-
-export function validate(data, screenType) {
-  const rows = data.rows ?? [];
-  const errors = {};
-
-  // Validate each compound row individually
-  const rowErrors = rows.map((row) => {
-    const rErrors = {};
-    for (const f of buildScreenFields(screenType)) {
-      const val = row[f.key];
-      if (f.required !== false && !val) {
-        rErrors[f.key] = 'Required';
-        continue;
-      }
-      if (f.validate && val) {
-        const msg = f.validate(val, row);
-        if (msg) rErrors[f.key] = msg;
-      }
-    }
-
-    const screenErrors = SCREEN_VALIDATORS[screenType]?.(row) ?? {};
-
-    // CPS with combinations: amount must cover 400 uL × slots this compound appears in
-    if (screenType === 'CPS' && data.combinations?.length > 0 && row.compound_name) {
-      const { comboAmountPerSlotUL } = SCREEN_CONFIG.CPS;
-      const n = data.combinations
-        .filter((r) => r.druga || r.drugb)
-        .filter((r) => r.druga === row.compound_name || r.drugb === row.compound_name).length;
-      if (n > 0) {
-        const requiredVolume = n * comboAmountPerSlotUL;
-        if (Number(row.amount) < requiredVolume) {
-          screenErrors.amount = `Minimum ${requiredVolume} uL required (${n} combination slot${n > 1 ? 's' : ''} × ${comboAmountPerSlotUL} uL)`;
+        // Every test agent must be used as Drug A or Drug B in at least one combination
+        const usedInCombination = combinations.some(
+          (r) => r.druga === row.compound_name || r.drugb === row.compound_name,
+        );
+        if (!usedInCombination) {
+          errors.compound_name = 'Must be used as Drug A or Drug B in a combination below';
         }
       }
-    }
 
-    return { ...rErrors, ...screenErrors };
-  });
+      return errors;
+    },
 
-  if (rowErrors.some((e) => Object.keys(e).length > 0)) {
-    errors.rows = rowErrors;
-  }
-
-  // Combination validation
-  const combinationFields = buildCombinationFields(screenType);
-  if (combinationFields.length > 0 && data.combinations) {
-    const compoundNames = rows.map((r) => r.compound_name).filter(Boolean);
-    const seenPairs = new Map();
-
-    const combinationErrors = data.combinations.map((comboRow, i) => {
+    // Every rule for a single CPS Combination Table row: required/format fields, Drug A/B name
+    // matching against the Compound Table, dose matching, same-name check, duplicate-pair
+    // detection. `seenPairs` is a Map shared across all rows in one validate() call — the caller
+    // owns it so duplicates are tracked across the whole combinations array, not per-row.
+    validateCombinationRow: (
+      comboRow,
+      i,
+      { compoundRows, compoundNames, combinationFields, seenPairs },
+    ) => {
       const comboErrors = {};
+      const isSolo = comboRow.drugb === NONE; // Drug A tested alone: no Drug B dose to validate
+
       for (const f of combinationFields) {
+        if (isSolo && (f.key === 'drugb_dose' || f.key === 'drugb_dose_unit')) continue;
         const val = comboRow[f.key];
         if (f.required !== false && !val) {
           comboErrors[f.key] = 'Required';
@@ -432,9 +279,38 @@ export function validate(data, screenType) {
         comboErrors.druga = `Must be one of the submitted test agents: ${compoundNames.join(', ')}`;
       }
 
-      // Drug B must be one of the submitted compound names
-      if (comboRow.drugb && compoundNames.length > 0 && !compoundNames.includes(comboRow.drugb)) {
-        comboErrors.drugb = `Must be one of the submitted test agents: ${compoundNames.join(', ')}`;
+      // Drug B must be one of the submitted compound names, or "None" (Drug A tested alone)
+      if (
+        comboRow.drugb &&
+        !isSolo &&
+        compoundNames.length > 0 &&
+        !compoundNames.includes(comboRow.drugb)
+      ) {
+        comboErrors.drugb = `Must be one of the submitted test agents, or "${NONE}": ${compoundNames.join(', ')}`;
+      }
+
+      // Drug A Top Dose must match the Top Screening Dose of that agent in the Compound Table
+      if (comboRow.druga && comboRow.druga_top_dose) {
+        const matchRow = compoundRows.find((r) => r.compound_name === comboRow.druga);
+        if (
+          matchRow?.top_dose &&
+          Math.abs(Number(comboRow.druga_top_dose) - Number(matchRow.top_dose)) > 0.001
+        ) {
+          const unit = matchRow.top_dose_unit ? ` ${matchRow.top_dose_unit}` : '';
+          comboErrors.druga_top_dose = `Must match Top Screening Dose (${matchRow.top_dose}${unit}) for ${comboRow.druga}`;
+        }
+      }
+
+      // Drug B Dose must match the Top Screening Dose of that agent in the Compound Table
+      if (!isSolo && comboRow.drugb && comboRow.drugb_dose) {
+        const matchRow = compoundRows.find((r) => r.compound_name === comboRow.drugb);
+        if (
+          matchRow?.top_dose &&
+          Math.abs(Number(comboRow.drugb_dose) - Number(matchRow.top_dose)) > 0.001
+        ) {
+          const unit = matchRow.top_dose_unit ? ` ${matchRow.top_dose_unit}` : '';
+          comboErrors.drugb_dose = `Must match Top Screening Dose (${matchRow.top_dose}${unit}) for ${comboRow.drugb}`;
+        }
       }
 
       // Drug B cannot be the same as Drug A
@@ -453,12 +329,332 @@ export function validate(data, screenType) {
       }
 
       return comboErrors;
-    });
+    },
+
+    // Cross-table rules for CPS: minimum counts on both tables, at least one valid combo entry,
+    // and the solo/real-combination pairing invariant (every Drug A needs both a combo entry
+    // and a solo entry, and vice versa). Named getTableMessages (not validateXxx) because it
+    // returns plain message strings, not a { fieldKey: message } errors fragment like
+    // validateCompoundRow/validateCombinationRow above — these rules aren't tied to a single field.
+    getTableMessages: (data, compoundNames) => {
+      const compoundRows = data.rows ?? [];
+      const combos = data.combinations ?? [];
+      const messages = [];
+
+      // CPS requires at least 2 test agents and at least 2 combination entries
+      const nonBlankRowCount = compoundRows.filter((r) => !isBlankRow(r)).length;
+      if (nonBlankRowCount < 2) messages.push('At least 2 test agent entries are required.');
+
+      const nonBlankComboCount = combos.filter((r) => !isBlankRow(r)).length;
+      if (nonBlankComboCount < 2) messages.push('At least 2 combination entries are required.');
+
+      // CPS requires at least one combination with a Drug A matching a submitted test agent
+      const hasValidCombo = combos.some((r) => r.druga && compoundNames.includes(r.druga));
+      if (!hasValidCombo) {
+        messages.push(
+          'The combination table must have at least 1 entry with Drug A matching a submitted test agent.',
+        );
+      }
+
+      const realCombos = combos.filter((r) => r.druga && r.drugb && r.drugb !== NONE);
+      const soloCombos = combos.filter((r) => r.druga && r.drugb === NONE);
+
+      // Every Drug A used in a real combination must also have a solo entry (Drug B = "None").
+      // Restricted to known compound names — an invalid Drug A is already flagged by the
+      // "must be one of the submitted test agents" check in validateCombinationRow.
+      const drugAValues = [...new Set(realCombos.map((r) => r.druga))].filter((druga) =>
+        compoundNames.includes(druga),
+      );
+      const missingNoneEntries = drugAValues.filter(
+        (druga) => !soloCombos.some((r) => r.druga === druga),
+      );
+      messages.push(
+        ...missingNoneEntries.map(
+          (druga) => `${druga} needs an additional combination entry with Drug B set to "${NONE}"`,
+        ),
+      );
+
+      // Every solo entry (Drug B = "None") must also have a corresponding real combination entry.
+      // Same restriction to known compound names as above.
+      const soloDrugAValues = [...new Set(soloCombos.map((r) => r.druga))].filter((druga) =>
+        compoundNames.includes(druga),
+      );
+      const missingComboEntries = soloDrugAValues.filter(
+        (druga) => !realCombos.some((r) => r.druga === druga),
+      );
+      messages.push(
+        ...missingComboEntries.map(
+          (druga) =>
+            `${druga}'s solo entry (Drug B = "${NONE}") needs a corresponding combination entry with an actual Drug B`,
+        ),
+      );
+
+      return messages;
+    },
+
+    compoundTooltips: () => {
+      const cfg = SCREEN_CONFIG.CPS;
+      const base = commonTooltips(cfg);
+      return {
+        ...base,
+        amount: `Minimum ${cfg.minAmountUL} uL solo. If in combinations: ${cfg.comboAmountPerSlotUL} uL × number of combination slots`,
+        compound_name: `${base.compound_name}. Must also be used as Drug A or Drug B in at least one row of the combination table below`,
+      };
+    },
+    combinationTooltips: () => ({
+      druga:
+        'Must match the Test Agent Name of a compound in the table above. Each Drug A compound needs both a combination entry (with a real Drug B) and a solo entry (Drug B = "None")',
+      druga_top_dose:
+        'Must match the Top Screening Dose of the selected Drug A in the table above.',
+      drugb:
+        'Must match the Test Agent Name of a compound in the table above, or "None" if Drug A is tested alone',
+      drugb_dose:
+        'Must match the Top Screening Dose of the selected Drug B in the table above. Not required when Drug B is "None"',
+      drugb_dose_unit: 'Not required when Drug B is "None"',
+    }),
+  },
+
+  // DMSO-based. Includes dilution factor (min 2). Amount: 2 to <3 → 720 uL, 3+× → 600 uL.
+  EPS: {
+    compoundFields: [
+      COMPOUND_FIELDS.COMPOUND_NAME,
+      COMPOUND_FIELDS.TOP_DOSE,
+      { ...COMPOUND_FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
+      COMPOUND_FIELDS.DILUTION_FACTOR,
+      COMPOUND_FIELDS.CONC_AMOUNT,
+      COMPOUND_FIELDS.CONC_AMOUNT_UNIT,
+      COMPOUND_FIELDS.CONC,
+      { ...COMPOUND_FIELDS.CONC_UNIT, options: ['mM'] },
+      COMPOUND_FIELDS.STORAGE_CONDITIONS,
+      COMPOUND_FIELDS.HEALTH_HAZARD,
+    ],
+    // Dilution factor floor, dilution-dependent amount minimum (2–<3× → 720 uL, 3+× → 600 uL),
+    // plus the shared conc/top-dose rule.
+    validateCompoundRow: (row) => {
+      const {
+        concMultiplier,
+        minDilutionFactor,
+        minAmountHighDilutionUL,
+        minAmountLowDilutionUL,
+        dilutionThreshold,
+      } = SCREEN_CONFIG.EPS;
+      const errors = { ...checkConcMatchesTopDose(row, concMultiplier) };
+
+      const dilutionFactor = Number(row.dilution_factor) || 0;
+      if (row.dilution_factor && dilutionFactor < minDilutionFactor)
+        errors.dilution_factor = `Minimum dilution factor is ${minDilutionFactor}`;
+
+      const minAmount =
+        dilutionFactor >= dilutionThreshold ? minAmountHighDilutionUL : minAmountLowDilutionUL;
+      if (Number(row.amount) < minAmount)
+        errors.amount = `Minimum ${minAmount} uL required (${dilutionFactor >= dilutionThreshold ? `≥${dilutionThreshold}` : `2–${dilutionThreshold}`}-fold dilution)`;
+
+      return errors;
+    },
+    compoundTooltips: () => {
+      const cfg = SCREEN_CONFIG.EPS;
+      return {
+        ...commonTooltips(cfg),
+        dilution_factor: `Minimum ${cfg.minDilutionFactor}`,
+        amount: `Dilution factor ${cfg.minDilutionFactor} to <${cfg.dilutionThreshold}: minimum ${cfg.minAmountLowDilutionUL} uL. Dilution factor ${cfg.dilutionThreshold}+: minimum ${cfg.minAmountHighDilutionUL} uL`,
+      };
+    },
+  },
+
+  // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 1000 uL. Stock = top dose / 4.
+  APS: {
+    compoundFields: [
+      COMPOUND_FIELDS.COMPOUND_NAME,
+      {
+        ...COMPOUND_FIELDS.MOLECULE_TYPE,
+        options: ['Antibody', 'Aqueous Small Molecule', 'Antibody Drug Conjugate (ADC)', 'Other'],
+      },
+      COMPOUND_FIELDS.TOP_DOSE,
+      { ...COMPOUND_FIELDS.TOP_DOSE_UNIT, options: ['uM', 'ug/mL'] },
+      COMPOUND_FIELDS.SOLVENT,
+      COMPOUND_FIELDS.CONC_AMOUNT,
+      COMPOUND_FIELDS.CONC_AMOUNT_UNIT,
+      COMPOUND_FIELDS.CONC,
+      { ...COMPOUND_FIELDS.CONC_UNIT, options: ['mM', 'mg/mL'] },
+      COMPOUND_FIELDS.STORAGE_CONDITIONS,
+      COMPOUND_FIELDS.HEALTH_HAZARD,
+    ],
+    validateCompoundRow: (row) => {
+      const { concMultiplier, minAmountUL, unitPairs } = SCREEN_CONFIG.APS;
+      const errors = {
+        ...checkMinAmount(row, minAmountUL),
+        ...checkConcMatchesTopDose(row, concMultiplier),
+      };
+
+      const expectedUnit = unitPairs[row.top_dose_unit];
+      if (expectedUnit && expectedUnit !== row.conc_unit)
+        errors.conc_unit = `Must be ${expectedUnit} when top dose unit is ${row.top_dose_unit}`;
+
+      return errors;
+    },
+    compoundTooltips: () => ({
+      ...commonTooltips(SCREEN_CONFIG.APS),
+      amount: `Minimum ${SCREEN_CONFIG.APS.minAmountUL} uL required`,
+    }),
+  },
+
+  // Aqueous in reagent. Antibody only. Top dose capped at 2 ug/mL. Min 500 uL. Stock = top dose / 2.
+  AIR: {
+    compoundFields: [
+      COMPOUND_FIELDS.COMPOUND_NAME,
+      { ...COMPOUND_FIELDS.MOLECULE_TYPE, options: ['Antibody'] },
+      COMPOUND_FIELDS.TOP_DOSE,
+      { ...COMPOUND_FIELDS.TOP_DOSE_UNIT, options: ['ug/mL'] },
+      COMPOUND_FIELDS.SOLVENT,
+      COMPOUND_FIELDS.CONC_AMOUNT,
+      COMPOUND_FIELDS.CONC_AMOUNT_UNIT,
+      COMPOUND_FIELDS.CONC,
+      { ...COMPOUND_FIELDS.CONC_UNIT, options: ['mg/mL'] },
+      COMPOUND_FIELDS.STORAGE_CONDITIONS,
+      COMPOUND_FIELDS.HEALTH_HAZARD,
+    ],
+    validateCompoundRow: (row) => {
+      const { concMultiplier, minAmountUL, maxTopDoseUgML } = SCREEN_CONFIG.AIR;
+      const errors = {
+        ...checkMinAmount(row, minAmountUL),
+        ...checkConcMatchesTopDose(row, concMultiplier),
+      };
+
+      if (Number(row.top_dose) > maxTopDoseUgML)
+        errors.top_dose = `Max top dose for AIR submissions is ${maxTopDoseUgML} ug/mL`;
+
+      return errors;
+    },
+    compoundTooltips: () => ({
+      ...commonTooltips(SCREEN_CONFIG.AIR, { topUnit: 'ug/mL', stockUnit: 'mg/mL', exampleTopDose: 1 }),
+      amount: `Minimum ${SCREEN_CONFIG.AIR.minAmountUL} uL required`,
+    }),
+  },
+};
+
+// ── Step lifecycle helpers ─────────────────────────────────────────────────
+
+export function buildCompoundFields(screenType) {
+  const screen = SCREEN_DEFINITIONS[screenType];
+  if (!screen) return [];
+  const tooltips = screen.compoundTooltips();
+  return screen.compoundFields.map((f) => ({ required: true, ...f, tooltip: tooltips[f.key] }));
+}
+
+export function buildCombinationFields(screenType, compoundNames = []) {
+  const screen = SCREEN_DEFINITIONS[screenType];
+  const fields = screen?.combinationFields ?? [];
+  const tooltips = screen?.combinationTooltips?.() ?? {};
+  return fields.map((f) => ({
+    ...f,
+    tooltip: tooltips[f.key] ?? f.tooltip,
+    ...(f.key === 'drugb' ? { options: [...compoundNames, NONE] } : {}),
+  }));
+}
+
+// A row the user added but never filled in — skip validation and drop from the submitted
+// payload. Shared by both tables: applies the same to a Compound Table row and a
+// Combination Table row, so it stays table-agnostic rather than picking a table-specific name.
+export function isBlankRow(row) {
+  return Object.values(row).every((v) => !v);
+}
+
+export function getInitialCombinationRow(screenType) {
+  return Object.fromEntries(buildCombinationFields(screenType).map((f) => [f.key, '']));
+}
+
+export function getInitialCompoundRow() {
+  return Object.fromEntries(Object.keys(COMPOUND_FIELDS_BY_KEY).map((k) => [k, '']));
+}
+
+export function getInitialData(screenType) {
+  const data = { rows: [getInitialCompoundRow()] };
+  if (buildCombinationFields(screenType).length > 0) {
+    data.combinations = [getInitialCombinationRow(screenType)];
+  }
+  return data;
+}
+
+export function getSummary(data) {
+  const compoundRows = data.rows ?? [];
+  const prefix = compoundRows.length > 1;
+  return compoundRows.flatMap((row, i) =>
+    Object.entries(row)
+      .filter(([, v]) => v)
+      .map(([key, value]) => ({
+        label: prefix
+          ? `[Agent ${i + 1}] ${COMPOUND_FIELDS_BY_KEY[key]?.label ?? key}`
+          : (COMPOUND_FIELDS_BY_KEY[key]?.label ?? key),
+        value,
+      })),
+  );
+}
+
+export function validate(data, screenType) {
+  const compoundRows = data.rows ?? [];
+  const compoundNames = compoundRows.map((r) => r.compound_name).filter(Boolean);
+  const nameCounts = compoundNames.reduce((acc, name) => {
+    acc[name] = (acc[name] ?? 0) + 1;
+    return acc;
+  }, {});
+  const errors = {};
+  const screen = SCREEN_DEFINITIONS[screenType];
+
+  // Validate each Compound Table row individually
+  const compoundErrors = compoundRows.map((row) => {
+    const rErrors = {};
+    for (const f of buildCompoundFields(screenType)) {
+      const val = row[f.key];
+      if (f.required !== false && !val) {
+        rErrors[f.key] = 'Required';
+        continue;
+      }
+      if (f.validate && val) {
+        const msg = f.validate(val, row);
+        if (msg) rErrors[f.key] = msg;
+      }
+    }
+
+    const screenErrors = screen?.validateCompoundRow(row, data.combinations) ?? {};
+
+    const merged = { ...rErrors, ...screenErrors };
+
+    // Test Agent Name must be unique — matching by name elsewhere (combinations,
+    // amount-per-slot) becomes ambiguous otherwise
+    if (row.compound_name && nameCounts[row.compound_name] > 1) {
+      merged.compound_name =
+        'Test Agent Name must be unique. Testing the same compound at multiple doses? Use a distinct name for each entry (e.g. append "-2")';
+    }
+
+    return merged;
+  });
+
+  if (compoundErrors.some((e) => Object.keys(e).length > 0)) {
+    errors.rows = compoundErrors;
+  }
+
+  // Cross-table validation: screens with a getTableMessages entry (currently just CPS)
+  // run their own message set; every other screen just needs at least 1 entry.
+  const tableMessages = screen?.getTableMessages?.(data, compoundNames);
+  if (tableMessages) {
+    if (tableMessages.length > 0) errors.general = [...(errors.general ?? []), ...tableMessages];
+  } else if (compoundRows.filter((r) => !isBlankRow(r)).length < 1) {
+    errors.general = ['At least 1 test agent entry is required.'];
+  }
+
+  // Combination Table validation (currently just CPS)
+  const combinationFields = buildCombinationFields(screenType);
+  if (combinationFields.length > 0 && data.combinations && screen?.validateCombinationRow) {
+    const seenPairs = new Map();
+    const ctx = { compoundRows, compoundNames, combinationFields, seenPairs };
+
+    const combinationErrors = data.combinations.map((comboRow, i) =>
+      screen.validateCombinationRow(comboRow, i, ctx),
+    );
 
     if (combinationErrors.some((e) => Object.keys(e).length > 0)) {
       errors.combinations = combinationErrors;
     }
-
   }
 
   return errors;
