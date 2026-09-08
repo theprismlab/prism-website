@@ -16,8 +16,8 @@
     components: { TheAppBar, TheAppBanner },
     data() {
       return {
-        showBanner: false,
-        //    showBanner: sessionStorage.getItem(SHOW_BANNER_KEY) !== 'false',
+        //showBanner: false,
+        showBanner: sessionStorage.getItem(SHOW_BANNER_KEY) !== 'false',
       };
     },
     computed: {

@@ -68,7 +68,7 @@ export function computedStatus(item, screenRouteStateFor) {
   if (validation?.status === 'valid') return 'OPEN';
   const today = todayET();
   if (today < item.window_start) return 'SCHEDULED';
-  if (today <= item.window_end) return 'OPEN'; // NEVER DEFINE OPEN, API NEEDS TO BE USED
+  // if (today <= item.window_end) return 'OPEN'; // NEVER DEFINE OPEN, API NEEDS TO BE USED
   return 'IN-PROGRESS';
 }
 
