@@ -13,6 +13,7 @@
         flat
         class="mb-2"
       />
+      <span class="prism-text-label-small">Filter categories:</span>
       <v-chip-group v-model="activeCategories" multiple filter column class="mb-4">
         <v-chip
           v-for="category in categories"
