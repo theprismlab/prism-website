@@ -11,17 +11,40 @@
         density="comfortable"
         variant="solo-filled"
         flat
-        class="mb-6"
+        class="mb-2"
       />
+      <v-chip-group v-model="activeCategories" multiple filter column class="mb-4">
+        <v-chip
+          v-for="category in categories"
+          :key="category"
+          :value="category"
+          size="small"
+          variant="outlined"
+        >
+          {{ category }}
+        </v-chip>
+      </v-chip-group>
       <v-expansion-panels v-model="openPanels" variant="accordion" flat multiple>
         <v-expansion-panel v-for="item in filteredFaqs" :key="item.question" :value="item.question">
           <v-expansion-panel-title>
-            <span class="prism-text-headline-small font-weight-light">
-              <template v-for="(part, i) in highlightParts(item.question)" :key="i">
-                <mark v-if="part.isMatch" class="faq-highlight">{{ part.text }}</mark>
-                <template v-else>{{ part.text }}</template>
-              </template>
-            </span>
+            <!-- w-100 so the title fills the row and the badge can sit at its right edge. -->
+            <div class="d-flex align-start ga-2 w-100">
+              <span class="prism-text-title-medium font-weight-medium faq-question">
+                <!-- v-text keeps the segments exact: no template whitespace can leak in. -->
+                <template v-for="(part, i) in highlightParts(item.question)" :key="i">
+                  <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
+                  <span v-else v-text="part.text" />
+                </template>
+              </span>
+              <span
+                class="prism-text-label-small text-grey-darken-1 text-no-wrap flex-shrink-0 mt-1 mr-2"
+              >
+                <template v-for="(part, i) in highlightParts(item.category)" :key="i">
+                  <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
+                  <span v-else v-text="part.text" />
+                </template>
+              </span>
+            </div>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <div class="prism-text-body-large" v-html="highlightHtml(item.answer)" />
@@ -29,7 +52,7 @@
         </v-expansion-panel>
       </v-expansion-panels>
       <div v-if="filteredFaqs.length === 0" class="prism-text-body-large py-8 text-center">
-        No FAQs match “{{ searchQuery }}”. Try a different search term.
+        {{ noResultsMessage }}
       </div>
     </app-container>
   </page>
@@ -51,14 +74,19 @@
       .replace(/[“”]/g, '"')
       .toLowerCase();
 
-  // Build a matcher for the query where a typed straight quote also matches a curly
-  // one, mirroring the normalization toSearchText() applies when filtering.
-  const toSearchRegExp = (query) => {
-    const escaped = query
-      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      .replace(/['‘’]/g, "['‘’]")
-      .replace(/["“”]/g, '["“”]');
-    return new RegExp(escaped, 'gi');
+  // Match any of the query's words, longest first so the longer one wins where two
+  // overlap. A typed straight quote also matches a curly one, mirroring toSearchText().
+  const toSearchRegExp = (tokens) => {
+    const pattern = [...tokens]
+      .sort((a, b) => b.length - a.length)
+      .map((token) =>
+        token
+          .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          .replace(/['‘’]/g, "['‘’]")
+          .replace(/["“”]/g, '["“”]'),
+      )
+      .join('|');
+    return new RegExp(pattern, 'gi');
   };
 
   export default {
@@ -66,6 +94,7 @@
     data() {
       return {
         searchQuery: '',
+        activeCategories: [],
         openPanels: [],
         faqs: [
           {
@@ -429,30 +458,57 @@
           text: toSearchText(`${item.category} ${item.question} ${item.answer}`),
         }));
       },
+      queryTokens() {
+        return (
+          toSearchText(this.searchQuery || '')
+            .split(/\s+/)
+            // Trim punctuation off the edges so "Portal." and "(CCLE)" still match, but
+            // keep tokens that are punctuation only, so "900+" stays searchable.
+            .map((token) => token.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '') || token)
+            .filter(Boolean)
+        );
+      },
+      categories() {
+        return [...new Set(this.faqs.map((item) => item.category))];
+      },
       filteredFaqs() {
-        const query = toSearchText(this.searchQuery || '').trim();
-        if (!query) return this.faqs;
-        return this.searchableFaqs
-          .filter((entry) => entry.text.includes(query))
+        const tokens = this.queryTokens;
+        // No chips selected means no category restriction, matching how the chips read.
+        const byCategory = this.activeCategories.length
+          ? this.searchableFaqs.filter((entry) =>
+              this.activeCategories.includes(entry.item.category),
+            )
+          : this.searchableFaqs;
+        // Every word must appear somewhere in the item, in any order, so a phrase
+        // broken up by markup (e.g. "PRISM Portal" around a link tag) still matches.
+        return byCategory
+          .filter((entry) => tokens.every((token) => entry.text.includes(token)))
           .map((entry) => entry.item);
+      },
+      noResultsMessage() {
+        if (this.queryTokens.length && this.activeCategories.length) {
+          return `No FAQs in the selected categories match “${this.searchQuery}”.`;
+        }
+        if (this.queryTokens.length) {
+          return `No FAQs match “${this.searchQuery}”. Try a different search term.`;
+        }
+        return 'No FAQs in the selected categories.';
       },
     },
     watch: {
-      searchQuery(value) {
+      // Runs for a category toggle too, so the open panels always track what is shown.
+      filteredFaqs(items) {
         // Open the matches so hits inside answer text are visible; collapse again when cleared.
-        this.openPanels = (value || '').trim()
-          ? this.filteredFaqs.map((item) => item.question)
-          : [];
+        this.openPanels = this.queryTokens.length ? items.map((item) => item.question) : [];
       },
     },
     methods: {
       // Split plain text into alternating plain/matched segments for safe rendering.
       highlightParts(text) {
-        const query = (this.searchQuery || '').trim();
-        if (!query) return [{ text, isMatch: false }];
+        if (!this.queryTokens.length) return [{ text, isMatch: false }];
 
         const parts = [];
-        const pattern = toSearchRegExp(query);
+        const pattern = toSearchRegExp(this.queryTokens);
         let lastIndex = 0;
         let match = pattern.exec(text);
         while (match) {
@@ -470,10 +526,9 @@
       },
       // Wrap matches in answer markup, skipping tags so attributes stay intact.
       highlightHtml(html) {
-        const query = (this.searchQuery || '').trim();
-        if (!query) return html;
+        if (!this.queryTokens.length) return html;
 
-        const pattern = toSearchRegExp(query);
+        const pattern = toSearchRegExp(this.queryTokens);
         return html.replace(/<[^>]*>|[^<]+/g, (chunk) =>
           chunk.startsWith('<')
             ? chunk
@@ -491,6 +546,13 @@
 
   .v-expansion-panel-title.v-expansion-panel-title--active {
     background-color: rgba(var(--v-theme-on-surface), 0.03);
+  }
+
+  /* Take the free space so the question wraps onto its own lines instead of pushing
+     the badge down; min-width: 0 keeps a long unbreakable word from forcing overflow. */
+  .faq-question {
+    flex: 1 1 auto;
+    min-width: 0;
   }
   .text-medium-emphasis {
     font-weight: 100 !important;
