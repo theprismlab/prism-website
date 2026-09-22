@@ -13,32 +13,22 @@
         flat
         class="mb-6"
       />
-      <v-expansion-panels
-        v-model="openPanels"
-        variant="accordion"
-        flat
-        multiple
-      >
-        <v-expansion-panel
-          v-for="item in filteredFaqs"
-          :key="item.question"
-          :value="item.question"
-        >
+      <v-expansion-panels v-model="openPanels" variant="accordion" flat multiple>
+        <v-expansion-panel v-for="item in filteredFaqs" :key="item.question" :value="item.question">
           <v-expansion-panel-title>
-            <span class="prism-text-headline-small font-weight-light">{{ item.question }}</span>
+            <span class="prism-text-headline-small font-weight-light">
+              <template v-for="(part, i) in highlightParts(item.question)" :key="i">
+                <mark v-if="part.isMatch" class="faq-highlight">{{ part.text }}</mark>
+                <template v-else>{{ part.text }}</template>
+              </template>
+            </span>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
-            <div
-              class="prism-text-body-large"
-              v-html="item.answer"
-            />
+            <div class="prism-text-body-large" v-html="highlightHtml(item.answer)" />
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
-      <div
-        v-if="filteredFaqs.length === 0"
-        class="prism-text-body-large py-8 text-center"
-      >
+      <div v-if="filteredFaqs.length === 0" class="prism-text-body-large py-8 text-center">
         No FAQs match “{{ searchQuery }}”. Try a different search term.
       </div>
     </app-container>
@@ -60,6 +50,16 @@
       .replace(/[‘’]/g, "'")
       .replace(/[“”]/g, '"')
       .toLowerCase();
+
+  // Build a matcher for the query where a typed straight quote also matches a curly
+  // one, mirroring the normalization toSearchText() applies when filtering.
+  const toSearchRegExp = (query) => {
+    const escaped = query
+      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      .replace(/['‘’]/g, "['‘’]")
+      .replace(/["“”]/g, '["“”]');
+    return new RegExp(escaped, 'gi');
+  };
 
   export default {
     name: 'FAQ',
@@ -320,7 +320,7 @@
           {
             category: 'Data Delivery',
             question: `Is there a way to do further analysis on the PRISM data?`,
-            answer: `A feature of the PRISM Data Portal allows PRISM data to be exported directly to the DepMap Portal Data Explorer tool. This tool allows collaborators to compare their PRISM data to other public DepMap datasets as well as generate custom figures and comparisons.`,
+            answer: `A feature of the PRISM Portal allows PRISM data to be exported directly to the DepMap Portal Data Explorer tool. This tool allows collaborators to compare their PRISM data to other public DepMap datasets as well as generate custom figures and comparisons.`,
           },
           {
             category: 'Data Delivery',
@@ -432,7 +432,9 @@
       filteredFaqs() {
         const query = toSearchText(this.searchQuery || '').trim();
         if (!query) return this.faqs;
-        return this.searchableFaqs.filter((entry) => entry.text.includes(query)).map((entry) => entry.item);
+        return this.searchableFaqs
+          .filter((entry) => entry.text.includes(query))
+          .map((entry) => entry.item);
       },
     },
     watch: {
@@ -441,6 +443,42 @@
         this.openPanels = (value || '').trim()
           ? this.filteredFaqs.map((item) => item.question)
           : [];
+      },
+    },
+    methods: {
+      // Split plain text into alternating plain/matched segments for safe rendering.
+      highlightParts(text) {
+        const query = (this.searchQuery || '').trim();
+        if (!query) return [{ text, isMatch: false }];
+
+        const parts = [];
+        const pattern = toSearchRegExp(query);
+        let lastIndex = 0;
+        let match = pattern.exec(text);
+        while (match) {
+          if (match.index > lastIndex) {
+            parts.push({ text: text.slice(lastIndex, match.index), isMatch: false });
+          }
+          parts.push({ text: match[0], isMatch: true });
+          lastIndex = match.index + match[0].length;
+          match = pattern.exec(text);
+        }
+        if (lastIndex < text.length) {
+          parts.push({ text: text.slice(lastIndex), isMatch: false });
+        }
+        return parts;
+      },
+      // Wrap matches in answer markup, skipping tags so attributes stay intact.
+      highlightHtml(html) {
+        const query = (this.searchQuery || '').trim();
+        if (!query) return html;
+
+        const pattern = toSearchRegExp(query);
+        return html.replace(/<[^>]*>|[^<]+/g, (chunk) =>
+          chunk.startsWith('<')
+            ? chunk
+            : chunk.replace(pattern, '<mark class="faq-highlight">$&</mark>'),
+        );
       },
     },
   };
@@ -456,5 +494,14 @@
   }
   .text-medium-emphasis {
     font-weight: 100 !important;
+  }
+
+  /* :deep() is needed for the answers, whose highlights are injected via v-html. */
+  .faq-highlight,
+  :deep(.faq-highlight) {
+    background-color: rgba(var(--v-theme-primary), 0.2);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
   }
 </style>
