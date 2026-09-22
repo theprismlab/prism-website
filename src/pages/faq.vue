@@ -25,7 +25,7 @@
           {{ category }}
         </v-chip>
       </v-chip-group>
-      <v-expansion-panels v-model="openPanels" variant="accordion" flat multiple>
+      <v-expansion-panels v-model="openPanels" variant="accordion" flat>
         <v-expansion-panel v-for="item in filteredFaqs" :key="item.question" :value="item.question">
           <v-expansion-panel-title>
             <!-- w-100 so the title fills the row and the badge can sit at its right edge. -->
@@ -500,7 +500,8 @@
       // Runs for a category toggle too, so the open panels always track what is shown.
       filteredFaqs(items) {
         // Open the matches so hits inside answer text are visible; collapse again when cleared.
-        this.openPanels = this.queryTokens.length ? items.map((item) => item.question) : [];
+        this.openPanels = [];
+        // this.queryTokens.length ? items.map((item) => item.question) : [];
       },
     },
     methods: {
