@@ -13,22 +13,43 @@
         flat
         class="mb-6"
       />
-      <v-expansion-panels v-model="openPanels" variant="accordion" flat multiple>
-        <v-expansion-panel v-for="item in filteredFaqs" :key="item.question" :value="item.question">
+      <v-expansion-panels
+        v-model="openPanels"
+        variant="accordion"
+        flat
+        multiple
+      >
+        <v-expansion-panel
+          v-for="item in filteredFaqs"
+          :key="item.question"
+          :value="item.question"
+        >
           <v-expansion-panel-title>
             <span class="prism-text-headline-small font-weight-light">
-              <template v-for="(part, i) in highlightParts(item.question)" :key="i">
-                <mark v-if="part.isMatch" class="faq-highlight">{{ part.text }}</mark>
+              <template
+                v-for="(part, i) in highlightParts(item.question)"
+                :key="i"
+              >
+                <mark
+                  v-if="part.isMatch"
+                  class="faq-highlight"
+                >{{ part.text }}</mark>
                 <template v-else>{{ part.text }}</template>
               </template>
             </span>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
-            <div class="prism-text-body-large" v-html="highlightHtml(item.answer)" />
+            <div
+              class="prism-text-body-large"
+              v-html="highlightHtml(item.answer)"
+            />
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
-      <div v-if="filteredFaqs.length === 0" class="prism-text-body-large py-8 text-center">
+      <div
+        v-if="filteredFaqs.length === 0"
+        class="prism-text-body-large py-8 text-center"
+      >
         No FAQs match “{{ searchQuery }}”. Try a different search term.
       </div>
     </app-container>
@@ -51,14 +72,19 @@
       .replace(/[“”]/g, '"')
       .toLowerCase();
 
-  // Build a matcher for the query where a typed straight quote also matches a curly
-  // one, mirroring the normalization toSearchText() applies when filtering.
-  const toSearchRegExp = (query) => {
-    const escaped = query
-      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      .replace(/['‘’]/g, "['‘’]")
-      .replace(/["“”]/g, '["“”]');
-    return new RegExp(escaped, 'gi');
+  // Match any of the query's words, longest first so the longer one wins where two
+  // overlap. A typed straight quote also matches a curly one, mirroring toSearchText().
+  const toSearchRegExp = (tokens) => {
+    const pattern = [...tokens]
+      .sort((a, b) => b.length - a.length)
+      .map((token) =>
+        token
+          .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          .replace(/['‘’]/g, "['‘’]")
+          .replace(/["“”]/g, '["“”]'),
+      )
+      .join('|');
+    return new RegExp(pattern, 'gi');
   };
 
   export default {
@@ -429,18 +455,28 @@
           text: toSearchText(`${item.category} ${item.question} ${item.answer}`),
         }));
       },
+      queryTokens() {
+        return toSearchText(this.searchQuery || '')
+          .split(/\s+/)
+          // Trim punctuation off the edges so "Portal." and "(CCLE)" still match, but
+          // keep tokens that are punctuation only, so "900+" stays searchable.
+          .map((token) => token.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '') || token)
+          .filter(Boolean);
+      },
       filteredFaqs() {
-        const query = toSearchText(this.searchQuery || '').trim();
-        if (!query) return this.faqs;
+        const tokens = this.queryTokens;
+        if (!tokens.length) return this.faqs;
+        // Every word must appear somewhere in the item, in any order, so a phrase
+        // broken up by markup (e.g. "PRISM Portal" around a link tag) still matches.
         return this.searchableFaqs
-          .filter((entry) => entry.text.includes(query))
+          .filter((entry) => tokens.every((token) => entry.text.includes(token)))
           .map((entry) => entry.item);
       },
     },
     watch: {
-      searchQuery(value) {
+      searchQuery() {
         // Open the matches so hits inside answer text are visible; collapse again when cleared.
-        this.openPanels = (value || '').trim()
+        this.openPanels = this.queryTokens.length
           ? this.filteredFaqs.map((item) => item.question)
           : [];
       },
@@ -448,11 +484,10 @@
     methods: {
       // Split plain text into alternating plain/matched segments for safe rendering.
       highlightParts(text) {
-        const query = (this.searchQuery || '').trim();
-        if (!query) return [{ text, isMatch: false }];
+        if (!this.queryTokens.length) return [{ text, isMatch: false }];
 
         const parts = [];
-        const pattern = toSearchRegExp(query);
+        const pattern = toSearchRegExp(this.queryTokens);
         let lastIndex = 0;
         let match = pattern.exec(text);
         while (match) {
@@ -470,10 +505,9 @@
       },
       // Wrap matches in answer markup, skipping tags so attributes stay intact.
       highlightHtml(html) {
-        const query = (this.searchQuery || '').trim();
-        if (!query) return html;
+        if (!this.queryTokens.length) return html;
 
-        const pattern = toSearchRegExp(query);
+        const pattern = toSearchRegExp(this.queryTokens);
         return html.replace(/<[^>]*>|[^<]+/g, (chunk) =>
           chunk.startsWith('<')
             ? chunk
