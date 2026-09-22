@@ -84,17 +84,16 @@ const routes = [
   },
 
   { path: '/contact-us', component: () => import('@/pages/contact-us.vue') },
-
-  // {
-  //   path: '/faq',
-  //   component: () => import('@/pages/faq.vue'),
-  //   meta: {
-  //     breadcrumbs: () => [
-  //       { title: 'Resources', disabled: true },
-  //       { title: 'FAQ', disabled: true },
-  //     ],
-  //   },
-  // },
+  {
+    path: '/faq',
+    component: () => import('@/pages/faq.vue'),
+    meta: {
+      breadcrumbs: () => [
+        { title: 'Resources', disabled: true },
+        { title: 'FAQ', disabled: true },
+      ],
+    },
+  },
   {
     path: '/webinars',
     component: () => import('@/pages/webinars.vue'),

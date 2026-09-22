@@ -751,8 +751,8 @@ const re = { marketing: "", portal: "/portal" }, se = [
   {
     title: "Resources",
     children: [
+      { title: "FAQ", route: "/faq", id: "faq", site: "marketing" },
       { title: "Publications", route: "/publications", id: "publications", site: "marketing" },
-      // { title: 'FAQ', route: '/faq', id: 'faq', site: 'marketing' },
       { title: "Webinars", route: "/webinars", id: "webinars", site: "marketing" }
     ]
   },
@@ -1145,7 +1145,7 @@ function xe(e, t, r, f, d, i) {
     })
   ], 2);
 }
-const x = /* @__PURE__ */ m(de, [["render", xe], ["__scopeId", "data-v-71b5d5b5"]]);
+const x = /* @__PURE__ */ m(de, [["render", xe], ["__scopeId", "data-v-8590bf43"]]);
 x.install = function(t) {
   t.component(x.name, x);
 };
