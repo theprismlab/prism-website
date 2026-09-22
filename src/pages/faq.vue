@@ -2,16 +2,45 @@
   <page>
     <app-container narrow>
       <prism-page-title>Frequently Asked Questions</prism-page-title>
-      <v-expansion-panels variant="accordion" flat>
-        <v-expansion-panel v-for="item in faqs" :key="item.question">
+      <v-text-field
+        v-model="searchQuery"
+        placeholder="Search FAQs..."
+        prepend-inner-icon="mdi-magnify"
+        clearable
+        hide-details
+        density="comfortable"
+        variant="solo-filled"
+        flat
+        class="mb-6"
+      />
+      <v-expansion-panels
+        v-model="openPanels"
+        variant="accordion"
+        flat
+        multiple
+      >
+        <v-expansion-panel
+          v-for="item in filteredFaqs"
+          :key="item.question"
+          :value="item.question"
+        >
           <v-expansion-panel-title>
             <span class="prism-text-headline-small font-weight-light">{{ item.question }}</span>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
-            <div class="prism-text-body-large" v-html="item.answer"></div>
+            <div
+              class="prism-text-body-large"
+              v-html="item.answer"
+            />
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
+      <div
+        v-if="filteredFaqs.length === 0"
+        class="prism-text-body-large py-8 text-center"
+      >
+        No FAQs match “{{ searchQuery }}”. Try a different search term.
+      </div>
     </app-container>
   </page>
 </template>
@@ -24,10 +53,20 @@
   const PRISM_GITHUB_lINK = `<a href="https://github.com/cmap/dockerized_mts" target="_blank">PRISM GitHub</a>`;
   const PRISM_EMAIL = `<a href="mailto:prism@broadinstitute.org">prism@broadinstitute.org</a>`;
 
+  // Strip markup and normalize smart quotes so searches match what the user sees.
+  const toSearchText = (html) =>
+    html
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/[‘’]/g, "'")
+      .replace(/[“”]/g, '"')
+      .toLowerCase();
+
   export default {
     name: 'FAQ',
     data() {
       return {
+        searchQuery: '',
+        openPanels: [],
         faqs: [
           {
             category: 'Cell Line Collection',
@@ -382,6 +421,27 @@
           },
         ],
       };
+    },
+    computed: {
+      searchableFaqs() {
+        return this.faqs.map((item) => ({
+          item,
+          text: toSearchText(`${item.category} ${item.question} ${item.answer}`),
+        }));
+      },
+      filteredFaqs() {
+        const query = toSearchText(this.searchQuery || '').trim();
+        if (!query) return this.faqs;
+        return this.searchableFaqs.filter((entry) => entry.text.includes(query)).map((entry) => entry.item);
+      },
+    },
+    watch: {
+      searchQuery(value) {
+        // Open the matches so hits inside answer text are visible; collapse again when cleared.
+        this.openPanels = (value || '').trim()
+          ? this.filteredFaqs.map((item) => item.question)
+          : [];
+      },
     },
   };
 </script>
