@@ -1,6 +1,6 @@
 <template>
   <page>
-    <!-- TODO: all manuscript details and dataset counts below are placeholders -->
+    <!-- TODO: manuscript details and lineage/subtype figure data are placeholders -->
     <app-container narrow>
       <section-overline>Manuscript</section-overline>
       <prism-page-title>{{ manuscript.title }}</prism-page-title>
@@ -28,6 +28,12 @@
     </app-container>
 
     <page-section>
+      <app-container wide>
+        <stat-grid :stats="stats" />
+      </app-container>
+    </page-section>
+
+    <page-section :padding="4">
       <app-container narrow>
         <v-card class="details-card" elevation="0">
           <v-row>
@@ -43,9 +49,34 @@
       </app-container>
     </page-section>
 
-    <page-section>
-      <app-container wide>
-        <impact-cards :cards="stats" />
+    <page-section :padding="10">
+      <app-container narrow>
+        <section-overline>About the dataset</section-overline>
+        <prism-section-title>A benchmark for oncology therapeutics</prism-section-title>
+        <p class="prism-text-body-large mb-4">
+          OncRef is generated using
+          <router-link to="/about-us/about-prism">PRISM</router-link> (Profiling Relative
+          Inhibition Simultaneously in Mixtures), a high-throughput drug screening platform
+          developed at the Broad Institute that introduces unique 24-nucleotide DNA barcodes into
+          individual cancer cell lines, enabling pooled multiplexed screening. Each compound was
+          profiled in triplicate 8-point dose-response.
+        </p>
+        <p class="prism-text-body-large mb-8">
+          The collection encompasses 172 agents (65%) not represented in other large-scale public
+          datasets, spanning small molecules, protein degraders (PROTACs), and biologics including
+          antibody-drug conjugates. Parallel genome-wide CRISPR knockout screens enable a new
+          analytical framework that deconvolves polypharmacology, off-target effects, and on-target
+          selectivity.
+        </p>
+
+        <prism-sub-section-title class="mb-4">Agent classes</prism-sub-section-title>
+        <stat-grid :stats="agentClasses" :min-width="140" class="mb-10" />
+
+        <prism-sub-section-title class="mb-4">Screening workflow</prism-sub-section-title>
+        <prism-timeline
+          :steps="workflow"
+          :variant="$vuetify.display.smAndDown ? 'vertical' : 'horizontal'"
+        />
       </app-container>
     </page-section>
 
@@ -71,12 +102,12 @@
 </template>
 
 <script>
-  import { mdiPill, mdiMicroscope, mdiSitemap, mdiLabel } from '@mdi/js';
+  import StatGrid from './oncref-manuscript/StatGrid.vue';
   import SubtypeBreakdown from './oncref-manuscript/SubtypeBreakdown.vue';
 
   export default {
     name: 'OncrefManuscript',
-    components: { SubtypeBreakdown },
+    components: { StatGrid, SubtypeBreakdown },
     data() {
       return {
         manuscript: {
@@ -94,15 +125,24 @@
             'Author A, Author B, Author C, et al. OncRef Compounds: a PRISM reference dataset of oncology compounds. Journal Name. 2026. doi:10.0000/placeholder.0000',
         },
         stats: [
-          { title: '500+', subtitle: 'Compounds', icon: mdiPill, color: 'var(--v-indigo-accent-2)' },
-          {
-            title: '900+',
-            subtitle: 'Cancer cell lines',
-            icon: mdiMicroscope,
-            color: 'var(--v-red-accent-2)',
-          },
-          { title: '8', subtitle: 'Lineages', icon: mdiSitemap, color: 'var(--v-amber-accent-4)' },
-          { title: '30+', subtitle: 'Subtypes', icon: mdiLabel, color: 'var(--v-teal-accent-4)' },
+          { value: '265', label: 'Agents screened', color: 'var(--v-blue-darken-1)' },
+          { value: '891', label: 'Cancer cell lines', color: 'var(--v-blue-darken-1)' },
+          { value: '29', label: 'Tumor lineages', color: 'var(--v-teal-darken-1)' },
+          { value: '8 × 3', label: 'Dose × replicate', color: 'var(--v-orange-darken-1)' },
+          { value: '172', label: 'Novel to public data', color: 'var(--v-deep-purple-accent-2)' },
+        ],
+        agentClasses: [
+          { value: '211', label: 'Targeted small molecules', color: 'var(--v-blue-darken-1)' },
+          { value: '23', label: 'Biologics / ADCs', color: 'var(--v-orange-darken-1)' },
+          { value: '26', label: 'Cytotoxic agents', color: 'var(--v-red-darken-1)' },
+          { value: '18', label: 'PROTAC degraders', color: 'var(--v-deep-purple-accent-2)' },
+        ],
+        workflow: [
+          { title: 'Pool', caption: '891 barcoded cell lines, ~25 lines per pool' },
+          { title: 'Treat', caption: '265 agents × 8 doses × 3 replicates' },
+          { title: 'Incubate', caption: '5-day exposure across 39 pools × 26 plates' },
+          { title: 'Amplify', caption: 'Biotinylated PCR of barcodes' },
+          { title: 'Detect', caption: 'Luminex bead fluorescence readout' },
         ],
         lineages: [
           {
