@@ -77,9 +77,16 @@
 
         <prism-sub-section-title class="mb-4">Screening workflow</prism-sub-section-title>
         <workflow-steps :steps="assayWorkflow" color="var(--v-teal-darken-1)" class="mb-10" />
+      </app-container>
 
+      <!-- Wide so the summary tables can sit in columns -->
+      <app-container wide>
         <prism-sub-section-title class="mb-4">Dataset summary</prism-sub-section-title>
-        <stat-table v-if="compounds" :groups="summaryGroups" />
+        <v-row v-if="compounds">
+          <v-col v-for="group in summaryGroups" :key="group.title" cols="12" sm="6" lg="4">
+            <stat-table :title="group.title" :subtitle="group.value" :stats="group.stats" />
+          </v-col>
+        </v-row>
         <p v-else class="prism-text-body-large text-medium-emphasis">Loading dataset…</p>
       </app-container>
     </page-section>
