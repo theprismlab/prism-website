@@ -76,7 +76,58 @@
         <stat-grid :stats="agentClasses" :min-width="140" class="mb-10" />
 
         <prism-sub-section-title class="mb-4">Screening workflow</prism-sub-section-title>
-        <workflow-steps :steps="workflow" color="var(--v-teal-darken-1)" />
+        <workflow-steps :steps="assayWorkflow" color="var(--v-teal-darken-1)" class="mb-10" />
+
+        <prism-sub-section-title class="mb-4">Dataset summary</prism-sub-section-title>
+        <stat-table v-if="compounds" :groups="summaryGroups" />
+        <p v-else class="prism-text-body-large text-medium-emphasis">Loading dataset…</p>
+      </app-container>
+    </page-section>
+
+    <page-section background="multi-focal-cool" :padding="12">
+      <app-container>
+        <section-overline gradient>The underlying technology</section-overline>
+        <prism-section-title>
+          The PRISM platform: multiplexed cancer drug screening at scale
+        </prism-section-title>
+        <p class="prism-text-body-large mb-10" style="max-width: 760px">
+          OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
+          high-throughput multiplexed viability screening platform developed at the
+          <a href="https://www.broadinstitute.org/" target="_blank" rel="noopener"
+            >Broad Institute</a
+          >. PRISM introduces unique 24-nucleotide DNA barcodes into cancer cell lines, enabling
+          hundreds of cell lines to be screened simultaneously in a single well — dramatically
+          reducing cost and increasing throughput compared to traditional approaches.
+        </p>
+
+        <workflow-steps :steps="platformWorkflow" color="var(--v-teal-darken-1)" class="mb-10" />
+
+        <div class="d-flex flex-wrap ga-2 mb-8">
+          <v-chip
+            v-for="feature in platformFeatures"
+            :key="feature"
+            color="teal-darken-1"
+            variant="tonal"
+            prepend-icon="mdi-circle-small"
+          >
+            {{ feature }}
+          </v-chip>
+        </div>
+
+        <div class="d-flex flex-wrap ga-3">
+          <v-btn color="primary" rounded to="/about-us/about-prism" append-icon="mdi-arrow-right"
+            >Learn about PRISM</v-btn
+          >
+          <v-btn
+            variant="outlined"
+            color="primary"
+            rounded
+            href="https://depmap.org"
+            target="_blank"
+            append-icon="mdi-open-in-new"
+            >DepMap portal</v-btn
+          >
+        </div>
       </app-container>
     </page-section>
 
@@ -102,12 +153,14 @@
 </template>
 
 <script>
+  import { loadOncrefData, countWhere, countBy } from '@/utils/oncref';
   import StatGrid from './oncref-manuscript/StatGrid.vue';
+  import StatTable from './oncref-manuscript/StatTable.vue';
   import SubtypeBreakdown from './oncref-manuscript/SubtypeBreakdown.vue';
 
   export default {
     name: 'OncrefManuscript',
-    components: { StatGrid, SubtypeBreakdown },
+    components: { StatGrid, StatTable, SubtypeBreakdown },
     data() {
       return {
         manuscript: {
@@ -124,21 +177,43 @@
           citation:
             'Author A, Author B, Author C, et al. OncRef Compounds: a PRISM reference dataset of oncology compounds. Journal Name. 2026. doi:10.0000/placeholder.0000',
         },
-        stats: [
-          { value: '265', label: 'Agents screened', color: 'var(--v-blue-darken-1)' },
-          { value: '891', label: 'Cancer cell lines', color: 'var(--v-blue-darken-1)' },
-          { value: '29', label: 'Tumor lineages', color: 'var(--v-teal-darken-1)' },
-          { value: '8 × 3', label: 'Dose × replicate', color: 'var(--v-orange-darken-1)' },
-          { value: '172', label: 'Novel to public data', color: 'var(--v-deep-purple-accent-2)' },
+        // Loaded from public/data/oncref/ (see @/utils/oncref)
+        compounds: null,
+        categories: null,
+        // Fields broken down in the dataset summary table
+        summaryFields: [
+          { field: 'drugClass', title: 'Drug class' },
+          { field: 'modality', title: 'Modality' },
+          { field: 'pathway', title: 'Pathway' },
+          { field: 'clinicalStage', title: 'Clinical stage' },
+          { field: 'targets', title: 'Targets', limit: 10 },
         ],
-        agentClasses: [
-          { value: '211', label: 'Targeted small molecules', color: 'var(--v-blue-darken-1)' },
-          { value: '23', label: 'Biologics / ADCs', color: 'var(--v-orange-darken-1)' },
-          { value: '26', label: 'Cytotoxic agents', color: 'var(--v-red-darken-1)' },
-          { value: '18', label: 'PROTAC degraders', color: 'var(--v-deep-purple-accent-2)' },
+        // Counted from compounds.json; each `filter` is passed to countWhere()
+        agentClassFilters: [
+          {
+            label: 'Targeted small molecules',
+            filter: { drugClass: 'targeted small molecule' },
+            color: 'var(--v-blue-darken-1)',
+          },
+          {
+            label: 'Biologics / ADCs',
+            filter: { drugClass: 'biologic' },
+            color: 'var(--v-orange-darken-1)',
+          },
+          {
+            label: 'Cytotoxic agents',
+            filter: { drugClass: 'cytotoxic/genotoxic' },
+            color: 'var(--v-red-darken-1)',
+          },
+          {
+            label: 'PROTAC degraders',
+            filter: { modality: 'PROTAC' },
+            color: 'var(--v-deep-purple-accent-2)',
+          },
         ],
-        workflow: [
-          // Swap `icon` for `image: '/images/...'` once step graphics are available
+        // Swap `icon` for `image: '/images/...'` once step graphics are available
+        // "About the dataset" section
+        assayWorkflow: [
           {
             title: 'Pool',
             caption: '891 barcoded cell lines, ~25 lines per pool',
@@ -152,6 +227,44 @@
           },
           { title: 'Amplify', caption: 'Biotinylated PCR of barcodes', icon: 'mdi-repeat' },
           { title: 'Detect', caption: 'Luminex bead fluorescence readout', icon: 'mdi-chart-bar' },
+        ],
+        // "PRISM platform" section
+        platformWorkflow: [
+          {
+            title: 'Pool',
+            caption:
+              '891 barcoded cell lines assembled into ~25 assay-ready pools (~25 lines/pool)',
+            icon: 'mdi-dna',
+          },
+          {
+            title: 'Treat',
+            caption:
+              '265 agents × 8 doses × 3 replicates across 39 pools and 26 plates, 5-day exposure',
+            icon: 'mdi-pill',
+          },
+          {
+            title: 'Collapse',
+            caption: 'Pool cells down to ~500 per well, lyse, and extract genomic DNA',
+            icon: 'mdi-microscope',
+          },
+          {
+            title: 'Amplify',
+            caption: 'Biotinylated PCR enriches barcode sequences from genomic DNA',
+            icon: 'mdi-repeat',
+          },
+          {
+            title: 'Detect',
+            caption:
+              "Luminex bead hybridization reads each barcode's abundance — a proxy for cell viability",
+            icon: 'mdi-chart-bar',
+          },
+        ],
+        platformFeatures: [
+          '891 barcoded cancer cell lines',
+          '29 tumor lineages',
+          '265 pharmacological agents',
+          '>100K DepMap feature associations per drug',
+          'Integrated with DepMap CRISPR · RNAi · Copy Number · Expression · Fusion · Mutation',
         ],
         lineages: [
           {
@@ -228,6 +341,53 @@
       };
     },
     computed: {
+      stats() {
+        return [
+          {
+            value: this.formatCount(this.compounds?.length),
+            label: 'Agents screened',
+            color: 'var(--v-blue-darken-1)',
+          },
+          // Not in the compound data
+          { value: '891', label: 'Cancer cell lines', color: 'var(--v-blue-darken-1)' },
+          { value: '29', label: 'Tumor lineages', color: 'var(--v-teal-darken-1)' },
+          { value: '8 × 3', label: 'Dose × replicate', color: 'var(--v-orange-darken-1)' },
+          { value: '172', label: 'Novel to public data', color: 'var(--v-deep-purple-accent-2)' },
+        ];
+      },
+      agentClasses() {
+        return this.agentClassFilters.map(({ label, filter, color }) => ({
+          label,
+          color,
+          value: this.formatCount(this.compounds && countWhere(this.compounds, filter)),
+        }));
+      },
+      summaryGroups() {
+        if (!this.compounds) return [];
+        const stageOrder = (this.categories?.clinicalStages || []).map((s) => s.name);
+        const byStage = (a, b) => {
+          // Unlisted stages (e.g. "Not specified") sort last
+          const rank = (name) =>
+            stageOrder.includes(name) ? stageOrder.indexOf(name) : stageOrder.length;
+          return rank(a.name) - rank(b.name);
+        };
+
+        return this.summaryFields.map(({ field, title, limit }) => {
+          const counts = countBy(this.compounds, field, { missingLabel: 'Not specified' });
+          let rows = counts.filter((r) => r.name !== 'Not specified');
+          const distinct = rows.length;
+          if (field === 'clinicalStage') rows.sort(byStage);
+          // Keep "Not specified" at the end of each group
+          rows = [...rows, ...counts.filter((r) => r.name === 'Not specified')];
+          const shown = limit ? rows.slice(0, limit) : rows;
+
+          return {
+            title,
+            value: limit ? `${distinct} distinct · top ${limit}` : `${distinct} distinct`,
+            stats: shown.map((r) => ({ label: r.name, value: this.formatCount(r.count) })),
+          };
+        });
+      },
       details() {
         const m = this.manuscript;
         return [
@@ -237,6 +397,19 @@
           { label: 'DOI', value: m.doi, href: m.paperUrl },
           { label: 'Authors', value: m.authors },
         ];
+      },
+    },
+    async created() {
+      try {
+        ({ compounds: this.compounds, categories: this.categories } = await loadOncrefData());
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    methods: {
+      // Placeholder until the data loads (or if it fails to)
+      formatCount(n) {
+        return n == null ? '—' : n.toLocaleString();
       },
     },
   };
