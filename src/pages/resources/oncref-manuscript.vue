@@ -1,31 +1,34 @@
 <template>
-  <page>
+  <page class="pt-0">
     <!-- TODO: manuscript details and lineage/subtype figure data are placeholders -->
-    <app-container narrow>
-      <section-overline>Manuscript</section-overline>
-      <prism-page-title>{{ manuscript.title }}</prism-page-title>
-      <p class="prism-text-body-large">{{ manuscript.summary }}</p>
+    <page-section background="multi-focal-cool" :padding="14">
+      <app-container narrow>
+        <section-overline gradient>Broad Institute of MIT & Harvard · 2026</section-overline>
+        <prism-page-title>{{ manuscript.title }}</prism-page-title>
+        <p class="prism-text-body-large">{{ manuscript.summary }}</p>
 
-      <div class="d-flex flex-wrap ga-3 mt-6">
-        <v-btn
-          color="primary"
-          rounded
-          :href="manuscript.paperUrl"
-          target="_blank"
-          prepend-icon="mdi-file-document-outline"
-          >Read the paper</v-btn
-        >
-        <v-btn
-          variant="outlined"
-          color="primary"
-          rounded
-          :href="manuscript.dataUrl"
-          target="_blank"
-          prepend-icon="mdi-download"
-          >Download dataset</v-btn
-        >
-      </div>
-    </app-container>
+        <div class="d-flex flex-wrap ga-3 mt-6">
+          <v-btn
+            color="primary"
+            rounded
+            flat
+            :href="manuscript.paperUrl"
+            target="_blank"
+            prepend-icon="mdi-file-document-outline"
+            >Read the paper</v-btn
+          >
+          <v-btn
+            variant="outlined"
+            color="primary"
+            rounded
+            :href="manuscript.dataUrl"
+            target="_blank"
+            prepend-icon="mdi-download"
+            >Download dataset</v-btn
+          >
+        </div>
+      </app-container>
+    </page-section>
 
     <page-section>
       <app-container wide>
@@ -51,12 +54,12 @@
 
     <page-section :padding="10">
       <app-container narrow>
-        <section-overline>About the dataset</section-overline>
+        <section-overline gradient>About the dataset</section-overline>
         <prism-section-title>A benchmark for oncology therapeutics</prism-section-title>
         <p class="prism-text-body-large mb-4">
           OncRef is generated using
-          <router-link to="/about-us/about-prism">PRISM</router-link> (Profiling Relative
-          Inhibition Simultaneously in Mixtures), a high-throughput drug screening platform
+          <router-link to="/about-us/about-prism" target="_blank">PRISM</router-link> (Profiling
+          Relative Inhibition Simultaneously in Mixtures), a high-throughput drug screening platform
           developed at the Broad Institute that introduces unique 24-nucleotide DNA barcodes into
           individual cancer cell lines, enabling pooled multiplexed screening. Each compound was
           profiled in triplicate 8-point dose-response.
@@ -73,17 +76,14 @@
         <stat-grid :stats="agentClasses" :min-width="140" class="mb-10" />
 
         <prism-sub-section-title class="mb-4">Screening workflow</prism-sub-section-title>
-        <prism-timeline
-          :steps="workflow"
-          :variant="$vuetify.display.smAndDown ? 'vertical' : 'horizontal'"
-        />
+        <workflow-steps :steps="workflow" color="var(--v-teal-darken-1)" />
       </app-container>
     </page-section>
 
     <page-section background="muted" :padding="10">
       <app-container wide>
         <div class="text-center">
-          <section-overline>Dataset overview</section-overline>
+          <section-overline gradient>Dataset overview</section-overline>
           <prism-section-title>Lineage and subtype breakdown</prism-section-title>
           <p class="prism-text-body-large mx-auto mb-8" style="max-width: 560px">
             The OncRef Compounds dataset spans a broad range of cancer lineages and molecular
@@ -111,15 +111,15 @@
     data() {
       return {
         manuscript: {
-          title: 'OncRef Compounds',
+          title: 'OncRef',
           summary:
-            'A reference dataset of oncology compounds profiled across hundreds of barcoded cancer cell lines using PRISM multiplexed viability screening, enabling systematic comparison of drug sensitivity across lineages and subtypes.',
+            'A pan-cancer reference of cancer therapeutics from the PRISM platform — 265 clinically relevant agents screened across 891 barcoded cancer cell lines spanning 29 tumor lineages, integrated with genome-wide CRISPR knockout profiles.',
           authors: 'Author A, Author B, Author C, et al.',
           journal: 'Journal Name',
           publisher: 'Publisher Name',
           published: 'January 1, 2026',
           doi: '10.0000/placeholder.0000',
-          paperUrl: 'https://doi.org/10.0000/placeholder.0000',
+          paperUrl: '', // TBD
           dataUrl: '#',
           citation:
             'Author A, Author B, Author C, et al. OncRef Compounds: a PRISM reference dataset of oncology compounds. Journal Name. 2026. doi:10.0000/placeholder.0000',
@@ -138,11 +138,20 @@
           { value: '18', label: 'PROTAC degraders', color: 'var(--v-deep-purple-accent-2)' },
         ],
         workflow: [
-          { title: 'Pool', caption: '891 barcoded cell lines, ~25 lines per pool' },
-          { title: 'Treat', caption: '265 agents × 8 doses × 3 replicates' },
-          { title: 'Incubate', caption: '5-day exposure across 39 pools × 26 plates' },
-          { title: 'Amplify', caption: 'Biotinylated PCR of barcodes' },
-          { title: 'Detect', caption: 'Luminex bead fluorescence readout' },
+          // Swap `icon` for `image: '/images/...'` once step graphics are available
+          {
+            title: 'Pool',
+            caption: '891 barcoded cell lines, ~25 lines per pool',
+            icon: 'mdi-dna',
+          },
+          { title: 'Treat', caption: '265 agents × 8 doses × 3 replicates', icon: 'mdi-pill' },
+          {
+            title: 'Incubate',
+            caption: '5-day exposure across 39 pools × 26 plates',
+            icon: 'mdi-timer-outline',
+          },
+          { title: 'Amplify', caption: 'Biotinylated PCR of barcodes', icon: 'mdi-repeat' },
+          { title: 'Detect', caption: 'Luminex bead fluorescence readout', icon: 'mdi-chart-bar' },
         ],
         lineages: [
           {
