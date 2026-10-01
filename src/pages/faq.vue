@@ -14,7 +14,7 @@
         class="mb-2"
       />
       <span class="prism-text-label-small">Filter categories:</span>
-      <v-chip-group v-model="activeCategories" multiple filter column class="mb-2">
+      <v-chip-group v-model="activeCategory" filter column class="mb-2">
         <v-chip
           v-for="category in categories"
           :key="category"
@@ -26,7 +26,7 @@
         </v-chip>
       </v-chip-group>
       <span class="prism-text-label-small">Filter tags:</span>
-      <v-chip-group v-model="activeTags" multiple filter column class="mb-4">
+      <v-chip-group v-model="activeTag" filter column class="mb-4">
         <v-chip v-for="tag in tags" :key="tag" :value="tag" size="small" variant="outlined">
           {{ tag }}
         </v-chip>
@@ -101,8 +101,9 @@
     data() {
       return {
         searchQuery: '',
-        activeCategories: [],
-        activeTags: [],
+        // One selection shared by both chip rows: { type: 'category' | 'tag', value } or null.
+        // Starts on the Popular tag so first-time visitors see the most useful questions.
+        activeFilter: { type: 'tag', value: 'Popular' },
         openPanels: [],
         faqs: [
           {
@@ -322,6 +323,7 @@
           },
           {
             category: 'Data Analysis & Delivery',
+            tag: ['Popular'],
             question: `How is PRISM data processed / analyzed?`,
             answer: `PRISM generates sensitivity profiles (heatmaps) for each drug based on the PRISM barcode amount of each cell line after treatment relative to the negative control wells.<br><br>
             These PRISM sensitivity profiles are then compared to baseline genomic feature sets for each cell line to identify features that correlate with sensitivity.<br><br>
@@ -349,6 +351,7 @@
           // },
           {
             category: 'Data Analysis & Delivery',
+            tag: ['Popular'],
             question: `What genomic characterization data is used in PRISM analysis?`,
             answer: `Each PRISM cell line has been genomically characterized through the Cancer Dependency Map group at the Broad Institute.
             <br><br>
@@ -465,6 +468,7 @@
           },
           {
             category: 'Legal / Operations',
+            tag: ['Popular'],
             question: `What is PRISM’s policy on using PRISM data in publications?`,
             answer: `PRISM requests acknowledgement in manuscripts in accordance with the NIH guidelines for Authorship Contribution. At minimum, please acknowledge the PRISM lab and use the word “PRISM” in the manuscript.
             <br><br>
@@ -509,37 +513,49 @@
       tags() {
         return [...new Set(this.faqs.flatMap((item) => item.tag || []))];
       },
-      hasActiveFilters() {
-        return this.activeCategories.length > 0 || this.activeTags.length > 0;
+      // Each chip row binds to its slice of activeFilter, so selecting in one row
+      // replaces whatever the other row had selected.
+      activeCategory: {
+        get() {
+          return this.activeFilter?.type === 'category' ? this.activeFilter.value : undefined;
+        },
+        set(value) {
+          this.activeFilter = value == null ? null : { type: 'category', value };
+        },
+      },
+      activeTag: {
+        get() {
+          return this.activeFilter?.type === 'tag' ? this.activeFilter.value : undefined;
+        },
+        set(value) {
+          this.activeFilter = value == null ? null : { type: 'tag', value };
+        },
       },
       filteredFaqs() {
         const tokens = this.queryTokens;
-        // No chips selected means no restriction in that group, matching how the chips
-        // read. Within a group any selected chip matches; across groups both must match.
-        const byCategory = this.activeCategories.length
+        const filter = this.activeFilter;
+        // No chip selected means no restriction, matching how the chips read.
+        const byFilter = filter
           ? this.searchableFaqs.filter((entry) =>
-              this.activeCategories.includes(entry.item.category),
+              filter.type === 'category'
+                ? entry.item.category === filter.value
+                : (entry.item.tag || []).includes(filter.value),
             )
           : this.searchableFaqs;
-        const byTag = this.activeTags.length
-          ? byCategory.filter((entry) =>
-              (entry.item.tag || []).some((tag) => this.activeTags.includes(tag)),
-            )
-          : byCategory;
         // Every word must appear somewhere in the item, in any order, so a phrase
         // broken up by markup (e.g. "PRISM Portal" around a link tag) still matches.
-        return byTag
+        return byFilter
           .filter((entry) => tokens.every((token) => entry.text.includes(token)))
           .map((entry) => entry.item);
       },
       noResultsMessage() {
-        if (this.queryTokens.length && this.hasActiveFilters) {
-          return `No FAQs matching the selected filters contain “${this.searchQuery}”.`;
+        if (this.queryTokens.length && this.activeFilter) {
+          return `No FAQs in “${this.activeFilter.value}” match “${this.searchQuery}”.`;
         }
         if (this.queryTokens.length) {
           return `No FAQs match “${this.searchQuery}”. Try a different search term.`;
         }
-        return 'No FAQs match the selected filters.';
+        return 'No FAQs match the selected filter.';
       },
     },
     watch: {
