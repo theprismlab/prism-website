@@ -32,6 +32,9 @@
             PRISM viability data from over 6,000 annotated commercial drugs (Drug Repurposing Hub)
           </li>
         </ul>
+        <p class="prism-text-body-medium text-medium-emphasis mb-6">
+          Note: PRISM only uses baseline genomic features - we do not use post-transcriptomics.
+        </p>
 
         <p class="prism-text-body-large">
           A current list of datasets used for each of the feature analyses can be found on our

@@ -14,7 +14,7 @@
         class="mb-2"
       />
       <span class="prism-text-label-small">Filter categories:</span>
-      <v-chip-group v-model="activeCategories" multiple filter column class="mb-4">
+      <v-chip-group v-model="activeCategory" filter column class="mb-2">
         <v-chip
           v-for="category in categories"
           :key="category"
@@ -23,6 +23,12 @@
           variant="outlined"
         >
           {{ category }}
+        </v-chip>
+      </v-chip-group>
+      <span class="prism-text-label-small">Filter tags:</span>
+      <v-chip-group v-model="activeTag" filter column class="mb-4">
+        <v-chip v-for="tag in tags" :key="tag" :value="tag" size="small" variant="outlined">
+          {{ tag }}
         </v-chip>
       </v-chip-group>
       <v-expansion-panels v-model="openPanels" variant="accordion" flat>
@@ -66,7 +72,7 @@
   const DEPMAP_PORTAL_LINK = `<a href="https://depmap.org/portal/" target="_blank">DepMap Portal</a>`;
   const PRISM_GITHUB_lINK = `<a href="https://github.com/cmap/dockerized_mts" target="_blank">PRISM GitHub</a>`;
   const PRISM_EMAIL = `<a href="mailto:prism@broadinstitute.org">prism@broadinstitute.org</a>`;
-
+  const PRISM_ANALYSIS_LINK = `<a href="https://www.theprismlab.org/consortium-screens/data-analysis/" target="_blank">Data Analysis</a>`;
   // Strip markup and normalize smart quotes so searches match what the user sees.
   const toSearchText = (html) =>
     html
@@ -95,11 +101,14 @@
     data() {
       return {
         searchQuery: '',
-        activeCategories: [],
+        // One selection shared by both chip rows: { type: 'category' | 'tag', value } or null.
+        // Starts on the Popular tag so first-time visitors see the most useful questions.
+        activeFilter: { type: 'tag', value: 'Popular' },
         openPanels: [],
         faqs: [
           {
             category: 'Cell Line Collection',
+            tag: ['Popular'],
             question: 'What cell lines are included in the PRISM cell set?',
             answer: `The PRISM cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and wide genomic diversity. Among them, our collection includes a significant number of pediatric cancer cell lines, as well as over 100 hematopoietic cell lines.<br><br>
             A list of the 900+ PRISM cell lines used in our screens can be found on the <a href="/consortium-screens/cell-line-collection" target="_blank">Cell Line Collection</a> page.`,
@@ -211,7 +220,8 @@
             `,
           },
           {
-            category: 'Consortium Screens',
+            tag: ['Popular', 'Consortium Screens'],
+            category: 'Assays',
             question: `What is the easiest way to screen with PRISM?`,
             answer: `
             We run three consortium-style screens each year (typically January, May, and September) for DMSO-soluble compounds (single-agent or combination format) and aqueous test agents (single-agent format or antibody internalization reporter assay).
@@ -222,12 +232,14 @@
             `,
           },
           {
-            category: 'Consortium Screens',
+            tag: ['Popular', 'Consortium Screens'],
+            category: 'Assays',
             question: `What is the data delivery turnaround time for these screens?`,
             answer: `Data for each screen is returned in approximately 4 months after the submission window.`,
           },
           {
-            category: 'Consortium Screens',
+            tag: ['Consortium Screens'],
+            category: 'Assays',
             question: `Who selects the top dose? Which top dose should I choose?`,
             answer: `
             Collaborators select the top screening dose for their drug during the screen submission process. PRISM performs the respective serial dilutions from the stock concentration submitted to the screen.
@@ -238,7 +250,8 @@
             `,
           },
           {
-            category: 'Consortium Screens',
+            tag: ['Consortium Screens'],
+            category: 'Assays',
             question: `What if the compound has issues with stability/solubility/etc.?`,
             answer: `For compounds with stability/solubility issues, we strongly suggest trying to recreate the stressors of the PRISM protocol in-house prior to submitting.<br><br>
             We do not re-run compounds that don't perform well in PRISM, unless a screen is repeated due to a fault in the assay workflow.<br><br>
@@ -246,12 +259,14 @@
             `,
           },
           {
-            category: 'Consortium Screens',
+            tag: ['Popular', 'Consortium Screens'],
+            category: 'Assays',
             question: `Where can I find more information about the assay offerings?`,
             answer: `An overview of PRISM assay offerings can be found on the <a href="/consortium-screens/assays" target="_blank">Assays</a> page.`,
           },
           {
-            category: 'Combination Screens',
+            tag: ['Combination Screens'],
+            category: 'Assays',
             question: `What is the PRISM combination study design?`,
             answer: `A standard PRISM combination submission requires 2 screening slots as outlined below:<br>
               <table>
@@ -281,14 +296,16 @@
             `,
           },
           {
-            category: 'Combination Screens',
+            tag: ['Combination Screens'],
+            category: 'Assays',
             question: `Can I only submit the combination and not include the single-agent arm?`,
             answer: `No - our combinatorial analytics are designed for curves of drug A+B and drug A alone, which is why we require 2 slots for our combination consortium screens.<br><br>
             By submitting only drug A+B in combination, we cannot offer any combinatorial analyses (including synergy scores and differential analyses) and it would be difficult to interpret the data for the combination without submitting drug A on its own.
             `,
           },
           {
-            category: 'Aqueous Screens',
+            tag: ['Aqueous Screens'],
+            category: 'Assays',
             question: `Are there bystander effects when screening ADCs in PRISM?`,
             answer: `Based on previous work from our team, we do not see significant bystander effects with ADC screening in PRISM.<br><br>
             For additional context, we screened HER2 ADCs and did not find significant bystander killing of HER2-negative cells. This was validated experimentally by screening the ADCs against HER2 positive and HER2 negative cell lines pooled at different ratios to mimic the expression in PRISM pools. <br><br>
@@ -296,7 +313,8 @@
             `,
           },
           {
-            category: 'Aqueous Screens',
+            tag: ['Popular', 'Aqueous Screens'],
+            category: 'Assays',
             question: `What is AIR?`,
             answer: `PRISM AIR stands for “Antibody Internalization Reporter” assay.<br><br>
             The assay is for viability screening of unconjugated antibodies: we couple collaborator antibodies with a cytotoxic payload via a universal secondary drug-conjugate prior to screening to mimic the function of an ADC. Additional details about AIR can be accessed <a href="https://assets.clue.io/prism/Overview-of-PRISM-AIR-Assay-for-Collaborators.pdf" target="_blank">here</a>.<br><br>
@@ -304,7 +322,8 @@
             `,
           },
           {
-            category: 'Data Processing & Analysis',
+            category: 'Data Analysis & Delivery',
+            tag: ['Popular'],
             question: `How is PRISM data processed / analyzed?`,
             answer: `PRISM generates sensitivity profiles (heatmaps) for each drug based on the PRISM barcode amount of each cell line after treatment relative to the negative control wells.<br><br>
             These PRISM sensitivity profiles are then compared to baseline genomic feature sets for each cell line to identify features that correlate with sensitivity.<br><br>
@@ -312,58 +331,69 @@
             `,
           },
           {
-            category: 'Data Processing & Analysis',
+            category: 'Data Analysis & Delivery',
             question: `How is PRISM data normalized?`,
             answer: `PRISM data is normalized to the negative control used in the assay (DMSO).`,
           },
+          // {
+          //   category: 'Data Analysis & Delivery',
+          //   question: `What genomic characterization data is used in PRISM analysis?`,
+          //   answer: `Each PRISM cell line has been genomically characterized through the Cancer Dependency Map group at the Broad Institute. This data can be accessed on the ${DEPMAP_PORTAL_LINK}.
+          //   <br><br>
+          //   The specific feature sets used in PRISM analysis include:
+          //   <ul>
+          //     <li>Cell line lineage and subtype, mutation status, gene expression, protein expression, copy number, methylation, and metabolomics</li>
+          //     <li>Loss-of-function genetic perturbation data using CRISPR and shRNA</li>
+          //     <li>PRISM viability data from over 6,000 annotated commercial drugs (Drug Repurposing dataset)</li>
+          //     <li>PRISM only uses baseline genomic features - we do not use post-transcriptomics. </li>
+          //     </ul>
+          //   `,
+          // },
           {
-            category: 'Data Processing & Analysis',
+            category: 'Data Analysis & Delivery',
+            tag: ['Popular'],
             question: `What genomic characterization data is used in PRISM analysis?`,
-            answer: `Each PRISM cell line has been genomically characterized through the Cancer Dependency Map group at the Broad Institute. This data can be accessed on the ${DEPMAP_PORTAL_LINK}.
+            answer: `Each PRISM cell line has been genomically characterized through the Cancer Dependency Map group at the Broad Institute.
             <br><br>
-            The specific feature sets used in PRISM analysis include:
-            <ul>
-              <li>Cell line lineage and subtype, mutation status, gene expression, protein expression, copy number, methylation, and metabolomics</li>
-              <li>Loss-of-function genetic perturbation data using CRISPR and shRNA</li>
-              <li>PRISM viability data from over 6,000 annotated commercial drugs (Drug Repurposing dataset)</li>
-              <li>PRISM only uses baseline genomic features - we do not use post-transcriptomics. </li>
-              </ul>
+            The specific feature sets used in PRISM can be found on our ${PRISM_ANALYSIS_LINK} page.
             `,
           },
           {
-            category: 'Data Processing & Analysis',
+            category: 'Data Analysis & Delivery',
             question: `What resources are available to understand how PRISM data is processed?`,
             answer: `Collaborators receive their PRISM data through the ${PRISM_PORTAL_LINK}. The Portal includes additional pop-outs and sections explaining how the data is processed, including a dedicated Data Processing page.<br><br>
             The code for collaborators to process or re-capitulate the data themselves is provided on the ${PRISM_GITHUB_lINK}.
             `,
           },
           {
-            category: 'Data Delivery',
+            category: 'Data Analysis & Delivery',
             question: `Can PRISM data be shared with others?`,
             answer: `Collaborators will select a ‘Data Access Manager’ at the time of submission, who will be able to independently grant access to the PRISM dataset to others through the PRISM Portal.`,
           },
           {
-            category: 'Data Delivery',
+            category: 'Data Analysis & Delivery',
             question: `What resources are available to help navigate the PRISM Portal or interpret the analyses?`,
             answer: `Pre-recorded webinars that walk through the features of the PRISM Portal and how to generally interpret the figures provided can be found on the ${PRISM_WEBINARS_LINK} page.`,
           },
           {
-            category: 'Data Delivery',
+            category: 'Data Analysis & Delivery',
             question: `Is there a way to do further analysis on the PRISM data?`,
             answer: `A feature of the PRISM Portal allows PRISM data to be exported directly to the DepMap Portal Data Explorer tool. This tool allows collaborators to compare their PRISM data to other public DepMap datasets as well as generate custom figures and comparisons.`,
           },
           {
-            category: 'Data Delivery',
+            category: 'Data Analysis & Delivery',
             question: `Does PRISM provide growth rates or Day 0 counts as part of its standard deliverables?`,
             answer: `We do not provide growth rates or Day 0 data in our deliverables.`,
           },
           {
-            category: 'Custom Screens',
+            tag: ['Custom Screens'],
+            category: 'Assays',
             question: `Are there any other readouts other than viability?`,
             answer: `As PRISM is a viability assay, we do not do any other readouts.`,
           },
           {
-            category: 'Custom Screens',
+            tag: ['Custom Screens'],
+            category: 'Assays',
             question: `Does PRISM do mixed combinations (i.e. DMSO + aqueous combination)?`,
             answer: `While we have previous experience running these types of screens, these are considered a "custom PRISM screen".
             <br><br>
@@ -371,7 +401,8 @@
             `,
           },
           {
-            category: 'Custom Screens',
+            tag: ['Custom Screens'],
+            category: 'Assays',
             question: `Does PRISM do co-culture screens (i.e. co-culture with T cells)?`,
             answer: `
             While we have previous experience running these types of screens, these are considered a "custom PRISM screen".
@@ -380,7 +411,8 @@
             `,
           },
           {
-            category: 'Custom Screens',
+            tag: ['Custom Screens'],
+            category: 'Assays',
             question: `Does PRISM do 3D screening?`,
             answer: `While we have previous experience running these types of screens in a ULA format, these are considered a "custom PRISM screen".
              <br><br>
@@ -388,22 +420,26 @@
             `,
           },
           {
-            category: 'Custom Screens',
+            tag: ['Custom Screens'],
+            category: 'Assays',
             question: `Does PRISM do organoid screening?`,
             answer: `Unfortunately, we do not have this offering.`,
           },
           {
-            category: 'Custom Screens',
+            tag: ['Custom Screens'],
+            category: 'Assays',
             question: `Does PRISM screen radioligand therapeutics?`,
             answer: `Unfortunately, we do not have this offering.`,
           },
           {
-            category: 'Custom Screens',
+            tag: ['Custom Screens'],
+            category: 'Assays',
             question: `Can I screen in only a subset of cell lines?`,
             answer: `No, consortium screens are run only in our full 900+ PRISM cell set. Due to the scale of these screens, it is more costly to screen in only a subset rather than the full PRISM cell set.`,
           },
           {
-            category: 'Custom Screens',
+            tag: ['Custom Screens'],
+            category: 'Assays',
             question: `Can I purchase PRISM pools for my own use?`,
             answer: `PRISM pools can only be used for PRISM experiments and screens. Due to the cell line MTAs, PRISM cell lines cannot be shared outside of the Broad Institute.`,
           },
@@ -432,6 +468,7 @@
           },
           {
             category: 'Legal / Operations',
+            tag: ['Popular'],
             question: `What is PRISM’s policy on using PRISM data in publications?`,
             answer: `PRISM requests acknowledgement in manuscripts in accordance with the NIH guidelines for Authorship Contribution. At minimum, please acknowledge the PRISM lab and use the word “PRISM” in the manuscript.
             <br><br>
@@ -472,28 +509,53 @@
       categories() {
         return [...new Set(this.faqs.map((item) => item.category))];
       },
+      // Not every FAQ is tagged, so default the missing field to an empty list.
+      tags() {
+        return [...new Set(this.faqs.flatMap((item) => item.tag || []))];
+      },
+      // Each chip row binds to its slice of activeFilter, so selecting in one row
+      // replaces whatever the other row had selected.
+      activeCategory: {
+        get() {
+          return this.activeFilter?.type === 'category' ? this.activeFilter.value : undefined;
+        },
+        set(value) {
+          this.activeFilter = value == null ? null : { type: 'category', value };
+        },
+      },
+      activeTag: {
+        get() {
+          return this.activeFilter?.type === 'tag' ? this.activeFilter.value : undefined;
+        },
+        set(value) {
+          this.activeFilter = value == null ? null : { type: 'tag', value };
+        },
+      },
       filteredFaqs() {
         const tokens = this.queryTokens;
-        // No chips selected means no category restriction, matching how the chips read.
-        const byCategory = this.activeCategories.length
+        const filter = this.activeFilter;
+        // No chip selected means no restriction, matching how the chips read.
+        const byFilter = filter
           ? this.searchableFaqs.filter((entry) =>
-              this.activeCategories.includes(entry.item.category),
+              filter.type === 'category'
+                ? entry.item.category === filter.value
+                : (entry.item.tag || []).includes(filter.value),
             )
           : this.searchableFaqs;
         // Every word must appear somewhere in the item, in any order, so a phrase
         // broken up by markup (e.g. "PRISM Portal" around a link tag) still matches.
-        return byCategory
+        return byFilter
           .filter((entry) => tokens.every((token) => entry.text.includes(token)))
           .map((entry) => entry.item);
       },
       noResultsMessage() {
-        if (this.queryTokens.length && this.activeCategories.length) {
-          return `No FAQs in the selected categories match “${this.searchQuery}”.`;
+        if (this.queryTokens.length && this.activeFilter) {
+          return `No FAQs in “${this.activeFilter.value}” match “${this.searchQuery}”.`;
         }
         if (this.queryTokens.length) {
           return `No FAQs match “${this.searchQuery}”. Try a different search term.`;
         }
-        return 'No FAQs in the selected categories.';
+        return 'No FAQs match the selected filter.';
       },
     },
     watch: {
