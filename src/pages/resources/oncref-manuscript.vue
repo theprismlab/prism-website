@@ -161,9 +161,9 @@
 
 <script>
   import { loadOncrefData, countWhere, countBy } from '@/utils/oncref';
-  import StatGrid from './oncref-manuscript/StatGrid.vue';
-  import StatTable from './oncref-manuscript/StatTable.vue';
-  import SubtypeBreakdown from './oncref-manuscript/SubtypeBreakdown.vue';
+  import StatGrid from './oncref/StatGrid.vue';
+  import StatTable from './oncref/StatTable.vue';
+  import SubtypeBreakdown from './oncref/SubtypeBreakdown.vue';
 
   export default {
     name: 'OncrefManuscript',

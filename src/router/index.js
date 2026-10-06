@@ -114,15 +114,13 @@ const routes = [
       ],
     },
   },
+  // {
+  //   path: '/oncref',
+  //   component: () => import('@/pages/resources/oncref.vue'),
+  // },
   {
-    path: '/oncref-manuscript',
-    component: () => import('@/pages/resources/oncref-manuscript.vue'),
-    meta: {
-      breadcrumbs: () => [
-        { title: 'Resources', disabled: true },
-        { title: 'OncRef Compounds', disabled: true },
-      ],
-    },
+    path: '/oncref/nomination',
+    component: () => import('@/pages/resources/oncref-nomination.vue'),
   },
 
   // ─── Submissions layout ───────────────────────────────────────────────────
