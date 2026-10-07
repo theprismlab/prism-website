@@ -6,9 +6,6 @@
     elevation="0"
     :style="{ '--type-color': typeStyle.bg }"
   >
-    <!-- Thin colored accent stripe on the left -->
-    <span class="pub-card-minimal__accent" :style="{ backgroundColor: typeStyle.bg }" />
-
     <div class="pub-card-minimal__body">
       <div v-if="featured" class="pub-card-minimal__eyebrow">
         <v-icon class="pub-card-minimal__eyebrow-icon" size="15" aria-hidden="true">
@@ -19,11 +16,7 @@
 
       <h3 v-if="featured" class="pub-card-minimal__title">{{ item.title }}</h3>
 
-      <div v-else>
-        <h3 class="pub-card-minimal__title">
-          <span class="ml-1">{{ item.title }}</span>
-        </h3>
-      </div>
+      <h3 v-else class="pub-card-minimal__title">{{ item.title }}</h3>
 
       <div v-if="item.author || item.publisher" class="pub-card-minimal__meta">
         <span v-if="item.author">{{ item.author }}, et al., </span>
@@ -67,16 +60,19 @@
 
 <style scoped>
   /* ---------- Shared base ---------- */
+  /* Both variants carry one 5px accent edge in the type color: the left
+     edge for list cards, the top edge for featured cards. */
   .pub-card-minimal {
     position: relative;
     display: flex;
     align-items: stretch;
     gap: 1rem;
     border: 1px solid rgba(0, 0, 0, 0.06);
+    border-left: 5px solid var(--type-color, #000);
     border-radius: 10px;
     background: #fff;
     overflow: hidden;
-    padding: 1rem 2rem;
+    padding: 1.1rem 1.5rem;
     box-shadow:
       0 1px 2px rgba(20, 30, 60, 0.06),
       0 3px 8px rgba(20, 30, 60, 0.07);
@@ -85,34 +81,15 @@
       box-shadow 180ms ease,
       transform 180ms ease;
     border-color: color-mix(in srgb, var(--type-color, #000) 10%, transparent);
+    border-left-color: var(--type-color, #000);
   }
 
   .pub-card-minimal:hover {
     border-color: color-mix(in srgb, var(--type-color, #000) 45%, transparent);
+    border-left-color: var(--type-color, #000);
     box-shadow:
       0 2px 4px rgba(20, 30, 60, 0.07),
       0 10px 24px rgba(20, 30, 60, 0.11);
-  }
-
-  /* Thin colored accent stripe on the left edge */
-  .pub-card-minimal__accent {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 16px;
-    opacity: 100%;
-  }
-
-  /* ---------- Type icon tile ---------- */
-  .pub-card-minimal__type-tile {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    /* border-radius: 8px; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   /* ---------- Body ---------- */
@@ -188,18 +165,18 @@
   }
 
   /* ---------- Featured-only ---------- */
-  /* Featured cards trade the left stripe for a thin accent line along the
-     top edge and a colored eyebrow, matching ResourceCard's editorial tone. */
+  /* Featured cards move the accent edge to the top and add a colored
+     eyebrow, matching ResourceCard's editorial tone. */
   .pub-card-minimal--featured {
     padding: 1.5rem 1.5rem 1.35rem;
     gap: 0;
-    border-top: 3px solid var(--type-color, #000);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-top: 5px solid var(--type-color, #000);
+    border-left-width: 1px;
+    border-left-color: color-mix(in srgb, var(--type-color, #000) 10%, transparent);
   }
 
-  .pub-card-minimal--featured .pub-card-minimal__accent {
-    display: none;
+  .pub-card-minimal--featured:hover {
+    border-left-color: color-mix(in srgb, var(--type-color, #000) 45%, transparent);
   }
 
   .pub-card-minimal--featured .pub-card-minimal__body {
