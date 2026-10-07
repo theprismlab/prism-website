@@ -11,13 +11,7 @@
 
     <div class="pub-card-minimal__body">
       <div v-if="featured" class="pub-card-minimal__eyebrow">
-        <v-icon
-          class="pub-card-minimal__eyebrow-icon"
-          color="white"
-          size="18"
-          :title="item.type"
-          :aria-label="item.type"
-        >
+        <v-icon class="pub-card-minimal__eyebrow-icon" size="15" aria-hidden="true">
           {{ typeStyle.icon }}
         </v-icon>
         <span class="pub-card-minimal__eyebrow-label">{{ item.type }}</span>
@@ -194,49 +188,32 @@
   }
 
   /* ---------- Featured-only ---------- */
+  /* Featured cards trade the left stripe for a thin accent line along the
+     top edge and a colored eyebrow, matching ResourceCard's editorial tone. */
   .pub-card-minimal--featured {
-    padding: 1.25rem 1.35rem 1.25rem 2rem;
-    gap: 1.15rem;
+    padding: 1.5rem 1.5rem 1.35rem;
+    gap: 0;
+    border-top: 3px solid var(--type-color, #000);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
 
-  .pub-card-minimal--featured .pub-card-minimal__type-tile {
-    width: 44px;
-    height: 44px;
-    border-radius: 9px;
-  }
-
-  /* .pub-card-minimal--featured .pub-card-minimal__title {
-    font-size: 1.18rem;
-    line-height: 1.3;
-    gap: 0.55rem;
-  } */
-
-  .pub-card-minimal--featured .pub-card-minimal__body {
-    gap: 0.55rem;
-  }
-
-  .pub-card-minimal--featured .pub-card-minimal__eyebrow {
-    font-size: 0.78rem;
-    gap: 0.5rem;
-    /* Break out of the card's padding so the colored bar spans the
-       full width. Negative margins must match the featured card's
-       top/left/right padding values. */
-    margin: -1.25rem -1.35rem 0.75rem;
-    padding: 0.5rem 1.35rem;
-    border-radius: 0;
-    align-self: stretch;
-    background-color: var(--type-color, #000);
-    color: #ffffff;
-  }
-
-  /* When the eyebrow is acting as a colored pill (featured),
-     the parent card no longer needs the left accent stripe. */
   .pub-card-minimal--featured .pub-card-minimal__accent {
     display: none;
   }
 
-  .pub-card-minimal--featured {
-    padding-left: 1.35rem;
+  .pub-card-minimal--featured .pub-card-minimal__body {
+    gap: 0.6rem;
+  }
+
+  .pub-card-minimal--featured .pub-card-minimal__title {
+    font-size: 1.05rem;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+
+  .pub-card-minimal--featured .pub-card-minimal__footer {
+    padding-top: 0.6rem;
   }
 
   /* ---------- Featured eyebrow (type label above title) ---------- */
@@ -249,17 +226,12 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     line-height: 1;
-    margin-bottom: 0.15rem;
-    /* slightly muted version of the type color so it doesn't shout */
-    color: color-mix(in srgb, var(--type-color, #000) 98%, rgb(60, 65, 80));
+    margin-bottom: 0.1rem;
+    color: var(--type-color, #000);
   }
 
   .pub-card-minimal__eyebrow-icon {
     flex-shrink: 0;
-  }
-
-  .pub-card-minimal__eyebrow-label {
-    /* subtle separator beneath the label for editorial feel */
-    padding-bottom: 1px;
+    color: var(--type-color, #000);
   }
 </style>

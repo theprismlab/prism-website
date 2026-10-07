@@ -3,7 +3,7 @@
     <div class="explorer-sticky-header">
       <div class="explorer-toolbar-track">
         <v-toolbar class="explorer-toolbar" flat>
-          <app-container wide class="explorer-toolbar__container">
+          <app-container class="explorer-toolbar__container">
             <div class="explorer-toolbar__inner">
               <v-toolbar-title class="toolbar-title text-overline">Explore All</v-toolbar-title>
               <v-spacer />
