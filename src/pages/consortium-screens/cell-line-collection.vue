@@ -1,7 +1,7 @@
 <template>
-  <page>
-    <app-container narrow>
-      <prism-page-title>Cell line collection</prism-page-title>
+  <page class="pt-0">
+    <page-header narrow>
+      <template #title>Cell line collection</template>
       <p class="prism-text-body-large">
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45
         major types of cancer and wide genomic diversity. Among them, our collection includes a
@@ -9,7 +9,7 @@
         lines. Our cell lines are our most important asset, and we therefore take great pride in the
         quality of our cell lines.
       </p>
-    </app-container>
+    </page-header>
 
     <page-section>
       <app-container wide>

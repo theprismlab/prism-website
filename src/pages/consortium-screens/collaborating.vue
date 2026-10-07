@@ -1,7 +1,7 @@
 <template>
-  <page>
-    <app-container narrow>
-      <prism-page-title>Collaborate with us!</prism-page-title>
+  <page class="pt-0">
+    <page-header narrow>
+      <template #title>Collaborate with us!</template>
       <p class="prism-text-body-large">
         If you have a test agent you want to screen in PRISM, participate in one of our PRISM
         Consortium Screens. These screens are run four times a year, with specific dates available
@@ -11,7 +11,9 @@
         <a href="/contact-us">Contact us</a> to receive updates on our screen offerings, submission
         windows, and costs!
       </p>
+    </page-header>
 
+    <app-container narrow>
       <section class="page-section">
         <h2 class="prism-text-display-small mb-4">How to participate in a PRISM screen</h2>
         <div v-for="(step, index) in steps" :key="index" class="my-4">

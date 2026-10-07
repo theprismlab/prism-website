@@ -1,12 +1,15 @@
 <template>
-  <page>
-    <app-container narrow>
-      <prism-page-title>Data Analysis</prism-page-title>
+  <page class="pt-0">
+    <page-header narrow>
+      <template #title>Data Analysis</template>
       <p class="prism-text-body-large">
         PRISM sensitivity profiles are compared to deep multi-omic cell line characterization
         information in univariate analyses as well as multivariate predictive modeling algorithms to
         identify features that correlate with sensitivity.
       </p>
+    </page-header>
+
+    <app-container narrow>
       <v-img
         eager
         style="max-width: 800px"

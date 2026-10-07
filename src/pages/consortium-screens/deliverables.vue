@@ -1,13 +1,16 @@
 <template>
-  <page>
-    <app-container narrow>
-      <prism-page-title>Deliverables</prism-page-title>
+  <page class="pt-0">
+    <page-header narrow>
+      <template #title>Deliverables</template>
       <p class="prism-text-body-large">
         We provide a complete analysis of your data via a secure data portal. Data analysis includes
         the viability of all 900 cell lines, metrics for the quality of the assay, univariate and
         multivariate feature set correlation analysis, and all the raw data from your test agents.
         Validation compounds run on each assay plate are shared also. See below for more details.
       </p>
+    </page-header>
+
+    <app-container narrow>
       <section class="page-section">
         <h2 class="prism-text-display-small mb-4">Test agent data</h2>
         <deliverable-card

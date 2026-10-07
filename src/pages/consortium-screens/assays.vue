@@ -1,12 +1,15 @@
 <template>
-  <page>
-    <app-container narrow>
-      <prism-page-title>Assays</prism-page-title>
-      <p class="prism-text-body-large mb-8">
+  <page class="pt-0">
+    <page-header narrow>
+      <template #title>Assays</template>
+      <p class="prism-text-body-large">
         Our viability assays are performed using ~900 PRISM barcoded cell lines plated in mixtures
         in 384- or 96-well plates at either 5- or 10-day assay timepoints. To ensure high-quality
         data, validation compounds are run on each assay plate.
       </p>
+    </page-header>
+
+    <app-container narrow>
       <v-expansion-panels variant="accordion" flat>
         <v-expansion-panel v-for="item in items" :key="item.id">
           <v-expansion-panel-title>
