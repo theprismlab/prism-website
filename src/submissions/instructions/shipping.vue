@@ -1,21 +1,14 @@
 <template>
   <page>
-    <app-container wide>
+    <page-section width="wide">
       <prism-page-title>Instructions — {{ screenType }}</prism-page-title>
       <!-- <prism-page-title>{{
         currentPage ? currentPage.title : 'Shipping Instructions'
       }}</prism-page-title> -->
-      <screen-gate
-        :screen-type="screenType"
-        optimistic
-      >
-        <iframe
-          :key="iframeKey"
-          :src="pdfUrl"
-          class="pdf-embed"
-        />
+      <screen-gate :screen-type="screenType" optimistic>
+        <iframe :key="iframeKey" :src="pdfUrl" class="pdf-embed" />
       </screen-gate>
-    </app-container>
+    </page-section>
   </page>
 </template>
 

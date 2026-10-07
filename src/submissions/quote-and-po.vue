@@ -1,6 +1,6 @@
 <template>
   <page>
-    <app-container wide>
+    <page-section width="wide">
       <prism-page-title>View Quote &amp; Upload PO</prism-page-title>
 
       <v-alert type="info" class="mb-8">
@@ -74,7 +74,7 @@
           <a href="mailto:partnering@broadinstitute.org">partnering@broadinstitute.org</a>.
         </p>
       </section>
-    </app-container>
+    </page-section>
   </page>
 </template>
 

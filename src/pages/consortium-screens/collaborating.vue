@@ -1,5 +1,5 @@
 <template>
-  <page class="pt-0">
+  <page>
     <page-header narrow>
       <template #title>Collaborate with us!</template>
       <p class="prism-text-body-large">
@@ -13,44 +13,42 @@
       </p>
     </page-header>
 
-    <app-container narrow>
-      <section class="page-section">
-        <h2 class="prism-text-display-small mb-4">How to participate in a PRISM screen</h2>
-        <div v-for="(step, index) in steps" :key="index" class="my-4">
-          <v-icon color="var(--prism-color-teal-accent-4)" style="float: left"
-            >mdi-numeric-{{ index + 1 }}-circle</v-icon
-          >
-          <div style="display: inline-block; width: calc(100% - 40px)">
-            <div v-html="step" class="ml-2 prism-text-body-2"></div>
-          </div>
+    <page-section width="narrow">
+      <h2 class="prism-text-display-small mb-4">How to participate in a PRISM screen</h2>
+      <div v-for="(step, index) in steps" :key="index" class="my-4">
+        <v-icon color="var(--prism-color-teal-accent-4)" style="float: left"
+          >mdi-numeric-{{ index + 1 }}-circle</v-icon
+        >
+        <div style="display: inline-block; width: calc(100% - 40px)">
+          <div v-html="step" class="ml-2 prism-text-body-2"></div>
         </div>
-      </section>
+      </div>
+    </page-section>
 
-      <section class="page-section">
-        <h2 class="prism-text-display-small mb-4">Industry Collaborators</h2>
-        <p class="prism-text-body-large">
-          PRISM requires fully-executed collaboration agreements with our pharmaceutical and biotech
-          collaborators in order to screen with us. In general, our agreements address the following
-          three areas:
-        </p>
+    <page-section width="narrow">
+      <h2 class="prism-text-display-small mb-4">Industry Collaborators</h2>
+      <p class="prism-text-body-large">
+        PRISM requires fully-executed collaboration agreements with our pharmaceutical and biotech
+        collaborators in order to screen with us. In general, our agreements address the following
+        three areas:
+      </p>
 
-        <collaborate-cards class="my-6"></collaborate-cards>
+      <collaborate-cards class="my-6"></collaborate-cards>
 
-        <p class="prism-text-body-large">
-          Please <a href="/contact-us">contact us</a> to receive additional information about our
-          agreements and pricing.
-        </p>
-      </section>
+      <p class="prism-text-body-large">
+        Please <a href="/contact-us">contact us</a> to receive additional information about our
+        agreements and pricing.
+      </p>
+    </page-section>
 
-      <section class="page-section">
-        <h2 class="prism-text-display-small mb-4">Academic Collaborators</h2>
-        <p class="prism-text-body-large">
-          Collaboration agreements are not a requirement for academic collaborators to participate
-          in our screens. If you would like to sign an agreement, please email our team at
-          <a href="mailto:prism@broadinstitute.org" class="text-link">prism@broadinstitute.org</a>.
-        </p>
-      </section>
-    </app-container>
+    <page-section width="narrow">
+      <h2 class="prism-text-display-small mb-4">Academic Collaborators</h2>
+      <p class="prism-text-body-large">
+        Collaboration agreements are not a requirement for academic collaborators to participate in
+        our screens. If you would like to sign an agreement, please email our team at
+        <a href="mailto:prism@broadinstitute.org" class="text-link">prism@broadinstitute.org</a>.
+      </p>
+    </page-section>
   </page>
 </template>
 <script>

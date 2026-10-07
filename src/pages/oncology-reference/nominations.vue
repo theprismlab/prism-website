@@ -1,163 +1,161 @@
 <template>
-  <page class="pt-0">
+  <page>
     <page-header background="multi-focal-cool">
       <template #title>Oncology Reference Nomination</template>
       <p class="prism-text-body-large">Blah blah blah.</p>
     </page-header>
 
-    <page-section :padding="12">
-      <app-container>
-        <section-overline gradient>NOMINATION</section-overline>
-        <prism-section-title>Nomination Steps</prism-section-title>
-        <p class="prism-text-body-large mb-10" style="max-width: 760px">
-          Placeholder copy describing the nomination process.
-        </p>
+    <page-section width="default" :padding="12">
+      <section-overline gradient>NOMINATION</section-overline>
+      <prism-section-title>Nomination Steps</prism-section-title>
+      <p class="prism-text-body-large mb-10" style="max-width: 760px">
+        Placeholder copy describing the nomination process.
+      </p>
 
-        <prism-expansion-panels v-model="openPanel">
-          <v-expansion-panel
-            v-for="(step, i) in steps"
-            :key="step.id"
-            :value="i"
-            :disabled="isLocked(i)"
-            :class="{ 'is-completed': completed[step.id] }"
-          >
-            <v-expansion-panel-title>
-              <v-icon
-                v-if="completed[step.id]"
-                class="step-icon mr-2"
-                color="teal-accent-4"
-                size="26"
-              >
-                mdi-check-circle
-              </v-icon>
-              <v-icon
-                v-else
-                class="step-number mr-2"
-                size="26"
-                :icon="`mdi-numeric-${i + 1}-circle-outline`"
-              />
-              <span>{{ step.title }}</span>
-              <v-icon
-                v-if="isLocked(i)"
-                class="step-lock ml-auto"
-                size="20"
-                icon="mdi-lock-outline"
-              />
-            </v-expansion-panel-title>
+      <prism-expansion-panels v-model="openPanel">
+        <v-expansion-panel
+          v-for="(step, i) in steps"
+          :key="step.id"
+          :value="i"
+          :disabled="isLocked(i)"
+          :class="{ 'is-completed': completed[step.id] }"
+        >
+          <v-expansion-panel-title>
+            <v-icon
+              v-if="completed[step.id]"
+              class="step-icon mr-2"
+              color="teal-accent-4"
+              size="26"
+            >
+              mdi-check-circle
+            </v-icon>
+            <v-icon
+              v-else
+              class="step-number mr-2"
+              size="26"
+              :icon="`mdi-numeric-${i + 1}-circle-outline`"
+            />
+            <span>{{ step.title }}</span>
+            <v-icon
+              v-if="isLocked(i)"
+              class="step-lock ml-auto"
+              size="20"
+              icon="mdi-lock-outline"
+            />
+          </v-expansion-panel-title>
 
-            <v-expansion-panel-text>
-              <!-- Step 1: Collaborator -->
-              <v-row v-if="step.id === 'collaborator'" dense class="mt-2">
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="collaborator.name"
-                    label="Name"
-                    variant="outlined"
-                    :error-messages="errors.collaborator.name"
-                  />
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    :model-value="collaborator.email"
-                    label="Email"
-                    type="email"
-                    variant="outlined"
-                    :error-messages="errors.collaborator.email"
-                    @update:model-value="(v) => (collaborator.email = normalizeEmail(v))"
-                  />
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-select
-                    v-model="collaborator.institutionType"
-                    label="Institution Type"
-                    :items="institutionTypeOptions"
-                    variant="outlined"
-                    :error-messages="errors.collaborator.institutionType"
-                    @update:model-value="collaborator.institutionName = ''"
-                  />
-                </v-col>
-                <v-col v-if="collaborator.institutionType" cols="12" sm="6">
-                  <v-select
-                    v-if="hasDropdownNames"
-                    v-model="collaborator.institutionName"
-                    label="Institution Name"
-                    :items="institutionNames"
-                    variant="outlined"
-                    :error-messages="errors.collaborator.institutionName"
-                  />
-                  <v-text-field
-                    v-else
-                    v-model="collaborator.institutionName"
-                    label="Institution Name"
-                    variant="outlined"
-                    :error-messages="errors.collaborator.institutionName"
-                  />
-                </v-col>
-              </v-row>
-
-              <!-- Step 2: Test agents -->
-              <div v-else-if="step.id === 'testAgent'" class="mt-2">
-                <nomination-table
-                  :fields="testAgentFields"
-                  :rows="testAgents"
-                  :errors="errors.testAgents"
-                  :submitted="testAgentsSubmitted"
-                  multi-row
-                  add-label="Add test agent"
-                  @add-row="testAgents.push(emptyTestAgent())"
-                  @remove-row="(i) => testAgents.splice(i, 1)"
+          <v-expansion-panel-text>
+            <!-- Step 1: Collaborator -->
+            <v-row v-if="step.id === 'collaborator'" dense class="mt-2">
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="collaborator.name"
+                  label="Name"
+                  variant="outlined"
+                  :error-messages="errors.collaborator.name"
                 />
-              </div>
-
-              <!-- Step 3: Terms & conditions -->
-              <div v-else-if="step.id === 'terms'" class="mt-2">
-                <v-checkbox
-                  v-for="(term, t) in terms"
-                  :key="t"
-                  v-model="termsAccepted[t]"
-                  :label="term"
-                  hide-details
-                  density="comfortable"
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  :model-value="collaborator.email"
+                  label="Email"
+                  type="email"
+                  variant="outlined"
+                  :error-messages="errors.collaborator.email"
+                  @update:model-value="(v) => (collaborator.email = normalizeEmail(v))"
                 />
-                <p v-if="errors.terms" class="text-error text-caption mt-2">{{ errors.terms }}</p>
-              </div>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-select
+                  v-model="collaborator.institutionType"
+                  label="Institution Type"
+                  :items="institutionTypeOptions"
+                  variant="outlined"
+                  :error-messages="errors.collaborator.institutionType"
+                  @update:model-value="collaborator.institutionName = ''"
+                />
+              </v-col>
+              <v-col v-if="collaborator.institutionType" cols="12" sm="6">
+                <v-select
+                  v-if="hasDropdownNames"
+                  v-model="collaborator.institutionName"
+                  label="Institution Name"
+                  :items="institutionNames"
+                  variant="outlined"
+                  :error-messages="errors.collaborator.institutionName"
+                />
+                <v-text-field
+                  v-else
+                  v-model="collaborator.institutionName"
+                  label="Institution Name"
+                  variant="outlined"
+                  :error-messages="errors.collaborator.institutionName"
+                />
+              </v-col>
+            </v-row>
 
-              <div class="d-flex justify-end mt-4">
-                <v-btn color="primary" variant="flat" @click="finishStep(i)">
-                  {{ i === steps.length - 1 ? 'Done' : 'Continue' }}
-                </v-btn>
-              </div>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </prism-expansion-panels>
+            <!-- Step 2: Test agents -->
+            <div v-else-if="step.id === 'testAgent'" class="mt-2">
+              <nomination-table
+                :fields="testAgentFields"
+                :rows="testAgents"
+                :errors="errors.testAgents"
+                :submitted="testAgentsSubmitted"
+                multi-row
+                add-label="Add test agent"
+                @add-row="testAgents.push(emptyTestAgent())"
+                @remove-row="(i) => testAgents.splice(i, 1)"
+              />
+            </div>
 
-        <div class="d-flex justify-end mt-6">
-          <v-btn
-            color="primary"
-            size="large"
-            :disabled="!allCompleted"
-            :loading="submitting"
-            @click="submit"
-          >
-            Submit nomination
-          </v-btn>
-        </div>
+            <!-- Step 3: Terms & conditions -->
+            <div v-else-if="step.id === 'terms'" class="mt-2">
+              <v-checkbox
+                v-for="(term, t) in terms"
+                :key="t"
+                v-model="termsAccepted[t]"
+                :label="term"
+                hide-details
+                density="comfortable"
+              />
+              <p v-if="errors.terms" class="text-error text-caption mt-2">{{ errors.terms }}</p>
+            </div>
 
-        <v-alert v-if="submittedPayload" type="success" variant="tonal" class="mt-6">
-          Nomination ready to send. Payload logged to the console.
-        </v-alert>
-        <v-alert v-if="schemaUnavailable" type="warning" variant="tonal" class="mt-6">
-          {{ SCHEMA_UNAVAILABLE }}
-        </v-alert>
-        <v-alert v-else-if="schemaErrors.length" type="error" variant="tonal" class="mt-6">
-          <p class="mb-2">The nomination did not pass schema validation:</p>
-          <ul class="pl-4">
-            <li v-for="e in schemaErrors" :key="e.row">
-              Test agent {{ e.row + 1 }}: {{ e.errors.join('; ') }}
-            </li>
-          </ul>
-        </v-alert>
-      </app-container>
+            <div class="d-flex justify-end mt-4">
+              <v-btn color="primary" variant="flat" @click="finishStep(i)">
+                {{ i === steps.length - 1 ? 'Done' : 'Continue' }}
+              </v-btn>
+            </div>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </prism-expansion-panels>
+
+      <div class="d-flex justify-end mt-6">
+        <v-btn
+          color="primary"
+          size="large"
+          :disabled="!allCompleted"
+          :loading="submitting"
+          @click="submit"
+        >
+          Submit nomination
+        </v-btn>
+      </div>
+
+      <v-alert v-if="submittedPayload" type="success" variant="tonal" class="mt-6">
+        Nomination ready to send. Payload logged to the console.
+      </v-alert>
+      <v-alert v-if="schemaUnavailable" type="warning" variant="tonal" class="mt-6">
+        {{ SCHEMA_UNAVAILABLE }}
+      </v-alert>
+      <v-alert v-else-if="schemaErrors.length" type="error" variant="tonal" class="mt-6">
+        <p class="mb-2">The nomination did not pass schema validation:</p>
+        <ul class="pl-4">
+          <li v-for="e in schemaErrors" :key="e.row">
+            Test agent {{ e.row + 1 }}: {{ e.errors.join('; ') }}
+          </li>
+        </ul>
+      </v-alert>
     </page-section>
   </page>
 </template>

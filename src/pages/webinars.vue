@@ -1,8 +1,11 @@
 <template>
   <page>
-    <app-container narrow>
-      <prism-page-title>Webinars</prism-page-title>
-      <section class="webinar-list">
+    <page-header narrow>
+      <template #title>Webinars</template>
+    </page-header>
+
+    <page-section width="narrow">
+      <div class="webinar-list">
         <resource-card
           v-for="webinar in webinars"
           :key="webinar.title"
@@ -25,8 +28,8 @@
             </span>
           </template>
         </resource-card>
-      </section>
-    </app-container>
+      </div>
+    </page-section>
   </page>
 </template>
 

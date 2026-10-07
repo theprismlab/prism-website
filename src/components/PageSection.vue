@@ -1,6 +1,9 @@
 <template>
   <section :class="['page-section', `page-section--bg-${background}`]" :style="paddingStyle">
-    <slot />
+    <app-container v-if="width" :wide="width === 'wide'" :narrow="width === 'narrow'">
+      <slot />
+    </app-container>
+    <slot v-else />
   </section>
 </template>
 
@@ -11,13 +14,18 @@
    * Standard wrapper for a vertical section of a page. Owns:
    *   - vertical spacing (padding)
    *   - optional full-bleed background
+   *   - the centered content column, when `width` is given
    *
    * Composition rule:
    *   <page>
-   *     <page-section background="muted">
-   *       <app-container wide>...content / section-component...</app-container>
+   *     <page-section width="wide" background="muted">
+   *       ...content / section-component...
    *     </page-section>
    *   </page>
+   *
+   * Without `width` the section renders its slot unwrapped, which keeps the
+   * older `<page-section><app-container>...</app-container></page-section>`
+   * form working until those pages migrate.
    *
    * Section components (e.g. MainVisual, OurPortal) MUST NOT add their own
    * container or background — those belong here.
@@ -25,19 +33,29 @@
   export default {
     name: 'PageSection',
     props: {
+      // Content column width: 'default' | 'wide' | 'narrow' (see AppContainer).
+      // Omit to render the slot without a container.
+      width: {
+        type: String,
+        default: null,
+        validator: (v) => ['default', 'wide', 'narrow'].includes(v),
+      },
       // Background variant: 'default' | 'muted' | 'gradient' | 'blue-indigo-dark'
       //   | 'multi-focal-cool' | 'multi-focal-slate' | 'multi-focal-neutral' | 'multi-focal-warm'
       background: { type: String, default: 'default' },
       // Vertical padding (in Vuetify spacing units, e.g. 12 -> py-12)
       padding: { type: [String, Number], default: 8 },
+      // Optional bottom padding override, same units. Falls back to `padding`.
+      paddingBottom: { type: [String, Number], default: null },
     },
     computed: {
       paddingStyle() {
-        const n = Number(this.padding);
-        if (!Number.isFinite(n)) return {};
+        const top = Number(this.padding);
+        if (!Number.isFinite(top)) return {};
+        const bottomRaw = this.paddingBottom == null ? top : Number(this.paddingBottom);
+        const bottom = Number.isFinite(bottomRaw) ? bottomRaw : top;
         // 1 spacing unit = 4px (matches Vuetify's py-N)
-        const v = `${n * 4}px`;
-        return { paddingTop: v, paddingBottom: v };
+        return { paddingTop: `${top * 4}px`, paddingBottom: `${bottom * 4}px` };
       },
     },
   };
@@ -80,8 +98,7 @@
       radial-gradient(ellipse at 14% 68%, rgba(53, 59, 82, 0.12) 0%, transparent 52%),
       radial-gradient(ellipse at 82% 18%, rgba(96, 110, 160, 0.11) 0%, transparent 48%),
       radial-gradient(ellipse at 58% 92%, rgba(42, 47, 66, 0.07) 0%, transparent 44%),
-      radial-gradient(ellipse at 38% 22%, rgba(140, 150, 190, 0.08) 0%, transparent 40%),
-      #f5f6fa;
+      radial-gradient(ellipse at 38% 22%, rgba(140, 150, 190, 0.08) 0%, transparent 40%), #f5f6fa;
   }
   .page-section--bg-multi-focal-neutral {
     background:

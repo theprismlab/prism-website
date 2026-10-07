@@ -1,15 +1,19 @@
 <template>
-  <page-section :background="background" :padding="padding" class="page-header">
-    <app-container :wide="wide" :narrow="narrow">
-      <nav v-if="hasBreadcrumbs" aria-label="Breadcrumb" class="page-header__breadcrumbs">
-        <breadcrumbs />
-      </nav>
-      <slot name="overline" />
-      <prism-page-title :class="{ 'page-header__title--last': !$slots.default }">
-        <slot name="title" />
-      </prism-page-title>
-      <slot />
-    </app-container>
+  <page-section
+    :width="width"
+    :background="background"
+    :padding="padding"
+    :padding-bottom="bottomPadding"
+    class="page-header"
+  >
+    <nav v-if="hasBreadcrumbs" aria-label="Breadcrumb" class="page-header__breadcrumbs">
+      <breadcrumbs />
+    </nav>
+    <slot name="overline" />
+    <prism-page-title :class="{ 'page-header__title--last': !$slots.default }">
+      <slot name="title" />
+    </prism-page-title>
+    <slot />
   </page-section>
 </template>
 
@@ -36,6 +40,10 @@
    *
    * Pass `wide` / `narrow` to match the container width used by the page body
    * so the breadcrumbs and title stay flush with the content below.
+   *
+   * Without a background fill the header's bottom padding reads as blank space
+   * and stacks with the body's own top spacing, so it is halved in that case.
+   * With a fill the padding reads as part of the colored block and is kept.
    */
   export default {
     name: 'PageHeader',
@@ -49,6 +57,15 @@
       narrow: { type: Boolean, default: false },
     },
     computed: {
+      width() {
+        if (this.narrow) return 'narrow';
+        return this.wide ? 'wide' : 'default';
+      },
+      bottomPadding() {
+        const n = Number(this.padding);
+        if (!Number.isFinite(n)) return null;
+        return this.background === 'default' ? n / 2 : n;
+      },
       hasBreadcrumbs() {
         const fn = this.$route?.meta?.breadcrumbs;
         return !!fn && fn(this.$route).length > 0;

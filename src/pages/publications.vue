@@ -1,40 +1,33 @@
 <template>
-  <page id="publication-page" class="pt-0">
-    <page-header background="multi-focal-slate" :padding="12">
-      <template #overline>
-        <section-overline gradient class="mb-2">Resources</section-overline>
-      </template>
+  <page>
+    <page-header>
       <template #title>Publications</template>
-      <p class="prism-text-body-large publications-lead">
-        Peer-reviewed papers, conference abstracts, and white papers from the PRISM team and our
-        collaborators.
-      </p>
-      <ul v-if="typeCounts.length" class="publications-counts" aria-label="Publications by type">
+      <!-- <ul v-if="typeCounts.length" class="publications-counts" aria-label="Publications by type">
         <li v-for="count in typeCounts" :key="count.type" class="publications-counts__item">
           <span class="publications-counts__dot" :style="{ backgroundColor: count.color }" />
           <span class="publications-counts__value">{{ count.total }}</span>
           <span class="publications-counts__label">{{ count.label }}</span>
         </li>
-      </ul>
+      </ul> -->
     </page-header>
 
-    <page-section :padding="12" class="featured-section">
-      <app-container>
-        <div class="featured-section__heading">
-          <section-overline gradient>Featured</section-overline>
-          <span class="featured-section__rule" aria-hidden="true" />
-        </div>
-        <v-row>
-          <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
-            <publication-card
-              :item="card"
-              :type-style="typeStyles[card.type]"
-              :links="getLinks(card)"
-              featured
-            />
-          </v-col>
-        </v-row>
-      </app-container>
+    <!-- Bottom padding is trimmed because the explorer's sticky toolbar
+         carries its own top margin. -->
+    <page-section width="default" :padding-bottom="6">
+      <div class="featured-section__heading">
+        <section-overline gradient>Featured</section-overline>
+        <span class="featured-section__rule" aria-hidden="true" />
+      </div>
+      <v-row>
+        <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
+          <publication-card
+            :item="card"
+            :type-style="typeStyles[card.type]"
+            :links="getLinks(card)"
+            featured
+          />
+        </v-col>
+      </v-row>
     </page-section>
 
     <publications-explorer :items="data" :type-styles="typeStyles" :get-links="getLinks" />
@@ -281,11 +274,5 @@
     flex: 1;
     height: 1px;
     background: rgba(30, 34, 48, 0.1);
-  }
-
-  /* The explorer's sticky toolbar carries its own top margin; keep the
-     featured block visually attached to it rather than floating. */
-  .featured-section {
-    padding-bottom: 1.5rem !important;
   }
 </style>

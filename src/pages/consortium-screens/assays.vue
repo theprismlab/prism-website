@@ -1,5 +1,5 @@
 <template>
-  <page class="pt-0">
+  <page>
     <page-header narrow>
       <template #title>Assays</template>
       <p class="prism-text-body-large">
@@ -9,7 +9,7 @@
       </p>
     </page-header>
 
-    <app-container narrow>
+    <page-section width="narrow">
       <v-expansion-panels variant="accordion" flat>
         <v-expansion-panel v-for="item in items" :key="item.id">
           <v-expansion-panel-title>
@@ -50,7 +50,7 @@
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
-    </app-container>
+    </page-section>
   </page>
 </template>
 

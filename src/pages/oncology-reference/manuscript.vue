@@ -1,55 +1,49 @@
 <template>
-  <page class="pt-0">
+  <page>
     <!-- TODO: manuscript details and lineage/subtype figure data are placeholders -->
-    <page-section background="multi-focal-cool" :padding="14">
-      <app-container narrow>
-        <section-overline gradient>Broad Institute of MIT & Harvard · 2026</section-overline>
-        <prism-page-title>{{ manuscript.title }}</prism-page-title>
-        <p class="prism-text-body-large">{{ manuscript.summary }}</p>
+    <page-section width="narrow" background="multi-focal-cool" :padding="14">
+      <section-overline gradient>Broad Institute of MIT & Harvard · 2026</section-overline>
+      <prism-page-title>{{ manuscript.title }}</prism-page-title>
+      <p class="prism-text-body-large">{{ manuscript.summary }}</p>
 
-        <div class="d-flex flex-wrap ga-3 mt-6">
-          <v-btn
-            color="primary"
-            rounded
-            flat
-            :href="manuscript.paperUrl"
-            target="_blank"
-            prepend-icon="mdi-file-document-outline"
-            >Read the paper</v-btn
-          >
-          <v-btn
-            variant="outlined"
-            color="primary"
-            rounded
-            :href="manuscript.dataUrl"
-            target="_blank"
-            prepend-icon="mdi-download"
-            >Download dataset</v-btn
-          >
-        </div>
-      </app-container>
+      <div class="d-flex flex-wrap ga-3 mt-6">
+        <v-btn
+          color="primary"
+          rounded
+          flat
+          :href="manuscript.paperUrl"
+          target="_blank"
+          prepend-icon="mdi-file-document-outline"
+          >Read the paper</v-btn
+        >
+        <v-btn
+          variant="outlined"
+          color="primary"
+          rounded
+          :href="manuscript.dataUrl"
+          target="_blank"
+          prepend-icon="mdi-download"
+          >Download dataset</v-btn
+        >
+      </div>
     </page-section>
 
-    <page-section>
-      <app-container wide>
-        <stat-grid :stats="stats" />
-      </app-container>
+    <page-section width="wide">
+      <stat-grid :stats="stats" />
     </page-section>
 
-    <page-section :padding="4">
-      <app-container narrow>
-        <v-card class="details-card" elevation="0">
-          <v-row>
-            <v-col v-for="item in details" :key="item.label" cols="12" sm="6">
-              <div class="detail-label">{{ item.label }}</div>
-              <a v-if="item.href" :href="item.href" target="_blank" class="detail-value">{{
-                item.value
-              }}</a>
-              <div v-else class="detail-value">{{ item.value }}</div>
-            </v-col>
-          </v-row>
-        </v-card>
-      </app-container>
+    <page-section width="narrow" :padding="4">
+      <v-card class="details-card" elevation="0">
+        <v-row>
+          <v-col v-for="item in details" :key="item.label" cols="12" sm="6">
+            <div class="detail-label">{{ item.label }}</div>
+            <a v-if="item.href" :href="item.href" target="_blank" class="detail-value">{{
+              item.value
+            }}</a>
+            <div v-else class="detail-value">{{ item.value }}</div>
+          </v-col>
+        </v-row>
+      </v-card>
     </page-section>
 
     <page-section :padding="10">
@@ -91,79 +85,74 @@
       </app-container>
     </page-section>
 
-    <page-section background="multi-focal-cool" :padding="12">
-      <app-container>
-        <section-overline gradient>The underlying technology</section-overline>
-        <prism-section-title>
-          The PRISM platform: multiplexed cancer drug screening at scale
-        </prism-section-title>
-        <p class="prism-text-body-large mb-10" style="max-width: 760px">
-          OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
-          high-throughput multiplexed viability screening platform developed at the
-          <a href="https://www.broadinstitute.org/" target="_blank" rel="noopener"
-            >Broad Institute</a
-          >. PRISM introduces unique 24-nucleotide DNA barcodes into cancer cell lines, enabling
-          hundreds of cell lines to be screened simultaneously in a single well — dramatically
-          reducing cost and increasing throughput compared to traditional approaches.
+    <page-section width="default" background="multi-focal-cool" :padding="12">
+      <section-overline gradient>The underlying technology</section-overline>
+      <prism-section-title>
+        The PRISM platform: multiplexed cancer drug screening at scale
+      </prism-section-title>
+      <p class="prism-text-body-large mb-10" style="max-width: 760px">
+        OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
+        high-throughput multiplexed viability screening platform developed at the
+        <a href="https://www.broadinstitute.org/" target="_blank" rel="noopener">Broad Institute</a
+        >. PRISM introduces unique 24-nucleotide DNA barcodes into cancer cell lines, enabling
+        hundreds of cell lines to be screened simultaneously in a single well — dramatically
+        reducing cost and increasing throughput compared to traditional approaches.
+      </p>
+
+      <workflow-steps :steps="platformWorkflow" color="var(--v-teal-darken-1)" class="mb-10" />
+
+      <div class="d-flex flex-wrap ga-2 mb-8">
+        <v-chip
+          v-for="feature in platformFeatures"
+          :key="feature"
+          color="teal-darken-1"
+          variant="tonal"
+          prepend-icon="mdi-circle-small"
+        >
+          {{ feature }}
+        </v-chip>
+      </div>
+
+      <div class="d-flex flex-wrap ga-3">
+        <v-btn color="primary" rounded to="/about-us/about-prism" append-icon="mdi-arrow-right"
+          >Learn about PRISM</v-btn
+        >
+        <v-btn
+          variant="outlined"
+          color="primary"
+          rounded
+          href="https://depmap.org"
+          target="_blank"
+          append-icon="mdi-open-in-new"
+          >DepMap portal</v-btn
+        >
+      </div>
+    </page-section>
+
+    <page-section width="wide" background="muted" :padding="10">
+      <div class="text-center">
+        <section-overline gradient>Dataset overview</section-overline>
+        <prism-section-title>Lineage and subtype breakdown</prism-section-title>
+        <p class="prism-text-body-large mx-auto mb-8" style="max-width: 560px">
+          The OncRef Compounds dataset spans a broad range of cancer lineages and molecular subtypes
+          profiled across the PRISM cell line collection.
         </p>
-
-        <workflow-steps :steps="platformWorkflow" color="var(--v-teal-darken-1)" class="mb-10" />
-
-        <div class="d-flex flex-wrap ga-2 mb-8">
-          <v-chip
-            v-for="feature in platformFeatures"
-            :key="feature"
-            color="teal-darken-1"
-            variant="tonal"
-            prepend-icon="mdi-circle-small"
-          >
-            {{ feature }}
-          </v-chip>
-        </div>
-
-        <div class="d-flex flex-wrap ga-3">
-          <v-btn color="primary" rounded to="/about-us/about-prism" append-icon="mdi-arrow-right"
-            >Learn about PRISM</v-btn
-          >
-          <v-btn
-            variant="outlined"
-            color="primary"
-            rounded
-            href="https://depmap.org"
-            target="_blank"
-            append-icon="mdi-open-in-new"
-            >DepMap portal</v-btn
-          >
-        </div>
-      </app-container>
+      </div>
+      <subtype-breakdown :lineages="lineages" />
     </page-section>
 
-    <page-section background="muted" :padding="10">
-      <app-container wide>
-        <div class="text-center">
-          <section-overline gradient>Dataset overview</section-overline>
-          <prism-section-title>Lineage and subtype breakdown</prism-section-title>
-          <p class="prism-text-body-large mx-auto mb-8" style="max-width: 560px">
-            The OncRef Compounds dataset spans a broad range of cancer lineages and molecular
-            subtypes profiled across the PRISM cell line collection.
-          </p>
-        </div>
-        <subtype-breakdown :lineages="lineages" />
-      </app-container>
-    </page-section>
-
-    <app-container narrow class="my-8">
+    <page-section width="narrow" :padding="8">
       <prism-section-title>How to cite</prism-section-title>
       <div class="citation-block">{{ manuscript.citation }}</div>
-    </app-container>
+    </page-section>
   </page>
 </template>
 
 <script>
   import { loadOncrefData, countWhere, countBy } from '@/utils/oncref';
-  import StatGrid from './oncref/StatGrid.vue';
-  import StatTable from './oncref/StatTable.vue';
-  import SubtypeBreakdown from './oncref/SubtypeBreakdown.vue';
+  import StatGrid from './manuscript/StatGrid.vue';
+  import StatTable from './manuscript/StatTable.vue';
+  import SubtypeBreakdown from './manuscript/SubtypeBreakdown.vue';
 
   export default {
     name: 'OncologyReferenceManuscript',
