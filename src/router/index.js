@@ -119,8 +119,14 @@ const routes = [
   //   component: () => import('@/pages/resources/oncref.vue'),
   // },
   {
-    path: '/oncref/nomination',
+    path: '/oncology-reference/nomination',
     component: () => import('@/pages/resources/oncref-nomination.vue'),
+    meta: {
+      breadcrumbs: () => [
+        { title: 'Oncology Reference', to: '/oncology-reference', disabled: true },
+        { title: 'Nomination', disabled: true },
+      ],
+    },
   },
 
   // ─── Submissions layout ───────────────────────────────────────────────────

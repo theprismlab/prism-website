@@ -1,0 +1,14 @@
+[
+  {
+    "nominated_compound_name": "Pan-Oncology Combination Inhibitor",
+    "pubchem_cid": 12345678,
+    "smiles_string": "CC1=C(C=C(C=C1)NC(=O)C2=CC=C(C=C2)CN3CCN(CC3)C)NC4=NC=CC(=N4)C5=CN=CC=C5",
+    "can_provide_qc_agent": "Yes",
+    "vendor_ordering_info": "N/A",
+    "modality": "Inhibitor",
+    "drug_targets": ["EGFR", "KRAS", "BRAF", "TP53"],
+    "test_agent_type": "DMSO",
+    "top_dose": 10.0,
+    "top_dose_unit": "uM"
+  }
+]
