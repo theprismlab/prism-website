@@ -10,16 +10,10 @@ const routes = [
   {
     path: '/about-us/about-prism',
     component: () => import('@/pages/about-us/about-prism.vue'),
-    meta: {
-      breadcrumbs: () => [{ title: 'About Us' }, { title: 'About PRISM' }],
-    },
   },
   {
     path: '/about-us/team',
     component: () => import('@/pages/about-us/team.vue'),
-    meta: {
-      breadcrumbs: () => [{ title: 'About Us' }, { title: 'Team' }],
-    },
   },
 
   {
