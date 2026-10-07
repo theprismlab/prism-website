@@ -25,7 +25,8 @@
   export default {
     name: 'PageSection',
     props: {
-      // Background variant: 'default' | 'muted' | 'tinted' | 'gradient'
+      // Background variant: 'default' | 'muted' | 'gradient' | 'blue-indigo-dark'
+      //   | 'multi-focal-cool' | 'multi-focal-slate' | 'multi-focal-neutral' | 'multi-focal-warm'
       background: { type: String, default: 'default' },
       // Vertical padding (in Vuetify spacing units, e.g. 12 -> py-12)
       padding: { type: [String, Number], default: 8 },
@@ -71,6 +72,16 @@
       radial-gradient(ellipse at 55% 88%, rgba(185, 168, 230, 0.12) 0%, transparent 44%),
       radial-gradient(ellipse at 72% 52%, rgba(138, 210, 198, 0.1) 0%, transparent 48%),
       radial-gradient(ellipse at 35% 20%, rgba(200, 185, 240, 0.1) 0%, transparent 40%), #f7f9fd;
+  }
+  /* Light end of the dark slate navy used by the publications explorer toolbar
+     (#1e2230 -> #2a2f42 -> #353b52). Same hue family, no new accent colors. */
+  .page-section--bg-multi-focal-slate {
+    background:
+      radial-gradient(ellipse at 14% 68%, rgba(53, 59, 82, 0.12) 0%, transparent 52%),
+      radial-gradient(ellipse at 82% 18%, rgba(96, 110, 160, 0.11) 0%, transparent 48%),
+      radial-gradient(ellipse at 58% 92%, rgba(42, 47, 66, 0.07) 0%, transparent 44%),
+      radial-gradient(ellipse at 38% 22%, rgba(140, 150, 190, 0.08) 0%, transparent 40%),
+      #f5f6fa;
   }
   .page-section--bg-multi-focal-neutral {
     background:

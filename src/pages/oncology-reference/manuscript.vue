@@ -166,7 +166,7 @@
   import SubtypeBreakdown from './oncref/SubtypeBreakdown.vue';
 
   export default {
-    name: 'OncrefManuscript',
+    name: 'OncologyReferenceManuscript',
     components: { StatGrid, StatTable, SubtypeBreakdown },
     data() {
       return {

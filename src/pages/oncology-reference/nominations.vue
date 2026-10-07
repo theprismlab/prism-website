@@ -1,12 +1,9 @@
 <template>
   <page class="pt-0">
-    <page-section background="multi-focal-cool" :padding="14">
-      <app-container>
-        <breadcrumbs />
-        <prism-page-title>Oncref Nomination</prism-page-title>
-        <p class="prism-text-body-large">Blah blah blah.</p>
-      </app-container>
-    </page-section>
+    <page-header background="multi-focal-cool">
+      <template #title>Oncology Reference Nomination</template>
+      <p class="prism-text-body-large">Blah blah blah.</p>
+    </page-header>
 
     <page-section :padding="12">
       <app-container>
@@ -166,12 +163,12 @@
 </template>
 
 <script>
-  import NominationTable from './oncref-nomination/NominationTable.vue';
+  import NominationTable from './nominations/NominationTable.vue';
   import { getCollaboratorList } from '@/submissions/api.js';
   import {
     INSTITUTION_TYPE_OPTIONS,
     DROPDOWN_NAME_TYPES,
-  } from './oncref-nomination/institutionOptions.js';
+  } from './nominations/institutionOptions.js';
   import {
     TEST_AGENT_FIELDS,
     TERMS,
@@ -183,12 +180,12 @@
     validateTestAgents,
     hasNoErrors,
     buildPayload,
-  } from './oncref-nomination/nominationSchema.js';
-  import { validateNominationPayload, SCHEMA_UNAVAILABLE } from './oncref-nomination/ajv.js';
-  import { loadRDKit } from './oncref-nomination/smiles.js';
+  } from './nominations/nominationSchema.js';
+  import { validateNominationPayload, SCHEMA_UNAVAILABLE } from './nominations/ajv.js';
+  import { loadRDKit } from './nominations/smiles.js';
 
   export default {
-    name: 'OncrefNomination',
+    name: 'OncologyReferenceNominations',
     components: { NominationTable },
     data() {
       return {
