@@ -2,7 +2,7 @@
   <page>
     <HomeHero></HomeHero>
 
-    <page-section width="default" background="multi-focal-cool" :padding="16">
+    <page-section width="default" background="multi-focal-cool">
       <p class="prism-text-display-small text-center">
         Our lab partners with researchers to
         <span class="text-gradient-blue"
@@ -13,7 +13,7 @@
       </p>
     </page-section>
 
-    <page-section width="wide" :padding="10">
+    <page-section width="wide">
       <p class="prism-text-body-large" style="max-width: 720px; margin: auto">
         Cancer cell line models remain essential in drug development, providing a controlled system
         to assess potency and confirm on-target engagement. At a larger scale using PRISM, these
@@ -32,7 +32,8 @@
       <HomePortal></HomePortal>
     </page-section>
 
-    <page-section width="default" :padding="10">
+    <!-- Showcase sections with display headings get the band rhythm (96px apart). -->
+    <page-section width="default" :padding="12">
       <h2 class="prism-text-overline text-amber-accent-4 mb-2 text-center">Impact</h2>
       <h3 class="prism-text-display-large mb-8 text-center">
         Dedicated to advancing oncology research
@@ -44,7 +45,7 @@
       <HomeImpactCards class="mt-4"></HomeImpactCards>
     </page-section>
 
-    <page-section width="default" :padding="10">
+    <page-section width="default" :padding="12">
       <h2 class="prism-text-overline text-amber-accent-4 mb-2 text-center">Testimonials</h2>
       <h3 class="prism-text-display-large text-center">What our collaborators say</h3>
       <HomeTestimonialCards class="mt-4"></HomeTestimonialCards>

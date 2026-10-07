@@ -33,9 +33,8 @@
     box-sizing: border-box;
     width: 66.667%;
     margin-inline: auto;
-    /* The old grid contributed 16px of vertical padding per container.
-       Kept so vertical rhythm is unchanged by the DOM simplification. */
-    padding: 16px;
+    /* Horizontal gutter only. Vertical rhythm belongs to PageSection. */
+    padding: 0 16px;
   }
 
   .app-container--wide {

@@ -15,7 +15,7 @@
       <cell-line-stats />
     </page-section>
 
-    <page-section width="default" background="muted" :padding="10" class="text-center">
+    <page-section width="default" background="muted" class="text-center">
       <section-overline>Methodology</section-overline>
       <prism-section-title>Cell line barcoding and pooling workflow</prism-section-title>
       <p class="prism-text-body-large mx-auto mb-8" style="max-width: 560px">

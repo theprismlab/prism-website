@@ -5,7 +5,7 @@
       <p class="prism-text-body-large">Blah blah blah.</p>
     </page-header>
 
-    <page-section width="default" :padding="12">
+    <page-section width="default">
       <section-overline gradient>NOMINATION</section-overline>
       <prism-section-title>Nomination Steps</prism-section-title>
       <p class="prism-text-body-large mb-10" style="max-width: 760px">
