@@ -156,16 +156,15 @@ export function validateTestAgents(rows) {
 // Rendered with v-html in nominations.vue, so this is trusted markup authored
 // here, never user input. Edit the copy freely; keep it to simple tags.
 export const TERMS_HTML = `
-  <p>Nominating a test agent does not guarantee its inclusion in any OncRef screens.
-<br><br>
-PRISM will only contact you if your nomination was selected. The selection process may take over one year depending upon screening bandwidth and test agent availability.
-<br><br>
-If your nomination is selected and screened, it may take several years before the data becomes publicly available due to the funding source used for this data. Please note that your institution will not hold ownership of any data generated as part of an OncRef screen.
-<br><br>
-Additionally, while your institution is not responsible for screening costs or the shipment of selected test agents, test agents that are cost-prohibitive may not be screened unless you are able to QC and provide them.
-<br><br>
-By clicking Submit, you are acknowledging the terms above.
-</p>
+  <p>
+  Nominating a test agent does not guarantee its inclusion in any OncRef screens. The selection process may take over one year depending upon screening bandwidth and test agent availability.
+  <br><br>
+  If your nomination is selected and screened, it may take up to one year before the data becomes publicly available due to the funding source used for this data. Please note that you and your institution will not own any data generated as part of an OncRef screen.
+  <br><br>
+  Additionally, while you are not responsible for screening costs or the shipment of selected test agents, test agents that are cost-prohibitive may not be screened unless you are able to QC and provide them.
+  <br><br>
+  By clicking Submit, you are acknowledging the terms above.
+  </p>
 `;
 
 // ---- Helpers ----
