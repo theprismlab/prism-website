@@ -29,5 +29,12 @@ export async function validateNominationPayload(payload) {
       validate(entry) ? null : { row, errors: validate.errors.map(formatError) },
     )
     .filter(Boolean);
-  return { valid: errors.length === 0, errors, unavailable: false };
+  const valid = errors.length === 0;
+  if (valid) {
+    console.info(
+      `[nomination] ${payload.length} ${payload.length === 1 ? 'entry' : 'entries'} passed schema validation (bundled: onc-ref-nomination-schema.json)`,
+      payload,
+    );
+  }
+  return { valid, errors, unavailable: false };
 }

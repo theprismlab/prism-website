@@ -104,5 +104,12 @@ export async function validateNominationPayload(payload) {
   const results = await Promise.all(payload.map(validateNominationEntry));
   const errors = results.map((r, row) => ({ row, errors: r.errors })).filter((r) => r.errors);
   const unavailable = errors.some((r) => r.errors.includes(SCHEMA_UNAVAILABLE));
-  return { valid: errors.length === 0, errors, unavailable };
+  const valid = errors.length === 0;
+  if (valid) {
+    console.info(
+      `[nomination] ${payload.length} ${payload.length === 1 ? 'entry' : 'entries'} passed schema validation (remote: ${SCHEMA_URL})`,
+      payload,
+    );
+  }
+  return { valid, errors, unavailable };
 }
