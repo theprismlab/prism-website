@@ -175,7 +175,7 @@
 
 <script>
   import NominationTable from './nominations/NominationTable.vue';
-  import { getCollaboratorList } from '@/utils/api.js';
+  import { getCollaboratorList, postNominations } from '@/utils/api.js';
   import {
     INSTITUTION_TYPE_OPTIONS,
     DROPDOWN_NAME_TYPES,
@@ -195,7 +195,7 @@
   } from './nominations/nominationSchema.js';
   import { validateNominationPayload, SCHEMA_UNAVAILABLE } from './nominations/ajv.js';
   import { loadRDKit } from './nominations/smiles.js';
-
+  const API_URL = import.meta.env.VITE_API_URL;
   export default {
     name: 'OncologyReferenceNominations',
     components: { NominationTable },
@@ -253,7 +253,7 @@
     async created() {
       this.ensureRDKit(); // start the ~7 MB WASM download early; awaited again before validating
       try {
-        this.allInstitutions = await getCollaboratorList(import.meta.env.VITE_API_URL);
+        this.allInstitutions = await getCollaboratorList(API_URL);
       } catch (error) {
         console.error('Failed to load institution names', error);
       }
@@ -360,7 +360,6 @@
         try {
           // Flat array, one entry per test agent, each repeating the submitter fields.
           const payload = buildPayload(this.collaborator, this.testAgents);
-          console.log('Payload to validate', payload);
           const { valid, errors, unavailable } = await validateNominationPayload(payload);
           if (!valid) {
             this.schemaUnavailable = unavailable;
@@ -368,8 +367,7 @@
             return;
           }
           this.submittedPayload = payload;
-          console.log('Nomination payload', payload);
-          // To do: Post to api for submission: /api/prism-nominations
+          await postNominations(API_URL, payload);
         } finally {
           this.submitting = false;
         }
