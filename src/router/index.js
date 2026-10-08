@@ -20,35 +20,35 @@ const routes = [
     path: '/consortium-screens/assays',
     component: () => import('@/pages/consortium-screens/assays.vue'),
     meta: {
-      breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Assays' }],
+      //   breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Assays' }],
     },
   },
   {
     path: '/consortium-screens/cell-line-collection',
     component: () => import('@/pages/consortium-screens/cell-line-collection.vue'),
     meta: {
-      breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Cell Line Collection' }],
+      //breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Cell Line Collection' }],
     },
   },
   {
     path: '/consortium-screens/collaborating',
     component: () => import('@/pages/consortium-screens/collaborating.vue'),
     meta: {
-      breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Collaborating' }],
+      //breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Collaborating' }],
     },
   },
   {
     path: '/consortium-screens/data-analysis',
     component: () => import('@/pages/consortium-screens/data-analysis.vue'),
     meta: {
-      breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Data Analysis' }],
+      // breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Data Analysis' }],
     },
   },
   {
     path: '/consortium-screens/deliverables',
     component: () => import('@/pages/consortium-screens/deliverables.vue'),
     meta: {
-      breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Deliverables' }],
+      //   breadcrumbs: () => [{ title: 'Consortium Screens' }, { title: 'Deliverables' }],
     },
   },
 
@@ -69,7 +69,7 @@ const routes = [
     path: '/oncology-reference/nominations',
     component: () => import('@/pages/oncology-reference/nominations.vue'),
     meta: {
-      breadcrumbs: () => [{ title: 'Oncology Reference' }, { title: 'Nominations' }],
+      // breadcrumbs: () => [{ title: 'Oncology Reference' }, { title: 'Nominations' }],
     },
   },
 
@@ -79,7 +79,7 @@ const routes = [
     component: () => import('@/submissions/index.vue'),
     meta: {
       layout: submissionsLayout,
-      breadcrumbs: () => [{ title: 'Submissions' }],
+      // breadcrumbs: () => [{ title: 'Submissions' }],
     },
   },
   {
@@ -87,10 +87,10 @@ const routes = [
     component: () => import('@/submissions/quote-and-po.vue'),
     meta: {
       layout: submissionsLayout,
-      breadcrumbs: () => [
-        { title: 'Submissions', to: '/submission-hub' },
-        { title: 'View Quote & Upload PO' },
-      ],
+      // breadcrumbs: () => [
+      //   { title: 'Submissions', to: '/submission-hub' },
+      //   { title: 'View Quote & Upload PO' },
+      // ],
     },
   },
 
@@ -99,10 +99,10 @@ const routes = [
     component: () => import('@/submissions/instructions/index.vue'),
     meta: {
       layout: submissionsLayout,
-      breadcrumbs: () => [
-        { title: 'Submissions', to: '/submission-hub' },
-        { title: 'Instructions' },
-      ],
+      // breadcrumbs: () => [
+      //   { title: 'Submissions', to: '/submission-hub' },
+      //   { title: 'Instructions' },
+      // ],
     },
   },
   {
@@ -114,11 +114,11 @@ const routes = [
     component: () => import('@/submissions/instructions/test-agent.vue'),
     meta: {
       layout: submissionsLayout,
-      breadcrumbs: (route) => [
-        { title: 'Submissions', to: '/submission-hub' },
-        { title: 'Instructions', to: '/submission-hub/instructions' },
-        { title: `${route.params.screenType} — Test Agent` },
-      ],
+      // breadcrumbs: (route) => [
+      //   { title: 'Submissions', to: '/submission-hub' },
+      //   { title: 'Instructions', to: '/submission-hub/instructions' },
+      //   { title: `${route.params.screenType} — Test Agent` },
+      // ],
     },
   },
   {
@@ -126,11 +126,11 @@ const routes = [
     component: () => import('@/submissions/instructions/shipping.vue'),
     meta: {
       layout: submissionsLayout,
-      breadcrumbs: (route) => [
-        { title: 'Submissions', to: '/submission-hub' },
-        { title: 'Instructions', to: '/submission-hub/instructions' },
-        { title: `${route.params.screenType} — Shipping` },
-      ],
+      // breadcrumbs: (route) => [
+      //   { title: 'Submissions', to: '/submission-hub' },
+      //   { title: 'Instructions', to: '/submission-hub/instructions' },
+      //   { title: `${route.params.screenType} — Shipping` },
+      // ],
     },
   },
 
@@ -139,7 +139,7 @@ const routes = [
     component: () => import('@/submissions/forms/index.vue'),
     meta: {
       layout: submissionsLayout,
-      breadcrumbs: () => [{ title: 'Submissions', to: '/submission-hub' }, { title: 'Forms' }],
+      //   breadcrumbs: () => [{ title: 'Submissions', to: '/submission-hub' }, { title: 'Forms' }],
     },
   },
   {
@@ -147,11 +147,11 @@ const routes = [
     component: () => import('@/submissions/forms/screen-type.vue'),
     meta: {
       layout: submissionsLayout,
-      breadcrumbs: (route) => [
-        { title: 'Submissions', to: '/submission-hub' },
-        { title: 'Forms', to: '/submission-hub/forms' },
-        { title: route.params.screenType },
-      ],
+      // breadcrumbs: (route) => [
+      //   { title: 'Submissions', to: '/submission-hub' },
+      //   { title: 'Forms', to: '/submission-hub/forms' },
+      //   { title: route.params.screenType },
+      // ],
     },
   },
 ];
