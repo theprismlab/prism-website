@@ -6,11 +6,11 @@
     </page-header>
 
     <page-section width="default">
-      <section-overline gradient>NOMINATION</section-overline>
+      <!-- <section-overline gradient>NOMINATION</section-overline>
       <prism-section-title>Nomination Steps</prism-section-title>
       <p class="prism-text-body-large mb-10" style="max-width: 760px">
         Placeholder copy describing the nomination process.
-      </p>
+      </p> -->
 
       <!-- Dev only: fills every step with valid sample data so the submit flow can be tested quickly. -->
       <div v-if="isDev" class="d-flex justify-end mb-2">
@@ -114,6 +114,11 @@
 
             <!-- Step 2: Test agents -->
             <div v-else-if="step.id === 'testAgent'" class="mt-2">
+              <p>
+                Please list all of your test agent nominations in the table below. All test agents
+                will be considered individually, and you do not need to fill out separate forms for
+                each nomination.
+              </p>
               <nomination-table
                 :fields="testAgentFields"
                 :rows="testAgents"
@@ -192,8 +197,8 @@
   import {
     INSTITUTION_TYPE_OPTIONS,
     DROPDOWN_NAME_TYPES,
-    COLLABORATOR_TYPE_OPTIONS,
   } from './nominations/institutionOptions.js';
+  import { testCollaborator, testAgents } from './nominations/testData.js';
   import {
     TEST_AGENT_FIELDS,
     TERMS_HTML,
@@ -218,7 +223,7 @@
     components: { NominationTable },
     data() {
       return {
-        isDev: import.meta.env.DEV,
+        isDev: false,
         openPanel: 0,
         steps: [
           { id: 'collaborator', title: 'Collaborator' },
@@ -301,44 +306,12 @@
       normalizeEmail,
       emptyTestAgent,
 
-      // Dev helper: populates all three steps with valid data (two test agents,
-      // one DMSO and one aqueous) and marks them complete so Submit is enabled.
-      // Uses a free-text institution type so it does not depend on the
-      // collaborator list having loaded.
+      // Dev helper: fills all steps from testData.js and marks them touched so the
+      // status badges show and Submit can be tested straight away.
       fillTestData() {
-        this.collaborator = {
-          name: 'Test Submitter',
-          email: 'test.submitter@example.org',
-          institutionType: COLLABORATOR_TYPE_OPTIONS.ACADEMIC.key,
-          institutionName: 'Example University',
-        };
-        this.testAgents = [
-          {
-            nominated_compound_name: 'Erlotinib',
-            pubchem_cid: '176870',
-            smiles_string: 'COCCOC1=C(C=C2C(=C1)C(=NC=N2)NC3=CC=CC(=C3)C#C)OCCOC',
-            can_provide_qc_agent: 'Yes',
-            vendor_ordering_info: 'N/A',
-            modality: 'Inhibitor',
-            drug_targets: 'EGFR',
-            test_agent_type: 'DMSO',
-            top_dose: '10',
-            top_dose_unit: 'uM',
-          },
-          {
-            nominated_compound_name: 'Gefitinib',
-            pubchem_cid: '',
-            smiles_string: 'COC1=C(C=C2C(=C1)N=CN=C2NC3=CC(=C(C=C3)F)Cl)OCCCN4CCOCC4',
-            can_provide_qc_agent: 'No',
-            vendor_ordering_info: 'Sigma Aldrich Cat# SML1657',
-            modality: 'Inhibitor',
-            drug_targets: 'EGFR; KRAS',
-            test_agent_type: 'Aqueous',
-            top_dose: '50',
-            top_dose_unit: 'ug/mL',
-          },
-        ];
-        this.touched = { collaborator: true, testAgent: true }; // show the green checks
+        this.collaborator = testCollaborator();
+        this.testAgents = testAgents();
+        this.touched = { collaborator: true, testAgent: true };
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.openPanel = this.steps.length - 1; // open the submit step
@@ -376,7 +349,8 @@
         // Touch both steps so every step's errors show, not just the first failing one.
         this.touched = { collaborator: true, testAgent: true };
         await this.ensureRDKit();
-        if (this.stepStatus.collaborator !== 'valid' || this.stepStatus.testAgent !== 'valid') return;
+        if (this.stepStatus.collaborator !== 'valid' || this.stepStatus.testAgent !== 'valid')
+          return;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.submitting = true;
@@ -421,7 +395,6 @@
 </script>
 
 <style scoped>
-
   /* v-html content is not scoped, so target the paragraphs via :deep */
   .terms-copy :deep(p) {
     margin-bottom: 12px;
