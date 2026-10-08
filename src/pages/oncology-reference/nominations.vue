@@ -2,7 +2,7 @@
   <page>
     <page-header background="multi-focal-cool">
       <template #title> Oncology Reference Nominations </template>
-      <p class="prism-text-body-large" style="max-width: 800px">
+      <p class="prism-text-body-large">
         Based on our in-process manuscript of creating a living resource of Oncology Reference test
         agents, we are accepting nominations to be included in this library. We will screen 150 test
         agents per year inclusive of small molecules, antibodies, andor ADC’s, in our PRISM cell set

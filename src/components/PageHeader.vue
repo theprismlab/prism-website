@@ -88,4 +88,15 @@
   .page-header :deep(h1.page-header__title--last) {
     margin-bottom: 0 !important;
   }
+
+  /* Lead copy keeps a readable measure (~65 characters) and stays flush with the
+     title's left edge; the space to the right is intentional. `ch` scales with
+     the paragraph's own font size, so it suits any text style passed in. */
+  .page-header :deep(p) {
+    max-width: 70ch;
+  }
+  /* A centred header (class="text-center") centres the measure under the title too. */
+  .page-header.text-center :deep(p) {
+    margin-inline: auto;
+  }
 </style>
