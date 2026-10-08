@@ -3,3 +3,5 @@ dist
 package-lock.json
 public/pdf.worker.min.js
 .idea
+# OncRef dataset (not for the repo)
+public/data/oncref/

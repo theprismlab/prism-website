@@ -1,7 +1,10 @@
 <template>
   <page>
-    <app-container narrow>
-      <prism-page-title>Frequently Asked Questions</prism-page-title>
+    <page-header narrow>
+      <template #title>Frequently Asked Questions</template>
+    </page-header>
+
+    <page-section width="narrow">
       <v-text-field
         v-model="searchQuery"
         placeholder="Search FAQs..."
@@ -61,7 +64,7 @@
       <div v-if="filteredFaqs.length === 0" class="prism-text-body-large py-8 text-center">
         {{ noResultsMessage }}
       </div>
-    </app-container>
+    </page-section>
   </page>
 </template>
 

@@ -1,0 +1,25 @@
+"Nominated Compound Name 
+
+Please use International Nonproprietary Names (INN) where available.",PubChem CID (if available),SMILE string,Are you able to provide PRISM with the already QC'd test agent should your nomination be selected?,"Provide a link or the vendor + catalog number from where the test agent can be ordered.
+
+If you are able to provide the test agent, put N/A",Modality,"Drug Target(s)
+
+Please use semicolon-separated HUGO gene names.","Test agent type: DMSO-soluble small molecule or aqueous test agent (including antibodies, ADCs, and cytokines) ","Top dose
+
+Top doses for DMSO-soluble must be provided in uM. For aqueous test agents, the top dose must be in uM or ug/mL.","Top dose unit
+
+Top doses for DMSO-soluble must be provided in uM. For aqueous test agents, the top dose must be in uM or ug/mL."
+Open text,Open text,Open text,"Dropdown: 
+-Yes
+-No",Open text,"Dropdown
+- Inhibitor
+- Degrader/glue
+- Activator/agonist
+- Biologic
+- Cytotoxic/genotoxic
+- Other",Open text,"Dropdown: 
+-DMSO
+-Aqueous",Number,"Dropdown: 
+-uM
+-ug/mL"
+,Validation --> PubChem CID or SMILE string required,,,,,,,,

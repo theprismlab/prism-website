@@ -1,7 +1,7 @@
 <template>
   <page>
-    <app-container narrow>
-      <prism-page-title>Cell line collection</prism-page-title>
+    <page-header narrow>
+      <template #title>Cell line collection</template>
       <p class="prism-text-body-large">
         Our cell line collection contains over 900 DNA barcoded cell lines that represent over 45
         major types of cancer and wide genomic diversity. Among them, our collection includes a
@@ -9,32 +9,28 @@
         lines. Our cell lines are our most important asset, and we therefore take great pride in the
         quality of our cell lines.
       </p>
-    </app-container>
+    </page-header>
 
-    <page-section>
-      <app-container wide>
-        <cell-line-stats />
-      </app-container>
+    <page-section width="wide">
+      <cell-line-stats />
     </page-section>
 
-    <page-section background="muted" :padding="10">
-      <app-container class="text-center">
-        <section-overline>Methodology</section-overline>
-        <prism-section-title>Cell line barcoding and pooling workflow</prism-section-title>
-        <p class="prism-text-body-large mx-auto mb-8" style="max-width: 560px">
-          Each cell line is individually DNA-barcoded, quality-controlled, and mixed by doubling
-          time into pools for use in high-throughput PRISM screens.
-        </p>
-        <v-img
-          eager
-          style="max-width: 800px; margin: auto"
-          :src="`${imgPath}img-kb-1.2-step-1.svg`"
-          alt="Cell line barcoding and pooling workflow diagram"
-        ></v-img>
-      </app-container>
+    <page-section width="default" background="muted" class="text-center">
+      <section-overline>Methodology</section-overline>
+      <prism-section-title>Cell line barcoding and pooling workflow</prism-section-title>
+      <p class="prism-text-body-large prism-measure-narrow mx-auto mb-8">
+        Each cell line is individually DNA-barcoded, quality-controlled, and mixed by doubling time
+        into pools for use in high-throughput PRISM screens.
+      </p>
+      <v-img
+        eager
+        style="max-width: 800px; margin: auto"
+        :src="`${imgPath}img-kb-1.2-step-1.svg`"
+        alt="Cell line barcoding and pooling workflow diagram"
+      ></v-img>
     </page-section>
 
-    <app-container narrow class="my-4">
+    <page-section width="narrow">
       <prism-section-title>All of our cell lines are:</prism-section-title>
       <v-list class="checklist-list">
         <v-list-item v-for="item in checklist" :key="item">
@@ -44,9 +40,9 @@
           <v-list-item-title class="text-wrap">{{ item }}</v-list-item-title>
         </v-list-item>
       </v-list>
-    </app-container>
+    </page-section>
 
-    <app-container narrow class="my-4">
+    <page-section width="narrow">
       <prism-section-title>Cell sets in PRISM screens</prism-section-title>
       <p class="prism-text-body-large">
         PRISM’s collection of over 900 cell lines is screened for all standard PRISM experiments and
@@ -83,7 +79,7 @@
           >PRISM barcoded cell lines</v-btn
         >
       </p>
-    </app-container>
+    </page-section>
   </page>
 </template>
 

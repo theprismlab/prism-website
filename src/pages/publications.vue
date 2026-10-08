@@ -1,10 +1,24 @@
 <template>
-  <page id="publication-page">
-    <app-container wide>
-      <prism-page-title>Publications</prism-page-title>
+  <page>
+    <page-header>
+      <template #title>Publications</template>
+      <!-- <ul v-if="typeCounts.length" class="publications-counts" aria-label="Publications by type">
+        <li v-for="count in typeCounts" :key="count.type" class="publications-counts__item">
+          <span class="publications-counts__dot" :style="{ backgroundColor: count.color }" />
+          <span class="publications-counts__value">{{ count.total }}</span>
+          <span class="publications-counts__label">{{ count.label }}</span>
+        </li>
+      </ul> -->
+    </page-header>
 
-      <h2 class="text-overline">Featured</h2>
-      <v-row justify="center" class="mb-12">
+    <!-- Bottom padding is trimmed because the explorer's sticky toolbar
+         carries its own top margin. -->
+    <page-section width="default" :padding-bottom="6">
+      <div class="featured-section__heading">
+        <section-overline gradient>Featured</section-overline>
+        <span class="featured-section__rule" aria-hidden="true" />
+      </div>
+      <v-row>
         <v-col v-for="card in featuredCards" :key="card.id" cols="12" md="4">
           <publication-card
             :item="card"
@@ -14,7 +28,7 @@
           />
         </v-col>
       </v-row>
-    </app-container>
+    </page-section>
 
     <publications-explorer :items="data" :type-styles="typeStyles" :get-links="getLinks" />
   </page>
@@ -71,6 +85,7 @@
       color: '#3f51b5',
       file: 'Website Content - 2025  - Publications.csv',
       idPrefix: 'publication',
+      pluralLabel: 'Publications',
       links: [{ field: 'link', label: 'Read Publication' }],
       parseRow: (d) => ({
         year: d.Year,
@@ -85,6 +100,7 @@
       color: '#8e24aa',
       file: 'Website Content - 2025  - White Papers.csv',
       idPrefix: 'white-paper',
+      pluralLabel: 'White papers',
       links: [
         { field: 'link', label: 'Read White Paper' },
         { field: 'portalLink', label: 'Explore Data', icon: 'mdi-chart-box-outline' },
@@ -105,6 +121,7 @@
       color: '#009688',
       file: 'Website Content - 2025  - Conference Abstracts.csv',
       idPrefix: 'conference',
+      pluralLabel: 'Conference abstracts',
       links: [
         { field: 'link', label: 'Read Abstract' },
         { field: 'posterLink', label: 'View Poster', icon: 'mdi-eye-outline' },
@@ -141,6 +158,17 @@
             const orderB = TYPE_CONFIG[b.type]?.order || 99;
             return orderA - orderB;
           });
+      },
+      typeCounts() {
+        return Object.entries(TYPE_CONFIG)
+          .sort(([, a], [, b]) => a.order - b.order)
+          .map(([type, cfg]) => ({
+            type,
+            color: cfg.color,
+            label: cfg.pluralLabel || type,
+            total: this.data.filter((d) => d.type === type).length,
+          }))
+          .filter((c) => c.total > 0);
       },
       typeStyles() {
         return Object.fromEntries(
@@ -187,10 +215,64 @@
 </script>
 
 <style scoped>
-  .publication-title {
+  .publications-lead {
+    max-width: 640px;
+    color: rgba(30, 34, 48, 0.78);
+    margin-bottom: 1.5rem;
+  }
+
+  /* ---------- Header: count-by-type row ---------- */
+  .publications-counts {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    padding: 0;
     margin: 0;
-    font-size: 1.25rem;
+  }
+
+  .publications-counts__item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .publications-counts__dot {
+    align-self: center;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .publications-counts__value {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: rgb(30, 34, 48);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .publications-counts__label {
+    font-size: 0.8rem;
     font-weight: 500;
-    color: rgb(23, 23, 23) !important;
+    letter-spacing: 0.02em;
+    color: rgba(30, 34, 48, 0.62);
+  }
+
+  /* ---------- Featured section ---------- */
+  .featured-section__heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .featured-section__rule {
+    flex: 1;
+    height: 1px;
+    background: rgba(30, 34, 48, 0.1);
   }
 </style>
