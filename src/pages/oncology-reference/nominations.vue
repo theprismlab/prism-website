@@ -175,7 +175,7 @@
 
 <script>
   import NominationTable from './nominations/NominationTable.vue';
-  import { getCollaboratorList } from '@/submissions/api.js';
+  import { getCollaboratorList } from '@/utils/api.js';
   import {
     INSTITUTION_TYPE_OPTIONS,
     DROPDOWN_NAME_TYPES,

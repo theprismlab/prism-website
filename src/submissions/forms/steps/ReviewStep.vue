@@ -130,7 +130,7 @@
   import { STEP_REGISTRY } from './registry';
   import { buildCompoundFields, buildCombinationFields } from './testAgentSchema.js';
   import { parseFormDataForApi } from './parseApiPayload.js';
-  import * as api from '@/submissions/api';
+  import * as api from '@/utils/api.js';
 
   export default {
     name: 'ReviewStep',
