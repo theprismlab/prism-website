@@ -93,7 +93,7 @@
      title's left edge; the space to the right is intentional. `ch` scales with
      the paragraph's own font size, so it suits any text style passed in. */
   .page-header :deep(p) {
-    max-width: 70ch;
+    max-width: var(--prism-measure); /* defined in styles/main.scss */
   }
   /* A centred header (class="text-center") centres the measure under the title too. */
   .page-header.text-center :deep(p) {

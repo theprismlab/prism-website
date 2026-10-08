@@ -90,7 +90,7 @@
       <prism-section-title>
         The PRISM platform: multiplexed cancer drug screening at scale
       </prism-section-title>
-      <p class="prism-text-body-large mb-10" style="max-width: 760px">
+      <p class="prism-text-body-large prism-measure mb-10">
         OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
         high-throughput multiplexed viability screening platform developed at the
         <a href="https://www.broadinstitute.org/" target="_blank" rel="noopener">Broad Institute</a
@@ -133,7 +133,7 @@
       <div class="text-center">
         <section-overline gradient>Dataset overview</section-overline>
         <prism-section-title>Lineage and subtype breakdown</prism-section-title>
-        <p class="prism-text-body-large mx-auto mb-8" style="max-width: 560px">
+        <p class="prism-text-body-large prism-measure-narrow mx-auto mb-8">
           The OncRef Compounds dataset spans a broad range of cancer lineages and molecular subtypes
           profiled across the PRISM cell line collection.
         </p>

@@ -14,7 +14,7 @@
     </page-section>
 
     <page-section width="wide">
-      <p class="prism-text-body-large" style="max-width: 720px; margin: auto">
+      <p class="prism-text-body-large prism-measure prism-measure--center">
         Cancer cell line models remain essential in drug development, providing a controlled system
         to assess potency and confirm on-target engagement. At a larger scale using PRISM, these
         models provide power to
@@ -38,7 +38,7 @@
       <h3 class="prism-text-display-large mb-8 text-center">
         Dedicated to advancing oncology research
       </h3>
-      <p class="prism-text-body-large text-center" style="max-width: 720px; margin: auto">
+      <p class="prism-text-body-large text-center prism-measure prism-measure--center">
         Working with pharmaceutical and biotech companies and academics to improve the outcome for
         cancer patients worldwide.
       </p>
@@ -53,7 +53,6 @@
   </page>
 </template>
 <script>
-  import SvgIcon from '@jamescoyle/vue-icon';
   import HomeHero from '@/pages/index/HomeHero.vue';
   import { ASSET_BASE } from '@/utils/assets';
   import HomeOverviewCards from '@/pages/index/HomeOverviewCards.vue';
@@ -62,23 +61,11 @@
   import HomePortal from '@/pages/index/HomePortal.vue';
   export default {
     components: {
-      SvgIcon,
       HomeHero,
       HomePortal,
       HomeOverviewCards,
       HomeTestimonialCards,
       HomeImpactCards,
-    },
-    data() {
-      return {
-        resizeCounter: 0,
-      };
-    },
-    created() {
-      window.addEventListener('resize', this.debounce(this.onWindowResize));
-    },
-    destroyed() {
-      window.removeEventListener('resize', this.onWindowResize);
     },
     computed: {
       imgPath() {
@@ -88,18 +75,5 @@
         return this.$vuetify.display.mobile;
       },
     },
-    methods: {
-      debounce(func) {
-        var timer;
-        return function (event) {
-          if (timer) clearTimeout(timer);
-          timer = setTimeout(func, 100, event);
-        };
-      },
-      onWindowResize() {
-        this.resizeCounter++;
-      },
-    },
-    watch: {},
   };
 </script>

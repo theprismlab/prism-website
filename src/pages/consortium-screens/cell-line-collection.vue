@@ -18,7 +18,7 @@
     <page-section width="default" background="muted" class="text-center">
       <section-overline>Methodology</section-overline>
       <prism-section-title>Cell line barcoding and pooling workflow</prism-section-title>
-      <p class="prism-text-body-large mx-auto mb-8" style="max-width: 560px">
+      <p class="prism-text-body-large prism-measure-narrow mx-auto mb-8">
         Each cell line is individually DNA-barcoded, quality-controlled, and mixed by doubling time
         into pools for use in high-throughput PRISM screens.
       </p>

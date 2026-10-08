@@ -3,6 +3,26 @@
   color: var(--base-color-gray--900);
 }
 
+// ── Reading measure ────────────────────────────────────────────────
+// Line length for prose. `ch` scales with the element's own font size, so one
+// value suits every text style. Opt-in: apply to a prose paragraph in a
+// `default`/`wide` section. Text-heavy sections should use width="narrow"
+// instead, which caps the whole column. Never apply inside cards or columns.
+:root {
+  --prism-measure: 70ch; // ~60-75 characters: comfortable body copy
+  --prism-measure-narrow: 55ch; // short centred ledes / subtitles under a section title
+}
+.prism-measure {
+  max-width: var(--prism-measure);
+}
+.prism-measure-narrow {
+  max-width: var(--prism-measure-narrow);
+}
+// Centre the block under a centred heading (text alignment is separate: add text-center if wanted).
+.prism-measure--center {
+  margin-inline: auto;
+}
+
 .v-container {
   width: 100% !important;
   max-width: var(--container-md-max-width) !important;
