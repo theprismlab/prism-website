@@ -155,9 +155,6 @@
         </v-btn>
       </div>
 
-      <v-alert v-if="submittedPayload" type="success" variant="tonal" class="mt-6">
-        Nomination ready to send. Payload logged to the console.
-      </v-alert>
       <v-alert v-if="schemaUnavailable" type="warning" variant="tonal" class="mt-6">
         {{ SCHEMA_UNAVAILABLE }}
       </v-alert>
@@ -170,6 +167,23 @@
         </ul>
       </v-alert>
     </page-section>
+
+    <!-- Result of the API post. Persistent so the user has to acknowledge it;
+         closing a success dialog resets the form for a fresh nomination. -->
+    <v-dialog v-model="showDialog" max-width="480" persistent>
+      <v-card>
+        <v-card-title class="d-flex align-center ga-2">
+          <v-icon :color="dialogSuccess ? 'teal-accent-4' : 'error'">
+            {{ dialogSuccess ? 'mdi-check-circle' : 'mdi-alert-circle' }}
+          </v-icon>
+          {{ dialog.title }}
+        </v-card-title>
+        <v-card-text>{{ dialog.body }}</v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn variant="text" @click="closeDialog">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </page>
 </template>
 
@@ -225,11 +239,15 @@
         termsAccepted: TERMS.map(() => false),
 
         errors: { collaborator: {}, testAgents: [], terms: '' },
-        submittedPayload: null,
         schemaErrors: [], // from the remote JSON schema check at submit
         schemaUnavailable: false, // schema could not be loaded at all
         SCHEMA_UNAVAILABLE,
         submitting: false,
+
+        // Post result dialog
+        showDialog: false,
+        dialogSuccess: false,
+        dialog: { title: '', body: '' },
       };
     },
     computed: {
@@ -305,10 +323,22 @@
         this.termsAccepted = TERMS.map(() => true);
         this.errors = { collaborator: {}, testAgents: [], terms: '' };
         this.completed = { collaborator: true, testAgent: true, terms: true };
-        this.submittedPayload = null;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.openPanel = null;
+      },
+
+      // Returns every step to its initial, empty state (used after a successful post).
+      resetForm() {
+        this.collaborator = emptyCollaborator();
+        this.testAgents = [emptyTestAgent()];
+        this.testAgentsSubmitted = 0;
+        this.termsAccepted = TERMS.map(() => false);
+        this.errors = { collaborator: {}, testAgents: [], terms: '' };
+        this.completed = { collaborator: false, testAgent: false, terms: false };
+        this.schemaErrors = [];
+        this.schemaUnavailable = false;
+        this.openPanel = 0;
       },
 
       // ---- Per-step validation: store errors, return true when the step is valid. ----
@@ -353,7 +383,6 @@
         const testAgentsOk = await this.validateTestAgents();
         const termsOk = this.validateTerms();
         if (!collaboratorOk || !testAgentsOk || !termsOk) return;
-        this.submittedPayload = null;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.submitting = true;
@@ -362,15 +391,37 @@
           const payload = buildPayload(this.collaborator, this.testAgents);
           const { valid, errors, unavailable } = await validateNominationPayload(payload);
           if (!valid) {
+            // Schema problems stay inline (per-row list) rather than in the dialog.
             this.schemaUnavailable = unavailable;
             this.schemaErrors = errors;
             return;
           }
-          this.submittedPayload = payload;
           await postNominations(API_URL, payload);
+          this.dialogSuccess = true;
+          this.dialog = {
+            title: 'Nomination submitted',
+            body: `Your nomination of ${payload.length} test agent${payload.length === 1 ? '' : 's'} has been received. You will receive an email confirmation shortly.`,
+          };
+          this.showDialog = true;
+        } catch (error) {
+          console.error('Nomination post failed', error, error.response?.data);
+          this.dialogSuccess = false;
+          this.dialog = {
+            title: 'Submission failed',
+            body:
+              error.response?.data?.message ??
+              error.response?.data?.error?.message ??
+              'There was an error submitting your nomination. Please try again later.',
+          };
+          this.showDialog = true;
         } finally {
           this.submitting = false;
         }
+      },
+
+      closeDialog() {
+        this.showDialog = false;
+        if (this.dialogSuccess) this.resetForm();
       },
     },
   };
