@@ -26,35 +26,14 @@
       </div>
 
       <prism-expansion-panels v-model="openPanel">
-        <v-expansion-panel
-          v-for="(step, i) in steps"
-          :key="step.id"
-          :value="i"
-          :disabled="isLocked(i)"
-          :class="{ 'is-completed': completed[step.id] }"
-        >
+        <v-expansion-panel v-for="(step, i) in steps" :key="step.id" :value="i">
           <v-expansion-panel-title>
             <v-icon
-              v-if="completed[step.id]"
-              class="step-icon mr-2"
-              color="teal-accent-4"
-              size="26"
-            >
-              mdi-check-circle
-            </v-icon>
-            <v-icon
-              v-else
               class="step-number mr-2"
               size="26"
               :icon="`mdi-numeric-${i + 1}-circle-outline`"
             />
             <span>{{ step.title }}</span>
-            <v-icon
-              v-if="isLocked(i)"
-              class="step-lock ml-auto"
-              size="20"
-              icon="mdi-lock-outline"
-            />
           </v-expansion-panel-title>
 
           <v-expansion-panel-text>
@@ -215,7 +194,6 @@
           { id: 'testAgent', title: 'Test Agent' },
           { id: 'terms', title: 'Confirm & Submit' },
         ],
-        completed: { collaborator: false, testAgent: false, terms: false },
 
         // Step 1
         collaborator: emptyCollaborator(),
@@ -268,9 +246,6 @@
     methods: {
       normalizeEmail,
       emptyTestAgent,
-      isLocked(i) {
-        return i > 0 && !this.completed[this.steps[i - 1].id];
-      },
 
       // Dev helper: populates all three steps with valid data (two test agents,
       // one DMSO and one aqueous) and marks them complete so Submit is enabled.
@@ -310,7 +285,6 @@
           },
         ];
         this.errors = { collaborator: {}, testAgents: [] };
-        this.completed = { collaborator: true, testAgent: true, terms: true };
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.openPanel = this.steps.length - 1; // open the submit step
@@ -322,7 +296,6 @@
         this.testAgents = [emptyTestAgent()];
         this.testAgentsSubmitted = 0;
         this.errors = { collaborator: {}, testAgents: [] };
-        this.completed = { collaborator: false, testAgent: false, terms: false };
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.openPanel = 0;
@@ -354,7 +327,6 @@
           testAgent: this.validateTestAgents,
         };
         if (!(await validators[id]())) return;
-        this.completed[id] = true;
         this.openPanel = i + 1 < this.steps.length ? i + 1 : null;
       },
 
