@@ -1,3 +1,6 @@
+// REMOTE schema validator. Drop-in alternative to validateBundled.js (same
+// exports), chosen by the import in nominations.vue.
+//
 // Submit-time gate: validates each nomination entry against the remote JSON schema.
 // The inline validators in nominationSchema.js give per-cell feedback; this
 // confirms the final payload matches what the backend accepts.

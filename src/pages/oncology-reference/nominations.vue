@@ -207,9 +207,14 @@
     hasNoErrors,
     buildPayload,
   } from './nominations/nominationSchema.js';
-  import { validateNominationPayload, SCHEMA_UNAVAILABLE } from './nominations/ajv.js';
   import { loadRDKit } from './nominations/smiles.js';
+  // Schema validator: both files export the same API. Using the bundled copy while
+  // assets.clue.io blocks CORS; swap to ajv.js (remote fetch) once that is fixed.
+  import { validateNominationPayload, SCHEMA_UNAVAILABLE } from './nominations/validateBundled.js';
+  // import { validateNominationPayload, SCHEMA_UNAVAILABLE } from './nominations/ajv.js';
+
   const API_URL = import.meta.env.VITE_API_URL;
+
   export default {
     name: 'OncologyReferenceNominations',
     components: { NominationTable },
@@ -239,8 +244,8 @@
         termsAccepted: TERMS.map(() => false),
 
         errors: { collaborator: {}, testAgents: [], terms: '' },
-        schemaErrors: [], // from the remote JSON schema check at submit
-        schemaUnavailable: false, // schema could not be loaded at all
+        schemaErrors: [], // from the JSON schema check at submit
+        schemaUnavailable: false, // schema could not be loaded at all (remote validator only)
         SCHEMA_UNAVAILABLE,
         submitting: false,
 
@@ -418,7 +423,6 @@
           this.submitting = false;
         }
       },
-
       closeDialog() {
         this.showDialog = false;
         if (this.dialogSuccess) this.resetForm();

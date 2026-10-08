@@ -1,6 +1,6 @@
 // OncRef nomination form schema: field definitions, validators, and payload shape.
 // Pure JS — no Vue dependencies — so it can be unit tested and kept in sync with
-// the remote JSON schema used by ajv.js.
+// the JSON schema used by ajv.js / validateBundled.js.
 //
 // Column details, dropdown options and rules come from the nomination form CSV
 // in this folder. Payload keys match example-payload.json.
