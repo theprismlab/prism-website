@@ -99,11 +99,16 @@
       return { submittedRows: [] };
     },
     watch: {
-      submitted(val) {
-        if (val > 0)
-          this.rows.forEach((r) => {
-            if (!this.submittedRows.includes(r)) this.submittedRows.push(r);
-          });
+      // `immediate` so a table mounted after a submit (the panel renders lazily)
+      // still marks its current rows.
+      submitted: {
+        immediate: true,
+        handler(val) {
+          if (val > 0)
+            this.rows.forEach((r) => {
+              if (!this.submittedRows.includes(r)) this.submittedRows.push(r);
+            });
+        },
       },
     },
     methods: {

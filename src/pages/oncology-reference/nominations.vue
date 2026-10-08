@@ -101,9 +101,6 @@
                 @add-row="testAgents.push(emptyTestAgent())"
                 @remove-row="(i) => testAgents.splice(i, 1)"
               />
-              <p v-if="errors.noTestAgents" class="text-error text-caption mt-2">
-                {{ errors.noTestAgents }}
-              </p>
             </div>
 
             <!-- Step 3: Confirm & Submit (read-only terms; the submit button lives here) -->
@@ -174,8 +171,6 @@
     TERMS_HTML,
     emptyCollaborator,
     emptyTestAgent,
-    isBlankTestAgent,
-    NO_TEST_AGENTS_ERROR,
     normalizeEmail,
     validateCollaborator,
     validateTestAgents,
@@ -216,7 +211,7 @@
         // Step 3
         termsHtml: TERMS_HTML,
 
-        errors: { collaborator: {}, testAgents: [], noTestAgents: '' },
+        errors: { collaborator: {}, testAgents: [] },
         submitAttempted: false, // gates the "Error" label in step titles
         schemaErrors: [], // from the JSON schema check at submit
         schemaUnavailable: false, // schema could not be loaded at all (remote validator only)
@@ -248,7 +243,7 @@
       stepHasErrors() {
         return {
           collaborator: !hasNoErrors(this.errors.collaborator),
-          testAgent: !!this.errors.noTestAgents || !this.errors.testAgents.every(hasNoErrors),
+          testAgent: !this.errors.testAgents.every(hasNoErrors),
           terms: false,
         };
       },
@@ -302,7 +297,7 @@
             top_dose_unit: 'ug/mL',
           },
         ];
-        this.errors = { collaborator: {}, testAgents: [], noTestAgents: '' };
+        this.errors = { collaborator: {}, testAgents: [] };
         this.submitAttempted = false;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
@@ -314,7 +309,7 @@
         this.collaborator = emptyCollaborator();
         this.testAgents = [emptyTestAgent()];
         this.testAgentsSubmitted = 0;
-        this.errors = { collaborator: {}, testAgents: [], noTestAgents: '' };
+        this.errors = { collaborator: {}, testAgents: [] };
         this.submitAttempted = false;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
@@ -329,13 +324,8 @@
       async validateTestAgents() {
         await this.ensureRDKit(); // SMILES check needs RDKit loaded
         this.testAgentsSubmitted++;
-        // All rows blank → one table-level message instead of "Required" in every cell.
-        const allBlank = this.testAgents.every(isBlankTestAgent);
-        this.errors.noTestAgents = allBlank ? NO_TEST_AGENTS_ERROR : '';
-        this.errors.testAgents = allBlank
-          ? this.testAgents.map(() => ({}))
-          : validateTestAgents(this.testAgents);
-        return !allBlank && this.errors.testAgents.every(hasNoErrors);
+        this.errors.testAgents = validateTestAgents(this.testAgents);
+        return this.errors.testAgents.every(hasNoErrors);
       },
       async ensureRDKit() {
         try {

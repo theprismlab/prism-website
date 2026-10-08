@@ -143,12 +143,6 @@ export const TEST_AGENT_FIELDS = [
 
 export const emptyTestAgent = () => Object.fromEntries(TEST_AGENT_FIELDS.map((f) => [f.key, '']));
 
-// True when no field in the row has a value (the user has not started it).
-export const isBlankTestAgent = (row) =>
-  TEST_AGENT_FIELDS.every((f) => !String(row[f.key] ?? '').trim());
-
-export const NO_TEST_AGENTS_ERROR = 'At least 1 test agent must be entered';
-
 // Returns one { field: errorString | undefined } object per row (shape NominationTable expects).
 export function validateTestAgents(rows) {
   return rows.map((row) =>
