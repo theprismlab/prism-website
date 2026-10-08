@@ -34,6 +34,9 @@
               :icon="`mdi-numeric-${i + 1}-circle-outline`"
             />
             <span>{{ step.title }}</span>
+            <span v-if="submitAttempted && stepHasErrors[step.id]" class="step-error ml-auto mr-2">
+              Error
+            </span>
           </v-expansion-panel-title>
 
           <v-expansion-panel-text>
@@ -98,6 +101,9 @@
                 @add-row="testAgents.push(emptyTestAgent())"
                 @remove-row="(i) => testAgents.splice(i, 1)"
               />
+              <p v-if="errors.noTestAgents" class="text-error text-caption mt-2">
+                {{ errors.noTestAgents }}
+              </p>
             </div>
 
             <!-- Step 3: Confirm & Submit (read-only terms; the submit button lives here) -->
@@ -168,6 +174,8 @@
     TERMS_HTML,
     emptyCollaborator,
     emptyTestAgent,
+    isBlankTestAgent,
+    NO_TEST_AGENTS_ERROR,
     normalizeEmail,
     validateCollaborator,
     validateTestAgents,
@@ -208,7 +216,8 @@
         // Step 3
         termsHtml: TERMS_HTML,
 
-        errors: { collaborator: {}, testAgents: [] },
+        errors: { collaborator: {}, testAgents: [], noTestAgents: '' },
+        submitAttempted: false, // gates the "Error" label in step titles
         schemaErrors: [], // from the JSON schema check at submit
         schemaUnavailable: false, // schema could not be loaded at all (remote validator only)
         SCHEMA_UNAVAILABLE,
@@ -233,6 +242,15 @@
           )
           .map((i) => i.name)
           .sort((a, b) => a.localeCompare(b));
+      },
+      // Per-step flag from the stored errors (set by the validators on Continue/Submit).
+      // The last step has nothing to validate, so it is never flagged.
+      stepHasErrors() {
+        return {
+          collaborator: !hasNoErrors(this.errors.collaborator),
+          testAgent: !!this.errors.noTestAgents || !this.errors.testAgents.every(hasNoErrors),
+          terms: false,
+        };
       },
     },
     async created() {
@@ -284,7 +302,8 @@
             top_dose_unit: 'ug/mL',
           },
         ];
-        this.errors = { collaborator: {}, testAgents: [] };
+        this.errors = { collaborator: {}, testAgents: [], noTestAgents: '' };
+        this.submitAttempted = false;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.openPanel = this.steps.length - 1; // open the submit step
@@ -295,7 +314,8 @@
         this.collaborator = emptyCollaborator();
         this.testAgents = [emptyTestAgent()];
         this.testAgentsSubmitted = 0;
-        this.errors = { collaborator: {}, testAgents: [] };
+        this.errors = { collaborator: {}, testAgents: [], noTestAgents: '' };
+        this.submitAttempted = false;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.openPanel = 0;
@@ -309,8 +329,13 @@
       async validateTestAgents() {
         await this.ensureRDKit(); // SMILES check needs RDKit loaded
         this.testAgentsSubmitted++;
-        this.errors.testAgents = validateTestAgents(this.testAgents);
-        return this.errors.testAgents.every(hasNoErrors);
+        // All rows blank → one table-level message instead of "Required" in every cell.
+        const allBlank = this.testAgents.every(isBlankTestAgent);
+        this.errors.noTestAgents = allBlank ? NO_TEST_AGENTS_ERROR : '';
+        this.errors.testAgents = allBlank
+          ? this.testAgents.map(() => ({}))
+          : validateTestAgents(this.testAgents);
+        return !allBlank && this.errors.testAgents.every(hasNoErrors);
       },
       async ensureRDKit() {
         try {
@@ -334,6 +359,7 @@
         // Run both so every step's errors show, not just the first failing one.
         const collaboratorOk = this.validateCollaborator();
         const testAgentsOk = await this.validateTestAgents();
+        this.submitAttempted = true;
         if (!collaboratorOk || !testAgentsOk) return;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
@@ -379,6 +405,12 @@
 </script>
 
 <style scoped>
+  .step-error {
+    color: rgb(var(--v-theme-error));
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
   /* v-html content is not scoped, so target the paragraphs via :deep */
   .terms-copy :deep(p) {
     margin-bottom: 12px;
