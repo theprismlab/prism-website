@@ -1,7 +1,7 @@
 <template>
   <page>
     <page-header background="multi-focal-cool">
-      <template #title>Oncology Reference Nomination</template>
+      <template #title>Oncology Reference Nominations</template>
       <p class="prism-text-body-large">Blah blah blah.</p>
     </page-header>
 
@@ -121,51 +121,40 @@
               />
             </div>
 
-            <!-- Step 3: Terms & conditions -->
+            <!-- Step 3: Confirm & Submit (read-only terms; the submit button lives here) -->
             <div v-else-if="step.id === 'terms'" class="mt-2">
-              <v-checkbox
-                v-for="(term, t) in terms"
-                :key="t"
-                v-model="termsAccepted[t]"
-                :label="term"
-                hide-details
-                density="comfortable"
-              />
-              <p v-if="errors.terms" class="text-error text-caption mt-2">{{ errors.terms }}</p>
+              <!-- eslint-disable-next-line vue/no-v-html -- static copy from nominationSchema.js, not user input -->
+              <div class="terms-copy" v-html="termsHtml" />
+
+              <v-alert v-if="schemaUnavailable" type="warning" variant="tonal" class="mt-4">
+                {{ SCHEMA_UNAVAILABLE }}
+              </v-alert>
+              <v-alert v-else-if="schemaErrors.length" type="error" variant="tonal" class="mt-4">
+                <p class="mb-2">The nomination did not pass schema validation:</p>
+                <ul class="pl-4">
+                  <li v-for="e in schemaErrors" :key="e.row">
+                    Test agent {{ e.row + 1 }}: {{ e.errors.join('; ') }}
+                  </li>
+                </ul>
+              </v-alert>
             </div>
 
+            <!-- Last step submits; earlier steps validate and advance. -->
             <div class="d-flex justify-end mt-4">
-              <v-btn color="primary" variant="flat" @click="finishStep(i)">
-                {{ i === steps.length - 1 ? 'Done' : 'Continue' }}
+              <v-btn
+                v-if="i === steps.length - 1"
+                color="primary"
+                size="large"
+                :loading="submitting"
+                @click="submit"
+              >
+                Submit nomination
               </v-btn>
+              <v-btn v-else color="primary" variant="flat" @click="finishStep(i)">Continue</v-btn>
             </div>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </prism-expansion-panels>
-
-      <div class="d-flex justify-end mt-6">
-        <v-btn
-          color="primary"
-          size="large"
-          :disabled="!allCompleted"
-          :loading="submitting"
-          @click="submit"
-        >
-          Submit nomination
-        </v-btn>
-      </div>
-
-      <v-alert v-if="schemaUnavailable" type="warning" variant="tonal" class="mt-6">
-        {{ SCHEMA_UNAVAILABLE }}
-      </v-alert>
-      <v-alert v-else-if="schemaErrors.length" type="error" variant="tonal" class="mt-6">
-        <p class="mb-2">The nomination did not pass schema validation:</p>
-        <ul class="pl-4">
-          <li v-for="e in schemaErrors" :key="e.row">
-            Test agent {{ e.row + 1 }}: {{ e.errors.join('; ') }}
-          </li>
-        </ul>
-      </v-alert>
     </page-section>
 
     <!-- Result of the API post. Persistent so the user has to acknowledge it;
@@ -197,8 +186,7 @@
   } from './nominations/institutionOptions.js';
   import {
     TEST_AGENT_FIELDS,
-    TERMS,
-    TERMS_ERROR,
+    TERMS_HTML,
     emptyCollaborator,
     emptyTestAgent,
     normalizeEmail,
@@ -225,7 +213,7 @@
         steps: [
           { id: 'collaborator', title: 'Collaborator' },
           { id: 'testAgent', title: 'Test Agent' },
-          { id: 'terms', title: 'Terms & Conditions' },
+          { id: 'terms', title: 'Confirm & Submit' },
         ],
         completed: { collaborator: false, testAgent: false, terms: false },
 
@@ -240,10 +228,9 @@
         testAgentsSubmitted: 0, // NominationTable only shows errors after this increments
 
         // Step 3
-        terms: TERMS,
-        termsAccepted: TERMS.map(() => false),
+        termsHtml: TERMS_HTML,
 
-        errors: { collaborator: {}, testAgents: [], terms: '' },
+        errors: { collaborator: {}, testAgents: [] },
         schemaErrors: [], // from the JSON schema check at submit
         schemaUnavailable: false, // schema could not be loaded at all (remote validator only)
         SCHEMA_UNAVAILABLE,
@@ -268,9 +255,6 @@
           )
           .map((i) => i.name)
           .sort((a, b) => a.localeCompare(b));
-      },
-      allCompleted() {
-        return Object.values(this.completed).every(Boolean);
       },
     },
     async created() {
@@ -325,12 +309,11 @@
             top_dose_unit: 'ug/mL',
           },
         ];
-        this.termsAccepted = TERMS.map(() => true);
-        this.errors = { collaborator: {}, testAgents: [], terms: '' };
+        this.errors = { collaborator: {}, testAgents: [] };
         this.completed = { collaborator: true, testAgent: true, terms: true };
         this.schemaErrors = [];
         this.schemaUnavailable = false;
-        this.openPanel = null;
+        this.openPanel = this.steps.length - 1; // open the submit step
       },
 
       // Returns every step to its initial, empty state (used after a successful post).
@@ -338,8 +321,7 @@
         this.collaborator = emptyCollaborator();
         this.testAgents = [emptyTestAgent()];
         this.testAgentsSubmitted = 0;
-        this.termsAccepted = TERMS.map(() => false);
-        this.errors = { collaborator: {}, testAgents: [], terms: '' };
+        this.errors = { collaborator: {}, testAgents: [] };
         this.completed = { collaborator: false, testAgent: false, terms: false };
         this.schemaErrors = [];
         this.schemaUnavailable = false;
@@ -364,18 +346,12 @@
           console.warn('RDKit failed to load; SMILES syntax will not be checked', error);
         }
       },
-      validateTerms() {
-        const ok = this.termsAccepted.every(Boolean);
-        this.errors.terms = ok ? '' : TERMS_ERROR;
-        return ok;
-      },
-
+      // Continue on steps 1 and 2. The last step has no validator; it submits.
       async finishStep(i) {
         const id = this.steps[i].id;
         const validators = {
           collaborator: this.validateCollaborator,
           testAgent: this.validateTestAgents,
-          terms: this.validateTerms,
         };
         if (!(await validators[id]())) return;
         this.completed[id] = true;
@@ -383,11 +359,10 @@
       },
 
       async submit() {
-        // Run all three so every step's errors show, not just the first failing one.
+        // Run both so every step's errors show, not just the first failing one.
         const collaboratorOk = this.validateCollaborator();
         const testAgentsOk = await this.validateTestAgents();
-        const termsOk = this.validateTerms();
-        if (!collaboratorOk || !testAgentsOk || !termsOk) return;
+        if (!collaboratorOk || !testAgentsOk) return;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.submitting = true;
@@ -432,6 +407,11 @@
 </script>
 
 <style scoped>
+  /* v-html content is not scoped, so target the paragraphs via :deep */
+  .terms-copy :deep(p) {
+    margin-bottom: 12px;
+  }
+
   /* xs */
   @media (max-width: 600px) {
   }

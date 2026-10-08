@@ -152,14 +152,21 @@ export function validateTestAgents(rows) {
   );
 }
 
-// ---- Step 3: terms the nominator must accept ----
-export const TERMS = [
-  'I confirm the nominated test agent(s) are not subject to third-party restrictions that would prevent screening.',
-  'I agree to provide the test agent(s) in the quantity and format requested by PRISM.',
-  'I understand that screening results may be shared publicly as part of the OncRef dataset.',
-];
-
-export const TERMS_ERROR = 'Please accept all terms to continue.';
+// ---- Step 3: terms shown to the nominator ----
+// Rendered with v-html in nominations.vue, so this is trusted markup authored
+// here, never user input. Edit the copy freely; keep it to simple tags.
+export const TERMS_HTML = `
+  <p>Nominating a test agent does not guarantee its inclusion in any OncRef screens.
+<br><br>
+PRISM will only contact you if your nomination was selected. The selection process may take over one year depending upon screening bandwidth and test agent availability.
+<br><br>
+If your nomination is selected and screened, it may take several years before the data becomes publicly available due to the funding source used for this data. Please note that your institution will not hold ownership of any data generated as part of an OncRef screen.
+<br><br>
+Additionally, while your institution is not responsible for screening costs or the shipment of selected test agents, test agents that are cost-prohibitive may not be screened unless you are able to QC and provide them.
+<br><br>
+By clicking Submit, you are acknowledging the terms above.
+</p>
+`;
 
 // ---- Helpers ----
 export const hasNoErrors = (errors) => Object.values(errors).every((e) => !e);
