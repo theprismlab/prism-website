@@ -1,4 +1,4 @@
-// Submit-time gate: validates each test agent against the remote JSON schema.
+// Submit-time gate: validates each nomination entry against the remote JSON schema.
 // The inline validators in nominationSchema.js give per-cell feedback; this
 // confirms the final payload matches what the backend accepts.
 //
@@ -76,13 +76,15 @@ async function getValidator() {
 const formatError = (e) => `${e.dataPath || '(row)'} ${e.message}`.trim();
 
 /**
- * Validates one test agent object (an entry of payload.test_agents).
+ * Validates one nomination object (one entry of the payload array: submitter
+ * fields plus one test agent). The schema accepts a single object or an array;
+ * entries are checked one at a time so errors can be attributed to a row.
  * Returns { valid: boolean, errors: string[] | null }.
  */
-export async function validateTestAgentPayload(testAgent) {
+export async function validateNominationEntry(nomination) {
   try {
     const validate = await getValidator();
-    if (validate(testAgent)) return { valid: true, errors: null };
+    if (validate(nomination)) return { valid: true, errors: null };
     return { valid: false, errors: validate.errors.map(formatError) };
   } catch (error) {
     return { valid: false, errors: [error.message] };
@@ -90,13 +92,13 @@ export async function validateTestAgentPayload(testAgent) {
 }
 
 /**
- * Validates every test agent in the payload.
+ * Validates every entry of the payload array (one per test agent).
  * Returns { valid, errors: { row, errors }[], unavailable }.
  * `unavailable` is true when the schema itself could not be loaded, so the
  * caller can show a connection message instead of per-row errors.
  */
 export async function validateNominationPayload(payload) {
-  const results = await Promise.all(payload.test_agents.map(validateTestAgentPayload));
+  const results = await Promise.all(payload.map(validateNominationEntry));
   const errors = results.map((r, row) => ({ row, errors: r.errors })).filter((r) => r.errors);
   const unavailable = errors.some((r) => r.errors.includes(SCHEMA_UNAVAILABLE));
   return { valid: errors.length === 0, errors, unavailable };

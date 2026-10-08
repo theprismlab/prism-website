@@ -12,6 +12,19 @@
         Placeholder copy describing the nomination process.
       </p>
 
+      <!-- Dev only: fills every step with valid sample data so the submit flow can be tested quickly. -->
+      <div v-if="isDev" class="d-flex justify-end mb-2">
+        <v-btn
+          size="small"
+          variant="tonal"
+          color="secondary"
+          prepend-icon="mdi-flask-outline"
+          @click="fillTestData"
+        >
+          Fill with test data
+        </v-btn>
+      </div>
+
       <prism-expansion-panels v-model="openPanel">
         <v-expansion-panel
           v-for="(step, i) in steps"
@@ -166,6 +179,7 @@
   import {
     INSTITUTION_TYPE_OPTIONS,
     DROPDOWN_NAME_TYPES,
+    COLLABORATOR_TYPE_OPTIONS,
   } from './nominations/institutionOptions.js';
   import {
     TEST_AGENT_FIELDS,
@@ -187,6 +201,7 @@
     components: { NominationTable },
     data() {
       return {
+        isDev: import.meta.env.DEV,
         openPanel: 0,
         steps: [
           { id: 'collaborator', title: 'Collaborator' },
@@ -250,6 +265,52 @@
         return i > 0 && !this.completed[this.steps[i - 1].id];
       },
 
+      // Dev helper: populates all three steps with valid data (two test agents,
+      // one DMSO and one aqueous) and marks them complete so Submit is enabled.
+      // Uses a free-text institution type so it does not depend on the
+      // collaborator list having loaded.
+      fillTestData() {
+        this.collaborator = {
+          name: 'Test Submitter',
+          email: 'test.submitter@example.org',
+          institutionType: COLLABORATOR_TYPE_OPTIONS.ACADEMIC.key,
+          institutionName: 'Example University',
+        };
+        this.testAgents = [
+          {
+            nominated_compound_name: 'Erlotinib',
+            pubchem_cid: '176870',
+            smiles_string: 'COCCOC1=C(C=C2C(=C1)C(=NC=N2)NC3=CC=CC(=C3)C#C)OCCOC',
+            can_provide_qc_agent: 'Yes',
+            vendor_ordering_info: 'N/A',
+            modality: 'Inhibitor',
+            drug_targets: 'EGFR',
+            test_agent_type: 'DMSO',
+            top_dose: '10',
+            top_dose_unit: 'uM',
+          },
+          {
+            nominated_compound_name: 'Gefitinib',
+            pubchem_cid: '',
+            smiles_string: 'COC1=C(C=C2C(=C1)N=CN=C2NC3=CC(=C(C=C3)F)Cl)OCCCN4CCOCC4',
+            can_provide_qc_agent: 'No',
+            vendor_ordering_info: 'Sigma Aldrich Cat# SML1657',
+            modality: 'Inhibitor',
+            drug_targets: 'EGFR; KRAS',
+            test_agent_type: 'Aqueous',
+            top_dose: '50',
+            top_dose_unit: 'ug/mL',
+          },
+        ];
+        this.termsAccepted = TERMS.map(() => true);
+        this.errors = { collaborator: {}, testAgents: [], terms: '' };
+        this.completed = { collaborator: true, testAgent: true, terms: true };
+        this.submittedPayload = null;
+        this.schemaErrors = [];
+        this.schemaUnavailable = false;
+        this.openPanel = null;
+      },
+
       // ---- Per-step validation: store errors, return true when the step is valid. ----
       validateCollaborator() {
         this.errors.collaborator = validateCollaborator(this.collaborator);
@@ -297,7 +358,9 @@
         this.schemaUnavailable = false;
         this.submitting = true;
         try {
+          // Flat array, one entry per test agent, each repeating the submitter fields.
           const payload = buildPayload(this.collaborator, this.testAgents);
+          console.log('Payload to validate', payload);
           const { valid, errors, unavailable } = await validateNominationPayload(payload);
           if (!valid) {
             this.schemaUnavailable = unavailable;
@@ -306,6 +369,7 @@
           }
           this.submittedPayload = payload;
           console.log('Nomination payload', payload);
+          // To do: Post to api for submission: /api/prism-nominations
         } finally {
           this.submitting = false;
         }

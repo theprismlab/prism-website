@@ -164,18 +164,25 @@ export const TERMS_ERROR = 'Please accept all terms to continue.';
 // ---- Helpers ----
 export const hasNoErrors = (errors) => Object.values(errors).every((e) => !e);
 
-// Converts form state into the payload shape in example-payload.json.
-// Each test_agents entry matches the remote JSON schema (see ajv.js):
-// optional identifiers are null when blank, never ''.
+// Converts form state into the payload shape in example-payload.json: a flat
+// array with one nomination per test agent. Every entry repeats the submitter
+// fields, so a two-compound submission is two objects with identical submitter
+// info and different compound info. Each entry matches the remote JSON schema
+// (see ajv.js): optional identifiers are null when blank, never ''.
+// Server-managed fields in the example (id, status, cost, dates) are not sent.
 export function buildPayload(collaborator, testAgents) {
-  return {
-    ...collaborator,
-    test_agents: testAgents.map((r) => ({
-      ...r,
-      pubchem_cid: r.pubchem_cid ? Number(r.pubchem_cid) : null,
-      smiles_string: r.smiles_string ? r.smiles_string.trim() : null,
-      top_dose: Number(r.top_dose),
-      drug_targets: splitGenes(r.drug_targets),
-    })),
+  const submitter = {
+    submitter_name: collaborator.name,
+    submitter_email: collaborator.email,
+    institution_company_name: collaborator.institutionName,
+    institution_company_type: collaborator.institutionType,
   };
+  return testAgents.map((r) => ({
+    ...submitter,
+    ...r,
+    pubchem_cid: r.pubchem_cid ? Number(r.pubchem_cid) : null,
+    smiles_string: r.smiles_string ? r.smiles_string.trim() : null,
+    top_dose: Number(r.top_dose),
+    drug_targets: splitGenes(r.drug_targets),
+  }));
 }
