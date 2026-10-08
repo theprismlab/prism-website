@@ -34,9 +34,32 @@
               :icon="`mdi-numeric-${i + 1}-circle-outline`"
             />
             <span>{{ step.title }}</span>
-            <span v-if="submitAttempted && stepHasErrors[step.id]" class="step-error ml-auto mr-2">
+            <!-- Status badge: number stays constant; the badge says complete or error.
+                 Green is Okabe-Ito bluish green (colour-blind safe against red); the
+                 error badge uses the theme's error colour so it matches the field
+                 messages. The icon and text also carry the meaning. -->
+            <v-chip
+              v-if="stepStatus[step.id] === 'valid'"
+              class="ml-auto mr-2"
+              color="#009E73"
+              variant="tonal"
+              size="x-small"
+              prepend-icon="mdi-check"
+              label
+            >
+              Complete
+            </v-chip>
+            <v-chip
+              v-else-if="stepStatus[step.id] === 'invalid'"
+              class="ml-auto mr-2"
+              color="error"
+              variant="tonal"
+              size="x-small"
+              prepend-icon="mdi-alert-circle-outline"
+              label
+            >
               Error
-            </span>
+            </v-chip>
           </v-expansion-panel-title>
 
           <v-expansion-panel-text>
@@ -47,7 +70,7 @@
                   v-model="collaborator.name"
                   label="Name"
                   variant="outlined"
-                  :error-messages="errors.collaborator.name"
+                  :error-messages="collaboratorErrors.name"
                 />
               </v-col>
               <v-col cols="12" sm="6">
@@ -56,7 +79,7 @@
                   label="Email"
                   type="email"
                   variant="outlined"
-                  :error-messages="errors.collaborator.email"
+                  :error-messages="collaboratorErrors.email"
                   @update:model-value="(v) => (collaborator.email = normalizeEmail(v))"
                 />
               </v-col>
@@ -66,7 +89,7 @@
                   label="Institution Type"
                   :items="institutionTypeOptions"
                   variant="outlined"
-                  :error-messages="errors.collaborator.institutionType"
+                  :error-messages="collaboratorErrors.institutionType"
                   @update:model-value="collaborator.institutionName = ''"
                 />
               </v-col>
@@ -77,14 +100,14 @@
                   label="Institution Name"
                   :items="institutionNames"
                   variant="outlined"
-                  :error-messages="errors.collaborator.institutionName"
+                  :error-messages="collaboratorErrors.institutionName"
                 />
                 <v-text-field
                   v-else
                   v-model="collaborator.institutionName"
                   label="Institution Name"
                   variant="outlined"
-                  :error-messages="errors.collaborator.institutionName"
+                  :error-messages="collaboratorErrors.institutionName"
                 />
               </v-col>
             </v-row>
@@ -94,8 +117,7 @@
               <nomination-table
                 :fields="testAgentFields"
                 :rows="testAgents"
-                :errors="errors.testAgents"
-                :submitted="testAgentsSubmitted"
+                :errors="testAgentErrors"
                 multi-row
                 add-label="Add test agent"
                 @add-row="testAgents.push(emptyTestAgent())"
@@ -122,6 +144,12 @@
             </div>
 
             <!-- Last step submits; earlier steps validate and advance. -->
+            <p
+              v-if="i === steps.length - 1 && hasStepErrors"
+              class="text-error text-body-2 text-right mt-4 mb-0"
+            >
+              Please fix errors before submitting
+            </p>
             <div class="d-flex justify-end mt-4">
               <v-btn
                 v-if="i === steps.length - 1"
@@ -206,13 +234,14 @@
         // Step 2
         testAgentFields: TEST_AGENT_FIELDS,
         testAgents: [emptyTestAgent()],
-        testAgentsSubmitted: 0, // NominationTable only shows errors after this increments
+        rdkitReady: false, // reactive hook so testAgentErrors re-runs once RDKit loads
 
         // Step 3
         termsHtml: TERMS_HTML,
 
-        errors: { collaborator: {}, testAgents: [] },
-        submitAttempted: false, // gates the "Error" label in step titles
+        // A step is "touched" once Continue was pressed on it, or Submit was pressed.
+        // Errors and status are computed live from the data, but only for touched steps.
+        touched: { collaborator: false, testAgent: false },
         schemaErrors: [], // from the JSON schema check at submit
         schemaUnavailable: false, // schema could not be loaded at all (remote validator only)
         SCHEMA_UNAVAILABLE,
@@ -238,14 +267,26 @@
           .map((i) => i.name)
           .sort((a, b) => a.localeCompare(b));
       },
-      // Per-step flag from the stored errors (set by the validators on Continue/Submit).
-      // The last step has nothing to validate, so it is never flagged.
-      stepHasErrors() {
+      // ---- Live validation. Empty until the step is touched, then recomputed on every edit. ----
+      collaboratorErrors() {
+        return this.touched.collaborator ? validateCollaborator(this.collaborator) : {};
+      },
+      testAgentErrors() {
+        this.rdkitReady; // dependency: SMILES check is skipped until RDKit is loaded
+        return this.touched.testAgent ? validateTestAgents(this.testAgents) : [];
+      },
+      // 'untouched' | 'valid' | 'invalid' per step, driving the header icon and label.
+      // The last step has nothing to validate, so it stays 'untouched' (number only).
+      stepStatus() {
+        const status = (touched, ok) => (!touched ? 'untouched' : ok ? 'valid' : 'invalid');
         return {
-          collaborator: !hasNoErrors(this.errors.collaborator),
-          testAgent: !this.errors.testAgents.every(hasNoErrors),
-          terms: false,
+          collaborator: status(this.touched.collaborator, hasNoErrors(this.collaboratorErrors)),
+          testAgent: status(this.touched.testAgent, this.testAgentErrors.every(hasNoErrors)),
+          terms: 'untouched',
         };
+      },
+      hasStepErrors() {
+        return Object.values(this.stepStatus).includes('invalid');
       },
     },
     async created() {
@@ -297,8 +338,7 @@
             top_dose_unit: 'ug/mL',
           },
         ];
-        this.errors = { collaborator: {}, testAgents: [] };
-        this.submitAttempted = false;
+        this.touched = { collaborator: true, testAgent: true }; // show the green checks
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.openPanel = this.steps.length - 1; // open the submit step
@@ -308,49 +348,35 @@
       resetForm() {
         this.collaborator = emptyCollaborator();
         this.testAgents = [emptyTestAgent()];
-        this.testAgentsSubmitted = 0;
-        this.errors = { collaborator: {}, testAgents: [] };
-        this.submitAttempted = false;
+        this.touched = { collaborator: false, testAgent: false };
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.openPanel = 0;
       },
 
-      // ---- Per-step validation: store errors, return true when the step is valid. ----
-      validateCollaborator() {
-        this.errors.collaborator = validateCollaborator(this.collaborator);
-        return hasNoErrors(this.errors.collaborator);
-      },
-      async validateTestAgents() {
-        await this.ensureRDKit(); // SMILES check needs RDKit loaded
-        this.testAgentsSubmitted++;
-        this.errors.testAgents = validateTestAgents(this.testAgents);
-        return this.errors.testAgents.every(hasNoErrors);
-      },
       async ensureRDKit() {
         try {
           await loadRDKit();
+          this.rdkitReady = true;
         } catch (error) {
           console.warn('RDKit failed to load; SMILES syntax will not be checked', error);
         }
       },
-      // Continue on steps 1 and 2. The last step has no validator; it submits.
+      // Continue on steps 1 and 2: mark the step touched (which turns on its live
+      // errors) and advance only if it is valid. The last step has no Continue.
       async finishStep(i) {
         const id = this.steps[i].id;
-        const validators = {
-          collaborator: this.validateCollaborator,
-          testAgent: this.validateTestAgents,
-        };
-        if (!(await validators[id]())) return;
+        this.touched[id] = true;
+        if (id === 'testAgent') await this.ensureRDKit(); // SMILES check needs RDKit loaded
+        if (this.stepStatus[id] !== 'valid') return;
         this.openPanel = i + 1 < this.steps.length ? i + 1 : null;
       },
 
       async submit() {
-        // Run both so every step's errors show, not just the first failing one.
-        const collaboratorOk = this.validateCollaborator();
-        const testAgentsOk = await this.validateTestAgents();
-        this.submitAttempted = true;
-        if (!collaboratorOk || !testAgentsOk) return;
+        // Touch both steps so every step's errors show, not just the first failing one.
+        this.touched = { collaborator: true, testAgent: true };
+        await this.ensureRDKit();
+        if (this.stepStatus.collaborator !== 'valid' || this.stepStatus.testAgent !== 'valid') return;
         this.schemaErrors = [];
         this.schemaUnavailable = false;
         this.submitting = true;
@@ -395,11 +421,6 @@
 </script>
 
 <style scoped>
-  .step-error {
-    color: rgb(var(--v-theme-error));
-    font-size: 0.875rem;
-    font-weight: 600;
-  }
 
   /* v-html content is not scoped, so target the paragraphs via :deep */
   .terms-copy :deep(p) {

@@ -34,7 +34,7 @@
                 single-line
                 hide-details
                 :disabled="isDisabled(row, f)"
-                :error="hasError(row, i, f.key)"
+                :error="hasError(i, f.key)"
                 class="perturbation-table-field"
               />
               <v-text-field
@@ -46,7 +46,7 @@
                 single-line
                 hide-details
                 :disabled="isDisabled(row, f)"
-                :error="hasError(row, i, f.key)"
+                :error="hasError(i, f.key)"
                 class="perturbation-table-field"
               />
             </td>
@@ -60,9 +60,9 @@
               />
             </td>
           </tr>
-          <tr v-if="fields.some((f) => hasError(row, i, f.key))" class="error-row">
+          <tr v-if="fields.some((f) => hasError(i, f.key))" class="error-row">
             <td v-for="f in fields" :key="f.key" class="error-cell">
-              <span v-if="hasError(row, i, f.key)" class="field-error">{{ errors[i][f.key] }}</span>
+              <span v-if="hasError(i, f.key)" class="field-error">{{ errors[i][f.key] }}</span>
             </td>
             <td v-if="multiRow" class="error-cell" />
           </tr>
@@ -92,28 +92,11 @@
       errors: { type: Array, default: () => [] },
       multiRow: { type: Boolean, default: false },
       addLabel: { type: String, default: 'Add row' },
-      submitted: { type: Number, default: 0 },
     },
     emits: ['add-row', 'remove-row'],
-    data() {
-      return { submittedRows: [] };
-    },
-    watch: {
-      // `immediate` so a table mounted after a submit (the panel renders lazily)
-      // still marks its current rows.
-      submitted: {
-        immediate: true,
-        handler(val) {
-          if (val > 0)
-            this.rows.forEach((r) => {
-              if (!this.submittedRows.includes(r)) this.submittedRows.push(r);
-            });
-        },
-      },
-    },
     methods: {
-      hasError(row, i, fieldKey) {
-        if (!this.submittedRows.includes(row)) return false;
+      // The parent decides when errors apply (it passes [] until the step is touched).
+      hasError(i, fieldKey) {
         return !!this.errors[i]?.[fieldKey];
       },
       isDisabled(row, f) {

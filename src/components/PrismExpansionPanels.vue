@@ -83,11 +83,14 @@
     font-weight: var(--prism-font-weight-semibold);
     letter-spacing: 0.01em;
   }
-  .prism-expansion-panels :deep(.v-expansion-panel-title span) {
+  /* Direct text spans only: a v-chip is also a span and sets its own colour inline,
+     so it (and its inner spans) must be left alone. */
+  .prism-expansion-panels :deep(.v-expansion-panel-title > span:not(.v-chip)) {
     color: var(--prism-color-text) !important;
   }
-  .prism-expansion-panels :deep(.v-expansion-panel-title.is-completed span),
-  .prism-expansion-panels :deep(.v-expansion-panel.is-completed .v-expansion-panel-title span) {
+  .prism-expansion-panels :deep(.v-expansion-panel-title.is-completed > span:not(.v-chip)),
+  .prism-expansion-panels
+    :deep(.v-expansion-panel.is-completed .v-expansion-panel-title > span:not(.v-chip)) {
     color: rgba(var(--v-theme-on-surface), 0.45) !important;
   }
   .prism-expansion-panels :deep(.v-expansion-panel-title--active) {
@@ -124,7 +127,8 @@
   .prism-expansion-panels :deep(.v-expansion-panel--disabled .step-number) {
     color: rgba(var(--v-theme-on-surface), 0.22);
   }
-  .prism-expansion-panels :deep(.v-expansion-panel--disabled .v-expansion-panel-title span) {
+  .prism-expansion-panels
+    :deep(.v-expansion-panel--disabled .v-expansion-panel-title > span:not(.v-chip)) {
     color: rgba(var(--v-theme-on-surface), 0.4) !important;
   }
   .prism-expansion-panels :deep(.v-expansion-panel--disabled .v-expansion-panel-title__icon) {
