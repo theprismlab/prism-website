@@ -16,11 +16,11 @@
         period before release, and nominators will not own any data generated from selected
         nominations.
         <br /><br />
-        The PRISM team appreciates whenever nominators can provide QC’d test agents, as doing so
-        makes it possible to accept more nominations and can expedite the selection and data
-        generation processes. To screen your test agent sooner, you can participate in one of our
-        three PRISM consortium screens per year
-
+        The PRISM team appreciates whenever nominators can provide
+        <b>mass spec quality-controlled test agents</b>, as doing so makes it possible to accept
+        more nominations and can expedite the selection and data generation processes. To screen
+        your test agent sooner, you can participate in one of our three PRISM consortium screens per
+        year
         <a href="https://theprismlab.org/consortium-screens/collaborating" target="_blank">here</a>.
       </p>
     </page-header>
