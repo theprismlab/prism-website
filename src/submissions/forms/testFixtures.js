@@ -7,7 +7,6 @@ function getCPSTestAgentData() {
     solvent: '',
     top_dose,
     top_dose_unit: 'uM',
-    dilution_factor: '',
     amount: '1200',
     amount_unit: 'uL',
     conc: top_dose,
@@ -45,7 +44,6 @@ function getTestAgentRow(screenType) {
     solvent: '',
     top_dose: '10',
     top_dose_unit: 'uM',
-    dilution_factor: '',
     amount: '200',
     amount_unit: 'uL',
     conc: '10',
@@ -56,8 +54,8 @@ function getTestAgentRow(screenType) {
 
   switch (screenType) {
     case 'EPS':
-      // dilution_factor >= 3 → min 600 uL; conc = top_dose × 1
-      return { ...base, dilution_factor: '3', amount: '600' };
+      // min 500 uL; conc = top_dose × 1
+      return { ...base, amount: '500' };
     case 'APS':
       // stock = top_dose / 4 (concMultiplier 250); min 1000 uL; unit pairs uM → mM
       return { ...base, molecule_type: 'Antibody', solvent: 'PBS', conc: '2.5', amount: '1000' };
