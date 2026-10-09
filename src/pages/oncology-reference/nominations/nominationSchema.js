@@ -56,41 +56,68 @@ const validGeneList = (v) =>
 const cidOrSmiles = (row) =>
   !row.pubchem_cid && !row.smiles_string ? 'PubChem CID or SMILES required' : undefined;
 
+// `span` (desktop, md and up) and `mobileSpan` (below md) are column widths of 12
+// used by NominationCards; a field without one gets the component's defaultSpan /
+// defaultMobileSpan prop. Groups below sum to 12 so cards pack into full rows.
+// NominationTable ignores both.
 export const TEST_AGENT_FIELDS = [
   {
     key: 'nominated_compound_name',
     label: 'Nominated compound name',
     tooltip: 'Please use International Nonproprietary Names (INN) where available.',
+    span: 6,
+    mobileSpan: 12,
     validate: required,
+  },
+  {
+    key: 'test_agent_type',
+    label: 'Test agent type',
+    tooltip:
+      'DMSO-soluble small molecule, or aqueous test agent (including antibodies, ADCs, and cytokines).',
+    options: Object.values(AGENT_TYPES),
+    span: 2,
+    mobileSpan: 4,
+    validate: required,
+  },
+  {
+    key: 'top_dose',
+    label: 'Top dose',
+    tooltip:
+      'Top doses for DMSO-soluble must be provided in uM. For aqueous test agents, the top dose must be in uM or ug/mL.',
+    inputmode: 'decimal',
+    span: 2,
+    mobileSpan: 4,
+    validate: (v) => required(v) || validPositiveNumber(v),
+  },
+  {
+    key: 'top_dose_unit',
+    label: 'Top dose unit',
+    tooltip: 'DMSO-soluble: uM only. Aqueous: uM or ug/mL.',
+    options: Object.values(DOSE_UNITS),
+    span: 2,
+    mobileSpan: 4,
+    validate: (v, row) =>
+      required(v) ||
+      (row.test_agent_type === AGENT_TYPES.DMSO && v !== DOSE_UNITS.UM
+        ? 'DMSO-soluble agents must use uM'
+        : undefined),
   },
   {
     key: 'pubchem_cid',
     label: 'PubChem CID',
     tooltip: 'If available. Either PubChem CID or SMILE string is required.',
     inputmode: 'numeric',
+    span: 2,
+    mobileSpan: 12,
     validate: (v, row) => validNumber(v) || cidOrSmiles(row),
   },
   {
     key: 'smiles_string',
     label: 'SMILE string',
     tooltip: 'Either PubChem CID or SMILE string is required. Checked with RDKit.',
+    span: 10,
+    mobileSpan: 12,
     validate: (v, row) => cidOrSmiles(row) || validSmiles(v),
-  },
-  {
-    key: 'can_provide_qc_agent',
-    label: "Can provide QC'd test agent?",
-    tooltip:
-      "Are you able to provide PRISM with the already QC'd test agent should your nomination be selected?",
-    options: ['Yes', 'No'],
-    validate: required,
-  },
-  {
-    key: 'vendor_ordering_info',
-    label: 'Vendor ordering info',
-    tooltip:
-      'Provide a link or the vendor + catalog number from where the test agent can be ordered. If you are able to provide the test agent, put N/A.',
-    placeholder: 'Link or vendor + catalog #',
-    validate: required,
   },
   {
     key: 'modality',
@@ -103,6 +130,8 @@ export const TEST_AGENT_FIELDS = [
       'Cytotoxic/genotoxic',
       'Other',
     ],
+    span: 3,
+    mobileSpan: 12,
     validate: required,
   },
   {
@@ -110,34 +139,29 @@ export const TEST_AGENT_FIELDS = [
     label: 'Drug target(s)',
     tooltip: 'Please use semicolon-separated HUGO gene names.',
     placeholder: 'EGFR; KRAS',
+    span: 9,
+    mobileSpan: 12,
     validate: (v) => required(v) || validGeneList(v),
   },
   {
-    key: 'test_agent_type',
-    label: 'Test agent type',
+    key: 'vendor_ordering_info',
+    label: 'Vendor ordering info',
     tooltip:
-      'DMSO-soluble small molecule, or aqueous test agent (including antibodies, ADCs, and cytokines).',
-    options: Object.values(AGENT_TYPES),
+      'Provide a link or the vendor + catalog number from where the test agent can be ordered. If you are able to provide the test agent, put N/A.',
+    placeholder: 'Link or vendor + catalog #',
+    span: 12,
     validate: required,
   },
   {
-    key: 'top_dose',
-    label: 'Top dose',
-    tooltip:
-      'Top doses for DMSO-soluble must be provided in uM. For aqueous test agents, the top dose must be in uM or ug/mL.',
-    inputmode: 'decimal',
-    validate: (v) => required(v) || validPositiveNumber(v),
-  },
-  {
-    key: 'top_dose_unit',
-    label: 'Top dose unit',
-    tooltip: 'DMSO-soluble: uM only. Aqueous: uM or ug/mL.',
-    options: Object.values(DOSE_UNITS),
-    validate: (v, row) =>
-      required(v) ||
-      (row.test_agent_type === AGENT_TYPES.DMSO && v !== DOSE_UNITS.UM
-        ? 'DMSO-soluble agents must use uM'
-        : undefined),
+    key: 'can_provide_qc_agent',
+    label:
+      "Are you able to provide PRISM with the already QC'd test agent should your nomination be selected?",
+    options: ['Yes', 'No'],
+    // Rendered as an inline radio group (one radio per option) instead of a select.
+    type: 'radio',
+    span: 12,
+    mobileSpan: 12,
+    validate: required,
   },
 ];
 
@@ -156,16 +180,15 @@ export function validateTestAgents(rows) {
 // Rendered with v-html in nominations.vue, so this is trusted markup authored
 // here, never user input. Edit the copy freely; keep it to simple tags.
 export const TERMS_HTML = `
-  <p>Nominating a test agent does not guarantee its inclusion in any OncRef screens.
-<br><br>
-PRISM will only contact you if your nomination was selected. The selection process may take over one year depending upon screening bandwidth and test agent availability.
-<br><br>
-If your nomination is selected and screened, it may take several years before the data becomes publicly available due to the funding source used for this data. Please note that your institution will not hold ownership of any data generated as part of an OncRef screen.
-<br><br>
-Additionally, while your institution is not responsible for screening costs or the shipment of selected test agents, test agents that are cost-prohibitive may not be screened unless you are able to QC and provide them.
-<br><br>
-By clicking Submit, you are acknowledging the terms above.
-</p>
+  <p>
+  Nominating a test agent does not guarantee its inclusion in any OncRef screens, and only a limited number of nominations will be selected each year.
+  <br><br>
+  Due to data-sharing restrictions, if your nomination is selected and screened, it may be one year before the data becomes publicly available. Please note that you and your institution will not own any data generated as part of an OncRef screen.
+  <br><br>
+  Additionally, while you are not responsible for screening costs or the shipment of selected test agents, test agents that are cost-prohibitive may not be screened unless you are able to QC and provide them.
+  <br><br>
+  <b>By clicking Submit, you are acknowledging the terms above.</b>
+  </p>
 `;
 
 // ---- Helpers ----

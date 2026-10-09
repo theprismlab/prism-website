@@ -1,24 +1,26 @@
 <template>
   <page>
-    <page-header background="multi-focal-cool">
-      <template #title> Oncology Reference<br />Nominations </template>
+    <page-header background="multi-focal-cool" narrow>
+      <template #title> Oncology Reference Nominations </template>
       <p class="prism-text-body-large">
-        Based on our in-process manuscript of creating a living resource of Oncology Reference test
-        agents, we are accepting nominations to be included in this library. We will screen 150 test
-        agents per year inclusive of small molecules, antibodies, andor ADC’s, in our PRISM cell set
-        of over 950 cancer cell lines at 8 doses in triplicate using our DepMap Consortium funding.
+        We are excited to accept nominations from all researchers to continue to grow our Oncology
+        Reference library. Based on our in-process manuscript to create a living resource of
+        Oncology Reference test agents, the PRISM Team will be screening 150 new test agents per
+        year, composed of small molecules, antibodies, and ADCs. These test agents will be screened
+        in our cell set of over 950 cancer cell lines at 8 doses in triplicate.
         <br /><br />
-        Researchers may nominate publicly available oncology test agents to keep this dataset
-        growing. Please note that only a limited number of nominations will be selected per year and
-        submitting a nomination does not guarantee its inclusion, and it may be several years before
-        data becomes available, will not own any data generated from selected nominations.
+        To keep our dataset growing, researchers may nominate publicly available oncology test
+        agents for inclusion in this library. Please note that only a limited number of nominations
+        will be selected each year, and submitting a nomination does not guarantee its inclusion.
+        Also, due to data-sharing restrictions, all generated data is subject to a one-year embargo
+        period before release, and nominators will not own any data generated from selected
+        nominations.
         <br /><br />
-        The PRISM team appreciates whenever nominators can provide QC’d test agents as doing so
-        makes it possible to accept more and can expedite the selection and data generation
-        processes.
-        <br /><br />
-        To screen a test agent (proprietary or public) sooner, you can learn more about
-        participating in PRISM consortium screens
+        The PRISM team appreciates whenever nominators can provide QC’d test agents, as doing so
+        makes it possible to accept more nominations and can expedite the selection and data
+        generation processes. To screen your test agent sooner, you can participate in one of our
+        three PRISM consortium screens per year
+
         <a href="https://theprismlab.org/consortium-screens/collaborating" target="_blank">here</a>.
       </p>
     </page-header>
@@ -137,12 +139,12 @@
 
                 <!-- Step 2: Test agents -->
                 <div v-else-if="step.id === 'testAgent'" class="mt-2">
-                  <p>
+                  <p class="prism-text-body-large mb-6">
                     Please list all of your test agent nominations in the table below. All test
                     agents will be considered individually, and you do not need to fill out separate
                     forms for each nomination.
                   </p>
-                  <nomination-table
+                  <nomination-cards
                     :fields="testAgentFields"
                     :rows="testAgents"
                     :errors="testAgentErrors"
@@ -224,7 +226,7 @@
 </template>
 
 <script>
-  import NominationTable from './nominations/NominationTable.vue';
+  import NominationCards from './nominations/NominationCards.vue';
   import { getCollaboratorList, postNominations } from '@/utils/api.js';
   import {
     INSTITUTION_TYPE_OPTIONS,
@@ -252,7 +254,7 @@
 
   export default {
     name: 'OncologyReferenceNominations',
-    components: { NominationTable },
+    components: { NominationCards },
     data() {
       return {
         isDev: false,
