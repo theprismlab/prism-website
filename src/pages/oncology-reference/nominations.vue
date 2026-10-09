@@ -139,12 +139,12 @@
 
                 <!-- Step 2: Test agents -->
                 <div v-else-if="step.id === 'testAgent'" class="mt-2">
-                  <p>
+                  <p class="prism-text-body-large mb-6">
                     Please list all of your test agent nominations in the table below. All test
                     agents will be considered individually, and you do not need to fill out separate
                     forms for each nomination.
                   </p>
-                  <nomination-table
+                  <nomination-cards
                     :fields="testAgentFields"
                     :rows="testAgents"
                     :errors="testAgentErrors"
@@ -226,7 +226,7 @@
 </template>
 
 <script>
-  import NominationTable from './nominations/NominationTable.vue';
+  import NominationCards from './nominations/NominationCards.vue';
   import { getCollaboratorList, postNominations } from '@/utils/api.js';
   import {
     INSTITUTION_TYPE_OPTIONS,
@@ -254,7 +254,7 @@
 
   export default {
     name: 'OncologyReferenceNominations',
-    components: { NominationTable },
+    components: { NominationCards },
     data() {
       return {
         isDev: false,
