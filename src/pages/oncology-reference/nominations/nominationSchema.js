@@ -157,13 +157,13 @@ export function validateTestAgents(rows) {
 // here, never user input. Edit the copy freely; keep it to simple tags.
 export const TERMS_HTML = `
   <p>
-  Nominating a test agent does not guarantee its inclusion in any OncRef screens. The selection process may take over one year depending upon screening bandwidth and test agent availability.
+  Nominating a test agent does not guarantee its inclusion in any OncRef screens, and only a limited number of nominations will be selected each year.
   <br><br>
-  If your nomination is selected and screened, it may take up to one year before the data becomes publicly available due to the funding source used for this data. Please note that you and your institution will not own any data generated as part of an OncRef screen.
+  Due to data-sharing restrictions, if your nomination is selected and screened, it may be one year before the data becomes publicly available. Please note that you and your institution will not own any data generated as part of an OncRef screen.
   <br><br>
   Additionally, while you are not responsible for screening costs or the shipment of selected test agents, test agents that are cost-prohibitive may not be screened unless you are able to QC and provide them.
   <br><br>
-  By clicking Submit, you are acknowledging the terms above.
+  <b>By clicking Submit, you are acknowledging the terms above.</b>
   </p>
 `;
 
