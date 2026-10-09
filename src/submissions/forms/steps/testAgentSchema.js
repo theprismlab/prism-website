@@ -42,12 +42,6 @@ export const COMPOUND_FIELDS = {
     validate: validPositiveNumber,
   },
   CONC_UNIT: { key: 'conc_unit', label: 'Stock Conc. Unit' },
-  DILUTION_FACTOR: {
-    key: 'dilution_factor',
-    label: 'Dilution Factor',
-    inputmode: 'decimal',
-    validate: validPositiveNumber,
-  },
   CONC_AMOUNT: {
     key: 'amount',
     label: 'Amount',
@@ -77,13 +71,7 @@ const COMPOUND_FIELDS_BY_KEY = Object.fromEntries(
 export const SCREEN_CONFIG = {
   MTS: { concMultiplier: 1000, minAmountUL: 150 },
   CPS: { concMultiplier: 1000, minAmountUL: 150, comboAmountPerSlotUL: 400 }, // solo: 150 uL; combo: 400 × n slots
-  EPS: {
-    concMultiplier: 1000,
-    minDilutionFactor: 2,
-    minAmountHighDilutionUL: 600,
-    minAmountLowDilutionUL: 720,
-    dilutionThreshold: 3,
-  },
+  EPS: { concMultiplier: 1000, minAmountUL: 500 },
   APS: { concMultiplier: 250, minAmountUL: 1000, unitPairs: { uM: 'mM', 'ug/mL': 'mg/mL' } },
   AIR: { concMultiplier: 500, minAmountUL: 500, maxTopDoseUgML: 2 },
 };
@@ -109,9 +97,8 @@ function checkConcMatchesTopDose(row, concMultiplier) {
   return {};
 }
 
-// Shared by every screen with a flat minimum-volume rule (MTS, CPS solo, APS, AIR).
-// EPS's minimum depends on dilution factor and CPS's combo slots have their own
-// rule on top of this, so both keep their own logic inline below.
+// Shared by every screen with a flat minimum-volume rule (MTS, CPS solo, EPS, APS, AIR).
+// CPS's combo slots have their own rule on top of this, kept inline below.
 function checkMinAmount(row, minAmountUL) {
   if (Number(row.amount) < minAmountUL) return { amount: `Minimum ${minAmountUL} uL required` };
   return {};
@@ -414,13 +401,12 @@ export const SCREEN_DEFINITIONS = {
     }),
   },
 
-  // DMSO-based. Includes dilution factor (min 2). Amount: 2 to <3 → 720 uL, 3+× → 600 uL.
+  // DMSO-based. Stock = 1000× top dose (N uM assay → N mM stock). Min 500 uL.
   EPS: {
     compoundFields: [
       COMPOUND_FIELDS.COMPOUND_NAME,
       COMPOUND_FIELDS.TOP_DOSE,
       { ...COMPOUND_FIELDS.TOP_DOSE_UNIT, options: ['uM'] },
-      COMPOUND_FIELDS.DILUTION_FACTOR,
       COMPOUND_FIELDS.CONC_AMOUNT,
       COMPOUND_FIELDS.CONC_AMOUNT_UNIT,
       COMPOUND_FIELDS.CONC,
@@ -428,37 +414,14 @@ export const SCREEN_DEFINITIONS = {
       COMPOUND_FIELDS.STORAGE_CONDITIONS,
       COMPOUND_FIELDS.HEALTH_HAZARD,
     ],
-    // Dilution factor floor, dilution-dependent amount minimum (2–<3× → 720 uL, 3+× → 600 uL),
-    // plus the shared conc/top-dose rule.
-    validateCompoundRow: (row) => {
-      const {
-        concMultiplier,
-        minDilutionFactor,
-        minAmountHighDilutionUL,
-        minAmountLowDilutionUL,
-        dilutionThreshold,
-      } = SCREEN_CONFIG.EPS;
-      const errors = { ...checkConcMatchesTopDose(row, concMultiplier) };
-
-      const dilutionFactor = Number(row.dilution_factor) || 0;
-      if (row.dilution_factor && dilutionFactor < minDilutionFactor)
-        errors.dilution_factor = `Minimum dilution factor is ${minDilutionFactor}`;
-
-      const minAmount =
-        dilutionFactor >= dilutionThreshold ? minAmountHighDilutionUL : minAmountLowDilutionUL;
-      if (Number(row.amount) < minAmount)
-        errors.amount = `Minimum ${minAmount} uL required (${dilutionFactor >= dilutionThreshold ? `≥${dilutionThreshold}` : `2–${dilutionThreshold}`}-fold dilution)`;
-
-      return errors;
-    },
-    compoundTooltips: () => {
-      const cfg = SCREEN_CONFIG.EPS;
-      return {
-        ...commonTooltips(cfg),
-        dilution_factor: `Minimum ${cfg.minDilutionFactor}`,
-        amount: `Dilution factor ${cfg.minDilutionFactor} to <${cfg.dilutionThreshold}: minimum ${cfg.minAmountLowDilutionUL} uL. Dilution factor ${cfg.dilutionThreshold}+: minimum ${cfg.minAmountHighDilutionUL} uL`,
-      };
-    },
+    validateCompoundRow: (row) => ({
+      ...checkMinAmount(row, SCREEN_CONFIG.EPS.minAmountUL),
+      ...checkConcMatchesTopDose(row, SCREEN_CONFIG.EPS.concMultiplier),
+    }),
+    compoundTooltips: () => ({
+      ...commonTooltips(SCREEN_CONFIG.EPS),
+      amount: `Minimum ${SCREEN_CONFIG.EPS.minAmountUL} uL required`,
+    }),
   },
 
   // Aqueous. Unit pairing: uM→mM, ug/mL→mg/mL. Min 1000 uL. Stock = top dose / 4.

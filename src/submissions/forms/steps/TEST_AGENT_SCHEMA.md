@@ -20,6 +20,12 @@ Column headers with validation rules now show an info icon (ⓘ) with a tooltip 
 
 ---
 
+## What changed (October 2026)
+
+EPS no longer has a Dilution Factor column. The `dilution_factor` field was removed from `COMPOUND_FIELDS` (it was only used by EPS), along with its minimum-2 rule and the dilution-dependent amount minimum (720 uL / 600 uL). EPS Amount now uses the same flat rule as the other screens: minimum **500 uL**, stored as `minAmountUL` in `SCREEN_CONFIG.EPS`.
+
+---
+
 ## What changed (July 2026)
 
 Internal refactor of `testAgentSchema.js` — no field, validation, or column changes. Each screen's fields, validators, and tooltips were consolidated into one `SCREEN_DEFINITIONS[screenType]` object per screen (previously spread across separate `SCREENS`, `SCREEN_VALIDATORS`, and `buildTooltips()` maps), and the generic property names were renamed to make explicit which table they describe: the **Compound Table** (every screen's main table) vs. the **Combination Table** (CPS's second table).
@@ -105,7 +111,6 @@ Additional combination validation:
 | Test Agent Name | Text | — |
 | Top Screening Dose | Number | — |
 | Top Dose Unit | Dropdown | uM |
-| Dilution Factor | Number | — |
 | Amount | Number | — |
 | Amount Unit | Dropdown | uL |
 | Stock Concentration | Number | — |
@@ -114,10 +119,7 @@ Additional combination validation:
 | Health Hazard? | Dropdown | Yes, No |
 
 **Validation rules**
-- Dilution Factor: minimum **2**
-- Amount: depends on the dilution factor
-  - Dilution factor **2 to <3**: minimum **720 uL**
-  - Dilution factor **3 or higher**: minimum **600 uL**
+- Amount: minimum **500 uL**
 - Stock Concentration: must equal Top Screening Dose numerically (same 1000× logic as MTS/CPS).
 
 ---

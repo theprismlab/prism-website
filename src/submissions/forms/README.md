@@ -113,7 +113,7 @@ form steps documented here — see [../SCREEN_STATUS_MIGRATION.md](../SCREEN_STA
 | ---- | ------- | ---------------- | ----------------------------------- | ---------------------------------- |
 | MTS  | DMSO    | 1000×            | 150 uL                              | —                                  |
 | CPS  | DMSO    | 1000×            | 150 uL solo / 400 uL × combo slots  | Supports Drug A/B combination rows |
-| EPS  | DMSO    | 1000×            | 600 uL (≥3× dilution) / 720 uL (2×) | Dilution factor field              |
+| EPS  | DMSO    | 1000×            | 500 uL                              | —                                  |
 | APS  | Aqueous | 250×             | 1000 uL                             | Unit pairs: uM→mM, ug/mL→mg/mL     |
 | AIR  | Aqueous | 500×             | 500 uL                              | Top dose capped at 2 ug/mL         |
 
