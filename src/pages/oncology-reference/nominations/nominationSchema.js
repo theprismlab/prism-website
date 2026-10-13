@@ -17,10 +17,10 @@ export const normalizeEmail = (v) => (v == null ? '' : String(v).toLowerCase());
 
 // ---- Step 1: collaborator ----
 export const emptyCollaborator = () => ({
-  name: '',
-  email: '',
-  institutionType: '',
-  institutionName: '',
+  name: null,
+  email: null,
+  institutionType: null,
+  institutionName: null,
 });
 
 // Returns { field: errorString | undefined }
