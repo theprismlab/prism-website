@@ -13,7 +13,7 @@
       :class="{ 'nomination-agent-card--error': rowHasError(i) }"
     >
       <div class="nomination-agent-card__header">
-        <span class="nomination-agent-card__title">
+        <span class="text-overline text-medium-emphasis">
           {{ cardTitle }} {{ multiRow ? i + 1 : '' }}
         </span>
         <v-btn
@@ -30,7 +30,11 @@
       <v-row dense class="nomination-agent-card__body">
         <v-col v-for="f in fields" :key="f.key" :cols="mobileSpan(f)" :md="span(f)">
           <!-- Label sits above the field so long labels and tooltips never truncate. -->
-          <div class="field-label" :title="f.label">
+          <div
+            class="field-label"
+            :class="{ 'field-label--wrap': f.type === 'radio' }"
+            :title="f.label"
+          >
             <span class="field-label__text">{{ f.label }}</span>
             <v-tooltip v-if="f.tooltip" :text="f.tooltip" location="top" max-width="260">
               <template #activator="{ props }">
@@ -153,6 +157,14 @@
     border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
     border-radius: var(--prism-radius-lg, 8px);
     margin-bottom: 10px;
+    font-size: 0.875rem;
+  }
+  /* Vuetify inputs, labels, messages and select values set their own size; inherit the card's instead. */
+  .nomination-agent-card :deep(.v-input),
+  .nomination-agent-card :deep(.v-label),
+  .nomination-agent-card :deep(.v-messages),
+  .nomination-agent-card :deep(.v-select__selection) {
+    font-size: inherit;
   }
   .nomination-agent-card--error {
     border-color: rgb(var(--v-theme-error));
@@ -165,15 +177,8 @@
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
     background: rgba(var(--v-theme-on-surface), 0.025);
   }
-  .nomination-agent-card__title {
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-  }
   .nomination-agent-card__body {
-    padding: 8px 12px 10px;
+    padding: 8px 12px;
   }
   /* dense rows already use 4px gutters; the column padding sets the row-to-row gap */
   .nomination-agent-card__body :deep(.v-col) {
@@ -185,9 +190,6 @@
     align-items: center;
     gap: 3px;
     margin-bottom: 2px;
-    font-size: 0.85rem;
-    line-height: 1.2;
-    letter-spacing: 0.01em;
     max-width: 100%;
   }
   /* Long labels in narrow columns truncate; the title attribute and tooltip carry the full text. */
@@ -205,26 +207,17 @@
   }
   /* Same 34px control height as the table so the two designs compare like for like. */
   .nomination-card-field :deep(.v-field) {
-    font-size: 0.85rem;
     --v-field-input-min-height: 34px;
     --v-input-control-height: 34px;
   }
   .nomination-card-field :deep(.v-field__input) {
-    font-size: 0.85rem;
     padding-inline: 8px;
     min-height: 34px;
     align-items: center;
   }
-  .nomination-card-field :deep(input) {
-    font-size: 0.85rem;
-  }
   .nomination-card-field :deep(.v-input__details) {
     padding-top: 2px;
     min-height: 0;
-  }
-  .nomination-card-field :deep(.v-messages__message) {
-    font-size: 0.85rem;
-    line-height: 1.2;
   }
 
   /* Yes / No radios sit inline, matching the 34px control height of the other fields. */
@@ -235,15 +228,37 @@
   .nomination-radio-group :deep(.v-selection-control) {
     min-height: 34px;
   }
+  /* Vuetify dims selection-control labels; keep Yes / No at full strength. */
   .nomination-radio-group :deep(.v-label) {
-    font-size: 0.8rem;
     opacity: 1;
   }
 
+  .nomination-card-field :deep(.v-field__input) {
+    padding-block: 0;
+    padding-inline: 8px;
+    min-height: 34px;
+    align-items: center;
+  }
+  /* Radio labels wrap onto multiple lines instead of truncating. */
+  .field-label--wrap {
+    align-items: flex-start;
+  }
+  .field-label--wrap .field-label__text {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
   /* xs */
   @media (max-width: 600px) {
+    .nomination-agent-card {
+      margin-left: -10px !important;
+      margin-right: -10px !important;
+    }
     .nomination-agent-card__body {
-      padding: 8px 8px 0;
+      padding: 8px 8px;
+    }
+    .field-label {
+      font-size: 0.8rem;
     }
   }
 </style>
