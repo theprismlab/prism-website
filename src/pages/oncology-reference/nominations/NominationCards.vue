@@ -185,11 +185,10 @@
     align-items: center;
     gap: 3px;
     margin-bottom: 2px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     line-height: 1.2;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.01em;
     max-width: 100%;
-    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   }
   /* Long labels in narrow columns truncate; the title attribute and tooltip carry the full text. */
   .field-label__text {
@@ -206,25 +205,25 @@
   }
   /* Same 34px control height as the table so the two designs compare like for like. */
   .nomination-card-field :deep(.v-field) {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     --v-field-input-min-height: 34px;
     --v-input-control-height: 34px;
   }
   .nomination-card-field :deep(.v-field__input) {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     padding-inline: 8px;
     min-height: 34px;
     align-items: center;
   }
   .nomination-card-field :deep(input) {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
   }
   .nomination-card-field :deep(.v-input__details) {
     padding-top: 2px;
     min-height: 0;
   }
   .nomination-card-field :deep(.v-messages__message) {
-    font-size: 0.65rem;
+    font-size: 0.85rem;
     line-height: 1.2;
   }
 
