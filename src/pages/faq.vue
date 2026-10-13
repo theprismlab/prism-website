@@ -29,26 +29,32 @@
         </v-chip>
       </v-chip-group>
       <span class="prism-text-label-small">Filter tags:</span>
-      <v-chip-group v-model="activeTag" filter column class="mb-4">
+      <v-chip-group v-model="activeTag" filter column class="mb-2">
         <v-chip v-for="tag in tags" :key="tag" :value="tag" size="small" variant="outlined">
           {{ tag }}
         </v-chip>
       </v-chip-group>
-      <v-expansion-panels v-model="openPanels" variant="accordion" flat>
-        <v-expansion-panel v-for="item in filteredFaqs" :key="item.question" :value="item.question">
-          <v-expansion-panel-title>
+      <div class="prism-text-label-small text-grey-darken-1 mb-3" aria-live="polite">
+        {{ resultCountMessage }}
+      </div>
+      <v-expansion-panels v-model="openPanels" flat class="faq-panels">
+        <v-expansion-panel
+          v-for="item in filteredFaqs"
+          :key="item.question"
+          :value="item.question"
+          class="faq-panel"
+        >
+          <v-expansion-panel-title class="faq-panel-title">
             <!-- w-100 so the title fills the row and the badge can sit at its right edge. -->
-            <div class="d-flex align-start ga-2 w-100">
-              <span class="prism-text-title-medium font-weight-medium faq-question">
+            <div class="d-flex align-start ga-3 w-100">
+              <span class="prism-text-title-medium faq-question">
                 <!-- v-text keeps the segments exact: no template whitespace can leak in. -->
                 <template v-for="(part, i) in highlightParts(item.question)" :key="i">
                   <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
                   <span v-else v-text="part.text" />
                 </template>
               </span>
-              <span
-                class="prism-text-label-small text-grey-darken-1 text-no-wrap flex-shrink-0 mt-1 mr-2"
-              >
+              <span class="prism-text-label-small text-no-wrap flex-shrink-0 faq-category">
                 <template v-for="(part, i) in highlightParts(item.category)" :key="i">
                   <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
                   <span v-else v-text="part.text" />
@@ -56,8 +62,8 @@
               </span>
             </div>
           </v-expansion-panel-title>
-          <v-expansion-panel-text>
-            <div class="prism-text-body-large" v-html="highlightHtml(item.answer)" />
+          <v-expansion-panel-text class="faq-panel-text">
+            <div class="prism-text-body-large faq-answer" v-html="highlightHtml(item.answer)" />
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -551,6 +557,13 @@
           .filter((entry) => tokens.every((token) => entry.text.includes(token)))
           .map((entry) => entry.item);
       },
+      // "N of M" when a search or chip narrows the list; a plain total otherwise.
+      resultCountMessage() {
+        const shown = this.filteredFaqs.length;
+        const total = this.faqs.length;
+        const noun = shown === 1 ? 'FAQ' : 'FAQs';
+        return shown === total ? `Showing all ${total} FAQs` : `Showing ${shown} of ${total} ${noun}`;
+      },
       noResultsMessage() {
         if (this.queryTokens.length && this.activeFilter) {
           return `No FAQs in “${this.activeFilter.value}” match “${this.searchQuery}”.`;
@@ -607,12 +620,51 @@
 </script>
 
 <style scoped>
-  .v-expansion-panel {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  /* Each question is its own bordered card with a small gap, so closed panels read as a
+     list of items rather than a wall of text. */
+  .faq-panel {
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+    border-radius: 8px !important;
+    background-color: transparent;
+  }
+  .faq-panel + .faq-panel {
+    margin-top: 8px;
+  }
+  /* Hide Vuetify's between-panel divider; the card borders replace it. */
+  .faq-panel::after {
+    display: none;
   }
 
-  .v-expansion-panel-title.v-expansion-panel-title--active {
+  /* The open panel lifts off the list: primary border and extra breathing room. */
+  .faq-panel.v-expansion-panel--active {
+    border-color: rgba(var(--v-theme-primary), 0.6);
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  .faq-panel.v-expansion-panel--active:first-child {
+    margin-top: 0;
+  }
+
+  .faq-panel-title {
+    padding: 14px 20px;
+    min-height: 56px;
+  }
+  .faq-panel-title:hover:not(.v-expansion-panel-title--active) {
     background-color: rgba(var(--v-theme-on-surface), 0.03);
+  }
+  /* Open title becomes a tinted header band in the primary colour, set off from the body
+     by a rule below it, so the question and its answer are clearly two different zones. */
+  .faq-panel-title.v-expansion-panel-title--active {
+    background-color: rgba(var(--v-theme-primary), 0.08);
+    color: rgb(var(--v-theme-primary));
+    border-bottom: 1px solid rgba(var(--v-theme-primary), 0.25);
+    border-radius: 7px 7px 0 0;
+  }
+  .faq-panel-title.v-expansion-panel-title--active .faq-question {
+    font-weight: 600;
+  }
+  .faq-panel-title.v-expansion-panel-title--active :deep(.v-expansion-panel-title__icon) {
+    color: rgb(var(--v-theme-primary));
   }
 
   /* Take the free space so the question wraps onto its own lines instead of pushing
@@ -620,6 +672,46 @@
   .faq-question {
     flex: 1 1 auto;
     min-width: 0;
+    color: rgba(var(--v-theme-on-surface), 0.87);
+
+    transition: color 0.2s;
+  }
+  .faq-panel-title.v-expansion-panel-title--active .faq-question {
+    color: inherit;
+  }
+
+  /* Category reads as a small pill so it no longer competes with the question text. */
+  .faq-category {
+    margin-top: 2px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background-color: rgba(var(--v-theme-on-surface), 0.06);
+    color: rgba(var(--v-theme-on-surface), 0.6);
+  }
+  .faq-panel-title.v-expansion-panel-title--active .faq-category {
+    background-color: rgba(var(--v-theme-primary), 0.12);
+    color: rgb(var(--v-theme-primary));
+  }
+
+  /* Answer body: plain surface, generous padding, slightly softer text than the title. */
+  .faq-panel-text :deep(.v-expansion-panel-text__wrapper) {
+    padding: 20px 24px 24px;
+  }
+  .faq-answer {
+    color: rgba(var(--v-theme-on-surface), 0.78);
+  }
+  .faq-answer :deep(a) {
+    color: rgb(var(--v-theme-primary));
+  }
+  .faq-answer :deep(table) {
+    border-collapse: collapse;
+    margin: 8px 0;
+  }
+  .faq-answer :deep(th),
+  .faq-answer :deep(td) {
+    padding: 6px 12px;
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+    text-align: left;
   }
   .text-medium-emphasis {
     font-weight: 100 !important;
