@@ -562,7 +562,9 @@
         const shown = this.filteredFaqs.length;
         const total = this.faqs.length;
         const noun = shown === 1 ? 'FAQ' : 'FAQs';
-        return shown === total ? `Showing all ${total} FAQs` : `Showing ${shown} of ${total} ${noun}`;
+        return shown === total
+          ? `Showing all ${total} FAQs`
+          : `Showing ${shown} of ${total} ${noun}`;
       },
       noResultsMessage() {
         if (this.queryTokens.length && this.activeFilter) {

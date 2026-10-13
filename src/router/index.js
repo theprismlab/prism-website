@@ -66,6 +66,10 @@ const routes = [
     component: () => import('@/pages/publications.vue'),
   },
   {
+    path: '/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism',
+    component: () => import('@/pages/white-papers/cps-2024/index.vue'),
+  },
+  {
     path: '/oncology-reference/nominations',
     component: () => import('@/pages/oncology-reference/nominations.vue'),
     meta: {
