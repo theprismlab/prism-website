@@ -9,6 +9,7 @@ export const SCHEDULE = [
     window_start: '2026-07-13',
     window_end: '2026-07-24',
     data_delivery_date: 'November 2026',
+    status: 'DATA_DELIVERED',
   },
   {
     screen_type: 'MTS',
@@ -63,7 +64,11 @@ function todayET() {
 // isn't enough, since a screen can be the current one for its type while its window is
 // closed/at capacity. When both hold, the API is treated as ground truth and the window-date
 // estimate below is overridden to OPEN.
+//
+// A `status` set explicitly on a SCHEDULE entry (e.g. 'DATA_DELIVERED') takes precedence over
+// both the API check and the date-based estimate.
 export function computedStatus(item, screenRouteStateFor) {
+  if (item.status) return item.status;
   const validation = screenRouteStateFor?.(item.screen_name, item.screen_type);
   if (validation?.status === 'valid') return 'OPEN';
   const today = todayET();

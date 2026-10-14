@@ -24,6 +24,11 @@ export const STATUS_META = {
     label: 'Closed',
     color: 'red',
   },
+  DATA_DELIVERED: {
+    key: 'data-delivered',
+    label: 'Data Delivered',
+    color: 'blue',
+  },
 };
 
 export function statusMeta(status) {
