@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PRISM Oncology Reference Screen Nomination Form",
+  "description": "Accepts a single nomination object or an array of nomination objects.",
+  "anyOf": [
+    { "$ref": "#/definitions/nomination" },
+    {
+      "type": "array",
+      "items": { "$ref": "#/definitions/nomination" },
+      "minItems": 1
+    }
+  ],
+  "definitions": {
+    "nomination": {
+      "type": "object",
+      "properties": {
+        "submitter_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "submitter_email": {
+          "type": "string",
+          "minLength": 1
+        },
+        "institution_company_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "institution_company_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nominated_compound_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pubchem_cid": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "smiles_string": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "can_provide_qc_agent": {
+          "type": "string",
+          "enum": ["Yes", "No"]
+        },
+        "vendor_ordering_info": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modality": {
+          "type": "string",
+          "enum": [
+            "Inhibitor",
+            "Degrader/glue",
+            "Activator/agonist",
+            "Biologic",
+            "Cytotoxic/genotoxic",
+            "Other"
+          ]
+        },
+        "drug_targets": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9-]+$"
+          },
+          "minItems": 1
+        },
+        "test_agent_type": {
+          "type": "string",
+          "enum": ["DMSO", "Aqueous"]
+        },
+        "top_dose": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "top_dose_unit": {
+          "type": "string",
+          "enum": ["uM", "ug/mL"]
+        }
+      },
+      "required": [
+        "submitter_name",
+        "submitter_email",
+        "institution_company_name",
+        "institution_company_type",
+        "nominated_compound_name",
+        "can_provide_qc_agent",
+        "vendor_ordering_info",
+        "modality",
+        "drug_targets",
+        "test_agent_type",
+        "top_dose",
+        "top_dose_unit"
+      ],
+      "anyOf": [
+        { "required": ["pubchem_cid"], "properties": { "pubchem_cid": { "type": "integer" } } },
+        {
+          "required": ["smiles_string"],
+          "properties": { "smiles_string": { "type": "string", "minLength": 1 } }
+        }
+      ],
+      "allOf": [
+        {
+          "if": { "properties": { "test_agent_type": { "const": "DMSO" } } },
+          "then": { "properties": { "top_dose_unit": { "const": "uM" } } }
+        }
+      ],
+      "additionalProperties": true
+    }
+  }
+}

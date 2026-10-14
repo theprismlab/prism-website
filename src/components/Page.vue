@@ -16,9 +16,11 @@
   };
 </script>
 <style scoped>
+  /* No top padding: every page opens with a PageHeader or PageSection,
+     which own their own vertical spacing. The bottom padding plus the last
+     section's own padding puts 64px between content and the footer. */
   .page {
-    padding-top: 24px;
-    padding-bottom: 64px;
+    padding-bottom: 32px;
   }
 
   /* xxl  */
@@ -40,7 +42,6 @@
   /* xs */
   @media (max-width: 600px) {
     .page {
-      padding-top: 24px;
       padding-bottom: 24px;
     }
   }

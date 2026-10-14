@@ -1,7 +1,10 @@
 <template>
   <page>
-    <app-container wide>
-      <prism-page-title class="text-center">Meet our team</prism-page-title>
+    <page-header wide class="text-center">
+      <template #title>Meet our team</template>
+    </page-header>
+
+    <page-section width="wide">
       <div class="team-grid">
         <TeamCard
           v-for="(individual, index) in teamBosses"
@@ -22,7 +25,7 @@
           :index="individual.index"
         ></TeamCard>
       </div>
-    </app-container>
+    </page-section>
   </page>
 </template>
 <script>
@@ -77,6 +80,9 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 14px 14px;
+  }
+  /* The section's own padding separates the first grid from the header. */
+  .team-grid + .team-grid {
     margin-top: 48px;
   }
   /* ipad size */

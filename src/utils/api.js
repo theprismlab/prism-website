@@ -70,3 +70,16 @@ export async function getSubbmissionScreenInfo(apiURL, submission_type) {
   }
   return authedGet(apiURL, path);
 }
+export async function postNominations(apiURL, payload) {
+  const url = apiURL + 'prism-nominations';
+  const userKey = await getTempApiKey(apiURL);
+
+  const res = await axios.post(url, payload, {
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      user_key: userKey,
+    },
+  });
+  return res.data;
+}

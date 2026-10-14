@@ -1,5 +1,5 @@
 <template>
-  <v-card class="hbspt-form-card elevation-1 px-12 py-6 my-12" style="max-width: 100%; width: 100%">
+  <v-card class="hbspt-form-card elevation-1 px-12 py-6" style="max-width: 100%; width: 100%">
     <div class="hbspt-form" id="hbspt-form-31184627-79a8-4973-9ed3-8cfe47d1cdd3" v-once></div>
   </v-card>
 </template>

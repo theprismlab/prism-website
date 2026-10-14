@@ -20,20 +20,26 @@ Column headers with validation rules now show an info icon (ⓘ) with a tooltip 
 
 ---
 
+## What changed (October 2026)
+
+EPS no longer has a Dilution Factor column. The `dilution_factor` field was removed from `COMPOUND_FIELDS` (it was only used by EPS), along with its minimum-2 rule and the dilution-dependent amount minimum (720 uL / 600 uL). EPS Amount now uses the same flat rule as the other screens: minimum **500 uL**, stored as `minAmountUL` in `SCREEN_CONFIG.EPS`.
+
+---
+
 ## What changed (July 2026)
 
 Internal refactor of `testAgentSchema.js` — no field, validation, or column changes. Each screen's fields, validators, and tooltips were consolidated into one `SCREEN_DEFINITIONS[screenType]` object per screen (previously spread across separate `SCREENS`, `SCREEN_VALIDATORS`, and `buildTooltips()` maps), and the generic property names were renamed to make explicit which table they describe: the **Compound Table** (every screen's main table) vs. the **Combination Table** (CPS's second table).
 
-| Old name | New name | Belongs to |
-|---|---|---|
-| `FIELDS` | `COMPOUND_FIELDS` | Compound Table |
-| `SCREEN_DEFINITIONS[x].fields` | `.compoundFields` | Compound Table |
-| `SCREEN_DEFINITIONS[x].validateRow` | `.validateCompoundRow` | Compound Table |
-| `SCREEN_DEFINITIONS[x].tooltips` | `.compoundTooltips` | Compound Table |
-| `buildScreenFields()` | `buildCompoundFields()` | Compound Table |
-| `getInitialRow()` | `getInitialCompoundRow()` | Compound Table |
-| `validateCPSTable` (standalone function) | `SCREEN_DEFINITIONS.CPS.getTableMessages` | Cross-table (CPS only) |
-| *(unchanged)* `.combinationFields`, `.validateCombinationRow`, `.combinationTooltips` | same | Combination Table (CPS only) |
+| Old name                                                                              | New name                                  | Belongs to                   |
+| ------------------------------------------------------------------------------------- | ----------------------------------------- | ---------------------------- |
+| `FIELDS`                                                                              | `COMPOUND_FIELDS`                         | Compound Table               |
+| `SCREEN_DEFINITIONS[x].fields`                                                        | `.compoundFields`                         | Compound Table               |
+| `SCREEN_DEFINITIONS[x].validateRow`                                                   | `.validateCompoundRow`                    | Compound Table               |
+| `SCREEN_DEFINITIONS[x].tooltips`                                                      | `.compoundTooltips`                       | Compound Table               |
+| `buildScreenFields()`                                                                 | `buildCompoundFields()`                   | Compound Table               |
+| `getInitialRow()`                                                                     | `getInitialCompoundRow()`                 | Compound Table               |
+| `validateCPSTable` (standalone function)                                              | `SCREEN_DEFINITIONS.CPS.getTableMessages` | Cross-table (CPS only)       |
+| _(unchanged)_ `.combinationFields`, `.validateCombinationRow`, `.combinationTooltips` | same                                      | Combination Table (CPS only) |
 
 `isBlankRow()` was kept table-agnostic on purpose — the same function applies to a Compound Table row or a Combination Table row. Data-shape keys consumed by the Vue components and the API payload builder (`data.rows`, `data.combinations`, `errors.rows`, `errors.combinations`) were **not** renamed, since they cross into props and the submitted payload rather than staying internal to this file.
 
@@ -41,19 +47,20 @@ Internal refactor of `testAgentSchema.js` — no field, validation, or column ch
 
 ## MTS — Multiplexed Treatment Screen (DMSO)
 
-| Column | Type | Options |
-|--------|------|---------|
-| Test Agent Name | Text | — |
-| Top Screening Dose | Number | — |
-| Top Dose Unit | Dropdown | uM |
-| Amount | Number | — |
-| Amount Unit | Dropdown | uL |
-| Storage Conditions | Dropdown | Room temperature, 4°C, -20°C |
-| Stock Concentration | Number | — |
-| Stock Conc. Unit | Dropdown | mM |
-| Health Hazard? | Dropdown | Yes, No |
+| Column              | Type     | Options                      |
+| ------------------- | -------- | ---------------------------- |
+| Test Agent Name     | Text     | —                            |
+| Top Screening Dose  | Number   | —                            |
+| Top Dose Unit       | Dropdown | uM                           |
+| Amount              | Number   | —                            |
+| Amount Unit         | Dropdown | uL                           |
+| Storage Conditions  | Dropdown | Room temperature, 4°C, -20°C |
+| Stock Concentration | Number   | —                            |
+| Stock Conc. Unit    | Dropdown | mM                           |
+| Health Hazard?      | Dropdown | Yes, No                      |
 
 **Validation rules**
+
 - Amount: minimum **150 uL**
 - Stock Concentration: must equal Top Screening Dose numerically (e.g. 10 uM top dose → 10 mM stock). This reflects the 1000× dilution factor between assay and stock units.
 
@@ -63,35 +70,37 @@ Internal refactor of `testAgentSchema.js` — no field, validation, or column ch
 
 Same fields and column order as MTS. Supports an optional combinations table.
 
-| Column | Type | Options |
-|--------|------|---------|
-| Test Agent Name | Text | — |
-| Top Screening Dose | Number | — |
-| Top Dose Unit | Dropdown | uM |
-| Amount | Number | — |
-| Amount Unit | Dropdown | uL |
-| Storage Conditions | Dropdown | Room temperature, 4°C, -20°C |
-| Stock Concentration | Number | — |
-| Stock Conc. Unit | Dropdown | mM |
-| Health Hazard? | Dropdown | Yes, No |
+| Column              | Type     | Options                      |
+| ------------------- | -------- | ---------------------------- |
+| Test Agent Name     | Text     | —                            |
+| Top Screening Dose  | Number   | —                            |
+| Top Dose Unit       | Dropdown | uM                           |
+| Amount              | Number   | —                            |
+| Amount Unit         | Dropdown | uL                           |
+| Storage Conditions  | Dropdown | Room temperature, 4°C, -20°C |
+| Stock Concentration | Number   | —                            |
+| Stock Conc. Unit    | Dropdown | mM                           |
+| Health Hazard?      | Dropdown | Yes, No                      |
 
 **Validation rules**
+
 - Amount (solo): minimum **150 uL**
 - Amount (with combinations): minimum **400 uL × number of combination slots** the compound appears in. For example, if a compound is in 2 combination rows, it requires at least 800 uL.
 - Stock Concentration: must equal Top Screening Dose numerically (same 1000× logic as MTS).
 
 **Combinations table**
 
-| Column | Required | Options |
-|--------|----------|---------|
-| Drug A Compound Name | Yes | Must match a submitted Test Agent Name |
-| Drug A Top Dose | Yes | — |
-| Drug A Top Dose Unit | Yes | uM |
-| Drug B Compound Name | No | Must match a submitted Test Agent Name if provided |
-| Drug B Dose | Conditional | Required when Drug B is specified |
-| Drug B Dose Unit | Conditional | Required when Drug B is specified; uM |
+| Column               | Required    | Options                                            |
+| -------------------- | ----------- | -------------------------------------------------- |
+| Drug A Compound Name | Yes         | Must match a submitted Test Agent Name             |
+| Drug A Top Dose      | Yes         | —                                                  |
+| Drug A Top Dose Unit | Yes         | uM                                                 |
+| Drug B Compound Name | No          | Must match a submitted Test Agent Name if provided |
+| Drug B Dose          | Conditional | Required when Drug B is specified                  |
+| Drug B Dose Unit     | Conditional | Required when Drug B is specified; uM              |
 
 Additional combination validation:
+
 - Drug A and Drug B cannot be the same compound.
 - Duplicate (Drug A, Drug B) pairs are not allowed.
 - Every Drug A that appears in a combination row must also appear in at least one solo row (Drug B left blank). This ensures the compound is run alone as a control in addition to any combinations.
@@ -100,45 +109,43 @@ Additional combination validation:
 
 ## EPS — Extended Perturbation Screen (DMSO)
 
-| Column | Type | Options |
-|--------|------|---------|
-| Test Agent Name | Text | — |
-| Top Screening Dose | Number | — |
-| Top Dose Unit | Dropdown | uM |
-| Dilution Factor | Number | — |
-| Amount | Number | — |
-| Amount Unit | Dropdown | uL |
-| Stock Concentration | Number | — |
-| Stock Conc. Unit | Dropdown | mM |
-| Storage Conditions | Dropdown | Room temperature, 4°C, -20°C |
-| Health Hazard? | Dropdown | Yes, No |
+| Column              | Type     | Options                      |
+| ------------------- | -------- | ---------------------------- |
+| Test Agent Name     | Text     | —                            |
+| Top Screening Dose  | Number   | —                            |
+| Top Dose Unit       | Dropdown | uM                           |
+| Amount              | Number   | —                            |
+| Amount Unit         | Dropdown | uL                           |
+| Stock Concentration | Number   | —                            |
+| Stock Conc. Unit    | Dropdown | mM                           |
+| Storage Conditions  | Dropdown | Room temperature, 4°C, -20°C |
+| Health Hazard?      | Dropdown | Yes, No                      |
 
 **Validation rules**
-- Dilution Factor: minimum **2**
-- Amount: depends on the dilution factor
-  - Dilution factor **2 to <3**: minimum **720 uL**
-  - Dilution factor **3 or higher**: minimum **600 uL**
+
+- Amount: minimum **500 uL**
 - Stock Concentration: must equal Top Screening Dose numerically (same 1000× logic as MTS/CPS).
 
 ---
 
 ## APS — Aqueous Perturbation Screen
 
-| Column | Type | Options |
-|--------|------|---------|
-| Test Agent Name | Text | — |
-| Molecule Type | Dropdown | Antibody, Aqueous Small Molecule, Antibody Drug Conjugate (ADC), Other |
-| Top Screening Dose | Number | — |
-| Top Dose Unit | Dropdown | uM, ug/mL |
-| Solvent | Text | — |
-| Amount | Number | — |
-| Amount Unit | Dropdown | uL |
-| Stock Concentration | Number | — |
-| Stock Conc. Unit | Dropdown | mM, mg/mL |
-| Storage Conditions | Dropdown | Room temperature, 4°C, -20°C |
-| Health Hazard? | Dropdown | Yes, No |
+| Column              | Type     | Options                                                                |
+| ------------------- | -------- | ---------------------------------------------------------------------- |
+| Test Agent Name     | Text     | —                                                                      |
+| Molecule Type       | Dropdown | Antibody, Aqueous Small Molecule, Antibody Drug Conjugate (ADC), Other |
+| Top Screening Dose  | Number   | —                                                                      |
+| Top Dose Unit       | Dropdown | uM, ug/mL                                                              |
+| Solvent             | Text     | —                                                                      |
+| Amount              | Number   | —                                                                      |
+| Amount Unit         | Dropdown | uL                                                                     |
+| Stock Concentration | Number   | —                                                                      |
+| Stock Conc. Unit    | Dropdown | mM, mg/mL                                                              |
+| Storage Conditions  | Dropdown | Room temperature, 4°C, -20°C                                           |
+| Health Hazard?      | Dropdown | Yes, No                                                                |
 
 **Validation rules**
+
 - Amount: minimum **1000 uL**
 - Stock Concentration: must equal Top Screening Dose ÷ 4 (250× concentration factor, e.g. 10 uM top dose → 2.5 mM stock).
 - Stock Conc. Unit must pair with Top Dose Unit:
@@ -149,21 +156,22 @@ Additional combination validation:
 
 ## AIR — Aqueous In Reagent
 
-| Column | Type | Options |
-|--------|------|---------|
-| Test Agent Name | Text | — |
-| Molecule Type | Dropdown | Antibody |
-| Top Screening Dose | Number | — |
-| Top Dose Unit | Dropdown | ug/mL |
-| Solvent | Text | — |
-| Amount | Number | — |
-| Amount Unit | Dropdown | uL |
-| Stock Concentration | Number | — |
-| Stock Conc. Unit | Dropdown | mg/mL |
-| Storage Conditions | Dropdown | Room temperature, 4°C, -20°C |
-| Health Hazard? | Dropdown | Yes, No |
+| Column              | Type     | Options                      |
+| ------------------- | -------- | ---------------------------- |
+| Test Agent Name     | Text     | —                            |
+| Molecule Type       | Dropdown | Antibody                     |
+| Top Screening Dose  | Number   | —                            |
+| Top Dose Unit       | Dropdown | ug/mL                        |
+| Solvent             | Text     | —                            |
+| Amount              | Number   | —                            |
+| Amount Unit         | Dropdown | uL                           |
+| Stock Concentration | Number   | —                            |
+| Stock Conc. Unit    | Dropdown | mg/mL                        |
+| Storage Conditions  | Dropdown | Room temperature, 4°C, -20°C |
+| Health Hazard?      | Dropdown | Yes, No                      |
 
 **Validation rules**
+
 - Molecule Type: restricted to **Antibody** only.
 - Top Screening Dose: maximum **2 ug/mL**
 - Amount: minimum **500 uL**

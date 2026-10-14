@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getSubbmissionScreenInfo, stripSeqSuffix } from './api.js';
+import { getSubbmissionScreenInfo, stripSeqSuffix } from '@/utils/api.js';
 import { loadableState, loadableActions } from './loadable.js';
 
 // Single source of truth for "what do we know about a submission type," keyed by screen_type

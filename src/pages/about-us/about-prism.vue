@@ -1,7 +1,10 @@
 <template>
   <page>
-    <app-container narrow>
-      <prism-page-title>About PRISM</prism-page-title>
+    <page-header narrow>
+      <template #title>About PRISM</template>
+    </page-header>
+
+    <page-section width="narrow">
       <p class="prism-text-body-large">
         Developed by the Broad Institute of MIT and Harvard, PRISM (Profiling Relative Inhibition
         Simultaneously in Mixtures) is a novel DNA barcoding technology that allows for rapid,
@@ -23,7 +26,7 @@
         helped identify new patient populations for clinical trials, our data has been used in
         Investigational New Drug (IND) filings, and we have been a part of over 40 publications.
       </p>
-    </app-container>
+    </page-section>
   </page>
 </template>
 <script>

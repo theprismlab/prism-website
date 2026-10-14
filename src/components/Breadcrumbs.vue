@@ -7,7 +7,12 @@
       <v-breadcrumbs-item
         :to="item.to"
         :disabled="item.disabled"
-        :class="item.disabled ? 'text-grey-darken-1' : 'text-primary-base'"
+        :aria-current="item.current ? 'page' : undefined"
+        :class="{
+          'breadcrumb-item--current text-grey-darken-3': item.current,
+          'breadcrumb-item--link text-primary': item.link,
+          'breadcrumb-item--label text-grey-darken-1': !item.current && !item.link,
+        }"
         class="breadcrumb-item text-caption font-weight-medium"
       >
         {{ item.title }}
@@ -17,48 +22,47 @@
 </template>
 
 <script>
+  /**
+   * Breadcrumbs
+   *
+   * Reads `$route.meta.breadcrumbs`, a function returning `[{ title, to? }]`.
+   * The router only supplies data; this component derives the three states:
+   *   - current : the last item (plain text, aria-current="page"; any `to` is ignored)
+   *   - link    : any earlier item with a `to`
+   *   - label   : any earlier item without a `to` (a grouping with no page of its own)
+   */
   export default {
     name: 'Breadcrumbs',
     computed: {
       items() {
         const fn = this.$route?.meta?.breadcrumbs;
-        return fn ? fn(this.$route) : [];
+        const raw = fn ? fn(this.$route) : [];
+        return raw.map((item, i) => {
+          const current = i === raw.length - 1;
+          const link = !current && !!item.to;
+          return {
+            title: item.title,
+            to: link ? item.to : undefined,
+            current,
+            link,
+            disabled: !link,
+          };
+        });
       },
     },
   };
 </script>
 
 <style scoped>
-  .breadcrumbs {
-    /* margin-bottom: 12px; */
-  }
-
   .breadcrumb-item {
     letter-spacing: 0.02em;
     text-decoration: none;
-    opacity: 1 !important;
+    opacity: 1 !important; /* Vuetify dims disabled items; the colors below carry the state instead */
   }
 
-  .breadcrumb-item:not([disabled]):hover {
+  /* Colors come from Vuetify utility classes bound in the template:
+     link -> text-primary, label -> text-grey-darken-1, current -> text-grey-darken-3 */
+  .breadcrumb-item--link:hover {
     text-decoration: underline;
-  }
-
-  /* xxl  */
-  @media (min-width: 2560px) {
-  }
-  /* xl */
-  @media (min-width: 1920px) and (max-width: 2560px) {
-  }
-  /* lg */
-  @media (min-width: 1280px) and (max-width: 1920px) {
-  }
-  /* md */
-  @media (min-width: 960px) and (max-width: 1280px) {
-  }
-  /* sm */
-  @media (min-width: 600px) and (max-width: 960px) {
-  }
-  /* xs */
-  @media (max-width: 600px) {
   }
 </style>

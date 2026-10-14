@@ -3,7 +3,7 @@
     <div class="explorer-sticky-header">
       <div class="explorer-toolbar-track">
         <v-toolbar class="explorer-toolbar" flat>
-          <app-container wide class="explorer-toolbar__container">
+          <app-container class="explorer-toolbar__container">
             <div class="explorer-toolbar__inner">
               <v-toolbar-title class="toolbar-title text-overline">Explore All</v-toolbar-title>
               <v-spacer />
@@ -470,20 +470,11 @@
     min-height: var(--publications-banner-height) !important;
     padding-inline: 0;
   }
-  /* The container fills the toolbar; its inner v-container handles the
-     responsive gutters so the toolbar contents align with the page body. */
-  .explorer-toolbar__container {
-    width: 100%;
-  }
-  :deep(.explorer-toolbar__container > .v-container) {
-    padding-block: 0;
+  /* The container fills the toolbar height and keeps the page's responsive
+     gutters so the toolbar contents align with the page body. The extra
+     selector depth outranks AppContainer's own vertical padding. */
+  .explorer-toolbar .explorer-toolbar__container {
     height: 100%;
-  }
-  :deep(.explorer-toolbar__container .v-row) {
-    height: 100%;
-    margin: 0;
-  }
-  :deep(.explorer-toolbar__container .v-col) {
     padding-block: 0;
     display: flex;
     align-items: center;

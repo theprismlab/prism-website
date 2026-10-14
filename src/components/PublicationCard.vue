@@ -6,18 +6,9 @@
     elevation="0"
     :style="{ '--type-color': typeStyle.bg }"
   >
-    <!-- Thin colored accent stripe on the left -->
-    <span class="pub-card-minimal__accent" :style="{ backgroundColor: typeStyle.bg }" />
-
     <div class="pub-card-minimal__body">
       <div v-if="featured" class="pub-card-minimal__eyebrow">
-        <v-icon
-          class="pub-card-minimal__eyebrow-icon"
-          color="white"
-          size="18"
-          :title="item.type"
-          :aria-label="item.type"
-        >
+        <v-icon class="pub-card-minimal__eyebrow-icon" size="15" aria-hidden="true">
           {{ typeStyle.icon }}
         </v-icon>
         <span class="pub-card-minimal__eyebrow-label">{{ item.type }}</span>
@@ -25,11 +16,7 @@
 
       <h3 v-if="featured" class="pub-card-minimal__title">{{ item.title }}</h3>
 
-      <div v-else>
-        <h3 class="pub-card-minimal__title">
-          <span class="ml-1">{{ item.title }}</span>
-        </h3>
-      </div>
+      <h3 v-else class="pub-card-minimal__title">{{ item.title }}</h3>
 
       <div v-if="item.author || item.publisher" class="pub-card-minimal__meta">
         <span v-if="item.author">{{ item.author }}, et al., </span>
@@ -73,16 +60,19 @@
 
 <style scoped>
   /* ---------- Shared base ---------- */
+  /* Both variants carry one 5px accent edge in the type color: the left
+     edge for list cards, the top edge for featured cards. */
   .pub-card-minimal {
     position: relative;
     display: flex;
     align-items: stretch;
     gap: 1rem;
     border: 1px solid rgba(0, 0, 0, 0.06);
+    border-left: 5px solid var(--type-color, #000);
     border-radius: 10px;
     background: #fff;
     overflow: hidden;
-    padding: 1rem 2rem;
+    padding: 1.1rem 1.5rem;
     box-shadow:
       0 1px 2px rgba(20, 30, 60, 0.06),
       0 3px 8px rgba(20, 30, 60, 0.07);
@@ -91,34 +81,15 @@
       box-shadow 180ms ease,
       transform 180ms ease;
     border-color: color-mix(in srgb, var(--type-color, #000) 10%, transparent);
+    border-left-color: var(--type-color, #000);
   }
 
   .pub-card-minimal:hover {
     border-color: color-mix(in srgb, var(--type-color, #000) 45%, transparent);
+    border-left-color: var(--type-color, #000);
     box-shadow:
       0 2px 4px rgba(20, 30, 60, 0.07),
       0 10px 24px rgba(20, 30, 60, 0.11);
-  }
-
-  /* Thin colored accent stripe on the left edge */
-  .pub-card-minimal__accent {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 16px;
-    opacity: 100%;
-  }
-
-  /* ---------- Type icon tile ---------- */
-  .pub-card-minimal__type-tile {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    /* border-radius: 8px; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   /* ---------- Body ---------- */
@@ -194,49 +165,32 @@
   }
 
   /* ---------- Featured-only ---------- */
+  /* Featured cards move the accent edge to the top and add a colored
+     eyebrow, matching ResourceCard's editorial tone. */
   .pub-card-minimal--featured {
-    padding: 1.25rem 1.35rem 1.25rem 2rem;
-    gap: 1.15rem;
+    padding: 1.5rem 1.5rem 1.35rem;
+    gap: 0;
+    border-top: 5px solid var(--type-color, #000);
+    border-left-width: 1px;
+    border-left-color: color-mix(in srgb, var(--type-color, #000) 10%, transparent);
   }
 
-  .pub-card-minimal--featured .pub-card-minimal__type-tile {
-    width: 44px;
-    height: 44px;
-    border-radius: 9px;
+  .pub-card-minimal--featured:hover {
+    border-left-color: color-mix(in srgb, var(--type-color, #000) 45%, transparent);
   }
-
-  /* .pub-card-minimal--featured .pub-card-minimal__title {
-    font-size: 1.18rem;
-    line-height: 1.3;
-    gap: 0.55rem;
-  } */
 
   .pub-card-minimal--featured .pub-card-minimal__body {
-    gap: 0.55rem;
+    gap: 0.6rem;
   }
 
-  .pub-card-minimal--featured .pub-card-minimal__eyebrow {
-    font-size: 0.78rem;
-    gap: 0.5rem;
-    /* Break out of the card's padding so the colored bar spans the
-       full width. Negative margins must match the featured card's
-       top/left/right padding values. */
-    margin: -1.25rem -1.35rem 0.75rem;
-    padding: 0.5rem 1.35rem;
-    border-radius: 0;
-    align-self: stretch;
-    background-color: var(--type-color, #000);
-    color: #ffffff;
+  .pub-card-minimal--featured .pub-card-minimal__title {
+    font-size: 1.05rem;
+    line-height: 1.4;
+    font-weight: 600;
   }
 
-  /* When the eyebrow is acting as a colored pill (featured),
-     the parent card no longer needs the left accent stripe. */
-  .pub-card-minimal--featured .pub-card-minimal__accent {
-    display: none;
-  }
-
-  .pub-card-minimal--featured {
-    padding-left: 1.35rem;
+  .pub-card-minimal--featured .pub-card-minimal__footer {
+    padding-top: 0.6rem;
   }
 
   /* ---------- Featured eyebrow (type label above title) ---------- */
@@ -249,17 +203,12 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     line-height: 1;
-    margin-bottom: 0.15rem;
-    /* slightly muted version of the type color so it doesn't shout */
-    color: color-mix(in srgb, var(--type-color, #000) 98%, rgb(60, 65, 80));
+    margin-bottom: 0.1rem;
+    color: var(--type-color, #000);
   }
 
   .pub-card-minimal__eyebrow-icon {
     flex-shrink: 0;
-  }
-
-  .pub-card-minimal__eyebrow-label {
-    /* subtle separator beneath the label for editorial feel */
-    padding-bottom: 1px;
+    color: var(--type-color, #000);
   }
 </style>

@@ -146,7 +146,7 @@
 </template>
 
 <script>
-  import { getCollaboratorList } from '@/submissions/api.js';
+  import { getCollaboratorList } from '@/utils/api.js';
   import {
     FIELDS,
     COLLABORATOR_TYPE_OPTIONS,

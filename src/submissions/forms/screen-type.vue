@@ -1,6 +1,6 @@
 <template>
   <page>
-    <app-container wide>
+    <page-section width="wide">
       <prism-page-title>
         {{ screenType }} Submission Form —<br />
         {{ screenName }}
@@ -81,7 +81,7 @@
           </v-expansion-panel>
         </v-expansion-panels>
       </screen-gate>
-    </app-container>
+    </page-section>
   </page>
 </template>
 

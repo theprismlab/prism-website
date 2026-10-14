@@ -1,6 +1,6 @@
 <template>
   <page>
-    <app-container wide>
+    <page-section width="wide">
       <div class="hub-layout">
         <div class="hub-layout__main">
           <prism-page-title>Submission Hub</prism-page-title>
@@ -95,7 +95,7 @@
           </section>
         </aside>
       </div>
-    </app-container>
+    </page-section>
   </page>
 </template>
 

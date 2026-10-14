@@ -1,5 +1,12 @@
 <template>
-  <h2 :class="`prism-text-overline text-${color} font-weight-black mb-0`"><slot></slot></h2>
+  <h2
+    :class="[
+      'prism-text-overline font-weight-black mb-0',
+      gradient ? 'overline-gradient' : `text-${color}`,
+    ]"
+  >
+    <slot></slot>
+  </h2>
 </template>
 
 <script>
@@ -11,6 +18,12 @@
         required: false,
         default: 'secondary',
       },
+      // Dark blue gradient text; overrides `color`
+      gradient: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
     },
     data() {
       return {};
@@ -20,6 +33,14 @@
   };
 </script>
 <style scoped>
+  .overline-gradient {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--v-blue-darken-2), var(--v-indigo-darken-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
   /* .text-overline{
   font-size: .85rem !important;  
 } */

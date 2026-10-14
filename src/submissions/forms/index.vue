@@ -1,9 +1,9 @@
 <template>
   <page>
-    <app-container wide>
+    <page-section width="wide">
       <prism-page-title>Forms</prism-page-title>
       <p class="prism-text-body-large">Select a screen above to view forms.</p>
-    </app-container>
+    </page-section>
   </page>
 </template>
 
