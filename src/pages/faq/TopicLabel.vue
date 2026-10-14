@@ -1,7 +1,7 @@
 <template>
-  <!-- One anatomy for a topic wherever it appears: colour dot, dimmed parent, name. -->
+  <!-- One anatomy for a topic wherever it appears: dimmed parent, then name. The topic
+       colour is a left border on the host (chip or panel), not part of the label. -->
   <span class="topic-label">
-    <span v-if="hue" class="topic-dot" :style="{ backgroundColor: hue }" aria-hidden="true" />
     <span v-if="parent" class="topic-parent">
       <!-- v-text keeps the segments exact: no template whitespace can leak in. -->
       <template v-for="(part, i) in highlight(parent)" :key="i">
@@ -26,8 +26,6 @@
       name: { type: String, required: true },
       // Category of a sub-topic; omitted for a top-level topic.
       parent: { type: String, default: '' },
-      // CSS colour for the dot; omitted for an uncoloured topic such as Popular.
-      hue: { type: String, default: '' },
       // Splits text into { text, isMatch } segments so search hits can be marked.
       highlight: { type: Function, default: (text) => [{ text, isMatch: false }] },
     },
@@ -39,13 +37,6 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-  }
-  .topic-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    margin-right: 7px;
-    flex-shrink: 0;
   }
   .topic-parent {
     opacity: 0.55;

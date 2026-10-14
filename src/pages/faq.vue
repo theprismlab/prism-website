@@ -22,20 +22,23 @@
           v-for="option in filterOptions"
           :key="option.label"
           :value="option.label"
+          :style="{ '--faq-hue': option.hue }"
+          :class="['faq-chip', { 'faq-chip--topic': option.hue }]"
           size="small"
           variant="outlined"
         >
-          <topic-label :parent="option.parent" :name="option.name" :hue="option.hue" />
+          <topic-label :parent="option.parent" :name="option.name" />
         </v-chip>
       </v-chip-group>
       <div class="prism-text-label-small text-grey-darken-1 mb-3" aria-live="polite">
         {{ resultCountMessage }}
       </div>
-      <v-expansion-panels v-model="openPanels" flat class="faq-panels">
+      <v-expansion-panels id="faq-panels" v-model="openPanels" flat class="faq-panels">
         <v-expansion-panel
           v-for="item in filteredFaqs"
           :key="item.question"
           :value="item.question"
+          :style="{ '--faq-hue': categoryHue(item.category) }"
           class="faq-panel"
         >
           <v-expansion-panel-title class="faq-panel-title">
@@ -46,7 +49,6 @@
                 class="prism-text-label-small faq-topic"
                 :parent="topicOf(item).parent"
                 :name="topicOf(item).name"
-                :hue="categoryHue(item.category)"
                 :highlight="highlightParts"
               />
               <span class="prism-text-title-medium faq-question">
@@ -661,8 +663,15 @@
      list of items rather than a wall of text. */
   .faq-panel {
     border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
-    border-radius: 8px !important;
+    /* Topic colour as an inset bar, like the chips, so the 1px outline and the radius
+       stay uniform on all four corners. */
+    box-shadow: inset 3px 0 0 var(--faq-hue);
     background-color: transparent;
+  }
+  /* Vuetify squares the corners where neighbouring panels meet, using !important rules
+     of specificity (0,6,0). The id outranks them so every card is rounded on all sides. */
+  #faq-panels > .faq-panel {
+    border-radius: 8px !important;
   }
   .faq-panel + .faq-panel {
     margin-top: 8px;
@@ -721,7 +730,20 @@
     min-width: 0;
   }
 
-  /* Card label is the chip's label in quiet grey; the dot carries the colour. */
+  /* Chips square off slightly so the coloured left edge reads as a tab, not a blemish
+     on a pill. Popular has no topic colour and keeps the plain outline. */
+  .faq-chip {
+    border-radius: 6px;
+    border-color: rgba(var(--v-theme-on-surface), 0.3);
+  }
+  /* The bar is an inset shadow rather than a border so the thin outline stays one
+     continuous stroke around the chip instead of mitring into a thicker edge. */
+  .faq-chip--topic {
+    box-shadow: inset 3px 0 0 var(--faq-hue);
+    padding-inline-start: 13px;
+  }
+
+  /* Card label is the chip's label in quiet grey; the left edge carries the colour. */
   .faq-topic {
     color: rgba(var(--v-theme-on-surface), 0.6);
   }
