@@ -77,11 +77,17 @@
 <script>
   const PRISM_PORTAL_LINK = `<a href="https://www.theprismlab.org/portal/" target="_blank">PRISM Portal</a>`;
   const PRISM_PORTAL_PROJECTS_LINK = `<a href="https://www.theprismlab.org/portal/projects" target="_blank">PRISM Portal</a>`;
-  const PRISM_WEBINARS_LINK = `<a href="https://www.theprismlab.org/webinars/" target="_blank">Webinars</a>`;
   const DEPMAP_PORTAL_LINK = `<a href="https://depmap.org/portal/" target="_blank">DepMap Portal</a>`;
   const PRISM_GITHUB_lINK = `<a href="https://github.com/cmap/dockerized_mts" target="_blank">PRISM GitHub</a>`;
   const PRISM_EMAIL = `<a href="mailto:prism@broadinstitute.org">prism@broadinstitute.org</a>`;
-  const PRISM_ANALYSIS_LINK = `<a href="https://www.theprismlab.org/consortium-screens/data-analysis/" target="_blank">Data Analysis</a>`;
+
+  const PRISM_SUBMISSION_HUB_LINK = `<a href="/submission-hub/overview" target="_blank">Submission Hub</a>`;
+  const PRISM_CELL_LINE_COLLECTION_LINK = `<a href="/consortium-screens/cell-line-collection" target="_blank">Cell Line Collection</a>`;
+  const PRISM_ASSAYS_LINK = `<a href="/consortium-screens/assays" target="_blank">Assays</a>`;
+  const PRISM_ANALYSIS_LINK = `<a href="/consortium-screens/data-analysis/" target="_blank">Data Analysis</a>`;
+  const PRISM_WEBINARS_LINK = `<a href="/webinars" target="_blank">Webinars</a>`;
+
+  const PRISM_ADC_WHITE_PAPER_LINK = `<a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>`;
   // Strip markup and normalize smart quotes so searches match what the user sees.
   const toSearchText = (html) =>
     html
@@ -120,7 +126,7 @@
             tag: ['Popular'],
             question: 'What cell lines are included in the PRISM cell set?',
             answer: `The PRISM cell line collection contains over 900 DNA barcoded cell lines that represent over 45 major types of cancer and wide genomic diversity. Among them, our collection includes a significant number of pediatric cancer cell lines, as well as over 100 hematopoietic cell lines.<br><br>
-            A list of the 900+ PRISM cell lines used in our screens can be found on the <a href="/consortium-screens/cell-line-collection" target="_blank">Cell Line Collection</a> page.`,
+            A list of the 900+ PRISM cell lines used in our screens can be found on the ${PRISM_CELL_LINE_COLLECTION_LINK} page.`,
           },
           {
             category: 'Cell Line Collection',
@@ -166,7 +172,7 @@
           {
             category: 'Cell Line Collection',
             question: `Are 'normal (immortalized) cell lines' included in the PRISM cell set?`,
-            answer: `The current PRISM cell set has 7 non-cancerous/normal cell lines. A list of the 900+ PRISM cell lines used in our screens can be found on the <a href="/consortium-screens/cell-line-collection" target="_blank">Cell Line Collection</a> page.`,
+            answer: `The current PRISM cell set has 7 non-cancerous/normal cell lines. A list of the 900+ PRISM cell lines used in our screens can be found on the ${PRISM_CELL_LINE_COLLECTION_LINK} page.`,
           },
           {
             category: 'Assays',
@@ -237,7 +243,7 @@
             <br><br>
             Collaborators can submit their test agents and compounds for PRISM screening to be run in our standard format.
             <br><br>
-            Additional details, including upcoming submission dates and test agent requirements can be found on the <a href="/consortium-screens/submission-hub/" target="_blank">Submission Hub</a>.
+            Additional details, including upcoming submission dates and test agent requirements can be found on the ${PRISM_SUBMISSION_HUB_LINK}.
             `,
           },
           {
@@ -271,7 +277,7 @@
             tag: ['Popular', 'Consortium Screens'],
             category: 'Assays',
             question: `Where can I find more information about the assay offerings?`,
-            answer: `An overview of PRISM assay offerings can be found on the <a href="/consortium-screens/assays" target="_blank">Assays</a> page.`,
+            answer: `An overview of PRISM assay offerings can be found on the ${PRISM_ASSAYS_LINK} page.`,
           },
           {
             tag: ['Combination Screens'],
@@ -318,7 +324,7 @@
             question: `Are there bystander effects when screening ADCs in PRISM?`,
             answer: `Based on previous work from our team, we do not see significant bystander effects with ADC screening in PRISM.<br><br>
             For additional context, we screened HER2 ADCs and did not find significant bystander killing of HER2-negative cells. This was validated experimentally by screening the ADCs against HER2 positive and HER2 negative cell lines pooled at different ratios to mimic the expression in PRISM pools. <br><br>
-            Learn more in our <a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>.
+            Learn more in our ${PRISM_ADC_WHITE_PAPER_LINK}.
             `,
           },
           {
@@ -562,7 +568,9 @@
         const shown = this.filteredFaqs.length;
         const total = this.faqs.length;
         const noun = shown === 1 ? 'FAQ' : 'FAQs';
-        return shown === total ? `Showing all ${total} FAQs` : `Showing ${shown} of ${total} ${noun}`;
+        return shown === total
+          ? `Showing all ${total} FAQs`
+          : `Showing ${shown} of ${total} ${noun}`;
       },
       noResultsMessage() {
         if (this.queryTokens.length && this.activeFilter) {

@@ -105,7 +105,7 @@ export const TEST_AGENT_FIELDS = [
   {
     key: 'pubchem_cid',
     label: 'PubChem CID',
-    tooltip: 'If available. Either PubChem CID or SMILE string is required.',
+    tooltip: 'If available. Either PubChem CID or SMILES is required.',
     inputmode: 'numeric',
     span: 2,
     mobileSpan: 12,
@@ -113,8 +113,8 @@ export const TEST_AGENT_FIELDS = [
   },
   {
     key: 'smiles_string',
-    label: 'SMILE string',
-    tooltip: 'Either PubChem CID or SMILE string is required. Checked with RDKit.',
+    label: 'SMILES',
+    tooltip: 'Either PubChem CID or SMILES is required. Checked with RDKit.',
     span: 10,
     mobileSpan: 12,
     validate: (v, row) => cidOrSmiles(row) || validSmiles(v),

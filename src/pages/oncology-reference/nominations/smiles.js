@@ -53,5 +53,5 @@ export function isValidSmiles(smiles, RDKit = rdkit) {
 // CID-or-SMILES rule covers that). Skips when RDKit is unavailable.
 export const validSmiles = (v) => {
   if (!v) return undefined;
-  return isValidSmiles(String(v).trim()) === false ? 'Not a valid SMILES string' : undefined;
+  return isValidSmiles(String(v).trim()) === false ? 'Not a valid SMILES' : undefined;
 };
