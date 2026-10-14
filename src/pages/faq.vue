@@ -22,9 +22,13 @@
           v-for="option in filterOptions"
           :key="option.label"
           :value="option.label"
+          :style="{ '--faq-hue': option.hue }"
           size="small"
           variant="outlined"
+          class="faq-chip"
         >
+          <!-- Topic dot in the same colour as the card overline. -->
+          <span v-if="option.hue" class="faq-chip-dot" aria-hidden="true" />
           <!-- Sub-topic chips read as a breadcrumb: the parent is dimmed, the child is the label. -->
           <span v-if="option.parent" class="faq-chip-parent" v-text="`${option.parent} ›`" />
           <span v-text="option.name" />
@@ -38,6 +42,7 @@
           v-for="item in filteredFaqs"
           :key="item.question"
           :value="item.question"
+          :style="{ '--faq-hue': categoryHue(item.category) }"
           class="faq-panel"
         >
           <v-expansion-panel-title class="faq-panel-title">
@@ -88,6 +93,16 @@
   // Popular cuts across every category, so it is the one tag shown without a parent.
   const POPULAR_TAG = 'Popular';
   const BREADCRUMB_SEPARATOR = ' › ';
+  // One colour per category, used identically for the chip dot and the card overline.
+  // Same values as the stat cards on the home and cell line pages. Sub-topics inherit
+  // their category's colour; Popular is a quick filter, not a topic, so it stays neutral.
+  const CATEGORY_HUES = {
+    'Cell Line Collection': 'var(--v-red-accent-2)',
+    Assays: 'var(--v-teal-accent-4)',
+    'Data Analysis & Delivery': 'var(--v-indigo-accent-2)',
+    'Legal / Operations': 'var(--v-amber-accent-4)',
+  };
+  const hueOf = (category) => CATEGORY_HUES[category];
   // The first tag that narrows a category (i.e. anything but Popular).
   const subTopicOf = (item) => (item.tag || []).find((tag) => tag !== POPULAR_TAG);
 
@@ -533,7 +548,8 @@
       filterOptions() {
         const options = [{ label: POPULAR_TAG, name: POPULAR_TAG, tag: POPULAR_TAG }];
         for (const category of new Set(this.faqs.map((item) => item.category))) {
-          options.push({ label: category, name: category, category });
+          const hue = hueOf(category);
+          options.push({ label: category, name: category, category, hue });
           const subTopics = new Set(
             this.faqs.filter((item) => item.category === category).map(subTopicOf),
           );
@@ -545,6 +561,7 @@
               parent: category,
               category,
               tag,
+              hue,
             });
           }
         }
@@ -598,6 +615,7 @@
       },
     },
     methods: {
+      categoryHue: hueOf,
       // The card badge mirrors the chip: "Assays › Custom Screens" for sub-topics,
       // just the category otherwise.
       badgeLabel(item) {
@@ -641,6 +659,16 @@
 </script>
 
 <style scoped>
+  /* The dot is the only colour on a chip; selection keeps Vuetify's neutral fill. */
+  .faq-chip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 7px;
+    flex-shrink: 0;
+    background-color: var(--faq-hue);
+  }
+
   /* Sub-topic chips: the parent reads as a quiet prefix so the child name stands out. */
   .faq-chip-parent {
     opacity: 0.55;
@@ -662,9 +690,9 @@
     display: none;
   }
 
-  /* The open panel lifts off the list: primary border and extra breathing room. */
+  /* The open panel lifts off the list: darker border and extra breathing room. */
   .faq-panel.v-expansion-panel--active {
-    border-color: rgba(var(--v-theme-primary), 0.6);
+    border-color: rgba(var(--v-theme-on-surface), 0.38);
     margin-top: 16px;
     margin-bottom: 16px;
   }
@@ -679,19 +707,15 @@
   .faq-panel-title:hover:not(.v-expansion-panel-title--active) {
     background-color: rgba(var(--v-theme-on-surface), 0.03);
   }
-  /* Open title becomes a tinted header band in the primary colour, set off from the body
-     by a rule below it, so the question and its answer are clearly two different zones. */
+  /* Open title becomes a neutral grey header band, set off from the body by a rule
+     below it, so the question and its answer are clearly two different zones. */
   .faq-panel-title.v-expansion-panel-title--active {
-    background-color: rgba(var(--v-theme-primary), 0.08);
-    color: rgb(var(--v-theme-primary));
-    border-bottom: 1px solid rgba(var(--v-theme-primary), 0.25);
+    background-color: rgba(var(--v-theme-on-surface), 0.04);
+    border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
     border-radius: 7px 7px 0 0;
   }
   .faq-panel-title.v-expansion-panel-title--active .faq-question {
     font-weight: 600;
-  }
-  .faq-panel-title.v-expansion-panel-title--active :deep(.v-expansion-panel-title__icon) {
-    color: rgb(var(--v-theme-primary));
   }
 
   /* Take the free space so the question wraps onto its own lines instead of pushing
@@ -715,14 +739,12 @@
     min-width: 0;
   }
 
-  /* Category reads as a quiet overline so it no longer competes with the question text. */
+  /* Category reads as a quiet overline in its topic colour. */
   .faq-category {
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: rgba(var(--v-theme-on-surface), 0.55);
-  }
-  .faq-panel-title.v-expansion-panel-title--active .faq-category {
-    color: rgba(var(--v-theme-primary), 0.8);
+    font-weight: 600;
+    color: var(--faq-hue);
   }
 
   /* Answer body: plain surface, generous padding, slightly softer text than the title. */
