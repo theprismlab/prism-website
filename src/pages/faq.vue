@@ -41,17 +41,17 @@
           class="faq-panel"
         >
           <v-expansion-panel-title class="faq-panel-title">
-            <!-- w-100 so the title fills the row and the badge can sit at its right edge. -->
-            <div class="d-flex align-start ga-3 w-100">
-              <span class="prism-text-title-medium faq-question">
-                <!-- v-text keeps the segments exact: no template whitespace can leak in. -->
-                <template v-for="(part, i) in highlightParts(item.question)" :key="i">
+            <div class="faq-title-block">
+              <!-- Overline above the question, so the question keeps the full card width. -->
+              <div class="prism-text-label-small faq-category">
+                <template v-for="(part, i) in highlightParts(badgeLabel(item))" :key="i">
                   <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
                   <span v-else v-text="part.text" />
                 </template>
-              </span>
-              <span class="prism-text-label-small text-no-wrap flex-shrink-0 faq-category">
-                <template v-for="(part, i) in highlightParts(badgeLabel(item))" :key="i">
+              </div>
+              <span class="prism-text-title-medium faq-question">
+                <!-- v-text keeps the segments exact: no template whitespace can leak in. -->
+                <template v-for="(part, i) in highlightParts(item.question)" :key="i">
                   <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
                   <span v-else v-text="part.text" />
                 </template>
@@ -707,17 +707,22 @@
     color: inherit;
   }
 
-  /* Category reads as a small pill so it no longer competes with the question text. */
+  /* Label stacks above the question so the question keeps the full card width. */
+  .faq-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  /* Category reads as a quiet overline so it no longer competes with the question text. */
   .faq-category {
-    margin-top: 2px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    background-color: rgba(var(--v-theme-on-surface), 0.06);
-    color: rgba(var(--v-theme-on-surface), 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(var(--v-theme-on-surface), 0.55);
   }
   .faq-panel-title.v-expansion-panel-title--active .faq-category {
-    background-color: rgba(var(--v-theme-primary), 0.12);
-    color: rgb(var(--v-theme-primary));
+    color: rgba(var(--v-theme-primary), 0.8);
   }
 
   /* Answer body: plain surface, generous padding, slightly softer text than the title. */
