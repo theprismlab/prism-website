@@ -22,16 +22,10 @@
           v-for="option in filterOptions"
           :key="option.label"
           :value="option.label"
-          :style="{ '--faq-hue': option.hue }"
           size="small"
           variant="outlined"
-          class="faq-chip"
         >
-          <!-- Topic dot in the same colour as the card overline. -->
-          <span v-if="option.hue" class="faq-chip-dot" aria-hidden="true" />
-          <!-- Sub-topic chips read as a breadcrumb: the parent is dimmed, the child is the label. -->
-          <span v-if="option.parent" class="faq-chip-parent" v-text="`${option.parent} ›`" />
-          <span v-text="option.name" />
+          <topic-label :parent="option.parent" :name="option.name" :hue="option.hue" />
         </v-chip>
       </v-chip-group>
       <div class="prism-text-label-small text-grey-darken-1 mb-3" aria-live="polite">
@@ -42,18 +36,19 @@
           v-for="item in filteredFaqs"
           :key="item.question"
           :value="item.question"
-          :style="{ '--faq-hue': categoryHue(item.category) }"
           class="faq-panel"
         >
           <v-expansion-panel-title class="faq-panel-title">
             <div class="faq-title-block">
-              <!-- Overline above the question, so the question keeps the full card width. -->
-              <div class="prism-text-label-small faq-category">
-                <template v-for="(part, i) in highlightParts(badgeLabel(item))" :key="i">
-                  <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
-                  <span v-else v-text="part.text" />
-                </template>
-              </div>
+              <!-- Same topic label as the chip, above the question so the question keeps
+                   the full card width. -->
+              <topic-label
+                class="prism-text-label-small faq-topic"
+                :parent="topicOf(item).parent"
+                :name="topicOf(item).name"
+                :hue="categoryHue(item.category)"
+                :highlight="highlightParts"
+              />
               <span class="prism-text-title-medium faq-question">
                 <!-- v-text keeps the segments exact: no template whitespace can leak in. -->
                 <template v-for="(part, i) in highlightParts(item.question)" :key="i">
@@ -76,6 +71,8 @@
 </template>
 
 <script>
+  import TopicLabel from './faq/TopicLabel.vue';
+
   const PRISM_PORTAL_LINK = `<a href="https://www.theprismlab.org/portal/" target="_blank">PRISM Portal</a>`;
   const PRISM_PORTAL_PROJECTS_LINK = `<a href="https://www.theprismlab.org/portal/projects" target="_blank">PRISM Portal</a>`;
   const DEPMAP_PORTAL_LINK = `<a href="https://depmap.org/portal/" target="_blank">DepMap Portal</a>`;
@@ -131,6 +128,7 @@
 
   export default {
     name: 'FAQ',
+    components: { TopicLabel },
     data() {
       return {
         searchQuery: '',
@@ -616,11 +614,11 @@
     },
     methods: {
       categoryHue: hueOf,
-      // The card badge mirrors the chip: "Assays › Custom Screens" for sub-topics,
+      // The card label mirrors the chip: parent › sub-topic when the item has one,
       // just the category otherwise.
-      badgeLabel(item) {
+      topicOf(item) {
         const subTopic = subTopicOf(item);
-        return subTopic ? `${item.category}${BREADCRUMB_SEPARATOR}${subTopic}` : item.category;
+        return subTopic ? { parent: item.category, name: subTopic } : { name: item.category };
       },
       // Split plain text into alternating plain/matched segments for safe rendering.
       highlightParts(text) {
@@ -659,22 +657,6 @@
 </script>
 
 <style scoped>
-  /* The dot is the only colour on a chip; selection keeps Vuetify's neutral fill. */
-  .faq-chip-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    margin-right: 7px;
-    flex-shrink: 0;
-    background-color: var(--faq-hue);
-  }
-
-  /* Sub-topic chips: the parent reads as a quiet prefix so the child name stands out. */
-  .faq-chip-parent {
-    opacity: 0.55;
-    margin-right: 4px;
-  }
-
   /* Each question is its own bordered card with a small gap, so closed panels read as a
      list of items rather than a wall of text. */
   .faq-panel {
@@ -739,12 +721,9 @@
     min-width: 0;
   }
 
-  /* Category reads as a quiet overline in its topic colour. */
-  .faq-category {
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 600;
-    color: var(--faq-hue);
+  /* Card label is the chip's label in quiet grey; the dot carries the colour. */
+  .faq-topic {
+    color: rgba(var(--v-theme-on-surface), 0.6);
   }
 
   /* Answer body: plain surface, generous padding, slightly softer text than the title. */
