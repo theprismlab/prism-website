@@ -16,22 +16,18 @@
         flat
         class="mb-2"
       />
-      <span class="prism-text-label-small">Filter categories:</span>
-      <v-chip-group v-model="activeCategory" filter column class="mb-2">
+      <span class="prism-text-label-small">Filter by topic:</span>
+      <v-chip-group v-model="activeFilter" filter column class="mb-2">
         <v-chip
-          v-for="category in categories"
-          :key="category"
-          :value="category"
+          v-for="option in filterOptions"
+          :key="option.label"
+          :value="option.label"
           size="small"
           variant="outlined"
         >
-          {{ category }}
-        </v-chip>
-      </v-chip-group>
-      <span class="prism-text-label-small">Filter tags:</span>
-      <v-chip-group v-model="activeTag" filter column class="mb-2">
-        <v-chip v-for="tag in tags" :key="tag" :value="tag" size="small" variant="outlined">
-          {{ tag }}
+          <!-- Sub-topic chips read as a breadcrumb: the parent is dimmed, the child is the label. -->
+          <span v-if="option.parent" class="faq-chip-parent" v-text="`${option.parent} ›`" />
+          <span v-text="option.name" />
         </v-chip>
       </v-chip-group>
       <div class="prism-text-label-small text-grey-darken-1 mb-3" aria-live="polite">
@@ -55,7 +51,7 @@
                 </template>
               </span>
               <span class="prism-text-label-small text-no-wrap flex-shrink-0 faq-category">
-                <template v-for="(part, i) in highlightParts(item.category)" :key="i">
+                <template v-for="(part, i) in highlightParts(badgeLabel(item))" :key="i">
                   <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
                   <span v-else v-text="part.text" />
                 </template>
@@ -88,6 +84,13 @@
   const PRISM_WEBINARS_LINK = `<a href="/webinars" target="_blank">Webinars</a>`;
 
   const PRISM_ADC_WHITE_PAPER_LINK = `<a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>`;
+
+  // Popular cuts across every category, so it is the one tag shown without a parent.
+  const POPULAR_TAG = 'Popular';
+  const BREADCRUMB_SEPARATOR = ' › ';
+  // The first tag that narrows a category (i.e. anything but Popular).
+  const subTopicOf = (item) => (item.tag || []).find((tag) => tag !== POPULAR_TAG);
+
   // Strip markup and normalize smart quotes so searches match what the user sees.
   const toSearchText = (html) =>
     html
@@ -116,9 +119,9 @@
     data() {
       return {
         searchQuery: '',
-        // One selection shared by both chip rows: { type: 'category' | 'tag', value } or null.
-        // Starts on the Popular tag so first-time visitors see the most useful questions.
-        activeFilter: { type: 'tag', value: 'Popular' },
+        // The label of the selected chip in filterOptions, or undefined for no filter.
+        // Starts on Popular so first-time visitors see the most useful questions.
+        activeFilter: POPULAR_TAG,
         openPanels: [],
         faqs: [
           {
@@ -506,9 +509,12 @@
     },
     computed: {
       searchableFaqs() {
+        // Tags are searchable too, since the card badge now shows them.
         return this.faqs.map((item) => ({
           item,
-          text: toSearchText(`${item.category} ${item.question} ${item.answer}`),
+          text: toSearchText(
+            `${item.category} ${(item.tag || []).join(' ')} ${item.question} ${item.answer}`,
+          ),
         }));
       },
       queryTokens() {
@@ -521,40 +527,41 @@
             .filter(Boolean)
         );
       },
-      categories() {
-        return [...new Set(this.faqs.map((item) => item.category))];
+      // One flat chip list: Popular first, then each category in data order with its
+      // sub-topics right after it as "Category › Tag" so the hierarchy shows in the label.
+      // Each option carries the fields a FAQ must match; a missing field means no restriction.
+      filterOptions() {
+        const options = [{ label: POPULAR_TAG, name: POPULAR_TAG, tag: POPULAR_TAG }];
+        for (const category of new Set(this.faqs.map((item) => item.category))) {
+          options.push({ label: category, name: category, category });
+          const subTopics = new Set(
+            this.faqs.filter((item) => item.category === category).map(subTopicOf),
+          );
+          subTopics.delete(undefined);
+          for (const tag of subTopics) {
+            options.push({
+              label: `${category}${BREADCRUMB_SEPARATOR}${tag}`,
+              name: tag,
+              parent: category,
+              category,
+              tag,
+            });
+          }
+        }
+        return options;
       },
-      // Not every FAQ is tagged, so default the missing field to an empty list.
-      tags() {
-        return [...new Set(this.faqs.flatMap((item) => item.tag || []))];
-      },
-      // Each chip row binds to its slice of activeFilter, so selecting in one row
-      // replaces whatever the other row had selected.
-      activeCategory: {
-        get() {
-          return this.activeFilter?.type === 'category' ? this.activeFilter.value : undefined;
-        },
-        set(value) {
-          this.activeFilter = value == null ? null : { type: 'category', value };
-        },
-      },
-      activeTag: {
-        get() {
-          return this.activeFilter?.type === 'tag' ? this.activeFilter.value : undefined;
-        },
-        set(value) {
-          this.activeFilter = value == null ? null : { type: 'tag', value };
-        },
+      activeOption() {
+        return this.filterOptions.find((option) => option.label === this.activeFilter);
       },
       filteredFaqs() {
         const tokens = this.queryTokens;
-        const filter = this.activeFilter;
+        const option = this.activeOption;
         // No chip selected means no restriction, matching how the chips read.
-        const byFilter = filter
-          ? this.searchableFaqs.filter((entry) =>
-              filter.type === 'category'
-                ? entry.item.category === filter.value
-                : (entry.item.tag || []).includes(filter.value),
+        const byFilter = option
+          ? this.searchableFaqs.filter(
+              ({ item }) =>
+                (!option.category || item.category === option.category) &&
+                (!option.tag || (item.tag || []).includes(option.tag)),
             )
           : this.searchableFaqs;
         // Every word must appear somewhere in the item, in any order, so a phrase
@@ -573,8 +580,8 @@
           : `Showing ${shown} of ${total} ${noun}`;
       },
       noResultsMessage() {
-        if (this.queryTokens.length && this.activeFilter) {
-          return `No FAQs in “${this.activeFilter.value}” match “${this.searchQuery}”.`;
+        if (this.queryTokens.length && this.activeOption) {
+          return `No FAQs in “${this.activeOption.label}” match “${this.searchQuery}”.`;
         }
         if (this.queryTokens.length) {
           return `No FAQs match “${this.searchQuery}”. Try a different search term.`;
@@ -591,6 +598,12 @@
       },
     },
     methods: {
+      // The card badge mirrors the chip: "Assays › Custom Screens" for sub-topics,
+      // just the category otherwise.
+      badgeLabel(item) {
+        const subTopic = subTopicOf(item);
+        return subTopic ? `${item.category}${BREADCRUMB_SEPARATOR}${subTopic}` : item.category;
+      },
       // Split plain text into alternating plain/matched segments for safe rendering.
       highlightParts(text) {
         if (!this.queryTokens.length) return [{ text, isMatch: false }];
@@ -628,6 +641,12 @@
 </script>
 
 <style scoped>
+  /* Sub-topic chips: the parent reads as a quiet prefix so the child name stands out. */
+  .faq-chip-parent {
+    opacity: 0.55;
+    margin-right: 4px;
+  }
+
   /* Each question is its own bordered card with a small gap, so closed panels read as a
      list of items rather than a wall of text. */
   .faq-panel {
