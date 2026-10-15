@@ -29,6 +29,16 @@
         >
           {{ option.label }}
         </v-chip>
+        <!-- A button, not a chip, so it never registers as a selectable value in the group. -->
+        <!-- <v-btn
+          class="faq-view-all"
+          size="small"
+          variant="text"
+          :disabled="!isNarrowed"
+          @click="clearFilters"
+        >
+          View all
+        </v-btn> -->
       </v-chip-group>
       <div class="prism-text-label-small text-grey-darken-1 mb-3" aria-live="polite">
         {{ resultCountMessage }}
@@ -106,7 +116,7 @@
     'Cell Line Collection': 'var(--v-red-accent-2)',
     'Consortium Screens': 'var(--v-amber-accent-4)',
     'Custom Screens': 'var(--v-teal-accent-4)',
-    'Data Analysis & Delivery': 'var(--v-indigo-accent-2)',
+    'Data Analysis / Delivery': 'var(--v-indigo-accent-2)',
     'Legal / Operations': 'var(--v-purple-accent-2)',
   };
   const hueOf = (category) => CATEGORY_HUES[category];
@@ -359,7 +369,7 @@
             `,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             tag: ['Popular'],
             question: `How is PRISM data processed / analyzed?`,
             answer: `PRISM generates sensitivity profiles (heatmaps) for each drug based on the PRISM barcode amount of each cell line after treatment relative to the negative control wells.<br><br>
@@ -368,12 +378,12 @@
             `,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `How is PRISM data normalized?`,
             answer: `PRISM data is normalized to the negative control used in the assay (DMSO).`,
           },
           // {
-          //   category: 'Data Analysis & Delivery',
+          //   category: 'Data Analysis / Delivery',
           //   question: `What genomic characterization data is used in PRISM analysis?`,
           //   answer: `Each PRISM cell line has been genomically characterized through the Cancer Dependency Map group at the Broad Institute. This data can be accessed on the ${DEPMAP_PORTAL_LINK}.
           //   <br><br>
@@ -387,7 +397,7 @@
           //   `,
           // },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             tag: ['Popular'],
             question: `What genomic characterization data is used in PRISM analysis?`,
             answer: `Each PRISM cell line has been genomically characterized through the Cancer Dependency Map group at the Broad Institute.
@@ -396,29 +406,29 @@
             `,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `What resources are available to understand how PRISM data is processed?`,
             answer: `Collaborators receive their PRISM data through the ${PRISM_PORTAL_LINK}. The Portal includes additional pop-outs and sections explaining how the data is processed, including a dedicated Data Processing page.<br><br>
             The code for collaborators to process or re-capitulate the data themselves is provided on the ${PRISM_GITHUB_lINK}.
             `,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `Can PRISM data be shared with others?`,
             answer: `Collaborators will select a ‘Data Access Manager’ at the time of submission, who will be able to independently grant access to the PRISM dataset to others through the PRISM Portal.`,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `What resources are available to help navigate the PRISM Portal or interpret the analyses?`,
             answer: `Pre-recorded webinars that walk through the features of the PRISM Portal and how to generally interpret the figures provided can be found on the ${PRISM_WEBINARS_LINK} page.`,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `Is there a way to do further analysis on the PRISM data?`,
             answer: `A feature of the PRISM Portal allows PRISM data to be exported directly to the DepMap Portal Data Explorer tool. This tool allows collaborators to compare their PRISM data to other public DepMap datasets as well as generate custom figures and comparisons.`,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `Does PRISM provide growth rates or Day 0 counts as part of its standard deliverables?`,
             answer: `We do not provide growth rates or Day 0 data in our deliverables.`,
           },
@@ -559,6 +569,10 @@
       activeOption() {
         return this.filterOptions.find((option) => option.label === this.activeFilter);
       },
+      // Whether a chip is narrowing the list; "View all" only has work to do when one is.
+      isNarrowed() {
+        return Boolean(this.activeOption);
+      },
       filteredFaqs() {
         const tokens = this.queryTokens;
         const option = this.activeOption;
@@ -607,6 +621,10 @@
     },
     methods: {
       categoryHue: hueOf,
+      // Deselect the chip only; the search box keeps whatever was typed.
+      clearFilters() {
+        this.activeFilter = undefined;
+      },
       // Split plain text into alternating plain/matched segments for safe rendering.
       highlightParts(text) {
         if (!this.queryTokens.length) return [{ text, isMatch: false }];
@@ -727,7 +745,30 @@
     box-shadow: inset 3px 0 0 var(--faq-hue);
     padding-inline-start: 13px;
   }
+  /* Vuetify's selected-chip check is a full 24px icon, which widens a small chip enough
+     to push its neighbours onto the next line. A smaller icon with tighter margins keeps
+     the growth to roughly half that, so the row mostly stays put. */
+  .faq-chip :deep(.v-chip__filter) {
+    margin-inline-start: -2px !important;
+    margin-inline-end: 2px !important;
+  }
+  .v-chip.v-chip--size-small .v-chip__filter {
+    margin-inline-start: -2px !important;
+    margin-inline-end: 2px !important;
+  }
 
+  .faq-chip :deep(.v-chip__filter .v-icon) {
+    font-size: 11px;
+    max-width: 11px !important;
+  }
+  /* Sits in the chip row with the chips' own 4px gutter so it lines up with them. */
+  .faq-view-all {
+    margin: 4px;
+    align-self: center;
+  }
+  .v-chip-group .v-chip {
+    margin: 4px 6px 4px 0;
+  }
   /* Card label is the chip's label in quiet grey; the left edge carries the colour. */
   .faq-topic {
     color: rgba(var(--v-theme-on-surface), 0.6);
