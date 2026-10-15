@@ -8,7 +8,7 @@ export const PDF_PATHS = {
     APS: '/pdfs/instructions/PRISM APS _ Submission Information (7.2026).pdf',
     MTS: '/pdfs/instructions/PRISM MTS _ Submission Information (7.2026).pdf',
     CPS: '/pdfs/instructions/PRISM CPS _ Submission Information (7.2026).pdf',
-    EPS: '/pdfs/instructions/PRISM EPS _ Submission Information (7.2026).pdf',
+    EPS: '/pdfs/instructions/PRISM EPS _ Submission Information (10.2026).pdf',
   },
   SHIPPING: '/pdfs/instructions/Shipping Information for PRISM Screens (7.2026).pdf',
 };
