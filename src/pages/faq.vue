@@ -96,7 +96,7 @@
   const PRISM_PORTAL_LINK = `<a href="https://www.theprismlab.org/portal/" target="_blank">PRISM Portal</a>`;
   const PRISM_PORTAL_PROJECTS_LINK = `<a href="https://www.theprismlab.org/portal/projects" target="_blank">PRISM Portal</a>`;
   const DEPMAP_PORTAL_LINK = `<a href="https://depmap.org/portal/" target="_blank">DepMap Portal</a>`;
-  const PRISM_GITHUB_lINK = `<a href="https://github.com/cmap/dockerized_mts" target="_blank">PRISM GitHub</a>`;
+  const PRISM_GITHUB_lINK = `<a href="https://github.com/theprismlab/sushi/tree/main/documentation" target="_blank">PRISM GitHub</a>`;
   const PRISM_EMAIL = `<a href="mailto:prism@broadinstitute.org">prism@broadinstitute.org</a>`;
 
   const PRISM_SUBMISSION_HUB_LINK = `<a href="/submission-hub/overview" target="_blank">Submission Hub</a>`;
