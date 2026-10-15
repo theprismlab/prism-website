@@ -50,6 +50,16 @@
                   <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
                   <span v-else v-text="part.text" />
                 </template>
+                <!-- Optional subcategory, italic, after a separator so it reads as a refinement. -->
+                <template v-if="item.subcategory">
+                  <span class="faq-subcategory-separator" v-text="' · '" />
+                  <em class="faq-subcategory">
+                    <template v-for="(part, i) in highlightParts(item.subcategory)" :key="i">
+                      <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
+                      <span v-else v-text="part.text" />
+                    </template>
+                  </em>
+                </template>
               </span>
               <span class="prism-text-title-medium faq-question">
                 <!-- v-text keeps the segments exact: no template whitespace can leak in. -->
@@ -292,6 +302,7 @@
           },
           {
             category: 'Consortium Screens',
+            subcategory: 'Combinations',
             question: `What is the PRISM combination study design?`,
             answer: `A standard PRISM combination submission requires 2 screening slots as outlined below:<br>
               <table>
@@ -322,6 +333,7 @@
           },
           {
             category: 'Consortium Screens',
+            subcategory: 'Combinations',
             question: `Can I only submit the combination and not include the single-agent arm?`,
             answer: `No - our combinatorial analytics are designed for curves of drug A+B and drug A alone, which is why we require 2 slots for our combination consortium screens.<br><br>
             By submitting only drug A+B in combination, we cannot offer any combinatorial analyses (including synergy scores and differential analyses) and it would be difficult to interpret the data for the combination without submitting drug A on its own.
@@ -329,6 +341,7 @@
           },
           {
             category: 'Consortium Screens',
+            subcategory: 'Aqueous',
             question: `Are there bystander effects when screening ADCs in PRISM?`,
             answer: `Based on previous work from our team, we do not see significant bystander effects with ADC screening in PRISM.<br><br>
             For additional context, we screened HER2 ADCs and did not find significant bystander killing of HER2-negative cells. This was validated experimentally by screening the ADCs against HER2 positive and HER2 negative cell lines pooled at different ratios to mimic the expression in PRISM pools. <br><br>
@@ -338,6 +351,7 @@
           {
             tag: ['Popular'],
             category: 'Consortium Screens',
+            subcategory: 'Aqueous',
             question: `What is AIR?`,
             answer: `PRISM AIR stands for “Antibody Internalization Reporter” assay.<br><br>
             The assay is for viability screening of unconjugated antibodies: we couple collaborator antibodies with a cytotoxic payload via a universal secondary drug-conjugate prior to screening to mimic the function of an ADC. Additional details about AIR can be accessed <a href="https://assets.clue.io/prism/Overview-of-PRISM-AIR-Assay-for-Collaborators.pdf" target="_blank">here</a>.<br><br>
@@ -506,11 +520,13 @@
     },
     computed: {
       searchableFaqs() {
-        // Tags are searchable too, since the card badge now shows them.
+        // Category, subcategory and tags are searchable too, since the card shows them.
         return this.faqs.map((item) => ({
           item,
           text: toSearchText(
-            `${item.category} ${(item.tag || []).join(' ')} ${item.question} ${item.answer}`,
+            [item.category, item.subcategory, ...(item.tag || []), item.question, item.answer]
+              .filter(Boolean)
+              .join(' '),
           ),
         }));
       },
@@ -715,6 +731,14 @@
   /* Card label is the chip's label in quiet grey; the left edge carries the colour. */
   .faq-topic {
     color: rgba(var(--v-theme-on-surface), 0.6);
+  }
+  /* Subcategory is a refinement of the category: italic, and the separator is quieter
+     than the words on either side of it. */
+  .faq-subcategory {
+    font-style: italic;
+  }
+  .faq-subcategory-separator {
+    opacity: 0.6;
   }
 
   /* Answer body: plain surface, generous padding, slightly softer text than the title. */
