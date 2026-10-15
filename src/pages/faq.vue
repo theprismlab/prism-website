@@ -90,13 +90,14 @@
   // Popular cuts across every category: a quick filter, not a topic, so it has no colour.
   const POPULAR_TAG = 'Popular';
   // One colour per category, used identically for the chip bar and the card overline.
-  // Same values as the stat cards on the home and cell line pages.
+  // Same values as the stat cards on the home and cell line pages. Key order is the
+  // chip order, so the two screen types sit next to each other.
   const CATEGORY_HUES = {
     'Cell Line Collection': 'var(--v-red-accent-2)',
-    'Consortium Screens': 'var(--v-teal-accent-4)',
+    'Consortium Screens': 'var(--v-amber-accent-4)',
+    'Custom Screens': 'var(--v-teal-accent-4)',
     'Data Analysis & Delivery': 'var(--v-indigo-accent-2)',
-    'Custom Screens': 'var(--v-purple-accent-2)',
-    'Legal / Operations': 'var(--v-amber-accent-4)',
+    'Legal / Operations': 'var(--v-purple-accent-2)',
   };
   const hueOf = (category) => CATEGORY_HUES[category];
 
@@ -523,13 +524,20 @@
             .filter(Boolean)
         );
       },
-      // One flat chip list: Popular first, then each category in data order. Each option
-      // carries the field a FAQ must match; a missing field means no restriction.
+      // One flat chip list: Popular first, then the categories in CATEGORY_HUES order, with
+      // any category missing from that map appended in data order so it is never hidden.
+      // Each option carries the field a FAQ must match; a missing field means no restriction.
       filterOptions() {
-        const categories = new Set(this.faqs.map((item) => item.category));
+        const present = new Set(this.faqs.map((item) => item.category));
+        const ordered = Object.keys(CATEGORY_HUES).filter((category) => present.has(category));
+        const unmapped = [...present].filter((category) => !(category in CATEGORY_HUES));
         return [
           { label: POPULAR_TAG, tag: POPULAR_TAG },
-          ...[...categories].map((category) => ({ label: category, category, hue: hueOf(category) })),
+          ...[...ordered, ...unmapped].map((category) => ({
+            label: category,
+            category,
+            hue: hueOf(category),
+          })),
         ];
       },
       activeOption() {
@@ -552,14 +560,17 @@
           .filter((entry) => tokens.every((token) => entry.text.includes(token)))
           .map((entry) => entry.item);
       },
-      // "N of M" when a search or chip narrows the list; a plain total otherwise.
+      // "N of M" when a search or chip narrows the list; a plain total otherwise. The
+      // selected chip and the search terms are named so the count reads as scoped to them.
       resultCountMessage() {
         const shown = this.filteredFaqs.length;
         const total = this.faqs.length;
         const noun = shown === 1 ? 'FAQ' : 'FAQs';
+        const scope = this.activeOption ? ` in ${this.activeOption.label}` : '';
+        const query = this.queryTokens.length ? ` matching “${this.searchQuery.trim()}”` : '';
         return shown === total
           ? `Showing all ${total} FAQs`
-          : `Showing ${shown} of ${total} ${noun}`;
+          : `Showing ${shown} of ${total} ${noun}${scope}${query}`;
       },
       noResultsMessage() {
         if (this.queryTokens.length && this.activeOption) {
