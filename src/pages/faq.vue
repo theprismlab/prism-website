@@ -27,8 +27,18 @@
           size="small"
           variant="outlined"
         >
-          <topic-label :parent="option.parent" :name="option.name" />
+          {{ option.label }}
         </v-chip>
+        <!-- A button, not a chip, so it never registers as a selectable value in the group. -->
+        <!-- <v-btn
+          class="faq-view-all"
+          size="small"
+          variant="text"
+          :disabled="!isNarrowed"
+          @click="clearFilters"
+        >
+          View all
+        </v-btn> -->
       </v-chip-group>
       <div class="prism-text-label-small text-grey-darken-1 mb-3" aria-live="polite">
         {{ resultCountMessage }}
@@ -43,14 +53,24 @@
         >
           <v-expansion-panel-title class="faq-panel-title">
             <div class="faq-title-block">
-              <!-- Same topic label as the chip, above the question so the question keeps
+              <!-- Same category label as the chip, above the question so the question keeps
                    the full card width. -->
-              <topic-label
-                class="prism-text-label-small faq-topic"
-                :parent="topicOf(item).parent"
-                :name="topicOf(item).name"
-                :highlight="highlightParts"
-              />
+              <span class="prism-text-label-small faq-topic">
+                <template v-for="(part, i) in highlightParts(item.category)" :key="i">
+                  <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
+                  <span v-else v-text="part.text" />
+                </template>
+                <!-- Optional subcategory, italic, after a separator so it reads as a refinement. -->
+                <template v-if="item.subcategory">
+                  <span class="faq-subcategory-separator" v-text="' · '" />
+                  <em class="faq-subcategory">
+                    <template v-for="(part, i) in highlightParts(item.subcategory)" :key="i">
+                      <mark v-if="part.isMatch" class="faq-highlight" v-text="part.text" />
+                      <span v-else v-text="part.text" />
+                    </template>
+                  </em>
+                </template>
+              </span>
               <span class="prism-text-title-medium faq-question">
                 <!-- v-text keeps the segments exact: no template whitespace can leak in. -->
                 <template v-for="(part, i) in highlightParts(item.question)" :key="i">
@@ -73,12 +93,10 @@
 </template>
 
 <script>
-  import TopicLabel from './faq/TopicLabel.vue';
-
   const PRISM_PORTAL_LINK = `<a href="https://www.theprismlab.org/portal/" target="_blank">PRISM Portal</a>`;
   const PRISM_PORTAL_PROJECTS_LINK = `<a href="https://www.theprismlab.org/portal/projects" target="_blank">PRISM Portal</a>`;
   const DEPMAP_PORTAL_LINK = `<a href="https://depmap.org/portal/" target="_blank">DepMap Portal</a>`;
-  const PRISM_GITHUB_lINK = `<a href="https://github.com/cmap/dockerized_mts" target="_blank">PRISM GitHub</a>`;
+  const PRISM_GITHUB_lINK = `<a href="https://github.com/theprismlab/sushi/tree/main/documentation" target="_blank">PRISM GitHub</a>`;
   const PRISM_EMAIL = `<a href="mailto:prism@broadinstitute.org">prism@broadinstitute.org</a>`;
 
   const PRISM_SUBMISSION_HUB_LINK = `<a href="/submission-hub/overview" target="_blank">Submission Hub</a>`;
@@ -89,21 +107,19 @@
 
   const PRISM_ADC_WHITE_PAPER_LINK = `<a href="https://theprismlab.org/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets" target="_blank">ADC white paper</a>`;
 
-  // Popular cuts across every category, so it is the one tag shown without a parent.
+  // Popular cuts across every category: a quick filter, not a topic, so it has no colour.
   const POPULAR_TAG = 'Popular';
-  const BREADCRUMB_SEPARATOR = ' › ';
-  // One colour per category, used identically for the chip dot and the card overline.
-  // Same values as the stat cards on the home and cell line pages. Sub-topics inherit
-  // their category's colour; Popular is a quick filter, not a topic, so it stays neutral.
+  // One colour per category, used identically for the chip bar and the card overline.
+  // Same values as the stat cards on the home and cell line pages. Key order is the
+  // chip order, so the two screen types sit next to each other.
   const CATEGORY_HUES = {
     'Cell Line Collection': 'var(--v-red-accent-2)',
-    Assays: 'var(--v-teal-accent-4)',
-    'Data Analysis & Delivery': 'var(--v-indigo-accent-2)',
-    'Legal / Operations': 'var(--v-amber-accent-4)',
+    'Consortium Screens': 'var(--v-amber-accent-4)',
+    'Custom Screens': 'var(--v-teal-accent-4)',
+    'Data Analysis / Delivery': 'var(--v-indigo-accent-2)',
+    'Legal / Operations': 'var(--v-purple-accent-2)',
   };
   const hueOf = (category) => CATEGORY_HUES[category];
-  // The first tag that narrows a category (i.e. anything but Popular).
-  const subTopicOf = (item) => (item.tag || []).find((tag) => tag !== POPULAR_TAG);
 
   // Strip markup and normalize smart quotes so searches match what the user sees.
   const toSearchText = (html) =>
@@ -130,7 +146,6 @@
 
   export default {
     name: 'FAQ',
-    components: { TopicLabel },
     data() {
       return {
         searchQuery: '',
@@ -193,17 +208,17 @@
             answer: `The current PRISM cell set has 7 non-cancerous/normal cell lines. A list of the 900+ PRISM cell lines used in our screens can be found on the ${PRISM_CELL_LINE_COLLECTION_LINK} page.`,
           },
           {
-            category: 'Assays',
+            category: 'Consortium Screens',
             question: `What is the readout for PRISM?`,
             answer: `All PRISM assays use Next Gen Sequencing (NovaSeqX) to readout the PRISM barcode after drug treatment.`,
           },
           {
-            category: 'Assays',
+            category: 'Consortium Screens',
             question: `What controls are included in the screen?`,
             answer: `PRISM uses DMSO as the negative control and bortezomib as the positive control. The same validation compounds are also included in every PRISM screen to assess data quality over time, between compound plates, and to ensure biomarker analysis is identifying similar correlations over time.`,
           },
           {
-            category: 'Assays',
+            category: 'Consortium Screens',
             question: `What validation compounds are included in the screen?`,
             answer: `
               <ul>
@@ -218,7 +233,7 @@
             `,
           },
           {
-            category: 'Assays',
+            category: 'Consortium Screens',
             question: `How is quality control (QC) measured in the PRISM assay?`,
             answer: `
             <ul>
@@ -253,8 +268,8 @@
             `,
           },
           {
-            tag: ['Popular', 'Consortium Screens'],
-            category: 'Assays',
+            tag: ['Popular'],
+            category: 'Consortium Screens',
             question: `What is the easiest way to screen with PRISM?`,
             answer: `
             We run three consortium-style screens each year (typically January, May, and September) for DMSO-soluble compounds (single-agent or combination format) and aqueous test agents (single-agent format or antibody internalization reporter assay).
@@ -265,14 +280,13 @@
             `,
           },
           {
-            tag: ['Popular', 'Consortium Screens'],
-            category: 'Assays',
+            tag: ['Popular'],
+            category: 'Consortium Screens',
             question: `What is the data delivery turnaround time for these screens?`,
             answer: `Data for each screen is returned in approximately 4 months after the submission window.`,
           },
           {
-            tag: ['Consortium Screens'],
-            category: 'Assays',
+            category: 'Consortium Screens',
             question: `Who selects the top dose? Which top dose should I choose?`,
             answer: `
             Collaborators select the top screening dose for their drug during the screen submission process. PRISM performs the respective serial dilutions from the stock concentration submitted to the screen.
@@ -283,8 +297,7 @@
             `,
           },
           {
-            tag: ['Consortium Screens'],
-            category: 'Assays',
+            category: 'Consortium Screens',
             question: `What if the compound has issues with stability/solubility/etc.?`,
             answer: `For compounds with stability/solubility issues, we strongly suggest trying to recreate the stressors of the PRISM protocol in-house prior to submitting.<br><br>
             We do not re-run compounds that don't perform well in PRISM, unless a screen is repeated due to a fault in the assay workflow.<br><br>
@@ -292,14 +305,14 @@
             `,
           },
           {
-            tag: ['Popular', 'Consortium Screens'],
-            category: 'Assays',
+            tag: ['Popular'],
+            category: 'Consortium Screens',
             question: `Where can I find more information about the assay offerings?`,
             answer: `An overview of PRISM assay offerings can be found on the ${PRISM_ASSAYS_LINK} page.`,
           },
           {
-            tag: ['Combination Screens'],
-            category: 'Assays',
+            category: 'Consortium Screens',
+            subcategory: 'Combinations',
             question: `What is the PRISM combination study design?`,
             answer: `A standard PRISM combination submission requires 2 screening slots as outlined below:<br>
               <table>
@@ -329,16 +342,16 @@
             `,
           },
           {
-            tag: ['Combination Screens'],
-            category: 'Assays',
+            category: 'Consortium Screens',
+            subcategory: 'Combinations',
             question: `Can I only submit the combination and not include the single-agent arm?`,
             answer: `No - our combinatorial analytics are designed for curves of drug A+B and drug A alone, which is why we require 2 slots for our combination consortium screens.<br><br>
             By submitting only drug A+B in combination, we cannot offer any combinatorial analyses (including synergy scores and differential analyses) and it would be difficult to interpret the data for the combination without submitting drug A on its own.
             `,
           },
           {
-            tag: ['Aqueous Screens'],
-            category: 'Assays',
+            category: 'Consortium Screens',
+            subcategory: 'Aqueous',
             question: `Are there bystander effects when screening ADCs in PRISM?`,
             answer: `Based on previous work from our team, we do not see significant bystander effects with ADC screening in PRISM.<br><br>
             For additional context, we screened HER2 ADCs and did not find significant bystander killing of HER2-negative cells. This was validated experimentally by screening the ADCs against HER2 positive and HER2 negative cell lines pooled at different ratios to mimic the expression in PRISM pools. <br><br>
@@ -346,8 +359,9 @@
             `,
           },
           {
-            tag: ['Popular', 'Aqueous Screens'],
-            category: 'Assays',
+            tag: ['Popular'],
+            category: 'Consortium Screens',
+            subcategory: 'Aqueous',
             question: `What is AIR?`,
             answer: `PRISM AIR stands for “Antibody Internalization Reporter” assay.<br><br>
             The assay is for viability screening of unconjugated antibodies: we couple collaborator antibodies with a cytotoxic payload via a universal secondary drug-conjugate prior to screening to mimic the function of an ADC. Additional details about AIR can be accessed <a href="https://assets.clue.io/prism/Overview-of-PRISM-AIR-Assay-for-Collaborators.pdf" target="_blank">here</a>.<br><br>
@@ -355,7 +369,7 @@
             `,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             tag: ['Popular'],
             question: `How is PRISM data processed / analyzed?`,
             answer: `PRISM generates sensitivity profiles (heatmaps) for each drug based on the PRISM barcode amount of each cell line after treatment relative to the negative control wells.<br><br>
@@ -364,12 +378,12 @@
             `,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `How is PRISM data normalized?`,
             answer: `PRISM data is normalized to the negative control used in the assay (DMSO).`,
           },
           // {
-          //   category: 'Data Analysis & Delivery',
+          //   category: 'Data Analysis / Delivery',
           //   question: `What genomic characterization data is used in PRISM analysis?`,
           //   answer: `Each PRISM cell line has been genomically characterized through the Cancer Dependency Map group at the Broad Institute. This data can be accessed on the ${DEPMAP_PORTAL_LINK}.
           //   <br><br>
@@ -383,7 +397,7 @@
           //   `,
           // },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             tag: ['Popular'],
             question: `What genomic characterization data is used in PRISM analysis?`,
             answer: `Each PRISM cell line has been genomically characterized through the Cancer Dependency Map group at the Broad Institute.
@@ -392,41 +406,39 @@
             `,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `What resources are available to understand how PRISM data is processed?`,
             answer: `Collaborators receive their PRISM data through the ${PRISM_PORTAL_LINK}. The Portal includes additional pop-outs and sections explaining how the data is processed, including a dedicated Data Processing page.<br><br>
             The code for collaborators to process or re-capitulate the data themselves is provided on the ${PRISM_GITHUB_lINK}.
             `,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `Can PRISM data be shared with others?`,
             answer: `Collaborators will select a ‘Data Access Manager’ at the time of submission, who will be able to independently grant access to the PRISM dataset to others through the PRISM Portal.`,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `What resources are available to help navigate the PRISM Portal or interpret the analyses?`,
             answer: `Pre-recorded webinars that walk through the features of the PRISM Portal and how to generally interpret the figures provided can be found on the ${PRISM_WEBINARS_LINK} page.`,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `Is there a way to do further analysis on the PRISM data?`,
             answer: `A feature of the PRISM Portal allows PRISM data to be exported directly to the DepMap Portal Data Explorer tool. This tool allows collaborators to compare their PRISM data to other public DepMap datasets as well as generate custom figures and comparisons.`,
           },
           {
-            category: 'Data Analysis & Delivery',
+            category: 'Data Analysis / Delivery',
             question: `Does PRISM provide growth rates or Day 0 counts as part of its standard deliverables?`,
             answer: `We do not provide growth rates or Day 0 data in our deliverables.`,
           },
           {
-            tag: ['Custom Screens'],
-            category: 'Assays',
+            category: 'Custom Screens',
             question: `Are there any other readouts other than viability?`,
             answer: `As PRISM is a viability assay, we do not do any other readouts.`,
           },
           {
-            tag: ['Custom Screens'],
-            category: 'Assays',
+            category: 'Custom Screens',
             question: `Does PRISM do mixed combinations (i.e. DMSO + aqueous combination)?`,
             answer: `While we have previous experience running these types of screens, these are considered a "custom PRISM screen".
             <br><br>
@@ -434,8 +446,7 @@
             `,
           },
           {
-            tag: ['Custom Screens'],
-            category: 'Assays',
+            category: 'Custom Screens',
             question: `Does PRISM do co-culture screens (i.e. co-culture with T cells)?`,
             answer: `
             While we have previous experience running these types of screens, these are considered a "custom PRISM screen".
@@ -444,8 +455,7 @@
             `,
           },
           {
-            tag: ['Custom Screens'],
-            category: 'Assays',
+            category: 'Custom Screens',
             question: `Does PRISM do 3D screening?`,
             answer: `While we have previous experience running these types of screens in a ULA format, these are considered a "custom PRISM screen".
              <br><br>
@@ -453,26 +463,22 @@
             `,
           },
           {
-            tag: ['Custom Screens'],
-            category: 'Assays',
+            category: 'Custom Screens',
             question: `Does PRISM do organoid screening?`,
             answer: `Unfortunately, we do not have this offering.`,
           },
           {
-            tag: ['Custom Screens'],
-            category: 'Assays',
+            category: 'Custom Screens',
             question: `Does PRISM screen radioligand therapeutics?`,
             answer: `Unfortunately, we do not have this offering.`,
           },
           {
-            tag: ['Custom Screens'],
-            category: 'Assays',
+            category: 'Custom Screens',
             question: `Can I screen in only a subset of cell lines?`,
             answer: `No, consortium screens are run only in our full 900+ PRISM cell set. Due to the scale of these screens, it is more costly to screen in only a subset rather than the full PRISM cell set.`,
           },
           {
-            tag: ['Custom Screens'],
-            category: 'Assays',
+            category: 'Custom Screens',
             question: `Can I purchase PRISM pools for my own use?`,
             answer: `PRISM pools can only be used for PRISM experiments and screens. Due to the cell line MTAs, PRISM cell lines cannot be shared outside of the Broad Institute.`,
           },
@@ -524,11 +530,13 @@
     },
     computed: {
       searchableFaqs() {
-        // Tags are searchable too, since the card badge now shows them.
+        // Category, subcategory and tags are searchable too, since the card shows them.
         return this.faqs.map((item) => ({
           item,
           text: toSearchText(
-            `${item.category} ${(item.tag || []).join(' ')} ${item.question} ${item.answer}`,
+            [item.category, item.subcategory, ...(item.tag || []), item.question, item.answer]
+              .filter(Boolean)
+              .join(' '),
           ),
         }));
       },
@@ -542,33 +550,28 @@
             .filter(Boolean)
         );
       },
-      // One flat chip list: Popular first, then each category in data order with its
-      // sub-topics right after it as "Category › Tag" so the hierarchy shows in the label.
-      // Each option carries the fields a FAQ must match; a missing field means no restriction.
+      // One flat chip list: Popular first, then the categories in CATEGORY_HUES order, with
+      // any category missing from that map appended in data order so it is never hidden.
+      // Each option carries the field a FAQ must match; a missing field means no restriction.
       filterOptions() {
-        const options = [{ label: POPULAR_TAG, name: POPULAR_TAG, tag: POPULAR_TAG }];
-        for (const category of new Set(this.faqs.map((item) => item.category))) {
-          const hue = hueOf(category);
-          options.push({ label: category, name: category, category, hue });
-          const subTopics = new Set(
-            this.faqs.filter((item) => item.category === category).map(subTopicOf),
-          );
-          subTopics.delete(undefined);
-          for (const tag of subTopics) {
-            options.push({
-              label: `${category}${BREADCRUMB_SEPARATOR}${tag}`,
-              name: tag,
-              parent: category,
-              category,
-              tag,
-              hue,
-            });
-          }
-        }
-        return options;
+        const present = new Set(this.faqs.map((item) => item.category));
+        const ordered = Object.keys(CATEGORY_HUES).filter((category) => present.has(category));
+        const unmapped = [...present].filter((category) => !(category in CATEGORY_HUES));
+        return [
+          { label: POPULAR_TAG, tag: POPULAR_TAG },
+          ...[...ordered, ...unmapped].map((category) => ({
+            label: category,
+            category,
+            hue: hueOf(category),
+          })),
+        ];
       },
       activeOption() {
         return this.filterOptions.find((option) => option.label === this.activeFilter);
+      },
+      // Whether a chip is narrowing the list; "View all" only has work to do when one is.
+      isNarrowed() {
+        return Boolean(this.activeOption);
       },
       filteredFaqs() {
         const tokens = this.queryTokens;
@@ -587,14 +590,17 @@
           .filter((entry) => tokens.every((token) => entry.text.includes(token)))
           .map((entry) => entry.item);
       },
-      // "N of M" when a search or chip narrows the list; a plain total otherwise.
+      // "N of M" when a search or chip narrows the list; a plain total otherwise. The
+      // selected chip and the search terms are named so the count reads as scoped to them.
       resultCountMessage() {
         const shown = this.filteredFaqs.length;
         const total = this.faqs.length;
         const noun = shown === 1 ? 'FAQ' : 'FAQs';
+        const scope = this.activeOption ? ` in ${this.activeOption.label}` : '';
+        const query = this.queryTokens.length ? ` matching “${this.searchQuery.trim()}”` : '';
         return shown === total
           ? `Showing all ${total} FAQs`
-          : `Showing ${shown} of ${total} ${noun}`;
+          : `Showing ${shown} of ${total} ${noun}${scope}${query}`;
       },
       noResultsMessage() {
         if (this.queryTokens.length && this.activeOption) {
@@ -608,19 +614,16 @@
     },
     watch: {
       // Runs for a category toggle too, so the open panels always track what is shown.
-      filteredFaqs(items) {
-        // Open the matches so hits inside answer text are visible; collapse again when cleared.
+      filteredFaqs() {
+        // Collapse everything whenever the visible list changes.
         this.openPanels = [];
-        // this.queryTokens.length ? items.map((item) => item.question) : [];
       },
     },
     methods: {
       categoryHue: hueOf,
-      // The card label mirrors the chip: parent › sub-topic when the item has one,
-      // just the category otherwise.
-      topicOf(item) {
-        const subTopic = subTopicOf(item);
-        return subTopic ? { parent: item.category, name: subTopic } : { name: item.category };
+      // Deselect the chip only; the search box keeps whatever was typed.
+      clearFilters() {
+        this.activeFilter = undefined;
       },
       // Split plain text into alternating plain/matched segments for safe rendering.
       highlightParts(text) {
@@ -742,10 +745,41 @@
     box-shadow: inset 3px 0 0 var(--faq-hue);
     padding-inline-start: 13px;
   }
+  /* Vuetify's selected-chip check is a full 24px icon, which widens a small chip enough
+     to push its neighbours onto the next line. A smaller icon with tighter margins keeps
+     the growth to roughly half that, so the row mostly stays put. */
+  .faq-chip :deep(.v-chip__filter) {
+    margin-inline-start: -2px !important;
+    margin-inline-end: 2px !important;
+  }
+  .v-chip.v-chip--size-small .v-chip__filter {
+    margin-inline-start: -2px !important;
+    margin-inline-end: 2px !important;
+  }
 
+  .faq-chip :deep(.v-chip__filter .v-icon) {
+    font-size: 11px;
+    max-width: 11px !important;
+  }
+  /* Sits in the chip row with the chips' own 4px gutter so it lines up with them. */
+  .faq-view-all {
+    margin: 4px;
+    align-self: center;
+  }
+  .v-chip-group .v-chip {
+    margin: 4px 6px 4px 0;
+  }
   /* Card label is the chip's label in quiet grey; the left edge carries the colour. */
   .faq-topic {
     color: rgba(var(--v-theme-on-surface), 0.6);
+  }
+  /* Subcategory is a refinement of the category: italic, and the separator is quieter
+     than the words on either side of it. */
+  .faq-subcategory {
+    font-style: italic;
+  }
+  .faq-subcategory-separator {
+    opacity: 0.6;
   }
 
   /* Answer body: plain surface, generous padding, slightly softer text than the title. */
