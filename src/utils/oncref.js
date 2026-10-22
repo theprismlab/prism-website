@@ -1,18 +1,70 @@
 // Loading, filtering, and counting helpers for the OncRef dataset.
-// Source files live in public/data/oncref/ and are fetched once per session.
+// Source data lives in public/data/OncRef_LandingPage_v3_data.json (extracted from the
+// reference landing page) and is fetched once per session.
 //
 //   const { compounds } = await loadOncrefData();
 //   countWhere(compounds, { drugClass: 'biologic' });              // 23
 //   countBy(compounds, 'pathway');                                  // [{ name, count }, ...]
 //   filterCompounds(compounds, { modality: ['PROTAC', 'degrader'], search: 'BRD4' });
 
-const DATA_PATH = '/data/oncref';
+const DATA_FILE = `${import.meta.env.BASE_URL}data/OncRef_LandingPage_v3_data.json`;
+
+// Clinical stages from most to least advanced (used to order summary tables)
+const CLINICAL_STAGE_ORDER = [
+  'Approved',
+  'Approved (non-oncology)',
+  'Phase III',
+  'Phase II/III',
+  'Phase IIa',
+  'Phase II',
+  'Phase Ib/II',
+  'Phase I/II',
+  'Phase I/IIa',
+  'Phase Ib',
+  'Phase I',
+  'Preclinical',
+];
 
 let dataPromise = null;
 
-async function fetchJSON(file) {
-  const res = await fetch(`${DATA_PATH}/${file}`);
-  if (!res.ok) throw new Error(`Failed to load ${file}: ${res.status}`);
+// Split a ";"-delimited string into a trimmed, non-empty array
+const splitList = (value) =>
+  (value || '')
+    .split(';')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+// Empty strings in the source mean "not specified"
+const orNull = (value) => (value === '' || value == null ? null : value);
+
+// The source file uses short keys; expand them into the field names used across the site
+function normalizeCompound(c) {
+  return {
+    name: c.n,
+    synonyms: splitList(c.syn),
+    targets: splitList(c.tg),
+    mechanism: orNull(c.mech),
+    drugClass: orNull(c.cl),
+    modality: orNull(c.mod),
+    pathway: orNull(c.pw),
+    clinicalStage: orNull(c.st),
+    umapClass: orNull(c.umapCls),
+    chemblId: orNull(c.ch),
+    pubchemId: orNull(c.pc),
+    x: c.x,
+    y: c.y,
+  };
+}
+
+function normalizeGene(g) {
+  return { name: g.n, x: g.x, y: g.y };
+}
+
+async function fetchJSON(url) {
+  const res = await fetch(url);
+  // The dev server answers unknown paths with index.html (200), so check the type too
+  const isJSON = (res.headers.get('content-type') || '').includes('json');
+  if (!res.ok || !isJSON) throw new Error(`Failed to load ${url}: ${res.status}`);
   return res.json();
 }
 
@@ -23,12 +75,15 @@ async function fetchJSON(file) {
  */
 export function loadOncrefData() {
   if (!dataPromise) {
-    dataPromise = Promise.all([
-      fetchJSON('compounds.json'),
-      fetchJSON('crispr-genes.json'),
-      fetchJSON('categories.json'),
-    ])
-      .then(([compounds, crisprGenes, categories]) => ({ compounds, crisprGenes, categories }))
+    dataPromise = fetchJSON(DATA_FILE)
+      .then((data) => {
+        const compounds = data.compounds.map(normalizeCompound);
+        const crisprGenes = data.crisprGenes.map(normalizeGene);
+        const categories = {
+          clinicalStages: CLINICAL_STAGE_ORDER.map((name) => ({ name })),
+        };
+        return { compounds, crisprGenes, categories };
+      })
       .catch((err) => {
         dataPromise = null;
         throw err;
