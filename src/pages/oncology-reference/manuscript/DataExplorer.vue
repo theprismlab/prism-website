@@ -12,20 +12,38 @@
   const jsonFile = 'OncRef_LandingPage_v3_data.json';
   const csvFile = 'OncRefManuscript_Test_Agents.csv';
 
+  /**
+   * Attach UMAP coordinates to each CSV agent row, matched by compound name
+   * (case-insensitive). Agents with no UMAP point get null coordinates.
+   */
+  function joinUmap(agents, compounds) {
+    const byName = new Map(compounds.map((c) => [c.n.toUpperCase(), c]));
+    return agents.map((row) => {
+      const umap = byName.get(row.CompoundName.toUpperCase());
+      return {
+        ...row,
+        umapX: umap ? umap.x : null,
+        umapY: umap ? umap.y : null,
+        umapClass: umap ? umap.umapCls : null,
+      };
+    });
+  }
+
   export default {
     name: 'DataExplorer',
     data() {
       return {
-        // { compounds: [...], crisprGenes: [...] } from the landing-page JSON
-        landingPageData: null,
-        // One row per test agent from the manuscript CSV
-        testAgents: null,
+        // One object per test agent: the CSV row plus UMAP fields from the JSON
+        // (umapX, umapY, umapClass are null for agents without a UMAP point)
+        agents: null,
+        // CRISPR gene UMAP points from the JSON, kept separate for the scatter plot
+        crisprGenes: null,
         error: null,
       };
     },
     computed: {
       loaded() {
-        return this.landingPageData !== null && this.testAgents !== null;
+        return this.agents !== null;
       },
     },
     async mounted() {
@@ -38,11 +56,12 @@
             d3.json(`${dataPath}${jsonFile}`),
             d3.csv(`${dataPath}${csvFile}`),
           ]);
-          this.landingPageData = landingPageData;
-          this.testAgents = testAgents;
 
-          console.log('OncRef landing page data:', landingPageData);
-          console.log('OncRef manuscript test agents:', testAgents);
+          this.agents = joinUmap(testAgents, landingPageData.compounds);
+          this.crisprGenes = landingPageData.crisprGenes;
+
+          console.log('OncRef agents (CSV + UMAP):', this.agents);
+          console.log('OncRef CRISPR genes:', this.crisprGenes);
         } catch (err) {
           this.error = 'Failed to load OncRef data.';
           console.error(err);
