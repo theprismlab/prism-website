@@ -81,6 +81,10 @@
   cursor: crosshair;
 }
 
+.umap-plot--panning .umap-plot__brush .overlay {
+  cursor: grabbing;
+}
+
 .umap-plot__brush .selection {
   fill: rgba(25, 118, 210, 0.08);
   stroke: rgba(25, 118, 210, 0.6);

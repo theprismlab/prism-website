@@ -114,9 +114,9 @@ function applyTicks(axisGenerator, axis) {
   return axisGenerator;
 }
 
-function positionalScale(axis, domain, pixelRange) {
+function positionalScale(axis, domain, pixelRange, nice) {
   const scale = continuousScale(axis.type).domain(domain).range(axis.range ?? pixelRange);
-  if (!axis.domain) scale.nice(axis.ticks ?? undefined);
+  if (nice) scale.nice(axis.ticks ?? undefined);
   return scale;
 }
 
@@ -184,6 +184,7 @@ export default class UmapPlot {
     this.nodes = []; // flat [{ d, layer }] across layers, in Delaunay order
     this.delaunay = null;
     this.brushing = false;
+    this.panning = false;
     this.width = 0;
 
     this._build();
@@ -228,10 +229,25 @@ export default class UmapPlot {
 
   /** Zoom into a data-space rectangle. */
   zoomTo(xDomain, yDomain) {
-    this.zoomDomain = { x: xDomain, y: yDomain };
+    this._setZoomDomain({ x: xDomain, y: yDomain }, true);
+  }
+
+  /** Shift the current view by a pixel offset, e.g. from a drag. */
+  panBy(dx, dy) {
+    const { x, y } = this.scales;
+    const [x0, x1] = x.domain();
+    const [y0, y1] = y.domain();
+    const shiftX = x.invert(0) - x.invert(dx);
+    const shiftY = y.invert(0) - y.invert(dy);
+    this._setZoomDomain({ x: [x0 + shiftX, x1 + shiftX], y: [y0 + shiftY, y1 + shiftY] }, false);
+  }
+
+  _setZoomDomain(domain, animate) {
+    const wasZoomed = this.zoomed;
+    this.zoomDomain = domain;
     this._hideTooltip();
-    this._render(true);
-    this.options.onZoomChange?.(true);
+    this._render(animate);
+    if (!wasZoomed) this.options.onZoomChange?.(true);
   }
 
   resetZoom() {
@@ -284,13 +300,30 @@ export default class UmapPlot {
       .attr('class', (layer) => `umap-plot__layer umap-plot__layer--${layer.id}`);
     this.highlight = this.plot.append('circle').attr('class', 'umap-plot__highlight').style('display', 'none');
 
+    // Plain drag brushes a zoom rectangle; shift+drag pans. Both behaviours
+    // listen on the brush overlay and are told apart by their filters.
     this.brush = d3
       .brush()
+      .filter((event) => !event.ctrlKey && !event.button && !event.shiftKey)
       .on('start', () => {
         this.brushing = true;
         this._hideTooltip();
       })
       .on('end', (event) => this._onBrushEnd(event));
+
+    this.pan = d3
+      .drag()
+      .filter((event) => event.shiftKey && !event.button)
+      .on('start', () => {
+        this.panning = true;
+        this.root.classed('umap-plot--panning', true);
+        this._hideTooltip();
+      })
+      .on('drag', (event) => this.panBy(event.dx, event.dy))
+      .on('end', () => {
+        this.panning = false;
+        this.root.classed('umap-plot--panning', false);
+      });
 
     this.svg
       .on('mousemove', (event) => this._onMouseMove(event))
@@ -301,7 +334,10 @@ export default class UmapPlot {
     this.legend = this.footer.append('div').attr('class', 'umap-plot__legend');
     this.layerLegend = this.footer.append('div').attr('class', 'umap-plot__legend');
     this.sizeLegend = this.footer.append('div').attr('class', 'umap-plot__legend');
-    this.footer.append('div').attr('class', 'umap-plot__hint').text('Drag to zoom · double-click to reset');
+    this.footer
+      .append('div')
+      .attr('class', 'umap-plot__hint')
+      .text('Drag to zoom · shift+drag to pan · double-click to reset');
 
     this.tooltip = this.root.append('div').attr('class', 'umap-plot__tooltip').style('display', 'none');
   }
@@ -334,6 +370,7 @@ export default class UmapPlot {
       [innerW, innerH],
     ]);
     this.brushG.call(this.brush);
+    this.brushG.select('.overlay').call(this.pan);
 
     const t = animate ? this.svg.transition().duration(duration) : null;
     this._drawAxes(innerW, innerH, t);
@@ -345,11 +382,14 @@ export default class UmapPlot {
   _updateScales(innerW, innerH) {
     const { x, y, color, radius } = this.axes;
     const domain = this.zoomDomain ?? this.baseDomain;
+    // Only an auto-derived, unzoomed domain is niced: a zoomed or panned domain
+    // must map exactly to what the user chose.
+    const nice = !this.zoomDomain;
     // Colour and radius domains only derive from layers that use the axis
     const axisData = this.layers.filter((l) => !l.color).flatMap((l) => this.dataByLayer.get(l.id));
     this.scales = {
-      x: positionalScale(x, domain.x, [0, innerW]),
-      y: positionalScale(y, domain.y, [innerH, 0]),
+      x: positionalScale(x, domain.x, [0, innerW], nice && !x.domain),
+      y: positionalScale(y, domain.y, [innerH, 0], nice && !y.domain),
       color: colorScale(color, axisData),
       radius: radiusScale(radius, this.allData),
     };
@@ -560,7 +600,7 @@ export default class UmapPlot {
   // ── Hover / tooltip ─────────────────────────────────────────────────────────
 
   _onMouseMove(event) {
-    if (this.brushing || !this.delaunay) return this._hideTooltip();
+    if (this.brushing || this.panning || !this.delaunay) return this._hideTooltip();
     const [mx, my] = d3.pointer(event, this.plot.node());
     const [xr0, xr1] = this.scales.x.range();
     const [yr1, yr0] = this.scales.y.range();
