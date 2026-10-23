@@ -493,9 +493,9 @@ export default class UmapPlot {
     return this.legend;
   }
 
-  /** One entry per labelled layer, drawn with that layer's mark and colour. */
+  /** One entry per labelled, non-empty layer, drawn with its mark and colour. */
   _drawLayerLegend() {
-    const layers = this.layers.filter((layer) => layer.label);
+    const layers = this.layers.filter((layer) => layer.label && this.dataByLayer.get(layer.id).length);
     this.layerLegend.selectAll('*').remove();
     if (!layers.length) return this.layerLegend.style('display', 'none');
     this.layerLegend.style('display', null);

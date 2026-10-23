@@ -9,6 +9,13 @@
           · <strong>{{ highlightedPointCount }}</strong> match search</template
         >
       </span>
+      <v-checkbox
+        v-model="showGenes"
+        label="Show genes"
+        density="compact"
+        hide-details
+        class="umap-chart__toggle"
+      />
       <v-btn
         v-if="zoomed"
         variant="text"
@@ -65,6 +72,7 @@
       return {
         // Mirrors the plot's zoom state so the "Reset zoom" button can react
         zoomed: false,
+        showGenes: true,
       };
     },
     computed: {
@@ -79,7 +87,9 @@
             agent: row,
           }));
       },
+      // Empty while genes are hidden, so the plot's gene layer simply drains
       genePoints() {
+        if (!this.showGenes) return [];
         return this.genes.map((gene) => ({ id: gene.n, x: gene.x, y: gene.y, gene: gene.n }));
       },
       unplottedCount() {
@@ -184,8 +194,13 @@
     margin-bottom: 4px;
   }
 
-  .umap-chart__header .v-btn {
+  .umap-chart__toggle {
+    flex: 0 0 auto;
     margin-left: auto;
+  }
+
+  .umap-chart__toggle :deep(.v-label) {
+    font-size: 0.8125rem;
   }
 
   .umap-chart__title {
