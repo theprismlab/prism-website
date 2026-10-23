@@ -30,11 +30,26 @@ const AXIS_DEFAULTS = {
   radius: { field: null, title: 'Radius', type: 'constant', domain: null, range: [4, 4], ticks: 3, tickValues: null, format: null },
 };
 
+/**
+ * A layer is a set of points drawn with one mark style. Layers share the axes,
+ * zoom, hover and highlight; they are drawn in config order (last on top).
+ *
+ *   id       unique name, used by `setData(data, id)`
+ *   label    legend entry (omit for the main layer, whose colour axis has its own legend)
+ *   mark     'filled' (colour fills the circle) | 'outline' (colour strokes it, hollow)
+ *   color    fixed CSS colour for every point in the layer; null uses the colour axis
+ *   key      data join key; null uses the plot-level `key`
+ *   tooltip  `(d, defaultRows) => rows | htmlString`; null uses the plot-level `tooltip`
+ */
+const LAYER_DEFAULTS = { id: 'points', label: null, mark: 'filled', color: null, key: null, tooltip: null };
+
 const DEFAULTS = {
   height: 480,
   margin: { top: 16, right: 16, bottom: 48, left: 56 },
   /** Data join key, so points keep their identity across `setData` calls. */
   key: (d, i) => i,
+  /** Layers to draw; a single filled layer by default. See LAYER_DEFAULTS. */
+  layers: [{}],
   /** Furthest a point may be from the cursor (px) and still get a tooltip. */
   hoverRadius: 24,
   /** Fraction of the data extent added on each side of an auto-derived domain. */
@@ -42,8 +57,8 @@ const DEFAULTS = {
   /** Zoom transition duration in ms. */
   duration: 500,
   /**
-   * Custom tooltip content: `(d, defaultRows) => rows | htmlString`, where rows
-   * is an array of `[label, value]` pairs. Defaults to the x, y and color axes.
+   * Default tooltip content: `(d, defaultRows, layer) => rows | htmlString`,
+   * where rows is an array of `[label, value]` pairs for the x, y and color axes.
    */
   tooltip: null,
   /** Called with `true` after a drag-zoom and `false` after a reset. */
@@ -64,6 +79,13 @@ function resolveAxis(name, overrides = {}) {
   axis.accessor = toAccessor(axis.field);
   axis.format = axis.format ?? DEFAULT_FORMAT;
   return axis;
+}
+
+function resolveLayers(layers) {
+  const resolved = layers.map((layer) => ({ ...LAYER_DEFAULTS, ...layer }));
+  const ids = new Set(resolved.map((l) => l.id));
+  if (ids.size !== resolved.length) throw new Error('UmapPlot: layer ids must be unique');
+  return resolved;
 }
 
 function paddedExtent(values, padding) {
@@ -121,15 +143,21 @@ function radiusScale(axis, data) {
 
 /**
  * SVG scatter plot for 2-D embeddings (UMAP, t-SNE, PCA…) with configurable
- * x / y / color / radius axes, click-and-drag zoom and hover tooltips.
+ * x / y / color / radius axes, one or more point layers, click-and-drag zoom
+ * and hover tooltips.
  *
  * Usage:
  *   const plot = new UmapPlot(el, {
- *     x: { field: (d) => d.umap.x, title: 'UMAP 1' },
- *     y: { field: (d) => d.umap.y, title: 'UMAP 2' },
- *     color: { field: (d) => d.umap.umapCls, title: 'Class', type: 'categorical' },
+ *     x: { field: 'x', title: 'UMAP 1' },
+ *     y: { field: 'y', title: 'UMAP 2' },
+ *     color: { field: 'cls', title: 'Class', type: 'categorical' },
+ *     layers: [
+ *       { id: 'agents', mark: 'filled' },
+ *       { id: 'genes', mark: 'outline', color: '#555', label: 'Gene' },
+ *     ],
  *   });
- *   plot.setData(points);
+ *   plot.setData(agentPoints, 'agents');
+ *   plot.setData(genePoints, 'genes');
  *   plot.destroy();
  *
  * Interaction: drag on the plot to zoom into that rectangle, double-click (or
@@ -146,12 +174,14 @@ export default class UmapPlot {
       color: resolveAxis('color', options.color),
       radius: resolveAxis('radius', options.radius),
     };
+    this.layers = resolveLayers(this.options.layers);
 
-    this.data = [];
-    this.highlightPredicate = null; // (d) => boolean while a highlight is active
+    this.dataByLayer = new Map(this.layers.map((layer) => [layer.id, []]));
+    this.highlightPredicate = null; // (d, layerId) => boolean while a highlight is active
     this.baseDomain = { x: [0, 1], y: [0, 1] };
     this.zoomDomain = null; // { x, y } while zoomed in, otherwise null
     this.scales = null;
+    this.nodes = []; // flat [{ d, layer }] across layers, in Delaunay order
     this.delaunay = null;
     this.brushing = false;
     this.width = 0;
@@ -162,23 +192,34 @@ export default class UmapPlot {
 
   // ── Public API ──────────────────────────────────────────────────────────────
 
-  /** Replace the plotted points. The current zoom is preserved. */
-  setData(data = []) {
-    this.data = Array.isArray(data) ? data : [];
+  /**
+   * Replace the points of one layer (the first layer by default). The current
+   * zoom is preserved.
+   */
+  setData(data = [], layerId = this.layers[0].id) {
+    if (!this.dataByLayer.has(layerId)) throw new Error(`UmapPlot: unknown layer "${layerId}"`);
+    this.dataByLayer.set(layerId, Array.isArray(data) ? data : []);
+
     const { x, y } = this.axes;
+    const all = this.allData;
     const padding = this.options.domainPadding;
     this.baseDomain = {
-      x: x.domain ?? paddedExtent(this.data.map(x.accessor), padding),
-      y: y.domain ?? paddedExtent(this.data.map(y.accessor), padding),
+      x: x.domain ?? paddedExtent(all.map(x.accessor), padding),
+      y: y.domain ?? paddedExtent(all.map(y.accessor), padding),
     };
     this._hideTooltip();
     this._render(false);
   }
 
+  /** Every point across all layers. */
+  get allData() {
+    return [...this.dataByLayer.values()].flat();
+  }
+
   /**
    * Emphasise a subset of points: those failing `predicate` are drawn grey and
-   * the rest are raised on top. Pass null to clear.
-   * @param {((d: object) => boolean) | null} predicate
+   * the rest are raised within their layer. Pass null to clear.
+   * @param {((d: object, layerId: string) => boolean) | null} predicate
    */
   setHighlight(predicate) {
     this.highlightPredicate = predicate ?? null;
@@ -236,6 +277,11 @@ export default class UmapPlot {
     // brush overlay receives every drag and hover is resolved via Delaunay.
     this.brushG = this.plot.append('g').attr('class', 'umap-plot__brush');
     this.pointsG = this.plot.append('g').attr('class', 'umap-plot__points').attr('clip-path', `url(#${this.clipId})`);
+    this.layerGroups = this.pointsG
+      .selectAll('g')
+      .data(this.layers, (layer) => layer.id)
+      .join('g')
+      .attr('class', (layer) => `umap-plot__layer umap-plot__layer--${layer.id}`);
     this.highlight = this.plot.append('circle').attr('class', 'umap-plot__highlight').style('display', 'none');
 
     this.brush = d3
@@ -253,6 +299,7 @@ export default class UmapPlot {
 
     this.footer = this.root.append('div').attr('class', 'umap-plot__footer');
     this.legend = this.footer.append('div').attr('class', 'umap-plot__legend');
+    this.layerLegend = this.footer.append('div').attr('class', 'umap-plot__legend');
     this.sizeLegend = this.footer.append('div').attr('class', 'umap-plot__legend');
     this.footer.append('div').attr('class', 'umap-plot__hint').text('Drag to zoom · double-click to reset');
 
@@ -292,26 +339,53 @@ export default class UmapPlot {
     this._drawAxes(innerW, innerH, t);
     this._drawPoints(t);
     this._drawLegends();
-
-    const { x, y } = this.axes;
-    this.delaunay = this.data.length
-      ? d3.Delaunay.from(
-          this.data,
-          (d) => this.scales.x(x.accessor(d)),
-          (d) => this.scales.y(y.accessor(d)),
-        )
-      : null;
+    this._buildDelaunay();
   }
 
   _updateScales(innerW, innerH) {
     const { x, y, color, radius } = this.axes;
     const domain = this.zoomDomain ?? this.baseDomain;
+    // Colour and radius domains only derive from layers that use the axis
+    const axisData = this.layers.filter((l) => !l.color).flatMap((l) => this.dataByLayer.get(l.id));
     this.scales = {
       x: positionalScale(x, domain.x, [0, innerW]),
       y: positionalScale(y, domain.y, [innerH, 0]),
-      color: colorScale(color, this.data),
-      radius: radiusScale(radius, this.data),
+      color: colorScale(color, axisData),
+      radius: radiusScale(radius, this.allData),
     };
+  }
+
+  _buildDelaunay() {
+    this.nodes = this.layers.flatMap((layer) =>
+      this.dataByLayer.get(layer.id).map((d) => ({ d, layer })),
+    );
+    this.delaunay = this.nodes.length
+      ? d3.Delaunay.from(
+          this.nodes,
+          (n) => this._px(n.d),
+          (n) => this._py(n.d),
+        )
+      : null;
+  }
+
+  // Pixel position / size / colour of a point
+  _px(d) {
+    return this.scales.x(this.axes.x.accessor(d));
+  }
+
+  _py(d) {
+    return this.scales.y(this.axes.y.accessor(d));
+  }
+
+  _pr(d) {
+    const { radius } = this.axes;
+    return radius.accessor ? this.scales.radius(radius.accessor(d)) : this.scales.radius();
+  }
+
+  _pcolor(d, layer) {
+    if (layer.color) return layer.color;
+    const { color } = this.axes;
+    return color.accessor ? this.scales.color(color.accessor(d)) : this.scales.color();
   }
 
   _drawAxes(innerW, innerH, t) {
@@ -335,35 +409,46 @@ export default class UmapPlot {
   }
 
   _drawPoints(t) {
-    const { x, y, color, radius } = this.axes;
-    const s = this.scales;
-    const cx = (d) => s.x(x.accessor(d));
-    const cy = (d) => s.y(y.accessor(d));
-    const r = (d) => (radius.accessor ? s.radius(radius.accessor(d)) : s.radius());
-    const fill = (d) => (color.accessor ? s.color(color.accessor(d)) : s.color());
+    const self = this;
+    this.layerGroups.each(function (layer) {
+      self._drawLayer(d3.select(this), layer, t);
+    });
+  }
 
-    const circles = this.pointsG.selectAll('circle').data(this.data, this.options.key);
+  _drawLayer(group, layer, t) {
+    const data = this.dataByLayer.get(layer.id);
+    const key = layer.key ?? this.options.key;
+    // Filled marks carry colour in `fill`, outline marks in `stroke`; the CSS
+    // for each mark class pins the other attribute (white ring / hollow fill).
+    const colorAttr = layer.mark === 'outline' ? 'stroke' : 'fill';
+    const cx = (d) => this._px(d);
+    const cy = (d) => this._py(d);
+    const r = (d) => this._pr(d);
+    const color = (d) => this._pcolor(d, layer);
+
+    const circles = group.selectAll('circle').data(data, key);
     circles.exit().remove();
     circles
       .enter()
       .append('circle')
-      .attr('class', 'umap-plot__point')
+      .attr('class', `umap-plot__point umap-plot__point--${layer.mark}`)
       .attr('cx', cx)
       .attr('cy', cy)
       .attr('r', r)
-      .attr('fill', fill);
-    (t ? circles.transition(t) : circles).attr('cx', cx).attr('cy', cy).attr('r', r).attr('fill', fill);
+      .attr(colorAttr, color);
+    (t ? circles.transition(t) : circles).attr('cx', cx).attr('cy', cy).attr('r', r).attr(colorAttr, color);
 
-    // Highlight: mute non-matching points (CSS overrides the fill) and draw the
-    // matches last so they sit on top of the grey ones.
+    // Highlight: mute non-matching points (CSS overrides the colour) and draw
+    // the matches last so they sit on top within the layer.
     const predicate = this.highlightPredicate;
-    const all = this.pointsG.selectAll('circle');
-    all.classed('umap-plot__point--muted', (d) => (predicate ? !predicate(d) : false));
-    if (predicate) all.filter(predicate).raise();
+    const all = group.selectAll('circle');
+    all.classed('umap-plot__point--muted', (d) => (predicate ? !predicate(d, layer.id) : false));
+    if (predicate) all.filter((d) => predicate(d, layer.id)).raise();
   }
 
   _drawLegends() {
     this._drawColorLegend();
+    this._drawLayerLegend();
     this._drawSizeLegend();
   }
 
@@ -403,9 +488,29 @@ export default class UmapPlot {
       .data(scale.domain())
       .join('span')
       .attr('class', 'umap-plot__legend-item');
-    items.append('i').attr('class', 'umap-plot__swatch').style('background', (v) => scale(v));
+    items.append('i').attr('class', 'umap-plot__swatch umap-plot__swatch--filled').style('color', (v) => scale(v));
     items.append('span').text((v) => axis.format(v));
     return this.legend;
+  }
+
+  /** One entry per labelled layer, drawn with that layer's mark and colour. */
+  _drawLayerLegend() {
+    const layers = this.layers.filter((layer) => layer.label);
+    this.layerLegend.selectAll('*').remove();
+    if (!layers.length) return this.layerLegend.style('display', 'none');
+    this.layerLegend.style('display', null);
+
+    const items = this.layerLegend
+      .selectAll('.umap-plot__legend-item')
+      .data(layers, (layer) => layer.id)
+      .join('span')
+      .attr('class', 'umap-plot__legend-item');
+    items
+      .append('i')
+      .attr('class', (layer) => `umap-plot__swatch umap-plot__swatch--${layer.mark}`)
+      .style('color', (layer) => layer.color ?? 'currentColor');
+    items.append('span').text((layer) => layer.label);
+    return this.layerLegend;
   }
 
   _drawSizeLegend() {
@@ -461,33 +566,31 @@ export default class UmapPlot {
     const [yr1, yr0] = this.scales.y.range();
     if (mx < xr0 || mx > xr1 || my < yr0 || my > yr1) return this._hideTooltip();
 
-    const i = this.delaunay.find(mx, my);
-    const d = this.data[i];
-    if (d === undefined) return this._hideTooltip();
+    const node = this.nodes[this.delaunay.find(mx, my)];
+    if (!node) return this._hideTooltip();
 
-    const px = this.scales.x(this.axes.x.accessor(d));
-    const py = this.scales.y(this.axes.y.accessor(d));
+    const px = this._px(node.d);
+    const py = this._py(node.d);
     if (Math.hypot(px - mx, py - my) > this.options.hoverRadius) return this._hideTooltip();
 
-    const r = this.axes.radius.accessor
-      ? this.scales.radius(this.axes.radius.accessor(d))
-      : this.scales.radius();
-    this.highlight.style('display', null).attr('cx', px).attr('cy', py).attr('r', r + 3);
-    this._showTooltip(d, event);
+    this.highlight.style('display', null).attr('cx', px).attr('cy', py).attr('r', this._pr(node.d) + 3);
+    this._showTooltip(node, event);
     return undefined;
   }
 
-  _tooltipRows(d) {
+  _tooltipRows({ d, layer }) {
     const rows = [];
     for (const name of ['x', 'y', 'color']) {
       const axis = this.axes[name];
+      if (name === 'color' && layer.color) continue; // fixed-colour layers have no colour value
       if (axis.accessor) rows.push([axis.title, axis.format(axis.accessor(d))]);
     }
-    return this.options.tooltip ? this.options.tooltip(d, rows) : rows;
+    const tooltip = layer.tooltip ?? this.options.tooltip;
+    return tooltip ? tooltip(d, rows, layer) : rows;
   }
 
-  _showTooltip(d, event) {
-    const content = this._tooltipRows(d);
+  _showTooltip(node, event) {
+    const content = this._tooltipRows(node);
     this.tooltip.selectAll('*').remove();
     if (typeof content === 'string') {
       this.tooltip.html(content);
@@ -499,10 +602,10 @@ export default class UmapPlot {
 
     // Place beside the cursor, flipping to stay inside the container
     const [cx, cy] = d3.pointer(event, this.container);
-    const node = this.tooltip.style('display', null).node();
+    const el = this.tooltip.style('display', null).node();
     const offset = 14;
-    const left = cx + offset + node.offsetWidth > this.container.clientWidth ? cx - offset - node.offsetWidth : cx + offset;
-    const top = cy + offset + node.offsetHeight > this.container.clientHeight ? cy - offset - node.offsetHeight : cy + offset;
+    const left = cx + offset + el.offsetWidth > this.container.clientWidth ? cx - offset - el.offsetWidth : cx + offset;
+    const top = cy + offset + el.offsetHeight > this.container.clientHeight ? cy - offset - el.offsetHeight : cy + offset;
     this.tooltip.style('left', `${Math.max(0, left)}px`).style('top', `${Math.max(0, top)}px`);
   }
 

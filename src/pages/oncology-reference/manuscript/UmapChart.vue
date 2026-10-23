@@ -5,7 +5,9 @@
       <span class="umap-chart__count">
         <strong>{{ points.length }}</strong> plotted
         <template v-if="unplottedCount"> · {{ unplottedCount }} without coordinates</template>
-        <template v-if="highlighted"> · <strong>{{ highlightedPointCount }}</strong> match search</template>
+        <template v-if="highlighted">
+          · <strong>{{ highlightedPointCount }}</strong> match search</template
+        >
       </span>
       <v-btn
         v-if="zoomed"
@@ -25,20 +27,36 @@
 <script>
   import UmapPlot from './UmapPlot.js';
 
+  const GENE_COLOR = '#555';
+
+  function splitList(value) {
+    return (value || '')
+      .split(';')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
   /**
-   * UMAP scatter of test agents, coloured by UMAP class.
+   * UMAP scatter of test agents (filled, coloured by UMAP class) with CRISPR
+   * genes overlaid as outlined circles.
    *
    * `agents` is the full list (used to fix the colour domain so filtering never
    * recolours a class); `rows` is the subset to plot, typically the filtered
    * table rows. Rows without a `umap` point are counted but not drawn.
+   * `genes` are `{ n, x, y }` CRISPR gene points from the JSON.
    * `highlighted`, when not null, is the subset of rows to emphasise (e.g. search
-   * hits); every other point is drawn grey.
+   * hits); every other agent is drawn grey, as is every gene that none of the
+   * highlighted agents target.
+   *
+   * Agents and genes are adapted into uniform `{ id, x, y, … }` points so the
+   * plot's axes read the same fields for both layers.
    */
   export default {
     name: 'UmapChart',
     props: {
       agents: { type: Array, required: true },
       rows: { type: Array, required: true },
+      genes: { type: Array, default: () => [] },
       highlighted: { type: Array, default: null },
       title: { type: String, default: 'Test agent UMAP' },
       height: { type: Number, default: 460 },
@@ -51,18 +69,37 @@
     },
     computed: {
       points() {
-        return this.rows.filter((row) => row.umap);
+        return this.rows
+          .filter((row) => row.umap)
+          .map((row) => ({
+            id: row.CompoundName,
+            x: row.umap.x,
+            y: row.umap.y,
+            cls: row.umap.umapCls,
+            agent: row,
+          }));
+      },
+      genePoints() {
+        return this.genes.map((gene) => ({ id: gene.n, x: gene.x, y: gene.y, gene: gene.n }));
       },
       unplottedCount() {
         return this.rows.length - this.points.length;
       },
-      // Compound names of the highlighted rows, or null when nothing is highlighted
+      // Ids to keep coloured per layer, or null when nothing is highlighted.
+      // Genes stay coloured when a highlighted agent targets them.
       highlightedKeys() {
-        return this.highlighted ? new Set(this.highlighted.map((row) => row.CompoundName)) : null;
+        if (!this.highlighted) return null;
+        const agents = new Set();
+        const genes = new Set();
+        for (const row of this.highlighted) {
+          agents.add(row.CompoundName);
+          for (const gene of splitList(row.GeneSymbolOfTargets)) genes.add(gene);
+        }
+        return { agents, genes };
       },
       highlightedPointCount() {
         const keys = this.highlightedKeys;
-        return keys ? this.points.filter((row) => keys.has(row.CompoundName)).length : 0;
+        return keys ? this.points.filter((p) => keys.agents.has(p.id)).length : 0;
       },
       // Every UMAP class across all agents, most common first
       classes() {
@@ -77,7 +114,10 @@
     },
     watch: {
       points(points) {
-        if (this.plot) this.plot.setData(points);
+        if (this.plot) this.plot.setData(points, 'agents');
+      },
+      genePoints(points) {
+        if (this.plot) this.plot.setData(points, 'genes');
       },
       highlightedKeys() {
         this.applyHighlight();
@@ -88,21 +128,30 @@
       // object graph in reactive proxies.
       this.plot = new UmapPlot(this.$refs.plot, {
         height: this.height,
-        key: (d) => d.CompoundName,
-        x: { field: (d) => d.umap.x, title: 'UMAP 1' },
-        y: { field: (d) => d.umap.y, title: 'UMAP 2' },
-        color: {
-          field: (d) => d.umap.umapCls,
-          title: 'Class',
-          type: 'categorical',
-          domain: this.classes,
-        },
-        tooltip: (d, rows) => [['Agent', d.FormattedName], ...rows],
+        key: (d) => d.id,
+        x: { field: 'x', title: 'X Axis' },
+        y: { field: 'y', title: 'Y Axis' },
+        color: { field: 'cls', title: 'Class', type: 'categorical', domain: this.classes },
+        layers: [
+          {
+            id: 'agents',
+            mark: 'filled',
+            tooltip: (d, rows) => [['Agent', d.agent.FormattedName], ...rows],
+          },
+          {
+            id: 'genes',
+            label: 'CRISPR gene',
+            mark: 'outline',
+            color: GENE_COLOR,
+            tooltip: (d, rows) => [['Gene', d.gene], ...rows],
+          },
+        ],
         onZoomChange: (zoomed) => {
           this.zoomed = zoomed;
         },
       });
-      this.plot.setData(this.points);
+      this.plot.setData(this.points, 'agents');
+      this.plot.setData(this.genePoints, 'genes');
       this.applyHighlight();
     },
     beforeUnmount() {
@@ -116,7 +165,7 @@
       applyHighlight() {
         if (!this.plot) return;
         const keys = this.highlightedKeys;
-        this.plot.setHighlight(keys ? (d) => keys.has(d.CompoundName) : null);
+        this.plot.setHighlight(keys ? (d, layer) => keys[layer].has(d.id) : null);
       },
     },
   };

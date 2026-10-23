@@ -53,6 +53,7 @@
       <UmapChart
         :agents="agents"
         :rows="filteredAgents"
+        :genes="crisprGenes"
         :highlighted="searchedAgents"
         class="data-explorer__plot"
       />
