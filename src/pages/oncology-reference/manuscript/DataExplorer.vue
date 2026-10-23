@@ -50,26 +50,7 @@
         </v-btn>
       </div>
 
-      <div class="data-explorer__plot">
-        <div class="data-explorer__plot-header">
-          <span class="data-explorer__plot-title">Test agent UMAP</span>
-          <span class="data-explorer__count">
-            <strong>{{ umapPoints.length }}</strong> plotted
-            <template v-if="unplottedCount"> · {{ unplottedCount }} without coordinates</template>
-          </span>
-          <v-btn
-            v-if="zoomed"
-            variant="text"
-            size="small"
-            color="primary"
-            prepend-icon="mdi-magnify-minus-outline"
-            @click="resetZoom"
-          >
-            Reset zoom
-          </v-btn>
-        </div>
-        <div ref="umap" class="data-explorer__umap" />
-      </div>
+      <UmapChart :agents="agents" :rows="filteredAgents" class="data-explorer__plot" />
 
       <v-data-table
         :headers="headers"
@@ -96,7 +77,7 @@
 
 <script>
   import { getOncRefData } from './oncref.js';
-  import UmapPlot from './UmapPlot.js';
+  import UmapChart from './UmapChart.vue';
 
   // Columns that get a multiselect filter, in table column order. `list` marks
   // semicolon-delimited CSV fields, where a row matches if any value is selected.
@@ -111,6 +92,7 @@
 
   export default {
     name: 'DataExplorer',
+    components: { UmapChart },
     data() {
       return {
         // One object per test agent: the CSV row plus `umap` ({ x, y, umapCls, n }
@@ -120,8 +102,6 @@
         crisprGenes: null,
         error: null,
         search: '',
-        // Mirrors the plot's zoom state so the "Reset zoom" button can react
-        zoomed: false,
         filterFields: FILTER_FIELDS,
         // Selected values per filter field, e.g. { Class: ['biologic'], ... }
         activeFilters: Object.fromEntries(FILTER_FIELDS.map((f) => [f.key, []])),
@@ -145,29 +125,9 @@
         return Object.values(this.activeFilters).filter((v) => v.length).length;
       },
       filteredAgents() {
-        // Watched by the plot before data arrives, so tolerate the null state
-        if (!this.agents) return [];
         return this.agents.filter((row) =>
           this.filterFields.every((field) => this.matchesFilter(row, field)),
         );
-      },
-      // Filtered agents that have a UMAP point, i.e. what the scatter plot shows
-      umapPoints() {
-        return this.filteredAgents.filter((row) => row.umap);
-      },
-      unplottedCount() {
-        return this.filteredAgents.length - this.umapPoints.length;
-      },
-      // Every UMAP class across *all* agents, most common first. Passed to the
-      // plot as a fixed colour domain so filtering never recolours a class.
-      umapClasses() {
-        const counts = new Map();
-        for (const row of this.agents ?? []) {
-          if (row.umap) counts.set(row.umap.umapCls, (counts.get(row.umap.umapCls) || 0) + 1);
-        }
-        return [...counts]
-          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-          .map(([cls]) => cls);
       },
       // Dropdown options per field, with counts that reflect every *other* active
       // filter, so each option shows how many rows selecting it would leave.
@@ -196,22 +156,8 @@
         return options;
       },
     },
-    watch: {
-      umapPoints(points) {
-        if (this.plot) this.plot.setData(points);
-      },
-    },
     async mounted() {
       await this.getData();
-      if (this.loaded) {
-        // The plot container only exists once the loaded branch has rendered
-        await this.$nextTick();
-        this.createPlot();
-      }
-    },
-    beforeUnmount() {
-      if (this.plot) this.plot.destroy();
-      this.plot = null;
     },
     methods: {
       async getData() {
@@ -223,30 +169,6 @@
           this.error = 'Failed to load OncRef data.';
           console.error(err);
         }
-      },
-      createPlot() {
-        // Stored as a plain property (not in data()) so Vue doesn't wrap the d3
-        // object graph in reactive proxies.
-        this.plot = new UmapPlot(this.$refs.umap, {
-          height: 460,
-          key: (d) => d.CompoundName,
-          x: { field: (d) => d.umap.x, title: 'UMAP 1' },
-          y: { field: (d) => d.umap.y, title: 'UMAP 2' },
-          color: {
-            field: (d) => d.umap.umapCls,
-            title: 'Class',
-            type: 'categorical',
-            domain: this.umapClasses,
-          },
-          tooltip: (d, rows) => [['Agent', d.FormattedName], ...rows],
-          onZoomChange: (zoomed) => {
-            this.zoomed = zoomed;
-          },
-        });
-        this.plot.setData(this.umapPoints);
-      },
-      resetZoom() {
-        if (this.plot) this.plot.resetZoom();
       },
       splitList(value) {
         return (value || '')
@@ -315,32 +237,8 @@
     font-weight: 600;
   }
 
-  /* ── UMAP plot ────────────────────────────────────────────────────────── */
   .data-explorer__plot {
-    padding: 8px 16px 12px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  }
-
-  .data-explorer__plot-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 36px;
-    margin-bottom: 4px;
-  }
-
-  .data-explorer__plot-header .v-btn {
-    margin-left: auto;
-  }
-
-  .data-explorer__plot-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.82);
-  }
-
-  .data-explorer__umap {
-    width: 100%;
   }
 
   /* ── Table ────────────────────────────────────────────────────────── */
