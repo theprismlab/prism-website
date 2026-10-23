@@ -50,7 +50,12 @@
         </v-btn>
       </div>
 
-      <UmapChart :agents="agents" :rows="filteredAgents" class="data-explorer__plot" />
+      <UmapChart
+        :agents="agents"
+        :rows="filteredAgents"
+        :highlighted="searchedAgents"
+        class="data-explorer__plot"
+      />
 
       <v-data-table
         :headers="headers"
@@ -127,6 +132,17 @@
       filteredAgents() {
         return this.agents.filter((row) =>
           this.filterFields.every((field) => this.matchesFilter(row, field)),
+        );
+      },
+      // Filtered agents matching the search box across the table columns, the
+      // same case-insensitive substring match v-data-table applies. Null when
+      // the search is empty, so the plot shows no highlight.
+      searchedAgents() {
+        const query = (this.search || '').trim().toLowerCase();
+        if (!query) return null;
+        const keys = this.headers.map((h) => h.key);
+        return this.filteredAgents.filter((row) =>
+          keys.some((key) => String(row[key] ?? '').toLowerCase().includes(query)),
         );
       },
       // Dropdown options per field, with counts that reflect every *other* active

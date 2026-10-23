@@ -5,6 +5,7 @@
       <span class="umap-chart__count">
         <strong>{{ points.length }}</strong> plotted
         <template v-if="unplottedCount"> · {{ unplottedCount }} without coordinates</template>
+        <template v-if="highlighted"> · <strong>{{ highlightedPointCount }}</strong> match search</template>
       </span>
       <v-btn
         v-if="zoomed"
@@ -30,12 +31,15 @@
    * `agents` is the full list (used to fix the colour domain so filtering never
    * recolours a class); `rows` is the subset to plot, typically the filtered
    * table rows. Rows without a `umap` point are counted but not drawn.
+   * `highlighted`, when not null, is the subset of rows to emphasise (e.g. search
+   * hits); every other point is drawn grey.
    */
   export default {
     name: 'UmapChart',
     props: {
       agents: { type: Array, required: true },
       rows: { type: Array, required: true },
+      highlighted: { type: Array, default: null },
       title: { type: String, default: 'Test agent UMAP' },
       height: { type: Number, default: 460 },
     },
@@ -52,6 +56,14 @@
       unplottedCount() {
         return this.rows.length - this.points.length;
       },
+      // Compound names of the highlighted rows, or null when nothing is highlighted
+      highlightedKeys() {
+        return this.highlighted ? new Set(this.highlighted.map((row) => row.CompoundName)) : null;
+      },
+      highlightedPointCount() {
+        const keys = this.highlightedKeys;
+        return keys ? this.points.filter((row) => keys.has(row.CompoundName)).length : 0;
+      },
       // Every UMAP class across all agents, most common first
       classes() {
         const counts = new Map();
@@ -66,6 +78,9 @@
     watch: {
       points(points) {
         if (this.plot) this.plot.setData(points);
+      },
+      highlightedKeys() {
+        this.applyHighlight();
       },
     },
     mounted() {
@@ -88,6 +103,7 @@
         },
       });
       this.plot.setData(this.points);
+      this.applyHighlight();
     },
     beforeUnmount() {
       if (this.plot) this.plot.destroy();
@@ -96,6 +112,11 @@
     methods: {
       resetZoom() {
         if (this.plot) this.plot.resetZoom();
+      },
+      applyHighlight() {
+        if (!this.plot) return;
+        const keys = this.highlightedKeys;
+        this.plot.setHighlight(keys ? (d) => keys.has(d.CompoundName) : null);
       },
     },
   };

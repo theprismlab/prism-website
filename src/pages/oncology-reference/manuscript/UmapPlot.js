@@ -148,6 +148,7 @@ export default class UmapPlot {
     };
 
     this.data = [];
+    this.highlightPredicate = null; // (d) => boolean while a highlight is active
     this.baseDomain = { x: [0, 1], y: [0, 1] };
     this.zoomDomain = null; // { x, y } while zoomed in, otherwise null
     this.scales = null;
@@ -172,6 +173,16 @@ export default class UmapPlot {
     };
     this._hideTooltip();
     this._render(false);
+  }
+
+  /**
+   * Emphasise a subset of points: those failing `predicate` are drawn grey and
+   * the rest are raised on top. Pass null to clear.
+   * @param {((d: object) => boolean) | null} predicate
+   */
+  setHighlight(predicate) {
+    this.highlightPredicate = predicate ?? null;
+    if (this.scales) this._drawPoints(null);
   }
 
   /** Zoom into a data-space rectangle. */
@@ -342,6 +353,13 @@ export default class UmapPlot {
       .attr('r', r)
       .attr('fill', fill);
     (t ? circles.transition(t) : circles).attr('cx', cx).attr('cy', cy).attr('r', r).attr('fill', fill);
+
+    // Highlight: mute non-matching points (CSS overrides the fill) and draw the
+    // matches last so they sit on top of the grey ones.
+    const predicate = this.highlightPredicate;
+    const all = this.pointsG.selectAll('circle');
+    all.classed('umap-plot__point--muted', (d) => (predicate ? !predicate(d) : false));
+    if (predicate) all.filter(predicate).raise();
   }
 
   _drawLegends() {
