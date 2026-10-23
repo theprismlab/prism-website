@@ -3,18 +3,8 @@
     <p v-if="error" class="text-error">{{ error }}</p>
     <p v-else-if="!loaded" class="prism-text-body-large text-medium-emphasis">Loading data…</p>
 
-    <template v-else>
-      <div class="data-explorer__filters">
-        <v-text-field
-          v-model="search"
-          placeholder="Search…"
-          prepend-inner-icon="mdi-magnify"
-          clearable
-          hide-details
-          density="compact"
-          variant="outlined"
-          class="data-explorer__filter"
-        />
+    <div v-else class="data-explorer__card">
+      <div class="data-explorer__toolbar">
         <v-autocomplete
           v-for="field in filterFields"
           :key="field.key"
@@ -28,18 +18,31 @@
           hide-details
           density="compact"
           variant="outlined"
+          bg-color="white"
+          class="data-explorer__filter"
+        />
+        <v-text-field
+          v-model="search"
+          placeholder="Search…"
+          prepend-inner-icon="mdi-magnify"
+          clearable
+          hide-details
+          density="compact"
+          variant="outlined"
+          bg-color="white"
           class="data-explorer__filter"
         />
       </div>
 
       <div class="data-explorer__status">
-        <span class="prism-text-body-small text-medium-emphasis">
-          Showing {{ filteredAgents.length }} of {{ agents.length }} agents
+        <span class="data-explorer__count">
+          Showing <strong>{{ filteredAgents.length }}</strong> of {{ agents.length }} agents
         </span>
         <v-btn
           v-if="activeFilterCount"
           variant="text"
           size="small"
+          color="primary"
           prepend-icon="mdi-filter-remove-outline"
           @click="clearFilters"
         >
@@ -51,30 +54,37 @@
         :headers="headers"
         :items="filteredAgents"
         :search="search"
-        :items-per-page="25"
+        :items-per-page="10"
+        :items-per-page-options="[10, 25, 50, 100, { value: -1, title: 'All' }]"
         :sort-by="[{ key: 'FormattedName', order: 'asc' }]"
         density="compact"
+        hover
+        no-data-text="No agents match the current filters."
         class="data-explorer__table"
       >
         <template #[`item.GeneSymbolOfTargets`]="{ value }">
           {{ splitList(value).join(', ') }}
         </template>
+        <template #[`item.TargetOrMechanism`]="{ value }">
+          {{ splitList(value).join('; ') }}
+        </template>
       </v-data-table>
-    </template>
+    </div>
   </div>
 </template>
 
 <script>
   import { getOncRefData } from './oncref.js';
 
-  // Columns that get a multiselect filter. `list` marks semicolon-delimited
-  // CSV fields, where a row matches if any of its values is selected.
+  // Columns that get a multiselect filter, in table column order. `list` marks
+  // semicolon-delimited CSV fields, where a row matches if any value is selected.
   const FILTER_FIELDS = [
+    { key: 'GeneSymbolOfTargets', label: 'Targets', list: true },
+    { key: 'TargetOrMechanism', label: 'Mechanism', list: true },
     { key: 'Class', label: 'Class' },
     { key: 'Modality', label: 'Modality' },
     { key: 'TargetPathway', label: 'Pathway' },
     { key: 'HighestClinicalStage', label: 'Clinical stage' },
-    { key: 'GeneSymbolOfTargets', label: 'Targets', list: true },
   ];
 
   export default {
@@ -95,7 +105,7 @@
         headers: [
           { title: 'Agent', key: 'FormattedName' },
           { title: 'Targets', key: 'GeneSymbolOfTargets' },
-          { title: 'Mechanism', key: 'TargetOrMechanism', sortable: false },
+          { title: 'Mechanism', key: 'TargetOrMechanism' },
           { title: 'Class', key: 'Class' },
           { title: 'Modality', key: 'Modality' },
           { title: 'Pathway', key: 'TargetPathway' },
@@ -136,8 +146,7 @@
           options[field.key] = [...counts]
             .map(([value, count]) => ({ title: `${value} (${count})`, value }))
             .sort(
-              (a, b) =>
-                counts.get(b.value) - counts.get(a.value) || a.value.localeCompare(b.value),
+              (a, b) => counts.get(b.value) - counts.get(a.value) || a.value.localeCompare(b.value),
             );
         }
         return options;
@@ -180,11 +189,22 @@
 </script>
 
 <style scoped>
-  .data-explorer__filters {
+  .data-explorer__card {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+  }
+
+  /* ── Toolbar ──────────────────────────────────────────────────────── */
+  .data-explorer__toolbar {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 12px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   .data-explorer__filter {
@@ -196,8 +216,68 @@
   .data-explorer__status {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
-    min-height: 32px;
-    margin-bottom: 8px;
+    min-height: 44px;
+    padding: 4px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .data-explorer__count {
+    font-size: 0.8125rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .data-explorer__count strong {
+    color: rgba(0, 0, 0, 0.87);
+    font-weight: 600;
+  }
+
+  /* ── Table ────────────────────────────────────────────────────────── */
+  .data-explorer__table :deep(table) {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .data-explorer__table :deep(.v-data-table__td) {
+    overflow-wrap: anywhere;
+  }
+
+  .data-explorer__table :deep(.v-data-table__th) {
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.6) !important;
+    background: rgba(0, 0, 0, 0.015);
+    white-space: nowrap;
+    height: 44px !important;
+  }
+
+  .data-explorer__table :deep(thead tr) {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .data-explorer__table :deep(.v-data-table__td) {
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.82);
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .data-explorer__table :deep(tbody tr:nth-child(even) > td) {
+    background: rgba(0, 0, 0, 0.012);
+  }
+
+  .data-explorer__table :deep(tbody tr:last-child > td) {
+    border-bottom: 0 !important;
+  }
+
+  .data-explorer__table :deep(.v-data-table-footer) {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 0.8125rem;
+    color: rgba(0, 0, 0, 0.6);
   }
 </style>
