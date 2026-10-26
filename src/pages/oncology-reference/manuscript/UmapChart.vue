@@ -137,14 +137,16 @@
         height: this.height,
         fontSize: this.fontSize,
         key: (d) => d.id,
-        x: { field: 'x', title: 'X Axis' },
-        y: { field: 'y', title: 'Y Axis' },
-        color: {
-          field: 'pathway',
-          title: 'Target Pathways',
-          type: 'categorical',
-          domain: this.pathwayColors.domain,
-          range: this.pathwayColors.range,
+        axis: {
+          x: { field: 'x', title: 'X Axis' },
+          y: { field: 'y', title: 'Y Axis' },
+          color: {
+            field: 'pathway',
+            title: 'Target Pathways',
+            type: 'categorical',
+            domain: this.pathwayColors.domain,
+            range: this.pathwayColors.range,
+          },
         },
         layers: [
           {

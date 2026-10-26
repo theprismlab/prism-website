@@ -45,15 +45,21 @@
 </script>
 
 <style scoped>
+  /* Vertical by default: image stacked above the text */
   .image-card {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 28px;
+    grid-template-columns: 1fr;
+    gap: 20px;
     padding: 24px;
     border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
     border-radius: var(--prism-radius-lg);
   }
-  .image-card--reverse .image-card__media {
+  /* Horizontal: image beside the text (falls back to stacked on small screens) */
+  .image-card--horizontal {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 28px;
+  }
+  .image-card--horizontal.image-card--reverse .image-card__media {
     order: 2;
   }
 
@@ -104,14 +110,16 @@
     color: var(--v-grey-darken-1);
   }
 
-  /* sm and below: stack image over text */
+  /* sm and below: horizontal cards stack image over text like vertical ones */
   @media (max-width: 960px) {
     .image-card {
-      grid-template-columns: 1fr;
-      gap: 20px;
       padding: 20px 16px;
     }
-    .image-card--reverse .image-card__media {
+    .image-card--horizontal {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .image-card--horizontal.image-card--reverse .image-card__media {
       order: 0;
     }
     .image-card__media {

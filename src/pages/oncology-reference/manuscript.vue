@@ -24,36 +24,41 @@
     <page-section width="narrow">
       <stat-grid :stats="stats" />
     </page-section>
-    <page-section v-if="agents" width="narrow">
-      <v-card variant="outlined" class="pa-6">
-        <v-card-title class="px-0">Previously screened</v-card-title>
-        <bar-chart
-          font-size="small"
-          :data="previouslyScreenedCounts"
-          :axis="previouslyScreenedAxis"
-        />
-      </v-card>
-    </page-section>
-    <page-section v-if="agents" width="narrow">
-      <v-card variant="outlined" class="pa-6">
-        <v-card-title class="px-0">Target pathway</v-card-title>
-        <bar-chart
-          orientation="horizontal"
-          font-size="small"
-          :data="targetPathwayCounts"
-          :axis="targetPathwayAxis"
-        />
-      </v-card>
-    </page-section>
-    <page-section v-if="agents" width="narrow">
-      <v-card variant="outlined" class="pa-6">
-        <v-card-title class="px-0">Target pathway by modality</v-card-title>
-        <stacked-bar-chart
-          font-size="small"
-          :data="targetPathwayModalityCounts"
-          :axis="targetPathwayModalityAxis"
-        />
-      </v-card>
+    <page-section v-if="agents" width="wide">
+      <v-row>
+        <v-col cols="12" md="4">
+          <v-card variant="outlined" class="pa-6 fill-height">
+            <v-card-title class="px-0">Previously screened</v-card-title>
+            <bar-chart
+              orientation="horizontal"
+              font-size="small"
+              :data="previouslyScreenedCounts"
+              :axis="previouslyScreenedAxis"
+            />
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-card variant="outlined" class="pa-6 fill-height">
+            <v-card-title class="px-0">Target pathway</v-card-title>
+            <bar-chart
+              orientation="horizontal"
+              font-size="small"
+              :data="targetPathwayCounts"
+              :axis="targetPathwayAxis"
+            />
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-card variant="outlined" class="pa-6 fill-height">
+            <v-card-title class="px-0">Target pathway by modality</v-card-title>
+            <stacked-bar-chart
+              font-size="small"
+              :data="targetPathwayModalityCounts"
+              :axis="targetPathwayModalityAxis"
+            />
+          </v-card>
+        </v-col>
+      </v-row>
     </page-section>
     <page-section width="narrow">
       <p>
@@ -73,6 +78,7 @@
           v-for="(study, i) in caseStudies"
           :key="study.title"
           v-bind="study"
+          layout="horizontal"
           :reverse="i % 2 === 1"
         />
       </div>
@@ -151,10 +157,12 @@
         // ({ title, body, caption, category, image })
         caseStudies,
         // Axis config for the bar charts (x, y and color, each with title, domain,
-        // range and ticks; see BarChart.vue). Anything left out uses the chart default.
+        // range and ticks; see chartAxis.js in prism-charts). Anything left out uses
+        // the chart default. The charts are horizontal, so x holds the counts and y
+        // the categories.
         previouslyScreenedAxis: {
-          x: { title: 'Previously screened' },
-          y: { title: 'Test agents' },
+          x: { title: 'Test agents' },
+          y: { title: 'Previously screened' },
         },
         // Dataset totals, matching the figures cited in the page text
         stats: [

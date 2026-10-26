@@ -12,5 +12,12 @@
     "caption": "Figure 6C · AUC distributions in G12C-mutant vs. all other lines",
     "category": "KRAS landscape",
     "image": ""
+  },
+  {
+    "title": "A 5-LOX inhibitor that actually hits TEAD1",
+    "body": "BW-B70C, annotated as a lipoxygenase inhibitor, sat next to known TEAD inhibitors in profile space. Boltz2 structural co-folding plus molecular dynamics predicted a stable pose in TEAD1's lipid pocket (shown), with hydrogen bonds to S356/P357 maintained throughout the trajectory. A TEAD luciferase reporter confirmed submicromolar inhibition in MCF7 cells.",
+    "caption": "Figure 5G · Predicted BW-B70C pose in TEAD1 hydrophobic pocket",
+    "category": "Hidden polypharmacology",
+    "image": ""
   }
 ]
