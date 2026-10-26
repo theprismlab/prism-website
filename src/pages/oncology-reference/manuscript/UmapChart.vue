@@ -32,8 +32,7 @@
 </template>
 
 <script>
-  import { categoryColors } from './chartColors.js';
-  import UmapPlot from './UmapPlot.js';
+  import { ScatterPlot, categoryColors } from '@/lib/charts/prism-charts.js';
 
   const GENE_COLOR = '#555';
 
@@ -134,7 +133,7 @@
     mounted() {
       // Stored as a plain property (not in data()) so Vue doesn't wrap the d3
       // object graph in reactive proxies.
-      this.plot = new UmapPlot(this.$refs.plot, {
+      this.plot = new ScatterPlot(this.$refs.plot, {
         height: this.height,
         fontSize: this.fontSize,
         key: (d) => d.id,

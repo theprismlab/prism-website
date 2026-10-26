@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import StackedBarChart from './StackedBarChart.js';
+  import { StackedBarChart } from '@/lib/charts/prism-charts.js';
 
   /**
    * Vue wrapper for StackedBarChart.js: every prop is a StackedBarChart option, and

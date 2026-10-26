@@ -122,11 +122,9 @@
 <script>
   import DataExplorer from './manuscript/DataExplorer.vue';
   import BarChart from './manuscript/BarChart.vue';
-  import { countBy } from './manuscript/barChartData.js';
+  import { categoryColors, countBy, countByStacked } from '@/lib/charts/prism-charts.js';
   import StackedBarChart from './manuscript/StackedBarChart.vue';
-  import { countByStacked } from './manuscript/stackedBarChartData.js';
   import StatGrid from './manuscript/StatGrid.vue';
-  import { categoryColors } from './manuscript/chartColors.js';
   import { getOncRefData } from './manuscript/oncref.js';
 
   export default {

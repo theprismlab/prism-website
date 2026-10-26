@@ -143,7 +143,11 @@
         if (!query) return null;
         const keys = this.headers.map((h) => h.key);
         return this.filteredAgents.filter((row) =>
-          keys.some((key) => String(row[key] ?? '').toLowerCase().includes(query)),
+          keys.some((key) =>
+            String(row[key] ?? '')
+              .toLowerCase()
+              .includes(query),
+          ),
         );
       },
       // Dropdown options per field, with counts that reflect every *other* active

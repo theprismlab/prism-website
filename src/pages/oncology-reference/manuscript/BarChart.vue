@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import BarChart from './BarChart.js';
+  import { BarChart } from '@/lib/charts/prism-charts.js';
 
   /**
    * Vue wrapper for BarChart.js: every prop is a BarChart option, and changing one
