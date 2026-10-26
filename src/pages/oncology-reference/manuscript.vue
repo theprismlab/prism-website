@@ -232,7 +232,7 @@
       // axis comes from the shared pathway colors, so the bars match the UMAP.
       targetPathwayAxis() {
         return {
-          y: { title: 'Test agents' },
+          y: { title: 'Test agents', titlePosition: 'top' },
           //     y: { title: 'Target pathway' },
           color: categoryColors(this.agents, 'TargetPathway'),
         };
@@ -253,7 +253,7 @@
           'Preclinical',
         ];
         return {
-          y: { title: 'Test agents' },
+          y: { title: 'Test agents', titlePosition: 'top' },
           x: { domain: STAGE_ORDER },
           color: {
             domain: STAGE_ORDER,
@@ -264,7 +264,7 @@
       },
       ModalityAxis() {
         return {
-          y: { title: 'Test agents' },
+          y: { title: 'Test agents', titlePosition: 'top' },
           //  y: { title: 'Modality' },
           color: { range: [schemeDark2[0]] },
         };
@@ -272,7 +272,7 @@
       // Same pathway bars, stacked and colored by modality
       targetPathwayModalityAxis() {
         return {
-          x: { title: 'Test agents' },
+          x: { title: 'Test agents', titlePosition: 'top' },
           //    y: { title: 'Target pathway' },
           color: { ...categoryColors(this.agents, 'Modality'), title: 'Modality' },
         };
