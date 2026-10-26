@@ -1,43 +1,37 @@
 <template>
-  <div class="bar-chart" :style="{ maxWidth: `${width}px` }">
+  <div class="stacked-bar-chart" :style="{ maxWidth: `${width}px` }">
     <div ref="legend"></div>
-    <svg ref="svg" class="bar-chart__svg" role="img" :aria-label="ariaLabel"></svg>
+    <svg ref="svg" class="stacked-bar-chart__svg" role="img" :aria-label="ariaLabel"></svg>
   </div>
 </template>
 
 <script>
   import * as d3 from 'd3';
+  import { defaultColors } from './chartColors.js';
   import { drawLegend } from './chartLegend.js';
-  import {
-    CHAR_WIDTH,
-    barChartMixin,
-    colorScale,
-    countLabel,
-    countScale,
-    countTicks,
-    drawAxisTitles,
-    drawGridlines,
-    mergeLabels,
-    resetSvg,
-    styleAxes,
-  } from './barChartShared.js';
 
+  // The left margin is sized to the labels when drawing
   const MARGIN = { top: 12, right: 76, bottom: 56, left: 0 };
   // Room for the y axis title, and the gap between the labels and the plot
   const Y_TITLE_WIDTH = 28;
   const LABEL_GAP = 12;
+  // Approximate pixel width of one character of 12px axis text
+  const CHAR_WIDTH = 6.5;
 
   export default {
-    name: 'HorizontalStackedBarChart',
-    mixins: [barChartMixin],
+    name: 'StackedBarChart',
     props: {
-      // [{ label, segments: [{ key, count }] }], one per bar (see countByStacked in
-      // chartData.js). Each bar is stacked from its segments, and a segment is colored
-      // by its key. Bar order comes from axis.y.domain, else the order of the data.
+      // [{ label, count, segments: [{ key, count }] }], one per bar; see countByStacked
+      // in stackedBarChart.js. Bars are horizontal, one row per bar, and the chart is
+      // as tall as its rows need. Each bar is stacked from its segments, and a segment
+      // is colored by its key. Bar order comes from axis.y.domain, else the order of
+      // the data.
       data: { type: Array, required: true },
-      // Same config as HorizontalBarChart: x is the horizontal axis (the counts,
-      // linear) and y is the vertical axis (the bars, categorical). Every axis is
-      // optional, and so is every property on it:
+      // Total the percentages are taken from (defaults to the sum of all the counts)
+      total: { type: Number, default: null },
+      // { x, y, color }: x is the horizontal axis (the counts), y the vertical axis
+      // (the bars), and color the segment fill, with the legend shown when it has a
+      // title. Every axis is optional, and so is every property on it:
       // title  Axis title (for color, the legend title).
       // domain x: [min, max] counts. y: bar labels from top to bottom; labels missing
       //        from it are added after it. color: segment keys the colors are assigned
@@ -46,9 +40,12 @@
       //        the plot. color: array of colors, reused in order if too short.
       // ticks  x: a tick count or an array of values. y: labels to show ticks for.
       //        color: keys to list in the legend.
-      // Defaults: y domain from the data, x domain [0, max bar total] rounded up, x
-      // about 5 ticks, color domain from the segment keys in order of first appearance.
-      // Height of each bar's row; the chart is as tall as its rows need
+      // Defaults: y domain from the data, x domain [0, max bar total] rounded up with
+      // about 5 ticks, color domain from the segment keys in order of first
+      // appearance, color range from defaultColors in chartColors.js.
+      axis: { type: Object, default: () => ({}) },
+      width: { type: Number, default: 640 },
+      // Height of each bar's row
       rowHeight: { type: Number, default: 28 },
     },
     computed: {
@@ -62,6 +59,13 @@
         return `Stacked bar chart of ${this.axis.x?.title || 'count'} by ${this.axis.y?.title || 'category'}, split by ${this.axis.color?.title || 'group'}. ${bars}`;
       },
     },
+    watch: {
+      data: { handler: 'draw', deep: true },
+      axis: { handler: 'draw', deep: true },
+    },
+    mounted() {
+      this.draw();
+    },
     methods: {
       draw() {
         const { width } = this;
@@ -70,7 +74,7 @@
         const ac = this.axis.color || {};
 
         const byLabel = new Map(this.data.map((d) => [d.label, d.segments]));
-        const labels = mergeLabels(ay.domain, byLabel.keys());
+        const labels = [...new Set([...(ay.domain || []), ...byLabel.keys()])];
         const keys = ac.domain || [
           ...new Set(this.data.flatMap((d) => d.segments.map((s) => s.key))),
         ];
@@ -109,15 +113,14 @@
           .domain(labels)
           .range(ay.range || [0, innerHeight])
           .padding(0.3);
-        const x = countScale(
-          ax,
-          [0, innerWidth],
-          d3.max(bars, (d) => d.count),
-        );
-        const color = colorScale(ac, keys);
-        const xTicks = countTicks(ax, x);
+        const x = d3.scaleLinear().range(ax.range || [0, innerWidth]);
+        if (ax.domain) x.domain(ax.domain);
+        else x.domain([0, d3.max(bars, (d) => d.count) || 1]).nice();
+        const color = d3.scaleOrdinal(keys, ac.range || defaultColors(keys.length));
+        const xTicks = Array.isArray(ax.ticks) ? ax.ticks : x.ticks(ax.ticks ?? 5);
 
-        const svg = resetSvg(this.$refs.svg, width, height);
+        const svg = d3.select(this.$refs.svg).attr('viewBox', `0 0 ${width} ${height}`);
+        svg.selectAll('*').remove();
         const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
         // Y axis with a tick beside each bar, and X axis with count ticks
@@ -131,9 +134,20 @@
           .append('g')
           .attr('transform', `translate(0,${innerHeight})`)
           .call(d3.axisBottom(x).tickValues(xTicks).tickSizeOuter(0));
-        styleAxes(yAxis, xAxis);
+        for (const axis of [yAxis, xAxis]) {
+          axis.selectAll('text').attr('font-size', 12).attr('fill', 'rgba(0,0,0,0.7)');
+          axis.selectAll('.domain, .tick line').attr('stroke', 'rgba(0,0,0,0.5)');
+        }
 
-        drawGridlines(g, xTicks, x, 'vertical', innerHeight);
+        // Light gridlines down the plot at each x tick, drawn behind the bars
+        g.insert('g', ':first-child')
+          .selectAll('line')
+          .data(xTicks)
+          .join('line')
+          .attr('y2', innerHeight)
+          .attr('x1', (d) => x(d))
+          .attr('x2', (d) => x(d))
+          .attr('stroke', 'rgba(0,0,0,0.08)');
 
         // Bars: one rect per segment, with a thin white gap between neighbors, and
         // the bar's total count and share beside the end of the stack
@@ -159,18 +173,37 @@
           .attr('font-size', 12)
           .attr('font-weight', 600)
           .attr('fill', 'rgba(0,0,0,0.87)')
-          .text((d) => countLabel(d.count, total));
+          .text((d) => `${d.count} (${Math.round((d.count / total) * 100)}%)`);
 
-        drawAxisTitles(svg, {
-          x: ax.title,
-          y: ay.title,
-          margin,
-          innerWidth,
-          innerHeight,
-          height,
-        });
+        // Axis titles: x centered under the plot, y rotated at the left edge
+        svg
+          .append('text')
+          .attr('x', margin.left + innerWidth / 2)
+          .attr('y', height - 12)
+          .attr('text-anchor', 'middle')
+          .attr('font-size', 12)
+          .attr('font-weight', 600)
+          .attr('fill', 'rgba(0,0,0,0.6)')
+          .text(ax.title || '');
+        svg
+          .append('text')
+          .attr('transform', `translate(14,${margin.top + innerHeight / 2}) rotate(-90)`)
+          .attr('text-anchor', 'middle')
+          .attr('font-size', 12)
+          .attr('font-weight', 600)
+          .attr('fill', 'rgba(0,0,0,0.6)')
+          .text(ay.title || '');
+
         drawLegend(d3.select(this.$refs.legend), color, ac);
       },
     },
   };
 </script>
+
+<style scoped>
+  .stacked-bar-chart__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

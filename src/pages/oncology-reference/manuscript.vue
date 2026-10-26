@@ -33,16 +33,13 @@
     <page-section v-if="agents" width="narrow">
       <v-card variant="outlined" class="pa-6">
         <v-card-title class="px-0">Target pathway</v-card-title>
-        <horizontal-bar-chart :data="targetPathwayCounts" :axis="targetPathwayAxis" />
+        <bar-chart orientation="horizontal" :data="targetPathwayCounts" :axis="targetPathwayAxis" />
       </v-card>
     </page-section>
     <page-section v-if="agents" width="narrow">
       <v-card variant="outlined" class="pa-6">
         <v-card-title class="px-0">Target pathway by modality</v-card-title>
-        <horizontal-stacked-bar-chart
-          :data="targetPathwayModalityCounts"
-          :axis="targetPathwayModalityAxis"
-        />
+        <stacked-bar-chart :data="targetPathwayModalityCounts" :axis="targetPathwayModalityAxis" />
       </v-card>
     </page-section>
     <page-section width="narrow">
@@ -112,16 +109,16 @@
 <script>
   import DataExplorer from './manuscript/DataExplorer.vue';
   import BarChart from './manuscript/BarChart.vue';
-  import HorizontalBarChart from './manuscript/HorizontalBarChart.vue';
-  import HorizontalStackedBarChart from './manuscript/HorizontalStackedBarChart.vue';
+  import { countBy } from './manuscript/barChart.js';
+  import StackedBarChart from './manuscript/StackedBarChart.vue';
+  import { countByStacked } from './manuscript/stackedBarChart.js';
   import StatGrid from './manuscript/StatGrid.vue';
   import { categoryColors } from './manuscript/chartColors.js';
-  import { countBy, countByStacked } from './manuscript/chartData.js';
   import { getOncRefData } from './manuscript/oncref.js';
 
   export default {
     name: 'OncologyReferenceManuscript',
-    components: { BarChart, DataExplorer, HorizontalBarChart, HorizontalStackedBarChart, StatGrid },
+    components: { BarChart, DataExplorer, StackedBarChart, StatGrid },
     data() {
       return {
         // Test agent rows from the CSV, loaded in created()
