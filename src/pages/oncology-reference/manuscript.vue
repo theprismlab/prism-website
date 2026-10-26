@@ -160,7 +160,7 @@
 </template>
 
 <script>
-  import { interpolateBlues, quantize } from 'd3';
+  import { interpolateBlues, quantize, schemeDark2 } from 'd3';
   import DataExplorer from './manuscript/DataExplorer.vue';
   import BarChart from './manuscript/BarChart.vue';
   import ImageCard from './manuscript/ImageCard.vue';
@@ -266,7 +266,7 @@
         return {
           y: { title: 'Test agents' },
           //  y: { title: 'Modality' },
-          color: categoryColors(this.agents, 'Modality'),
+          color: { range: [schemeDark2[0]] },
         };
       },
       // Same pathway bars, stacked and colored by modality
