@@ -32,6 +32,7 @@
 </template>
 
 <script>
+  import { categoryColors } from './chartColors.js';
   import UmapPlot from './UmapPlot.js';
 
   const GENE_COLOR = '#555';
@@ -44,11 +45,11 @@
   }
 
   /**
-   * UMAP scatter of test agents (filled, coloured by UMAP class) with CRISPR
+   * UMAP scatter of test agents (filled, coloured by target pathway) with CRISPR
    * genes overlaid as outlined circles.
    *
    * `agents` is the full list (used to fix the colour domain so filtering never
-   * recolours a class); `rows` is the subset to plot, typically the filtered
+   * recolours a pathway); `rows` is the subset to plot, typically the filtered
    * table rows. Rows without a `umap` point are counted but not drawn.
    * `genes` are `{ n, x, y }` CRISPR gene points from the JSON.
    * `highlighted`, when not null, is the subset of rows to emphasise (e.g. search
@@ -83,7 +84,7 @@
             id: row.CompoundName,
             x: row.umap.x,
             y: row.umap.y,
-            cls: row.umap.umapCls,
+            pathway: row.TargetPathway || '(blank)',
             agent: row,
           }));
       },
@@ -111,15 +112,10 @@
         const keys = this.highlightedKeys;
         return keys ? this.points.filter((p) => keys.agents.has(p.id)).length : 0;
       },
-      // Every UMAP class across all agents, most common first
-      classes() {
-        const counts = new Map();
-        for (const row of this.agents) {
-          if (row.umap) counts.set(row.umap.umapCls, (counts.get(row.umap.umapCls) || 0) + 1);
-        }
-        return [...counts]
-          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-          .map(([cls]) => cls);
+      // Pathway colors from all agents (not just the plotted rows), so filtering
+      // never recolors a pathway. The same mapping colors the pathway bar chart.
+      pathwayColors() {
+        return categoryColors(this.agents, 'TargetPathway');
       },
     },
     watch: {
@@ -141,12 +137,24 @@
         key: (d) => d.id,
         x: { field: 'x', title: 'X Axis' },
         y: { field: 'y', title: 'Y Axis' },
-        color: { field: 'cls', title: 'Class', type: 'categorical', domain: this.classes },
+        color: {
+          field: 'pathway',
+          title: 'Target Pathways',
+          type: 'categorical',
+          domain: this.pathwayColors.domain,
+          range: this.pathwayColors.range,
+        },
         layers: [
           {
             id: 'agents',
             mark: 'filled',
-            tooltip: (d, rows) => [['Agent', d.agent.FormattedName], ...rows],
+            // The legend title is plural, so the tooltip row uses the singular
+            tooltip: (d, rows) => [
+              ['Agent', d.agent.FormattedName],
+              ...rows.map(([label, value]) =>
+                label === 'Target Pathways' ? ['Target pathway', value] : [label, value],
+              ),
+            ],
           },
           {
             id: 'genes',

@@ -40,3 +40,26 @@ const DARK_LIGHT_PAIRS = [
 export function defaultColors(count) {
   return count <= d3.schemeTableau10.length ? d3.schemeTableau10 : DARK_LIGHT_PAIRS;
 }
+
+/**
+ * Color scale config for coloring by a CSV column, shared by every chart that shows
+ * the column so a value gets the same color everywhere. Values are ordered by row
+ * count, high to low (ties keep their order of first appearance), and take the
+ * default colors in that order. Pass the same rows to every chart.
+ *
+ * @param {Object[]} rows one object per test agent
+ * @param {string} column CSV column to color by; empty cells count as "(blank)"
+ * @returns {{ domain: string[], range: string[] }} color axis `domain` and `range`
+ */
+export function categoryColors(rows, column) {
+  const counts = d3.rollup(
+    rows,
+    (group) => group.length,
+    (row) => row[column] || '(blank)',
+  );
+  // Array.sort is stable, so ties keep the order the values first appear in
+  const domain = Array.from(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([value]) => value);
+  return { domain, range: defaultColors(domain.length) };
+}

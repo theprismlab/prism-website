@@ -110,6 +110,7 @@
   import DataExplorer from './manuscript/DataExplorer.vue';
   import BarChartTile from './manuscript/BarChartTile.vue';
   import StatGrid from './manuscript/StatGrid.vue';
+  import { categoryColors } from './manuscript/chartColors.js';
   import { getOncRefData } from './manuscript/oncref.js';
 
   export default {
@@ -124,11 +125,6 @@
         previouslyScreenedAxis: {
           x: { title: 'Previously screened' },
           y: { title: 'Test agents' },
-        },
-        // Horizontal chart: x is the counts axis and y holds the pathways
-        targetPathwayAxis: {
-          x: { title: 'Test agents' },
-          y: { title: 'Target pathway' },
         },
         // Dataset totals, matching the figures cited in the page text
         stats: [
@@ -153,7 +149,17 @@
         ],
       };
     },
-    computed: {},
+    computed: {
+      // Horizontal chart: x is the counts axis and y holds the pathways. The color
+      // axis comes from the shared pathway colors, so the bars match the UMAP.
+      targetPathwayAxis() {
+        return {
+          x: { title: 'Test agents' },
+          y: { title: 'Target pathway' },
+          color: categoryColors(this.agents, 'TargetPathway'),
+        };
+      },
+    },
     async created() {
       try {
         this.agents = (await getOncRefData()).agents;
