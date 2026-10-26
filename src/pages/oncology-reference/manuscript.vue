@@ -38,8 +38,8 @@
         column="TargetPathway"
         :rows="agents"
         :axis="targetPathwayAxis"
-        :width="960"
-        :height="360"
+        horizontal
+        sort="descending"
       />
     </page-section>
     <page-section width="narrow">
@@ -125,9 +125,10 @@
           x: { title: 'Previously screened' },
           y: { title: 'Test agents' },
         },
+        // Horizontal chart: x is the counts axis and y holds the pathways
         targetPathwayAxis: {
-          x: { title: 'Target pathway' },
-          y: { title: 'Test agents' },
+          x: { title: 'Test agents' },
+          y: { title: 'Target pathway' },
         },
         // Dataset totals, matching the figures cited in the page text
         stats: [

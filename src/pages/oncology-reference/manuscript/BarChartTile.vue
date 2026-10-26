@@ -6,12 +6,12 @@
         <strong>{{ rows.length }}</strong> test agents, counted by <code>{{ column }}</code>
       </div>
     </div>
-    <bar-chart
+    <component
+      :is="horizontal ? 'HorizontalBarChart' : 'BarChart'"
+      v-bind="chartSize"
       :data="counts"
       :total="rows.length"
       :axis="axis"
-      :width="width"
-      :height="height"
     />
   </v-card>
 </template>
@@ -19,10 +19,11 @@
 <script>
   import * as d3 from 'd3';
   import BarChart from './BarChart.vue';
+  import HorizontalBarChart from './HorizontalBarChart.vue';
 
   export default {
     name: 'BarChartTile',
-    components: { BarChart },
+    components: { BarChart, HorizontalBarChart },
     props: {
       title: { type: String, required: true },
       // One object per CSV row (test agent)
@@ -30,17 +31,31 @@
       // CSV column the rows are counted by, one bar per distinct value
       column: { type: String, required: true },
       // This tile's own axis config ({ x, y, color }, each with title, domain, range
-      // and ticks); see BarChart.vue. Without it, bars follow the order the values
-      // first appear in the CSV.
+      // and ticks); see BarChart.vue, or HorizontalBarChart.vue when `horizontal`
+      // is set, where x is the counts axis. Without it, bars follow the order the
+      // values first appear in the CSV.
       axis: { type: Object, default: () => ({}) },
+      // Draw horizontal bars, one row per value, instead of vertical bars
+      horizontal: { type: Boolean, default: false },
+      // Order the bars by count: 'descending' (high to low) or 'ascending'. Ties keep
+      // their CSV order. Leave unset to use the axis domain or CSV order instead.
+      sort: {
+        type: String,
+        default: null,
+        validator: (v) => [null, 'ascending', 'descending'].includes(v),
+      },
       width: { type: Number, default: 640 },
+      // Vertical charts only; a horizontal chart is as tall as its rows need
       height: { type: Number, default: 320 },
     },
     computed: {
+      chartSize() {
+        return this.horizontal ? { width: this.width } : { width: this.width, height: this.height };
+      },
       // Row counts per value in the column, in order of first appearance. Empty
       // cells are counted as "(blank)" so the bars add up to the row total.
       counts() {
-        return Array.from(
+        const counts = Array.from(
           d3.rollup(
             this.rows,
             (group) => group.length,
@@ -48,6 +63,10 @@
           ),
           ([label, count]) => ({ label, count }),
         );
+        // Array.sort is stable, so ties keep their CSV order
+        if (this.sort === 'descending') counts.sort((a, b) => b.count - a.count);
+        else if (this.sort === 'ascending') counts.sort((a, b) => a.count - b.count);
+        return counts;
       },
     },
   };

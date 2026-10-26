@@ -10,6 +10,8 @@
 
 <script>
   import * as d3 from 'd3';
+  import { defaultColors } from './chartColors.js';
+  import { drawLegend } from './chartLegend.js';
 
   const MARGIN = { top: 28, right: 16, bottom: 64, left: 64 };
   const LEGEND_HEIGHT = 24;
@@ -36,7 +38,8 @@
       // ticks  x: labels to show ticks for. y: a tick count or an array of values.
       //        color: labels to list in the legend.
       // Defaults: x domain from the data, y domain [0, max count] rounded up, y about
-      // 5 ticks, color domain from x, color range d3.schemeTableau10.
+      // 5 ticks, color domain from x, color range d3.schemeTableau10 (or
+      // a 14-color alternating-lightness palette when there are more than 10 bars).
       axis: { type: Object, default: () => ({}) },
       width: { type: Number, default: 640 },
       height: { type: Number, default: 320 },
@@ -87,7 +90,8 @@
         const y = d3.scaleLinear().range(ay.range || [innerHeight, 0]);
         if (ay.domain) y.domain(ay.domain);
         else y.domain([0, d3.max(bars, (d) => d.count) || 1]).nice();
-        const color = d3.scaleOrdinal(ac.domain || labels, ac.range || d3.schemeTableau10);
+        const colorDomain = ac.domain || labels;
+        const color = d3.scaleOrdinal(colorDomain, ac.range || defaultColors(colorDomain.length));
 
         const yTicks = Array.isArray(ay.ticks) ? ay.ticks : y.ticks(ay.ticks ?? 5);
 
@@ -100,7 +104,12 @@
         const xAxis = g
           .append('g')
           .attr('transform', `translate(0,${innerHeight})`)
-          .call(d3.axisBottom(x).tickValues(ax.ticks || labels).tickSizeOuter(0));
+          .call(
+            d3
+              .axisBottom(x)
+              .tickValues(ax.ticks || labels)
+              .tickSizeOuter(0),
+          );
         for (const axis of [yAxis, xAxis]) {
           axis.selectAll('text').attr('font-size', 12).attr('fill', 'rgba(0,0,0,0.7)');
           axis.selectAll('.domain, .tick line').attr('stroke', 'rgba(0,0,0,0.5)');
@@ -166,38 +175,7 @@
           .attr('fill', 'rgba(0,0,0,0.6)')
           .text(ay.title || '');
 
-        if (hasLegend) this.drawLegend(svg, color, ac, margin.left);
-      },
-
-      // Legend row above the plot: the color title, then a swatch and name per entry
-      drawLegend(svg, color, ac, left) {
-        const entries = ac.ticks || color.domain();
-        const legend = svg.append('g').attr('transform', `translate(${left},14)`);
-        const title = legend
-          .append('text')
-          .attr('font-size', 12)
-          .attr('font-weight', 600)
-          .attr('fill', 'rgba(0,0,0,0.6)')
-          .text(ac.title);
-
-        let offset = title.node().getComputedTextLength() + 16;
-        for (const entry of entries) {
-          legend
-            .append('rect')
-            .attr('x', offset)
-            .attr('y', -10)
-            .attr('width', 12)
-            .attr('height', 12)
-            .attr('rx', 2)
-            .attr('fill', color(entry));
-          const label = legend
-            .append('text')
-            .attr('x', offset + 18)
-            .attr('font-size', 12)
-            .attr('fill', 'rgba(0,0,0,0.7)')
-            .text(entry);
-          offset += 18 + label.node().getComputedTextLength() + 16;
-        }
+        if (hasLegend) drawLegend(svg, color, ac, margin.left);
       },
     },
   };
