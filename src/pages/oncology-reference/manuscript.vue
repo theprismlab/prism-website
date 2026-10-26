@@ -26,14 +26,25 @@
     </page-section>
     <page-section v-if="agents" width="wide">
       <v-row>
-        <v-col cols="12" md="4">
+        <!-- <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Previously screened</v-card-title>
             <bar-chart
-              orientation="horizontal"
               font-size="small"
               :data="previouslyScreenedCounts"
               :axis="previouslyScreenedAxis"
+              bar-label="count"
+            />
+          </v-card>
+        </v-col> -->
+        <v-col cols="12" md="4">
+          <v-card variant="outlined" class="pa-6 fill-height">
+            <v-card-title class="px-0">Clinical Stage</v-card-title>
+            <bar-chart
+              font-size="small"
+              :data="clinicalStageCounts"
+              :axis="clinicalStageAxis"
+              bar-label="count"
             />
           </v-card>
         </v-col>
@@ -41,10 +52,21 @@
           <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Target pathway</v-card-title>
             <bar-chart
-              orientation="horizontal"
+              bar-label="count"
               font-size="small"
               :data="targetPathwayCounts"
               :axis="targetPathwayAxis"
+            />
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-card variant="outlined" class="pa-6 fill-height">
+            <v-card-title class="px-0">Modality</v-card-title>
+            <bar-chart
+              font-size="small"
+              :data="ModalityCounts"
+              :axis="ModalityAxis"
+              bar-label="count"
             />
           </v-card>
         </v-col>
@@ -55,6 +77,7 @@
               font-size="small"
               :data="targetPathwayModalityCounts"
               :axis="targetPathwayModalityAxis"
+              bar-label="count"
             />
           </v-card>
         </v-col>
@@ -137,6 +160,7 @@
 </template>
 
 <script>
+  import { interpolateBlues, quantize } from 'd3';
   import DataExplorer from './manuscript/DataExplorer.vue';
   import BarChart from './manuscript/BarChart.vue';
   import ImageCard from './manuscript/ImageCard.vue';
@@ -192,26 +216,64 @@
       previouslyScreenedCounts() {
         return countBy(this.agents, 'PreviouslyScreened');
       },
+      clinicalStageCounts() {
+        return countBy(this.agents, 'HighestClinicalStage');
+      },
       targetPathwayCounts() {
         return countBy(this.agents, 'TargetPathway', { sort: 'descending' });
       },
       targetPathwayModalityCounts() {
         return countByStacked(this.agents, 'TargetPathway', 'Modality', { sort: 'descending' });
       },
+      ModalityCounts() {
+        return countBy(this.agents, 'Modality', { sort: 'descending' });
+      },
       // Horizontal chart: x is the counts axis and y holds the pathways. The color
       // axis comes from the shared pathway colors, so the bars match the UMAP.
       targetPathwayAxis() {
         return {
-          x: { title: 'Test agents' },
-          y: { title: 'Target pathway' },
+          y: { title: 'Test agents' },
+          //     y: { title: 'Target pathway' },
           color: categoryColors(this.agents, 'TargetPathway'),
+        };
+      },
+      clinicalStageAxis() {
+        const STAGE_ORDER = [
+          'Approved',
+          'Approved (non-oncology)',
+          'Phase III',
+          'Phase II/III',
+          'Phase IIa',
+          'Phase II',
+          'Phase Ib/II',
+          'Phase I/II',
+          'Phase I/IIa',
+          'Phase Ib',
+          'Phase I',
+          'Preclinical',
+        ];
+        return {
+          y: { title: 'Test agents' },
+          x: { domain: STAGE_ORDER },
+          color: {
+            domain: STAGE_ORDER,
+            //range: quantize(interpolateBlues, STAGE_ORDER.length),
+            range: quantize((t) => interpolateBlues(0.33 + 0.7 * t), STAGE_ORDER.length),
+          },
+        };
+      },
+      ModalityAxis() {
+        return {
+          y: { title: 'Test agents' },
+          //  y: { title: 'Modality' },
+          color: categoryColors(this.agents, 'Modality'),
         };
       },
       // Same pathway bars, stacked and colored by modality
       targetPathwayModalityAxis() {
         return {
           x: { title: 'Test agents' },
-          y: { title: 'Target pathway' },
+          //    y: { title: 'Target pathway' },
           color: { ...categoryColors(this.agents, 'Modality'), title: 'Modality' },
         };
       },

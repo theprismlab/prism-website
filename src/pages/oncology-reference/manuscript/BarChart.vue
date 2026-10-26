@@ -22,6 +22,7 @@
       total: { type: Number, default: null },
       axis: { type: Object, default: () => ({}) },
       fontSize: { type: [String, Number], default: 'medium' },
+      barLabel: { type: String, default: 'both' },
       // Fixed pixel width; null measures the container instead
       width: { type: Number, default: null },
       height: { type: Number, default: 320 },
@@ -38,8 +39,28 @@
         return this.width ?? this.measuredWidth ?? 640;
       },
       options() {
-        const { data, orientation, total, axis, fontSize, chartWidth, height, rowHeight } = this;
-        return { data, orientation, total, axis, fontSize, width: chartWidth, height, rowHeight };
+        const {
+          data,
+          orientation,
+          total,
+          axis,
+          fontSize,
+          chartWidth,
+          height,
+          rowHeight,
+          barLabel,
+        } = this;
+        return {
+          data,
+          orientation,
+          total,
+          axis,
+          fontSize,
+          width: chartWidth,
+          height,
+          rowHeight,
+          barLabel,
+        };
       },
     },
     watch: {
