@@ -39,17 +39,6 @@
         </v-col> -->
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
-            <v-card-title class="px-0">Clinical Stage</v-card-title>
-            <bar-chart
-              font-size="small"
-              :data="clinicalStageCounts"
-              :axis="clinicalStageAxis"
-              bar-label="count"
-            />
-          </v-card>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Target pathway</v-card-title>
             <bar-chart
               bar-label="count"
@@ -72,6 +61,17 @@
         </v-col>
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
+            <v-card-title class="px-0">Clinical Stage</v-card-title>
+            <bar-chart
+              font-size="small"
+              :data="clinicalStageCounts"
+              :axis="clinicalStageAxis"
+              bar-label="count"
+            />
+          </v-card>
+        </v-col>
+        <!-- <v-col cols="12" md="4">
+          <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Target pathway by modality</v-card-title>
             <stacked-bar-chart
               font-size="small"
@@ -80,7 +80,7 @@
               bar-label="count"
             />
           </v-card>
-        </v-col>
+        </v-col> -->
       </v-row>
     </page-section>
     <page-section width="narrow">
