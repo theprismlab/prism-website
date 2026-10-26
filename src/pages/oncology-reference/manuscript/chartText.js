@@ -17,7 +17,11 @@ export function resolveFontSize(size = 'medium') {
   return FONT_SIZES[size];
 }
 
-let context = null;
+// Canvas context the text is measured on; null where canvas isn't available
+// (jsdom in tests), in which case the width is estimated from the character count
+let context;
+// Approximate width of one character as a fraction of the font size
+const CHAR_EM = 0.55;
 
 /**
  * Rendered width of `text` in pixels. The font family is read from `element` so the
@@ -30,7 +34,8 @@ let context = null;
  * @returns {number}
  */
 export function measureText(text, fontSize, element, fontWeight = 400) {
-  context ??= document.createElement('canvas').getContext('2d');
+  if (context === undefined) context = document.createElement('canvas').getContext('2d');
+  if (!context) return String(text).length * fontSize * CHAR_EM;
   const family = element ? getComputedStyle(element).fontFamily : 'sans-serif';
   context.font = `${fontWeight} ${fontSize}px ${family}`;
   return context.measureText(String(text)).width;
