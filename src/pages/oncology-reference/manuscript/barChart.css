@@ -1,0 +1,6 @@
+/* Shared by BarChart, HorizontalBarChart and HorizontalStackedBarChart */
+.bar-chart__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}

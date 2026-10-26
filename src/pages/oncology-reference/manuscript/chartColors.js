@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { valueOf } from './chartData.js';
 
 // 14 colors for charts with more than 10 bars, named after their IBM Carbon palette steps.
 const COLOR_CATEGORICAL_14 = [
@@ -92,7 +93,7 @@ export function categoryColors(rows, column) {
   const counts = d3.rollup(
     rows,
     (group) => group.length,
-    (row) => row[column] || '(blank)',
+    (row) => valueOf(row, column),
   );
   // Array.sort is stable, so ties keep the order the values first appear in
   const domain = Array.from(counts)

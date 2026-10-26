@@ -25,33 +25,25 @@
       <stat-grid :stats="stats" />
     </page-section>
     <page-section v-if="agents" width="narrow">
-      <bar-chart-tile
-        title="Previously screened"
-        column="PreviouslyScreened"
-        :rows="agents"
-        :axis="previouslyScreenedAxis"
-      />
+      <v-card variant="outlined" class="pa-6">
+        <v-card-title class="px-0">Previously screened</v-card-title>
+        <bar-chart :data="previouslyScreenedCounts" :axis="previouslyScreenedAxis" />
+      </v-card>
     </page-section>
     <page-section v-if="agents" width="narrow">
-      <bar-chart-tile
-        title="Target pathway"
-        column="TargetPathway"
-        :rows="agents"
-        :axis="targetPathwayAxis"
-        horizontal
-        sort="descending"
-      />
+      <v-card variant="outlined" class="pa-6">
+        <v-card-title class="px-0">Target pathway</v-card-title>
+        <horizontal-bar-chart :data="targetPathwayCounts" :axis="targetPathwayAxis" />
+      </v-card>
     </page-section>
     <page-section v-if="agents" width="narrow">
-      <bar-chart-tile
-        title="Target pathway by modality"
-        column="TargetPathway"
-        stack-by="Modality"
-        :rows="agents"
-        :axis="targetPathwayModalityAxis"
-        horizontal
-        sort="descending"
-      />
+      <v-card variant="outlined" class="pa-6">
+        <v-card-title class="px-0">Target pathway by modality</v-card-title>
+        <horizontal-stacked-bar-chart
+          :data="targetPathwayModalityCounts"
+          :axis="targetPathwayModalityAxis"
+        />
+      </v-card>
     </page-section>
     <page-section width="narrow">
       <p>
@@ -119,19 +111,22 @@
 
 <script>
   import DataExplorer from './manuscript/DataExplorer.vue';
-  import BarChartTile from './manuscript/BarChartTile.vue';
+  import BarChart from './manuscript/BarChart.vue';
+  import HorizontalBarChart from './manuscript/HorizontalBarChart.vue';
+  import HorizontalStackedBarChart from './manuscript/HorizontalStackedBarChart.vue';
   import StatGrid from './manuscript/StatGrid.vue';
   import { categoryColors } from './manuscript/chartColors.js';
+  import { countBy, countByStacked } from './manuscript/chartData.js';
   import { getOncRefData } from './manuscript/oncref.js';
 
   export default {
     name: 'OncologyReferenceManuscript',
-    components: { BarChartTile, DataExplorer, StatGrid },
+    components: { BarChart, DataExplorer, HorizontalBarChart, HorizontalStackedBarChart, StatGrid },
     data() {
       return {
         // Test agent rows from the CSV, loaded in created()
         agents: null,
-        // Axis config for each bar chart tile (x, y and color, each with title, domain,
+        // Axis config for the bar charts (x, y and color, each with title, domain,
         // range and ticks; see BarChart.vue). Anything left out uses the chart default.
         previouslyScreenedAxis: {
           x: { title: 'Previously screened' },
@@ -161,6 +156,16 @@
       };
     },
     computed: {
+      // Chart data: counts of the test agent rows, in the shape each chart takes
+      previouslyScreenedCounts() {
+        return countBy(this.agents, 'PreviouslyScreened');
+      },
+      targetPathwayCounts() {
+        return countBy(this.agents, 'TargetPathway', { sort: 'descending' });
+      },
+      targetPathwayModalityCounts() {
+        return countByStacked(this.agents, 'TargetPathway', 'Modality', { sort: 'descending' });
+      },
       // Horizontal chart: x is the counts axis and y holds the pathways. The color
       // axis comes from the shared pathway colors, so the bars match the UMAP.
       targetPathwayAxis() {
@@ -183,7 +188,7 @@
       try {
         this.agents = (await getOncRefData()).agents;
       } catch (err) {
-        // The data explorer reports load failures; the chart tiles just stay hidden
+        // The data explorer reports load failures; the charts just stay hidden
         console.error(err);
       }
     },
