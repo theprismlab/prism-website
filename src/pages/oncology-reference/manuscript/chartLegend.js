@@ -14,15 +14,20 @@ import './chartLegend.css';
  * @param {(value: string) => string} [config.format] entry name from its value
  * @param {'square'|'circle'} [config.shape] swatch shape: 'square' for bars, 'circle'
  *   for points (default 'square')
+ * @param {number} [config.fontSize] text size in pixels; the swatches scale with it
+ *   (default: the stylesheet's 0.75rem)
  */
 export function drawLegend(container, color, config) {
-  const { title, ticks, format = (value) => value, shape = 'square' } = config;
+  const { title, ticks, format = (value) => value, shape = 'square', fontSize } = config;
   container.selectAll('*').remove();
   if (!title) {
     container.style('display', 'none');
     return;
   }
-  container.attr('class', 'chart-legend').style('display', null);
+  container
+    .attr('class', 'chart-legend')
+    .style('display', null)
+    .style('font-size', fontSize ? `${fontSize}px` : null);
   container.append('div').attr('class', 'chart-legend__title').text(title);
 
   const items = container

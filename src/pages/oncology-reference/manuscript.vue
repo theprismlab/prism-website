@@ -27,19 +27,32 @@
     <page-section v-if="agents" width="narrow">
       <v-card variant="outlined" class="pa-6">
         <v-card-title class="px-0">Previously screened</v-card-title>
-        <bar-chart :data="previouslyScreenedCounts" :axis="previouslyScreenedAxis" />
+        <bar-chart
+          font-size="small"
+          :data="previouslyScreenedCounts"
+          :axis="previouslyScreenedAxis"
+        />
       </v-card>
     </page-section>
     <page-section v-if="agents" width="narrow">
       <v-card variant="outlined" class="pa-6">
         <v-card-title class="px-0">Target pathway</v-card-title>
-        <bar-chart orientation="horizontal" :data="targetPathwayCounts" :axis="targetPathwayAxis" />
+        <bar-chart
+          orientation="horizontal"
+          font-size="small"
+          :data="targetPathwayCounts"
+          :axis="targetPathwayAxis"
+        />
       </v-card>
     </page-section>
     <page-section v-if="agents" width="narrow">
       <v-card variant="outlined" class="pa-6">
         <v-card-title class="px-0">Target pathway by modality</v-card-title>
-        <stacked-bar-chart :data="targetPathwayModalityCounts" :axis="targetPathwayModalityAxis" />
+        <stacked-bar-chart
+          font-size="small"
+          :data="targetPathwayModalityCounts"
+          :axis="targetPathwayModalityAxis"
+        />
       </v-card>
     </page-section>
     <page-section width="narrow">

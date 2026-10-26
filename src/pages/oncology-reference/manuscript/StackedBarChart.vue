@@ -9,14 +9,11 @@
   import * as d3 from 'd3';
   import { defaultColors } from './chartColors.js';
   import { drawLegend } from './chartLegend.js';
+  import { maxTextWidth, resolveFontSize } from './chartText.js';
 
-  // The left margin is sized to the labels when drawing
-  const MARGIN = { top: 12, right: 76, bottom: 56, left: 0 };
-  // Room for the y axis title, and the gap between the labels and the plot
-  const Y_TITLE_WIDTH = 28;
+  // Gap between the bar labels and the plot, and between a bar and its count
   const LABEL_GAP = 12;
-  // Approximate pixel width of one character of 12px axis text
-  const CHAR_WIDTH = 6.5;
+  const COUNT_GAP = 6;
 
   export default {
     name: 'StackedBarChart',
@@ -44,6 +41,10 @@
       // about 5 ticks, color domain from the segment keys in order of first
       // appearance, color range from defaultColors in chartColors.js.
       axis: { type: Object, default: () => ({}) },
+      // Size of every text in the chart (ticks, counts, titles, legend): 'small',
+      // 'medium' or 'large' (see chartText.js), or a number of pixels. The margins
+      // scale with it.
+      fontSize: { type: [String, Number], default: 'medium' },
       width: { type: Number, default: 640 },
       // Height of each bar's row
       rowHeight: { type: Number, default: 28 },
@@ -62,6 +63,7 @@
     watch: {
       data: { handler: 'draw', deep: true },
       axis: { handler: 'draw', deep: true },
+      fontSize: 'draw',
     },
     mounted() {
       this.draw();
@@ -69,6 +71,8 @@
     methods: {
       draw() {
         const { width } = this;
+        const svgElement = this.$refs.svg;
+        const fs = resolveFontSize(this.fontSize);
         const ax = this.axis.x || {};
         const ay = this.axis.y || {};
         const ac = this.axis.color || {};
@@ -97,12 +101,15 @@
           return { label, count: start, segments };
         });
         const total = this.total ?? d3.sum(bars, (d) => d.count);
+        const countLabel = (d) => `${d.count} (${Math.round((d.count / total) * 100)}%)`;
 
-        // The left margin fits the longest bar label, and the height fits every row
-        const longest = d3.max(labels, (label) => label.length) || 0;
+        // Margins hold the bar labels, the axis titles (one line of text each) and
+        // the count beside the end of the longest bar; the height fits every row
         const margin = {
-          ...MARGIN,
-          left: Y_TITLE_WIDTH + Math.ceil(longest * CHAR_WIDTH) + LABEL_GAP,
+          top: fs,
+          right: maxTextWidth(bars.map(countLabel), fs, svgElement, 600) + COUNT_GAP + 8,
+          bottom: 2 * fs + 32,
+          left: fs + 16 + maxTextWidth(labels, fs, svgElement) + LABEL_GAP,
         };
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = labels.length * this.rowHeight;
@@ -119,11 +126,13 @@
         const color = d3.scaleOrdinal(keys, ac.range || defaultColors(keys.length));
         const xTicks = Array.isArray(ax.ticks) ? ax.ticks : x.ticks(ax.ticks ?? 5);
 
-        const svg = d3.select(this.$refs.svg).attr('viewBox', `0 0 ${width} ${height}`);
+        const svg = d3.select(svgElement).attr('viewBox', `0 0 ${width} ${height}`);
         svg.selectAll('*').remove();
         const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-        // Y axis with a tick beside each bar, and X axis with count ticks
+        // Y axis with a tick beside each bar, and X axis with count ticks. d3 sets
+        // its own font family on an axis; clearing it lets the page's through,
+        // which is also what the labels were measured in.
         const yAxis = g.append('g').call(
           d3
             .axisLeft(y)
@@ -135,7 +144,8 @@
           .attr('transform', `translate(0,${innerHeight})`)
           .call(d3.axisBottom(x).tickValues(xTicks).tickSizeOuter(0));
         for (const axis of [yAxis, xAxis]) {
-          axis.selectAll('text').attr('font-size', 12).attr('fill', 'rgba(0,0,0,0.7)');
+          axis.attr('font-family', null).attr('font-size', fs);
+          axis.selectAll('text').attr('fill', 'rgba(0,0,0,0.7)');
           axis.selectAll('.domain, .tick line').attr('stroke', 'rgba(0,0,0,0.5)');
         }
 
@@ -167,34 +177,32 @@
           .text((d) => `${d.label}, ${d.key}: ${d.count} of ${d.barCount} (${total} total)`);
         bar
           .append('text')
-          .attr('x', (d) => x(d.count) + 6)
+          .attr('x', (d) => x(d.count) + COUNT_GAP)
           .attr('y', (d) => y(d.label) + y.bandwidth() / 2)
           .attr('dy', '0.35em')
-          .attr('font-size', 12)
+          .attr('font-size', fs)
           .attr('font-weight', 600)
           .attr('fill', 'rgba(0,0,0,0.87)')
-          .text((d) => `${d.count} (${Math.round((d.count / total) * 100)}%)`);
+          .text(countLabel);
 
         // Axis titles: x centered under the plot, y rotated at the left edge
-        svg
-          .append('text')
+        const title = (text) =>
+          svg
+            .append('text')
+            .attr('text-anchor', 'middle')
+            .attr('font-size', fs)
+            .attr('font-weight', 600)
+            .attr('fill', 'rgba(0,0,0,0.6)')
+            .text(text || '');
+        title(ax.title)
           .attr('x', margin.left + innerWidth / 2)
-          .attr('y', height - 12)
-          .attr('text-anchor', 'middle')
-          .attr('font-size', 12)
-          .attr('font-weight', 600)
-          .attr('fill', 'rgba(0,0,0,0.6)')
-          .text(ax.title || '');
-        svg
-          .append('text')
-          .attr('transform', `translate(14,${margin.top + innerHeight / 2}) rotate(-90)`)
-          .attr('text-anchor', 'middle')
-          .attr('font-size', 12)
-          .attr('font-weight', 600)
-          .attr('fill', 'rgba(0,0,0,0.6)')
-          .text(ay.title || '');
+          .attr('y', height - fs);
+        title(ay.title).attr(
+          'transform',
+          `translate(${fs + 2},${margin.top + innerHeight / 2}) rotate(-90)`,
+        );
 
-        drawLegend(d3.select(this.$refs.legend), color, ac);
+        drawLegend(d3.select(this.$refs.legend), color, { ...ac, fontSize: fs });
       },
     },
   };

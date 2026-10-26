@@ -68,6 +68,8 @@
       highlighted: { type: Array, default: null },
       title: { type: String, default: 'Test agent UMAP' },
       height: { type: Number, default: 460 },
+      // 'small', 'medium' or 'large' (see chartText.js), or a number of pixels
+      fontSize: { type: [String, Number], default: 'medium' },
     },
     data() {
       return {
@@ -134,6 +136,7 @@
       // object graph in reactive proxies.
       this.plot = new UmapPlot(this.$refs.plot, {
         height: this.height,
+        fontSize: this.fontSize,
         key: (d) => d.id,
         x: { field: 'x', title: 'X Axis' },
         y: { field: 'y', title: 'Y Axis' },

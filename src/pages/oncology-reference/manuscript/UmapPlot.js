@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import './UmapPlot.css';
 import { drawLegend } from './chartLegend.js';
+import { maxTextWidth, resolveFontSize } from './chartText.js';
 
 // ─── Defaults ─────────────────────────────────────────────────────────────────
 
@@ -25,10 +26,46 @@ export const CATEGORICAL_RANGE = [...d3.schemeTableau10, ...d3.schemeSet2];
  *   format      value formatter for ticks and the tooltip
  */
 const AXIS_DEFAULTS = {
-  x: { field: 'x', title: 'x', type: 'linear', domain: null, range: null, ticks: 6, tickValues: null, format: null },
-  y: { field: 'y', title: 'y', type: 'linear', domain: null, range: null, ticks: 6, tickValues: null, format: null },
-  color: { field: null, title: 'Color', type: 'categorical', domain: null, range: CATEGORICAL_RANGE, ticks: 5, tickValues: null, format: null },
-  radius: { field: null, title: 'Radius', type: 'constant', domain: null, range: [4, 4], ticks: 3, tickValues: null, format: null },
+  x: {
+    field: 'x',
+    title: 'x',
+    type: 'linear',
+    domain: null,
+    range: null,
+    ticks: 6,
+    tickValues: null,
+    format: null,
+  },
+  y: {
+    field: 'y',
+    title: 'y',
+    type: 'linear',
+    domain: null,
+    range: null,
+    ticks: 6,
+    tickValues: null,
+    format: null,
+  },
+  color: {
+    field: null,
+    title: 'Color',
+    type: 'categorical',
+    domain: null,
+    range: CATEGORICAL_RANGE,
+    ticks: 5,
+    tickValues: null,
+    format: null,
+  },
+  radius: {
+    field: null,
+    title: 'Radius',
+    type: 'constant',
+    domain: null,
+    range: [4, 4],
+    ticks: 3,
+    tickValues: null,
+    format: null,
+  },
 };
 
 /**
@@ -42,11 +79,27 @@ const AXIS_DEFAULTS = {
  *   key      data join key; null uses the plot-level `key`
  *   tooltip  `(d, defaultRows) => rows | htmlString`; null uses the plot-level `tooltip`
  */
-const LAYER_DEFAULTS = { id: 'points', label: null, mark: 'filled', color: null, key: null, tooltip: null };
+const LAYER_DEFAULTS = {
+  id: 'points',
+  label: null,
+  mark: 'filled',
+  color: null,
+  key: null,
+  tooltip: null,
+};
 
 const DEFAULTS = {
   height: 480,
-  margin: { top: 16, right: 16, bottom: 48, left: 56 },
+  /**
+   * Size of every text in the plot (ticks, titles, legends, tooltip): 'small',
+   * 'medium' or 'large' (see chartText.js), or a number of pixels.
+   */
+  fontSize: 'medium',
+  /**
+   * Any side left out is sized from the font: the bottom holds the x ticks and
+   * title, and the left holds the y title and the widest y tick label.
+   */
+  margin: { top: 16, right: 16 },
   /** Data join key, so points keep their identity across `setData` calls. */
   key: (d, i) => i,
   /** Layers to draw; a single filled layer by default. See LAYER_DEFAULTS. */
@@ -67,6 +120,9 @@ const DEFAULTS = {
 };
 
 const DEFAULT_FORMAT = (v) => (typeof v === 'number' ? d3.format('.2f')(v) : String(v));
+
+// Tick labels are drawn a little smaller than the base font (see UmapPlot.css)
+const TICK_EM = 0.92;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -116,7 +172,9 @@ function applyTicks(axisGenerator, axis) {
 }
 
 function positionalScale(axis, domain, pixelRange, nice) {
-  const scale = continuousScale(axis.type).domain(domain).range(axis.range ?? pixelRange);
+  const scale = continuousScale(axis.type)
+    .domain(domain)
+    .range(axis.range ?? pixelRange);
   if (nice) scale.nice(axis.ticks ?? undefined);
   return scale;
 }
@@ -169,6 +227,8 @@ export default class UmapPlot {
     if (!container) throw new Error('UmapPlot: a container element is required');
     this.container = container;
     this.options = { ...DEFAULTS, ...options, margin: { ...DEFAULTS.margin, ...options.margin } };
+    this.fontSize = resolveFontSize(this.options.fontSize);
+    this.margin = null; // the margins in use, resolved from the options on each render
     this.axes = {
       x: resolveAxis('x', options.x),
       y: resolveAxis('y', options.y),
@@ -266,24 +326,35 @@ export default class UmapPlot {
   destroy() {
     if (this.resizeObserver) this.resizeObserver.disconnect();
     this.root.selectAll('*').remove();
-    this.root.classed('umap-plot', false);
+    this.root.classed('umap-plot', false).style('font-size', null);
   }
 
   // ── DOM scaffold ────────────────────────────────────────────────────────────
 
   _build() {
-    this.root = d3.select(this.container).classed('umap-plot', true);
+    // Every text size in the stylesheet is in em, so this sets them all
+    this.root = d3
+      .select(this.container)
+      .classed('umap-plot', true)
+      .style('font-size', `${this.fontSize}px`);
     this.svg = this.root.append('svg').attr('class', 'umap-plot__svg');
 
     this.clipId = `umap-plot-clip-${Math.random().toString(36).slice(2, 9)}`;
-    this.clipRect = this.svg.append('defs').append('clipPath').attr('id', this.clipId).append('rect');
+    this.clipRect = this.svg
+      .append('defs')
+      .append('clipPath')
+      .attr('id', this.clipId)
+      .append('rect');
 
     this.plot = this.svg.append('g').attr('class', 'umap-plot__plot');
     this.gridX = this.plot.append('g').attr('class', 'umap-plot__grid');
     this.gridY = this.plot.append('g').attr('class', 'umap-plot__grid');
     this.axisX = this.plot.append('g').attr('class', 'umap-plot__axis umap-plot__axis--x');
     this.axisY = this.plot.append('g').attr('class', 'umap-plot__axis umap-plot__axis--y');
-    this.titleX = this.plot.append('text').attr('class', 'umap-plot__axis-title').attr('text-anchor', 'middle');
+    this.titleX = this.plot
+      .append('text')
+      .attr('class', 'umap-plot__axis-title')
+      .attr('text-anchor', 'middle');
     this.titleY = this.plot
       .append('text')
       .attr('class', 'umap-plot__axis-title')
@@ -293,13 +364,19 @@ export default class UmapPlot {
     // Points sit above the brush but ignore pointer events (see CSS), so the
     // brush overlay receives every drag and hover is resolved via Delaunay.
     this.brushG = this.plot.append('g').attr('class', 'umap-plot__brush');
-    this.pointsG = this.plot.append('g').attr('class', 'umap-plot__points').attr('clip-path', `url(#${this.clipId})`);
+    this.pointsG = this.plot
+      .append('g')
+      .attr('class', 'umap-plot__points')
+      .attr('clip-path', `url(#${this.clipId})`);
     this.layerGroups = this.pointsG
       .selectAll('g')
       .data(this.layers, (layer) => layer.id)
       .join('g')
       .attr('class', (layer) => `umap-plot__layer umap-plot__layer--${layer.id}`);
-    this.highlight = this.plot.append('circle').attr('class', 'umap-plot__highlight').style('display', 'none');
+    this.highlight = this.plot
+      .append('circle')
+      .attr('class', 'umap-plot__highlight')
+      .style('display', 'none');
 
     // Plain drag brushes a zoom rectangle; shift+drag pans. Both behaviours
     // listen on the brush overlay and are told apart by their filters.
@@ -340,7 +417,10 @@ export default class UmapPlot {
       .attr('class', 'umap-plot__hint')
       .text('Drag to zoom · shift+drag to pan · double-click to reset');
 
-    this.tooltip = this.root.append('div').attr('class', 'umap-plot__tooltip').style('display', 'none');
+    this.tooltip = this.root
+      .append('div')
+      .attr('class', 'umap-plot__tooltip')
+      .style('display', 'none');
   }
 
   _observeResize() {
@@ -353,8 +433,30 @@ export default class UmapPlot {
 
   // ── Rendering ───────────────────────────────────────────────────────────────
 
+  /**
+   * The margins for this render: the options, with any side left out sized to the
+   * text it holds. The left side depends on the y tick labels, which change with
+   * the zoom, so this runs on every render.
+   */
+  _resolveMargin() {
+    const fs = this.fontSize;
+    const margin = { ...this.options.margin };
+    margin.bottom ??= 2 * fs + 24;
+    if (margin.left == null) {
+      // Same scale as _updateScales builds, since ticks depend only on the domain
+      const { y } = this.axes;
+      const domain = (this.zoomDomain ?? this.baseDomain).y;
+      const scale = positionalScale(y, domain, [0, 1], !this.zoomDomain && !y.domain);
+      const ticks = y.tickValues ?? scale.ticks(y.ticks ?? undefined);
+      const labels = ticks.map(y.format);
+      margin.left = fs + 16 + maxTextWidth(labels, fs * TICK_EM, this.container) + 8;
+    }
+    return margin;
+  }
+
   _render(animate) {
-    const { margin, height, duration } = this.options;
+    const { height, duration } = this.options;
+    const margin = (this.margin = this._resolveMargin());
     const width = this.container.clientWidth || 640;
     const innerW = Math.max(width - margin.left - margin.right, 10);
     const innerH = Math.max(height - margin.top - margin.bottom, 10);
@@ -431,7 +533,7 @@ export default class UmapPlot {
 
   _drawAxes(innerW, innerH, t) {
     const { x, y } = this.axes;
-    const { margin } = this.options;
+    const { margin, fontSize } = this;
     const withT = (sel) => (t ? sel.transition(t) : sel);
 
     withT(this.gridX).call(
@@ -445,8 +547,14 @@ export default class UmapPlot {
     );
     withT(this.axisY).call(applyTicks(d3.axisLeft(this.scales.y), y).tickSizeOuter(0));
 
-    this.titleX.attr('x', innerW / 2).attr('y', innerH + margin.bottom - 8).text(x.title);
-    this.titleY.attr('x', -innerH / 2).attr('y', -margin.left + 14).text(y.title);
+    this.titleX
+      .attr('x', innerW / 2)
+      .attr('y', innerH + margin.bottom - 8)
+      .text(x.title);
+    this.titleY
+      .attr('x', -innerH / 2)
+      .attr('y', -margin.left + fontSize + 2)
+      .text(y.title);
   }
 
   _drawPoints(t) {
@@ -477,7 +585,11 @@ export default class UmapPlot {
       .attr('cy', cy)
       .attr('r', r)
       .attr(colorAttr, color);
-    (t ? circles.transition(t) : circles).attr('cx', cx).attr('cy', cy).attr('r', r).attr(colorAttr, color);
+    (t ? circles.transition(t) : circles)
+      .attr('cx', cx)
+      .attr('cy', cy)
+      .attr('r', r)
+      .attr(colorAttr, color);
 
     // Highlight: mute non-matching points (CSS overrides the colour) and draw
     // the matches last so they sit on top within the layer.
@@ -504,7 +616,11 @@ export default class UmapPlot {
       this.legend.append('span').attr('class', 'umap-plot__legend-title').text(axis.title);
       const [lo, hi] = scale.domain();
       const width = 160;
-      const svg = this.legend.append('svg').attr('class', 'umap-plot__ramp').attr('width', width).attr('height', 30);
+      const svg = this.legend
+        .append('svg')
+        .attr('class', 'umap-plot__ramp')
+        .attr('width', width)
+        .attr('height', 30);
       const gradientId = `${this.clipId}-ramp`;
       svg
         .append('linearGradient')
@@ -524,13 +640,20 @@ export default class UmapPlot {
       return this.legend;
     }
 
-    drawLegend(this.legend, scale, { title: axis.title, format: axis.format, shape: 'circle' });
+    drawLegend(this.legend, scale, {
+      title: axis.title,
+      format: axis.format,
+      shape: 'circle',
+      fontSize: this.fontSize,
+    });
     return this.legend;
   }
 
   /** One entry per labelled, non-empty layer, drawn with its mark and colour. */
   _drawLayerLegend() {
-    const layers = this.layers.filter((layer) => layer.label && this.dataByLayer.get(layer.id).length);
+    const layers = this.layers.filter(
+      (layer) => layer.label && this.dataByLayer.get(layer.id).length,
+    );
     this.layerLegend.selectAll('*').remove();
     if (!layers.length) return this.layerLegend.style('display', 'none');
     this.layerLegend.style('display', null);
@@ -608,7 +731,11 @@ export default class UmapPlot {
     const py = this._py(node.d);
     if (Math.hypot(px - mx, py - my) > this.options.hoverRadius) return this._hideTooltip();
 
-    this.highlight.style('display', null).attr('cx', px).attr('cy', py).attr('r', this._pr(node.d) + 3);
+    this.highlight
+      .style('display', null)
+      .attr('cx', px)
+      .attr('cy', py)
+      .attr('r', this._pr(node.d) + 3);
     this._showTooltip(node, event);
     return undefined;
   }
@@ -639,8 +766,14 @@ export default class UmapPlot {
     const [cx, cy] = d3.pointer(event, this.container);
     const el = this.tooltip.style('display', null).node();
     const offset = 14;
-    const left = cx + offset + el.offsetWidth > this.container.clientWidth ? cx - offset - el.offsetWidth : cx + offset;
-    const top = cy + offset + el.offsetHeight > this.container.clientHeight ? cy - offset - el.offsetHeight : cy + offset;
+    const left =
+      cx + offset + el.offsetWidth > this.container.clientWidth
+        ? cx - offset - el.offsetWidth
+        : cx + offset;
+    const top =
+      cy + offset + el.offsetHeight > this.container.clientHeight
+        ? cy - offset - el.offsetHeight
+        : cy + offset;
     this.tooltip.style('left', `${Math.max(0, left)}px`).style('top', `${Math.max(0, top)}px`);
   }
 
