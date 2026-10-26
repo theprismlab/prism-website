@@ -24,6 +24,9 @@
     <page-section width="narrow">
       <stat-grid :stats="stats" />
     </page-section>
+    <page-section v-if="agents" width="narrow">
+      <breakdown-card :rows="agents" :charts="breakdownCharts" />
+    </page-section>
     <page-section width="narrow">
       <p>
         Most inhibitory molecules produced effects consistent with genetic inactivation of their
@@ -90,13 +93,19 @@
 
 <script>
   import DataExplorer from './manuscript/DataExplorer.vue';
+  import BreakdownCard from './manuscript/BreakdownCard.vue';
   import StatGrid from './manuscript/StatGrid.vue';
+  import { getOncRefData } from './manuscript/oncref.js';
 
   export default {
     name: 'OncologyReferenceManuscript',
-    components: { DataExplorer, StatGrid },
+    components: { BreakdownCard, DataExplorer, StatGrid },
     data() {
       return {
+        // Test agent rows from the CSV, loaded in created()
+        agents: null,
+        // Breakdown charts, top to bottom. Each counts the CSV rows by one column.
+        breakdownCharts: [{ title: 'Previously screened', column: 'PreviouslyScreened' }],
         // Dataset totals, matching the figures cited in the page text
         stats: [
           { value: 265, label: 'Test agents', color: 'var(--v-teal-darken-1)' },
@@ -121,7 +130,14 @@
       };
     },
     computed: {},
-    async created() {},
+    async created() {
+      try {
+        this.agents = (await getOncRefData()).agents;
+      } catch (err) {
+        // The data explorer reports load failures; the breakdown card just stays hidden
+        console.error(err);
+      }
+    },
     methods: {},
   };
 </script>

@@ -28,7 +28,20 @@ function joinUmap(agents, compounds) {
  *   crisprGenes: CRISPR gene UMAP points from the JSON, kept separate for the
  *     scatter plot.
  */
-export async function getOncRefData() {
+let dataPromise = null;
+
+export function getOncRefData() {
+  // Cached so every component on the page shares one fetch; a failed load is retried
+  if (!dataPromise) {
+    dataPromise = loadOncRefData().catch((err) => {
+      dataPromise = null;
+      throw err;
+    });
+  }
+  return dataPromise;
+}
+
+async function loadOncRefData() {
   const [testAgents, umap] = await Promise.all([
     d3.csv(`${dataPath}${csvFile}`),
     d3.json(`${dataPath}${jsonFile}`),
