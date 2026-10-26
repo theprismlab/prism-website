@@ -1,0 +1,16 @@
+[
+  {
+    "title": "Half of inhibitors hit what they say they hit — at rank 1",
+    "body": "For 50% of agents, the annotated target's genetic dependency is the single best predictor of sensitivity across the 891 cell lines. Another 10% have it within the top 10. The strength of this match often tracks with clinical trial success — drugs that fail this test get flagged for closer mechanistic inspection.",
+    "caption": "Figure 1D–E: Rank of annotated target among top correlations",
+    "category": "On-target mapping",
+    "image": ""
+  },
+  {
+    "title": "A clear evolution in KRAS G12C selectivity",
+    "body": "Divarasib, sotorasib, and adagrasib show progressively cleaner separation between KRAS G12C-mutant cell lines (red) and everything else (gray). Pan-RAS drugs sub-divide too: daraxonrasib and RMC-7977 favor NRAS/HRAS-mutant contexts, while BI-2865 and BI-2493 are more active in KRAS-amplified lines.",
+    "caption": "Figure 6C · AUC distributions in G12C-mutant vs. all other lines",
+    "category": "KRAS landscape",
+    "image": ""
+  }
+]

@@ -67,6 +67,17 @@
       </p>
     </page-section>
     <page-section width="narrow">
+      <section-overline gradient>Case studies</section-overline>
+      <div class="case-studies">
+        <image-card
+          v-for="(study, i) in caseStudies"
+          :key="study.title"
+          v-bind="study"
+          :reverse="i % 2 === 1"
+        />
+      </div>
+    </page-section>
+    <page-section width="narrow">
       <section-overline gradient>About the dataset</section-overline>
       <p class="prism-text-body-large">
         OncRef is generated using
@@ -122,18 +133,23 @@
 <script>
   import DataExplorer from './manuscript/DataExplorer.vue';
   import BarChart from './manuscript/BarChart.vue';
+  import ImageCard from './manuscript/ImageCard.vue';
   import { categoryColors, countBy, countByStacked } from '@/lib/charts/prism-charts.js';
   import StackedBarChart from './manuscript/StackedBarChart.vue';
   import StatGrid from './manuscript/StatGrid.vue';
   import { getOncRefData } from './manuscript/oncref.js';
+  import caseStudies from './manuscript/CaseStudies.json';
 
   export default {
     name: 'OncologyReferenceManuscript',
-    components: { BarChart, DataExplorer, StackedBarChart, StatGrid },
+    components: { BarChart, DataExplorer, ImageCard, StackedBarChart, StatGrid },
     data() {
       return {
         // Test agent rows from the CSV, loaded in created()
         agents: null,
+        // Highlighted findings from the manuscript, one ImageCard each
+        // ({ title, body, caption, category, image })
+        caseStudies,
         // Axis config for the bar charts (x, y and color, each with title, domain,
         // range and ticks; see BarChart.vue). Anything left out uses the chart default.
         previouslyScreenedAxis: {
@@ -205,6 +221,13 @@
 </script>
 
 <style scoped>
+  .case-studies {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 16px;
+  }
+
   .nominations-cta {
     display: flex;
     flex-direction: column;
