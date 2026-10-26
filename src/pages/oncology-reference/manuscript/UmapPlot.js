@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import './UmapPlot.css';
+import { drawLegend } from './chartLegend.js';
 
 // ─── Defaults ─────────────────────────────────────────────────────────────────
 
@@ -497,10 +498,10 @@ export default class UmapPlot {
     const scale = this.scales.color;
     this.legend.selectAll('*').remove();
     if (!axis.accessor) return this.legend.style('display', 'none');
-    this.legend.style('display', null);
-    this.legend.append('span').attr('class', 'umap-plot__legend-title').text(axis.title);
 
     if (axis.type === 'sequential') {
+      this.legend.attr('class', 'umap-plot__legend').style('display', null);
+      this.legend.append('span').attr('class', 'umap-plot__legend-title').text(axis.title);
       const [lo, hi] = scale.domain();
       const width = 160;
       const svg = this.legend.append('svg').attr('class', 'umap-plot__ramp').attr('width', width).attr('height', 30);
@@ -523,13 +524,7 @@ export default class UmapPlot {
       return this.legend;
     }
 
-    const items = this.legend
-      .selectAll('.umap-plot__legend-item')
-      .data(scale.domain())
-      .join('span')
-      .attr('class', 'umap-plot__legend-item');
-    items.append('i').attr('class', 'umap-plot__swatch umap-plot__swatch--filled').style('color', (v) => scale(v));
-    items.append('span').text((v) => axis.format(v));
+    drawLegend(this.legend, scale, { title: axis.title, format: axis.format, shape: 'circle' });
     return this.legend;
   }
 

@@ -1,11 +1,8 @@
 <template>
-  <svg
-    ref="svg"
-    class="bar-chart"
-    :style="{ maxWidth: `${width}px` }"
-    role="img"
-    :aria-label="ariaLabel"
-  ></svg>
+  <div class="bar-chart" :style="{ maxWidth: `${width}px` }">
+    <div ref="legend"></div>
+    <svg ref="svg" class="bar-chart__svg" role="img" :aria-label="ariaLabel"></svg>
+  </div>
 </template>
 
 <script>
@@ -14,7 +11,6 @@
   import { drawLegend } from './chartLegend.js';
 
   const MARGIN = { top: 12, right: 76, bottom: 56, left: 0 };
-  const LEGEND_HEIGHT = 24;
   // Room for the y axis title, and the gap between the labels and the plot
   const Y_TITLE_WIDTH = 28;
   const LABEL_GAP = 12;
@@ -73,11 +69,9 @@
         const total = this.total ?? d3.sum(bars, (d) => d.count);
 
         // The left margin fits the longest bar label, and the height fits every row
-        const hasLegend = Boolean(ac.title);
         const longest = d3.max(labels, (label) => label.length) || 0;
         const margin = {
           ...MARGIN,
-          top: MARGIN.top + (hasLegend ? LEGEND_HEIGHT : 0),
           left: Y_TITLE_WIDTH + Math.ceil(longest * CHAR_WIDTH) + LABEL_GAP,
         };
         const innerWidth = width - margin.left - margin.right;
@@ -168,14 +162,14 @@
           .attr('fill', 'rgba(0,0,0,0.6)')
           .text(ay.title || '');
 
-        if (hasLegend) drawLegend(svg, color, ac, margin.left);
+        drawLegend(d3.select(this.$refs.legend), color, ac);
       },
     },
   };
 </script>
 
 <style scoped>
-  .bar-chart {
+  .bar-chart__svg {
     display: block;
     width: 100%;
     height: auto;

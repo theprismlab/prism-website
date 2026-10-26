@@ -42,6 +42,17 @@
         sort="descending"
       />
     </page-section>
+    <page-section v-if="agents" width="narrow">
+      <bar-chart-tile
+        title="Target pathway by modality"
+        column="TargetPathway"
+        stack-by="Modality"
+        :rows="agents"
+        :axis="targetPathwayModalityAxis"
+        horizontal
+        sort="descending"
+      />
+    </page-section>
     <page-section width="narrow">
       <p>
         Most inhibitory molecules produced effects consistent with genetic inactivation of their
@@ -157,6 +168,14 @@
           x: { title: 'Test agents' },
           y: { title: 'Target pathway' },
           color: categoryColors(this.agents, 'TargetPathway'),
+        };
+      },
+      // Same pathway bars, stacked and colored by modality
+      targetPathwayModalityAxis() {
+        return {
+          x: { title: 'Test agents' },
+          y: { title: 'Target pathway' },
+          color: { ...categoryColors(this.agents, 'Modality'), title: 'Modality' },
         };
       },
     },

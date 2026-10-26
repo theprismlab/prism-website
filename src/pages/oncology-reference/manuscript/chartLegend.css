@@ -1,0 +1,41 @@
+/* Categorical color legend shared by the bar charts and the UMAP plot */
+.chart-legend {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.chart-legend__title {
+  margin-bottom: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.chart-legend__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.chart-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.chart-legend__swatch {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.chart-legend__swatch--square {
+  border-radius: 2px;
+}
+
+.chart-legend__swatch--circle {
+  border-radius: 50%;
+}

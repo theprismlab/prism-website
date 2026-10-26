@@ -1,38 +1,40 @@
-/**
- * Draw a color legend row into an SVG: the title, then a swatch and name per entry.
- *
- * @param svg d3 selection of the chart's <svg>
- * @param color d3 ordinal color scale
- * @param {{ title: string, ticks?: string[] }} config color axis config; `ticks`
- *   limits which entries are listed (default: the whole color domain)
- * @param {number} left x position of the legend's left edge
- */
-export function drawLegend(svg, color, config, left) {
-  const entries = config.ticks || color.domain();
-  const legend = svg.append('g').attr('transform', `translate(${left},14)`);
-  const title = legend
-    .append('text')
-    .attr('font-size', 12)
-    .attr('font-weight', 600)
-    .attr('fill', 'rgba(0,0,0,0.6)')
-    .text(config.title);
+import './chartLegend.css';
 
-  let offset = title.node().getComputedTextLength() + 16;
-  for (const entry of entries) {
-    legend
-      .append('rect')
-      .attr('x', offset)
-      .attr('y', -10)
-      .attr('width', 12)
-      .attr('height', 12)
-      .attr('rx', 2)
-      .attr('fill', color(entry));
-    const label = legend
-      .append('text')
-      .attr('x', offset + 18)
-      .attr('font-size', 12)
-      .attr('fill', 'rgba(0,0,0,0.7)')
-      .text(entry);
-    offset += 18 + label.node().getComputedTextLength() + 16;
+/**
+ * Draw a categorical color legend into an HTML element, shared by the bar charts and
+ * the UMAP plot: the title on its own row, then a swatch and name per entry, wrapping
+ * onto more rows when they don't fit the width.
+ *
+ * @param container d3 selection of the element to draw into; it is cleared first
+ * @param color d3 ordinal color scale
+ * @param {Object} config
+ * @param {string} [config.title] legend title; without one, nothing is drawn
+ * @param {string[]} [config.ticks] limits which entries are listed (default: the whole
+ *   color domain)
+ * @param {(value: string) => string} [config.format] entry name from its value
+ * @param {'square'|'circle'} [config.shape] swatch shape: 'square' for bars, 'circle'
+ *   for points (default 'square')
+ */
+export function drawLegend(container, color, config) {
+  const { title, ticks, format = (value) => value, shape = 'square' } = config;
+  container.selectAll('*').remove();
+  if (!title) {
+    container.style('display', 'none');
+    return;
   }
+  container.attr('class', 'chart-legend').style('display', null);
+  container.append('div').attr('class', 'chart-legend__title').text(title);
+
+  const items = container
+    .append('div')
+    .attr('class', 'chart-legend__items')
+    .selectAll('span')
+    .data(ticks || color.domain())
+    .join('span')
+    .attr('class', 'chart-legend__item');
+  items
+    .append('i')
+    .attr('class', `chart-legend__swatch chart-legend__swatch--${shape}`)
+    .style('background', (value) => color(value));
+  items.append('span').text((value) => format(value));
 }

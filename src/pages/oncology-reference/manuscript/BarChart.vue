@@ -1,11 +1,8 @@
 <template>
-  <svg
-    ref="svg"
-    class="bar-chart"
-    :style="{ maxWidth: `${width}px` }"
-    role="img"
-    :aria-label="ariaLabel"
-  ></svg>
+  <div class="bar-chart" :style="{ maxWidth: `${width}px` }">
+    <div ref="legend"></div>
+    <svg ref="svg" class="bar-chart__svg" role="img" :aria-label="ariaLabel"></svg>
+  </div>
 </template>
 
 <script>
@@ -14,7 +11,6 @@
   import { drawLegend } from './chartLegend.js';
 
   const MARGIN = { top: 28, right: 16, bottom: 64, left: 64 };
-  const LEGEND_HEIGHT = 24;
   // Approximate pixel width of one character of 12px axis text
   const CHAR_WIDTH = 6.5;
 
@@ -69,8 +65,7 @@
         const bars = labels.map((label) => ({ label, count: counts.get(label) || 0 }));
         const total = this.total ?? d3.sum(bars, (d) => d.count);
 
-        const hasLegend = Boolean(ac.title);
-        const margin = { ...MARGIN, top: MARGIN.top + (hasLegend ? LEGEND_HEIGHT : 0) };
+        const margin = { ...MARGIN };
         const innerWidth = width - margin.left - margin.right;
 
         // Labels too long to sit side by side are tilted, and the chart grows
@@ -175,14 +170,14 @@
           .attr('fill', 'rgba(0,0,0,0.6)')
           .text(ay.title || '');
 
-        if (hasLegend) drawLegend(svg, color, ac, margin.left);
+        drawLegend(d3.select(this.$refs.legend), color, ac);
       },
     },
   };
 </script>
 
 <style scoped>
-  .bar-chart {
+  .bar-chart__svg {
     display: block;
     width: 100%;
     height: auto;
