@@ -25,7 +25,22 @@
       <stat-grid :stats="stats" />
     </page-section>
     <page-section v-if="agents" width="narrow">
-      <breakdown-card :rows="agents" :charts="breakdownCharts" />
+      <bar-chart-tile
+        title="Previously screened"
+        column="PreviouslyScreened"
+        :rows="agents"
+        :axis="previouslyScreenedAxis"
+      />
+    </page-section>
+    <page-section v-if="agents" width="narrow">
+      <bar-chart-tile
+        title="Target pathway"
+        column="TargetPathway"
+        :rows="agents"
+        :axis="targetPathwayAxis"
+        :width="960"
+        :height="360"
+      />
     </page-section>
     <page-section width="narrow">
       <p>
@@ -93,19 +108,27 @@
 
 <script>
   import DataExplorer from './manuscript/DataExplorer.vue';
-  import BreakdownCard from './manuscript/BreakdownCard.vue';
+  import BarChartTile from './manuscript/BarChartTile.vue';
   import StatGrid from './manuscript/StatGrid.vue';
   import { getOncRefData } from './manuscript/oncref.js';
 
   export default {
     name: 'OncologyReferenceManuscript',
-    components: { BreakdownCard, DataExplorer, StatGrid },
+    components: { BarChartTile, DataExplorer, StatGrid },
     data() {
       return {
         // Test agent rows from the CSV, loaded in created()
         agents: null,
-        // Breakdown charts, top to bottom. Each counts the CSV rows by one column.
-        breakdownCharts: [{ title: 'Previously screened', column: 'PreviouslyScreened' }],
+        // Axis config for each bar chart tile (x, y and color, each with title, domain,
+        // range and ticks; see BarChart.vue). Anything left out uses the chart default.
+        previouslyScreenedAxis: {
+          x: { title: 'Previously screened' },
+          y: { title: 'Test agents' },
+        },
+        targetPathwayAxis: {
+          x: { title: 'Target pathway' },
+          y: { title: 'Test agents' },
+        },
         // Dataset totals, matching the figures cited in the page text
         stats: [
           { value: 265, label: 'Test agents', color: 'var(--v-teal-darken-1)' },
@@ -134,7 +157,7 @@
       try {
         this.agents = (await getOncRefData()).agents;
       } catch (err) {
-        // The data explorer reports load failures; the breakdown card just stays hidden
+        // The data explorer reports load failures; the chart tiles just stay hidden
         console.error(err);
       }
     },
