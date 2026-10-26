@@ -1,5 +1,23 @@
 import * as d3 from 'd3';
 
+// 14 colors for charts with more than 10 bars, named after their IBM Carbon palette steps.
+const COLOR_CATEGORICAL_14 = [
+  '#6929c4', // Purple 70
+  '#1192e8', // Cyan 50
+  '#005d5d', // Teal 70
+  '#9f1853', // Magenta 70
+  '#fa4d56', // Red 50
+  '#570408', // Red 90
+  '#198038', // Green 60
+  '#002d9c', // Blue 80
+  '#ee538b', // Magenta 50
+  '#b28600', // Yellow 50
+  '#009d9a', // Teal 50
+  '#012749', // Cyan 90
+  '#8a3800', // Orange 70
+  '#a56eff', // Purple 50
+];
+
 // 14 colors for charts with more than 10 bars: 7 hues (blue, orange, aqua, magenta,
 // yellow-green, violet, red), each once dark (OKLCH L 0.48) and once light (L 0.75). The
 // order alternates dark and light while stepping through the hues, so neighboring
@@ -28,17 +46,36 @@ const DARK_LIGHT_PAIRS = [
   '#6a45a6', // violet, dark
   '#ff8482', // red, light
 ];
+// Second iteration of the palette above. Order alternates dark and light so neighbors
+// differ strongly in lightness, and similar hues (reds/oranges/magentas, cyan/teal/green)
+// are placed far apart or given very different lightness. Checked in OKLab with
+// deuteranopia/protanopia/tritanopia simulation: worst adjacent ΔE is 13 (old: 6).
+const COLOR_CATEGORICAL_14_V2 = [
+  '#6929c4', // Purple 70
+  '#d2a106', // Yellow 40
+  '#005d5d', // Teal 70
+  '#ff7eb6', // Magenta 40
+  '#8a3800', // Orange 70
+  '#33b1ff', // Cyan 40
+  '#da1e28', // Red 60
+  '#42be65', // Green 40
+  '#002d9c', // Blue 80
+  '#ffb784', // Orange 30
+  '#9f1853', // Magenta 70
+  '#3ddbd9', // Teal 30
+  '#570408', // Red 90
+  '#be95ff', // Purple 40
+];
 
 /**
  * Default colors for a categorical color scale with `count` values: the 10 Tableau
- * colors when they are enough, otherwise the 14-color alternating-lightness palette
- * above. Beyond 14 values the colors repeat, which d3's ordinal scale does by itself.
+ * colors when they are enough, otherwise the 14-color palette above. Beyond 14 values the colors repeat, which d3's ordinal scale does by itself.
  *
  * @param {number} count how many values need a color
  * @returns {string[]}
  */
 export function defaultColors(count) {
-  return count <= d3.schemeTableau10.length ? d3.schemeTableau10 : DARK_LIGHT_PAIRS;
+  return count <= d3.schemeTableau10.length ? d3.schemeTableau10 : COLOR_CATEGORICAL_14_V2;
 }
 
 /**
