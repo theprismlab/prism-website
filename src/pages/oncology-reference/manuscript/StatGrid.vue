@@ -16,7 +16,7 @@
   export default {
     name: 'StatGrid',
     props: {
-      // [{ value, label, color }]
+      // [{ value, label, color? }] — tiles without a color render in grey
       stats: { type: Array, required: true },
       // Minimum tile width before the grid wraps to a new row
       minWidth: { type: Number, default: 150 },
@@ -32,8 +32,10 @@
   }
 
   .stat {
-    border-top: 3px solid var(--stat-color);
-    background: color-mix(in srgb, var(--stat-color) 5%, white);
+    /* --stat-color is set per tile from stat.color; unset falls back to grey */
+    --tile-color: var(--stat-color, var(--v-grey-darken-1));
+    border-top: 3px solid var(--tile-color);
+    background: color-mix(in srgb, var(--tile-color) 5%, white);
     border-radius: 12px;
     padding: 20px 20px 18px;
   }
@@ -43,7 +45,7 @@
     font-weight: 700;
     line-height: 1.1;
     font-variant-numeric: tabular-nums;
-    color: var(--stat-color);
+    color: var(--tile-color);
   }
 
   .stat-label {

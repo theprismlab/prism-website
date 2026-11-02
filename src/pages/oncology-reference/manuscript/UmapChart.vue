@@ -142,7 +142,7 @@
           y: { field: 'y', title: 'Y Axis' },
           color: {
             field: 'pathway',
-            title: 'Target Pathways',
+            title: 'Pathways',
             type: 'categorical',
             domain: this.pathwayColors.domain,
             range: this.pathwayColors.range,
@@ -156,7 +156,7 @@
             tooltip: (d, rows) => [
               ['Agent', d.agent.FormattedName],
               ...rows.map(([label, value]) =>
-                label === 'Target Pathways' ? ['Target pathway', value] : [label, value],
+                label === 'Pathways' ? ['Pathway', value] : [label, value],
               ),
             ],
           },

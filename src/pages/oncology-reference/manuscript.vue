@@ -9,6 +9,58 @@
       </p>
     </page-header>
     <page-section width="narrow">
+      <section-overline gradient>About the manuscript</section-overline>
+      <v-card variant="outlined" class="manuscript-card">
+        <h2 class="prism-text-headline-small manuscript-card__title">{{ manuscript.title }}</h2>
+        <p class="prism-text-body-medium manuscript-card__authors mb-0">
+          <span v-for="(author, i) in manuscript.authors" :key="author.name">
+            {{ author.name }}<sup v-if="author.note">{{ author.note }}</sup
+            ><template v-if="i < manuscript.authors.length - 1">, </template>
+          </span>
+        </p>
+        <dl class="manuscript-card__meta">
+          <div>
+            <dt>Journal</dt>
+            <dd>{{ manuscript.journal }}</dd>
+          </div>
+          <div>
+            <dt>Published</dt>
+            <dd>{{ manuscript.date }}</dd>
+          </div>
+          <div>
+            <dt>DOI</dt>
+            <dd>
+              <a :href="`https://doi.org/${manuscript.doi}`" target="_blank" rel="noopener">
+                {{ manuscript.doi }}
+              </a>
+            </dd>
+          </div>
+        </dl>
+        <div class="manuscript-card__actions">
+          <v-btn
+            :href="`https://doi.org/${manuscript.doi}`"
+            target="_blank"
+            rel="noopener"
+            color="primary"
+            variant="flat"
+            rounded
+            append-icon="mdi-arrow-top-right"
+          >
+            Read the manuscript
+          </v-btn>
+          <!-- <v-btn
+            :href="manuscript.pdfUrl"
+            target="_blank"
+            rel="noopener"
+            variant="outlined"
+            append-icon="mdi-file-pdf-box"
+          >
+            Download PDF
+          </v-btn> -->
+        </div>
+      </v-card>
+    </page-section>
+    <page-section width="narrow">
       <section-overline gradient>Summary</section-overline>
       <p class="prism-text-body-large">
         Transformative therapeutic approaches are emerging to address cancer complexity and
@@ -22,28 +74,22 @@
       </p>
     </page-section>
     <page-section width="narrow">
-      <stat-grid :stats="stats" />
+      <stat-grid :stats="overviewStats" />
+      <!-- Stats computed from the test agent CSV once it loads -->
+      <template v-if="agents">
+        <stat-grid :stats="agentClassStats" class="mt-4" />
+        <stat-grid :stats="agentHighlightStats" class="mt-4" />
+      </template>
     </page-section>
     <page-section v-if="agents" width="wide">
       <v-row>
-        <!-- <v-col cols="12" md="4">
-          <v-card variant="outlined" class="pa-6 fill-height">
-            <v-card-title class="px-0">Previously screened</v-card-title>
-            <bar-chart
-              font-size="small"
-              :data="previouslyScreenedCounts"
-              :axis="previouslyScreenedAxis"
-              bar-label="count"
-            />
-          </v-card>
-        </v-col> -->
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Target pathway</v-card-title>
             <bar-chart
               bar-label="count"
-              font-size="small"
-              :data="targetPathwayCounts"
+              font-size="medium"
+              :data="counts.targetPathway"
               :axis="targetPathwayAxis"
             />
           </v-card>
@@ -52,8 +98,8 @@
           <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Modality</v-card-title>
             <bar-chart
-              font-size="small"
-              :data="ModalityCounts"
+              font-size="medium"
+              :data="counts.modality"
               :axis="ModalityAxis"
               bar-label="count"
             />
@@ -63,24 +109,26 @@
           <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Clinical Stage</v-card-title>
             <bar-chart
-              font-size="small"
-              :data="clinicalStageCounts"
+              font-size="medium"
+              :data="counts.clinicalStage"
               :axis="clinicalStageAxis"
               bar-label="count"
             />
           </v-card>
         </v-col>
-        <!-- <v-col cols="12" md="4">
+        <v-col cols="12" md="12">
           <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Target pathway by modality</v-card-title>
             <stacked-bar-chart
-              font-size="small"
-              :data="targetPathwayModalityCounts"
+              font-size="medium"
+              :data="counts.targetPathwayByModality"
               :axis="targetPathwayModalityAxis"
               bar-label="count"
+              id="target-pathway-modality-chart"
+              rowHeight="18"
             />
           </v-card>
-        </v-col> -->
+        </v-col>
       </v-row>
     </page-section>
     <page-section width="narrow">
@@ -95,7 +143,14 @@
       </p>
     </page-section>
     <page-section width="narrow">
-      <section-overline gradient>Case studies</section-overline>
+      <section-overline gradient>Data Vignettes</section-overline>
+      <prism-section-title>Key findings from the paper</prism-section-title>
+      <p class="prism-text-body-large">
+        OncRef goes beyond cataloging drug sensitivity. By correlating each compound's cell-line
+        response profile with genome-wide CRISPR dependencies, the framework identifies on-target
+        engagement, unexpected polypharmacology, and shared off-target liabilities. Click any figure
+        to view it full-size.
+      </p>
       <div class="case-studies">
         <image-card
           v-for="(study, i) in caseStudies"
@@ -106,6 +161,7 @@
         />
       </div>
     </page-section>
+
     <page-section width="narrow">
       <section-overline gradient>About the dataset</section-overline>
       <p class="prism-text-body-large">
@@ -164,10 +220,19 @@
   import DataExplorer from './manuscript/DataExplorer.vue';
   import BarChart from './manuscript/BarChart.vue';
   import ImageCard from './manuscript/ImageCard.vue';
-  import { categoryColors, countBy, countByStacked } from '@/lib/charts/prism-charts.js';
+  import { categoryColors } from '@/lib/charts/prism-charts.js';
   import StackedBarChart from './manuscript/StackedBarChart.vue';
   import StatGrid from './manuscript/StatGrid.vue';
   import { getOncRefData } from './manuscript/oncref.js';
+  import { assayWorkflow } from './manuscript/assayWorkflow.js';
+  import {
+    OVERVIEW_STATS,
+    AGENT_CLASS_STATS,
+    AGENT_HIGHLIGHT_STATS,
+    CLINICAL_STAGE_ORDER,
+    resolveStats,
+    chartCounts,
+  } from './manuscript/stats.js';
   import caseStudies from './manuscript/CaseStudies.json';
 
   export default {
@@ -177,103 +242,72 @@
       return {
         // Test agent rows from the CSV, loaded in created()
         agents: null,
+        // PLACEHOLDER: citation details for the OncRef paper. Replace with the real
+        // title, author list, venue, date, DOI and links once the manuscript is public.
+        manuscript: {
+          title:
+            'An Oncology Reference of clinically relevant therapeutics profiled across 891 cancer cell lines',
+          authors: [
+            { name: 'First Author', note: '1,2' },
+            { name: 'Second Author', note: '1' },
+            { name: 'Third Author', note: '3' },
+            { name: 'Fourth Author', note: '1,2' },
+            { name: 'Senior Author', note: '1,2,*' },
+          ],
+          journal: 'bioRxiv (preprint)',
+          date: 'Month DD, YYYY',
+          doi: '10.1101/2025.XX.XX.XXXXXX',
+          pdfUrl: '#',
+        },
         // Highlighted findings from the manuscript, one ImageCard each
         // ({ title, body, caption, category, image })
         caseStudies,
-        // Axis config for the bar charts (x, y and color, each with title, domain,
-        // range and ticks; see chartAxis.js in prism-charts). Anything left out uses
-        // the chart default. The charts are horizontal, so x holds the counts and y
-        // the categories.
-        previouslyScreenedAxis: {
-          x: { title: 'Test agents' },
-          y: { title: 'Previously screened' },
-        },
         // Dataset totals, matching the figures cited in the page text
-        stats: [
-          { value: 265, label: 'Test agents', color: 'var(--v-teal-darken-1)' },
-          { value: 891, label: 'Cell lines', color: 'var(--v-blue-darken-1)' },
-          { value: 29, label: 'Lineages', color: 'var(--v-purple-darken-1)' },
-        ],
-        assayWorkflow: [
-          {
-            title: 'Pool',
-            caption: '891 barcoded cell lines, ~25 lines per pool',
-            icon: 'mdi-dna',
-          },
-          { title: 'Treat', caption: '265 agents × 8 doses × 3 replicates', icon: 'mdi-pill' },
-          {
-            title: 'Incubate',
-            caption: '5-day exposure across 39 pools × 26 plates',
-            icon: 'mdi-timer-outline',
-          },
-          { title: 'Amplify', caption: 'Biotinylated PCR of barcodes', icon: 'mdi-repeat' },
-          { title: 'Detect', caption: 'Luminex bead fluorescence readout', icon: 'mdi-chart-bar' },
-        ],
+        overviewStats: resolveStats(OVERVIEW_STATS),
+        assayWorkflow: assayWorkflow,
       };
     },
     computed: {
-      // Chart data: counts of the test agent rows, in the shape each chart takes
-      previouslyScreenedCounts() {
-        return countBy(this.agents, 'PreviouslyScreened');
+      // Stat groups resolved against the CSV rows (see stats.js). Empty until
+      // the data loads; the template guards on `agents`.
+      agentClassStats() {
+        return resolveStats(AGENT_CLASS_STATS, this.agents ?? []);
       },
-      clinicalStageCounts() {
-        return countBy(this.agents, 'HighestClinicalStage');
+      agentHighlightStats() {
+        return resolveStats(AGENT_HIGHLIGHT_STATS, this.agents ?? []);
       },
-      targetPathwayCounts() {
-        return countBy(this.agents, 'TargetPathway', { sort: 'descending' });
-      },
-      targetPathwayModalityCounts() {
-        return countByStacked(this.agents, 'TargetPathway', 'Modality', { sort: 'descending' });
-      },
-      ModalityCounts() {
-        return countBy(this.agents, 'Modality', { sort: 'descending' });
+      // Count data for every chart, keyed by chart (see chartCounts in stats.js)
+      counts() {
+        return this.agents ? chartCounts(this.agents) : {};
       },
       // Horizontal chart: x is the counts axis and y holds the pathways. The color
       // axis comes from the shared pathway colors, so the bars match the UMAP.
       targetPathwayAxis() {
         return {
           y: { title: 'Test agents', titlePosition: 'top' },
-          //     y: { title: 'Target pathway' },
           color: categoryColors(this.agents, 'TargetPathway'),
-        };
-      },
-      clinicalStageAxis() {
-        const STAGE_ORDER = [
-          'Approved',
-          'Approved (non-oncology)',
-          'Phase III',
-          'Phase II/III',
-          'Phase IIa',
-          'Phase II',
-          'Phase Ib/II',
-          'Phase I/II',
-          'Phase I/IIa',
-          'Phase Ib',
-          'Phase I',
-          'Preclinical',
-        ];
-        return {
-          y: { title: 'Test agents', titlePosition: 'top' },
-          x: { domain: STAGE_ORDER },
-          color: {
-            domain: STAGE_ORDER,
-            //range: quantize(interpolateBlues, STAGE_ORDER.length),
-            range: quantize((t) => interpolateBlues(0.33 + 0.7 * t), STAGE_ORDER.length),
-          },
         };
       },
       ModalityAxis() {
         return {
           y: { title: 'Test agents', titlePosition: 'top' },
-          //  y: { title: 'Modality' },
           color: { range: [schemeDark2[0]] },
+        };
+      },
+      clinicalStageAxis() {
+        return {
+          y: { title: 'Test agents', titlePosition: 'top' },
+          x: { domain: CLINICAL_STAGE_ORDER },
+          color: {
+            domain: CLINICAL_STAGE_ORDER,
+            range: quantize((t) => interpolateBlues(0.33 + 0.7 * t), CLINICAL_STAGE_ORDER.length),
+          },
         };
       },
       // Same pathway bars, stacked and colored by modality
       targetPathwayModalityAxis() {
         return {
           x: { title: 'Test agents', titlePosition: 'top' },
-          //    y: { title: 'Target pathway' },
           color: { ...categoryColors(this.agents, 'Modality'), title: 'Modality' },
         };
       },
@@ -291,6 +325,52 @@
 </script>
 
 <style scoped>
+  .manuscript-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 28px 32px;
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+    border-radius: var(--prism-radius-lg);
+  }
+  .manuscript-card__title {
+    margin: 0;
+  }
+  .manuscript-card__authors {
+    color: rgba(var(--v-theme-on-surface), 0.72);
+  }
+  .manuscript-card__authors sup {
+    font-size: 0.7em;
+    margin-left: 1px;
+  }
+  .manuscript-card__meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px 24px;
+    margin: 8px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  }
+  .manuscript-card__meta dt {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(var(--v-theme-on-surface), 0.6);
+  }
+  .manuscript-card__meta dd {
+    margin: 4px 0 0;
+    font-size: 0.9375rem;
+    overflow-wrap: anywhere;
+  }
+  .manuscript-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
   .case-studies {
     display: flex;
     flex-direction: column;
@@ -315,9 +395,15 @@
   .nominations-cta__content {
     max-width: 640px;
   }
+  /* #target-pathway-modality-chart {
+    height: 300px;
+  } */
 
   /* xs */
   @media (max-width: 600px) {
+    .manuscript-card {
+      padding: 20px 16px;
+    }
     .nominations-cta {
       gap: 20px;
       padding: 20px 16px;
