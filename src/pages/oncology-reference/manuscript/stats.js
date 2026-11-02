@@ -79,10 +79,11 @@ export function resolveStats(group, agents = []) {
 export function chartCounts(agents) {
   return {
     previouslyScreened: countBy(agents, 'PreviouslyScreened'),
-    clinicalStage: countBy(agents, 'HighestClinicalStage'),
+    // The summarized columns, so the charts group the same way as the parallel sets
+    clinicalStage: countBy(agents, 'HighestClinicalStage_summarized'),
     targetPathway: countBy(agents, 'TargetPathway', { sort: 'descending' }),
-    modality: countBy(agents, 'Modality', { sort: 'descending' }),
-    targetPathwayByModality: countByStacked(agents, 'TargetPathway', 'Modality', {
+    modality: countBy(agents, 'Modality_summarized', { sort: 'descending' }),
+    targetPathwayByModality: countByStacked(agents, 'TargetPathway', 'Modality_summarized', {
       sort: 'descending',
     }),
   };

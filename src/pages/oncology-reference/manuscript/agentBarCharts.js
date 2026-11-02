@@ -22,16 +22,16 @@ export const AGENT_BAR_CHARTS = {
       axis: (agents) => ({ y: COUNT_AXIS, color: categoryColors(agents, 'TargetPathway') }),
     },
     {
-      field: 'Modality',
+      field: 'Modality_summarized',
       counts: 'modality',
       axis: () => ({ y: COUNT_AXIS, color: { range: [schemeDark2[0]] } }),
     },
     {
-      field: 'HighestClinicalStage',
+      field: 'HighestClinicalStage_summarized',
       counts: 'clinicalStage',
       // Stages in clinical order on a blue ramp, most advanced darkest
       axis: () => {
-        const stages = valueOrder('HighestClinicalStage');
+        const stages = valueOrder('HighestClinicalStage_summarized');
         return {
           y: COUNT_AXIS,
           x: { domain: stages },

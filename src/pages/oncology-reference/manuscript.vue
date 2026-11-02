@@ -96,7 +96,7 @@
           <agent-parallel-sets :rows="breakdownAgents" />
         </v-col>
         <v-col cols="12">
-          <agent-bar-charts :rows="agents" />
+          <agent-bar-charts :rows="breakdownAgents" />
         </v-col>
       </v-row>
     </page-section>
@@ -230,7 +230,7 @@
       agentHighlightStats() {
         return resolveStats(AGENT_HIGHLIGHT_STATS, this.agents ?? []);
       },
-      // Rows for the parallel sets chart: controls would add a stray strand
+      // Rows for the parallel sets and bar charts: controls would add a stray category
       breakdownAgents() {
         return this.agents ? nonControlAgents(this.agents) : [];
       },
