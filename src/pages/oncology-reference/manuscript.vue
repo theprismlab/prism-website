@@ -7,7 +7,7 @@
         relevant agents screened across 891 barcoded cancer cell lines spanning 29 tumor lineages,
         integrated with genome-wide CRISPR knockout profiles.
       </p>
-      <!-- <stat-grid :stats="overviewStats" /> -->
+      <stat-grid class="pb-8" :stats="overviewStats" />
     </page-header>
     <page-section width="narrow" class="manuscript-overlap">
       <v-card variant="outlined" class="manuscript-card">
@@ -18,7 +18,7 @@
             ><template v-if="i < manuscript.authors.length - 1">, </template>
           </span>
         </p>
-        <div class="manuscript-card__abstract">
+        <!-- <div class="manuscript-card__abstract">
           <h3 class="manuscript-card__heading">Abstract</h3>
           <p class="prism-text-body-large mb-0">
             Transformative therapeutic approaches are emerging to address cancer complexity and
@@ -30,7 +30,7 @@
             relevant agents, encompassing small molecules, protein degraders, and biologics, to
             generate an Oncology Reference (OncRef) resource.
           </p>
-        </div>
+        </div> -->
         <dl class="manuscript-card__meta">
           <div>
             <dt>Journal</dt>
