@@ -98,6 +98,9 @@
         <v-col cols="12">
           <agent-bar-charts :rows="breakdownAgents" />
         </v-col>
+        <v-col cols="12">
+          <agent-grouped-bars :rows="breakdownAgents" />
+        </v-col>
       </v-row>
     </page-section>
 
@@ -170,6 +173,7 @@
 <script>
   import AgentBarCharts from './manuscript/AgentBarCharts.vue';
   import AgentExplorer from './manuscript/AgentExplorer.vue';
+  import AgentGroupedBars from './manuscript/AgentGroupedBars.vue';
   import AgentParallelSets from './manuscript/AgentParallelSets.vue';
   import ImageCard from '@/components/ImageCard.vue';
   import StatGrid from './manuscript/StatGrid.vue';
@@ -188,6 +192,7 @@
     components: {
       AgentBarCharts,
       AgentExplorer,
+      AgentGroupedBars,
       AgentParallelSets,
       ImageCard,
       StatGrid,

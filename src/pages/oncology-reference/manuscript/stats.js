@@ -9,7 +9,7 @@
 // group into the [{ label, value, color }] array StatGrid takes.
 import { countBy, countByStacked } from '@/lib/charts/prism-charts.js';
 import { countValue } from './oncref.js';
-import { valueLabel } from './fields.js';
+import { fieldLabel, valueLabel, valueOrder } from './fields.js';
 
 // Test agents minus the control compounds (inactive analogs etc.)
 export const nonControlAgents = (agents) => agents.filter((a) => a.Class !== 'control');
@@ -76,6 +76,31 @@ export function resolveStats(group, agents = []) {
  *
  * @param {Object[]} agents - rows from getOncRefData().agents
  */
+/**
+ * Records for a grouped BarChart: the value counts of several columns at once,
+ * one group per column headed by its field label. Within a group the bars
+ * follow the column's value order from fields.js when it has one, else count
+ * descending.
+ *
+ * @param {Object[]} agents - rows from getOncRefData().agents
+ * @param {string[]} fields - CSV columns, one group each, in group order
+ * @returns {{ group: string, label: string, count: number }[]}
+ */
+export function groupedCounts(agents, fields) {
+  return fields.flatMap((field) => {
+    const order = valueOrder(field);
+    const bars = countBy(agents, field, order ? {} : { sort: 'descending' });
+    if (order) {
+      const rank = (label) => {
+        const i = order.indexOf(label);
+        return i < 0 ? order.length : i;
+      };
+      bars.sort((a, b) => rank(a.label) - rank(b.label) || b.count - a.count);
+    }
+    return bars.map((bar) => ({ ...bar, group: fieldLabel(field) }));
+  });
+}
+
 export function chartCounts(agents) {
   return {
     previouslyScreened: countBy(agents, 'PreviouslyScreened'),
