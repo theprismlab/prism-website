@@ -1,11 +1,12 @@
 // Derived statistics for the OncRef manuscript page. Everything here takes the
 // test agent rows from getOncRefData() and returns plain data in the shape the
-// page components consume. No colors or layout: that stays in manuscript.vue.
+// page components consume.
 //
 // Stat groups are plain exported constants so the page can import just the
-// ones a section needs. Each entry is { label, value } where `value` is either
-// a number or a function of the agent rows; resolveStats() turns a group into
-// the [{ label, value }] array StatGrid takes.
+// ones a section needs. Each entry is { label, value, color } where `value` is
+// either a number or a function of the agent rows and `color` is any CSS color
+// (StatGrid falls back to grey when it is left out). resolveStats() turns a
+// group into the [{ label, value, color }] array StatGrid takes.
 import { countBy, countByStacked } from '@/lib/charts/prism-charts.js';
 import { countValue } from './oncref.js';
 
@@ -15,36 +16,61 @@ const count = (field, match) => (agents) => countValue(agents, field, match);
 // Dataset totals cited in the page text. Cell lines and lineages are not in the
 // test agent CSV, so these stay hardcoded.
 export const OVERVIEW_STATS = [
-  { label: 'Test agents', value: 265 },
-  { label: 'Cell lines', value: 891 },
-  { label: 'Lineages', value: 29 },
+  { label: 'Test agents', value: 265, color: 'var(--v-teal-darken-1)' },
+  { label: 'Cell lines', value: 891, color: 'var(--v-blue-darken-1)' },
+  { label: 'Lineages', value: 29, color: 'var(--v-purple-darken-1)' },
 ];
 
 // Test agents by Class (controls left out)
 export const AGENT_CLASS_STATS = [
-  { label: 'Targeted small molecules', value: count('Class', 'targeted small molecule') },
-  { label: 'Biologics / ADCs', value: count('Class', 'biologic') },
-  { label: 'Cytotoxic agents', value: count('Class', 'cytotoxic/genotoxic') },
-  { label: 'Phenotypic agents', value: count('Class', 'phenotypic') },
+  {
+    label: 'Targeted small molecules',
+    value: count('Class', 'targeted small molecule'),
+    color: 'var(--v-teal-darken-1)',
+  },
+  {
+    label: 'Biologics / ADCs',
+    value: count('Class', 'biologic'),
+    color: 'var(--v-blue-darken-1)',
+  },
+  {
+    label: 'Cytotoxic agents',
+    value: count('Class', 'cytotoxic/genotoxic'),
+    color: 'var(--v-purple-darken-1)',
+  },
+  {
+    label: 'Phenotypic agents',
+    value: count('Class', 'phenotypic'),
+    color: 'var(--v-indigo-darken-1)',
+  },
 ];
 
 // Single-value highlights on other columns
 export const AGENT_HIGHLIGHT_STATS = [
-  { label: 'Approved agents', value: count('HighestClinicalStage_summarized', 'Approved') },
-  { label: 'New to PRISM', value: count('PreviouslyScreened', 'FALSE') },
+  {
+    label: 'Approved agents',
+    value: count('HighestClinicalStage_summarized', 'Approved'),
+    color: 'var(--v-green-darken-1)',
+  },
+  {
+    label: 'New to PRISM',
+    value: count('PreviouslyScreened', 'FALSE'),
+    color: 'var(--v-orange-darken-1)',
+  },
 ];
 
 /**
  * Resolve a stat group against the agent rows.
  *
- * @param {{ label: string, value: number | function }[]} group
+ * @param {{ label: string, value: number | function, color?: string }[]} group
  * @param {Object[]} [agents=[]] - rows from getOncRefData().agents; only needed
  *   when the group has function values
- * @returns {{ label: string, value: number }[]}
+ * @returns {{ label: string, value: number, color?: string }[]} every other
+ *   field on the entry (color etc.) is passed through unchanged
  */
 export function resolveStats(group, agents = []) {
-  return group.map(({ label, value }) => ({
-    label,
+  return group.map(({ value, ...rest }) => ({
+    ...rest,
     value: typeof value === 'function' ? value(agents) : value,
   }));
 }

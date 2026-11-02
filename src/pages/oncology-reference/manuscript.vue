@@ -2,14 +2,27 @@
   <page>
     <page-header background="multi-focal-cool" narrow>
       <template #title> Oncology Reference </template>
-      <p class="prism-text-headline-medium">
+      <p class="prism-text-headline-medium mb-6">
         A pan-cancer reference of cancer therapeutics from the PRISM platform — 265 clinically
         relevant agents screened across 891 barcoded cancer cell lines spanning 29 tumor lineages,
         integrated with genome-wide CRISPR knockout profiles.
       </p>
+      <stat-grid :stats="overviewStats" />
     </page-header>
     <page-section width="narrow">
-      <section-overline gradient>About the manuscript</section-overline>
+      <section-overline gradient>About the paper</section-overline>
+
+      <prism-section-title>Abstract</prism-section-title>
+      <p class="prism-text-body-large">
+        Transformative therapeutic approaches are emerging to address cancer complexity and
+        heterogeneity, underscoring the need for systematic drug evaluation methodologies to
+        accelerate the translation to improved patient outcomes. Cell line profiling is a powerful
+        tool; however, mechanistic interpretation requires large-scale collections with extensive
+        molecular characterization. We screened the PRISM collection of 891 deeply characterized
+        barcoded cancer cell lines spanning 29 lineages with 265 clinically relevant agents,
+        encompassing small molecules, protein degraders, and biologics, to generate an Oncology
+        Reference (OncRef) resource.
+      </p>
       <v-card variant="outlined" class="manuscript-card">
         <h2 class="prism-text-headline-small manuscript-card__title">{{ manuscript.title }}</h2>
         <p class="prism-text-body-medium manuscript-card__authors mb-0">
@@ -48,33 +61,13 @@
           >
             Read the manuscript
           </v-btn>
-          <!-- <v-btn
-            :href="manuscript.pdfUrl"
-            target="_blank"
-            rel="noopener"
-            variant="outlined"
-            append-icon="mdi-file-pdf-box"
-          >
-            Download PDF
-          </v-btn> -->
         </div>
       </v-card>
     </page-section>
     <page-section width="narrow">
-      <section-overline gradient>Summary</section-overline>
-      <p class="prism-text-body-large">
-        Transformative therapeutic approaches are emerging to address cancer complexity and
-        heterogeneity, underscoring the need for systematic drug evaluation methodologies to
-        accelerate the translation to improved patient outcomes. Cell line profiling is a powerful
-        tool; however, mechanistic interpretation requires large-scale collections with extensive
-        molecular characterization. We screened the PRISM collection of 891 deeply characterized
-        barcoded cancer cell lines spanning 29 lineages with 265 clinically relevant agents,
-        encompassing small molecules, protein degraders, and biologics, to generate an Oncology
-        Reference (OncRef) resource.
-      </p>
-    </page-section>
-    <page-section width="narrow">
-      <stat-grid :stats="overviewStats" />
+      <section-overline gradient>Dataset Composition</section-overline>
+      <prism-section-title>Coverage at a Glance</prism-section-title>
+
       <!-- Stats computed from the test agent CSV once it loads -->
       <template v-if="agents">
         <stat-grid :stats="agentClassStats" class="mt-4" />
@@ -142,6 +135,40 @@
         for evaluating new targets and modalities.
       </p>
     </page-section>
+
+    <page-section width="narrow">
+      <section-overline gradient>About the dataset</section-overline>
+      <prism-section-title>A Benchmark for Oncology Therapeutics</prism-section-title>
+      <p class="prism-text-body-large">
+        OncRef is generated using
+        <router-link to="/about-us/about-prism" target="_blank">PRISM</router-link> (Profiling
+        Relative Inhibition Simultaneously in Mixtures), a high-throughput drug screening platform
+        developed at the Broad Institute that introduces unique 24-nucleotide DNA barcodes into
+        individual cancer cell lines, enabling pooled multiplexed screening. Each compound was
+        profiled in triplicate 8-point dose-response. <br /><br />
+        The collection encompasses 172 agents (65%) not represented in other large-scale public
+        datasets, spanning small molecules, protein degraders (PROTACs), and biologics including
+        antibody-drug conjugates. Parallel genome-wide CRISPR knockout screens enable a new
+        analytical framework that deconvolves polypharmacology, off-target effects, and on-target
+        selectivity.
+      </p>
+    </page-section>
+
+    <page-section width="narrow">
+      <section-overline gradient>The Underlying Technology</section-overline>
+      <prism-section-title
+        >The PRISM Platform — Multiplexed Cancer Drug Screening at Scale</prism-section-title
+      >
+      <p class="prism-text-body-large">
+        OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
+        high-throughput multiplexed viability screening platform developed at the Broad Institute.
+        PRISM introduces unique 24-nucleotide DNA barcodes into cancer cell lines, enabling hundreds
+        of cell lines to be screened simultaneously in a single well — dramatically reducing cost
+        and increasing throughput compared to traditional approaches.
+      </p>
+      <workflow-steps :steps="assayWorkflow" color="var(--v-teal-darken-1)" />
+    </page-section>
+
     <page-section width="narrow">
       <section-overline gradient>Data Vignettes</section-overline>
       <prism-section-title>Key findings from the paper</prism-section-title>
@@ -160,28 +187,6 @@
           :reverse="i % 2 === 1"
         />
       </div>
-    </page-section>
-
-    <page-section width="narrow">
-      <section-overline gradient>About the dataset</section-overline>
-      <p class="prism-text-body-large">
-        OncRef is generated using
-        <router-link to="/about-us/about-prism" target="_blank">PRISM</router-link> (Profiling
-        Relative Inhibition Simultaneously in Mixtures), a high-throughput drug screening platform
-        developed at the Broad Institute that introduces unique 24-nucleotide DNA barcodes into
-        individual cancer cell lines, enabling pooled multiplexed screening. Each compound was
-        profiled in triplicate 8-point dose-response. <br /><br />
-        The collection encompasses 172 agents (65%) not represented in other large-scale public
-        datasets, spanning small molecules, protein degraders (PROTACs), and biologics including
-        antibody-drug conjugates. Parallel genome-wide CRISPR knockout screens enable a new
-        analytical framework that deconvolves polypharmacology, off-target effects, and on-target
-        selectivity.
-      </p>
-    </page-section>
-
-    <page-section width="narrow">
-      <prism-section-title>Screening workflow</prism-section-title>
-      <workflow-steps :steps="assayWorkflow" color="var(--v-teal-darken-1)" />
     </page-section>
 
     <page-section width="wide">
