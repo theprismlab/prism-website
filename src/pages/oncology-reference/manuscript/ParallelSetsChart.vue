@@ -1,18 +1,5 @@
 <template>
   <div ref="host" class="parallel-sets" @mouseleave="clearHover">
-    <div class="parallel-sets__controls">
-      <v-select
-        v-model="colorField"
-        :items="dimensionItems"
-        item-title="label"
-        item-value="field"
-        label="Color by"
-        density="compact"
-        variant="outlined"
-        hide-details
-        class="parallel-sets__color-select"
-      />
-    </div>
     <svg
       v-if="layout"
       class="parallel-sets__svg"
@@ -106,16 +93,20 @@
 <script>
   import { scaleOrdinal } from 'd3';
   import { defaultColors } from '@/lib/charts/prism-charts.js';
-  import { normalizeDimension, parallelSetsLayout } from './parallelSets.js';
+  import { parallelSetsLayout } from './parallelSets.js';
 
   /**
    * Parallel sets chart (d3-sankey layout, see parallelSets.js): a thin column
    * of category nodes per dimension and stroked links between adjacent columns
-   * sized by the rows that share both categories. Links are colored by one
-   * dimension (the first by default; a "Color by" select in the header switches
-   * it, or set `colorBy`) and blended with multiply, so each category of that
+   * sized by the rows that share both categories. Links are colored by the
+   * `colorBy` dimension and blended with multiply, so each category of that
    * column reads as a strand flowing through the rest of the chart. Strands are
    * sorted by the color column so same-colored strands stay together.
+   *
+   * Presentational: everything comes in through props and the only state is
+   * hover. Dimensions must arrive fully described ({ field, label, order,
+   * labels }; see the Dimension typedef in parallelSets.js). Controls such as a
+   * color picker belong to the parent.
    *
    * Hovering a node highlights every strand passing through it. Hovering a link
    * highlights the whole band between its two nodes (every strand sharing that
@@ -130,53 +121,41 @@
     name: 'ParallelSetsChart',
     props: {
       rows: { type: Array, required: true },
-      // [{ field, label?, order?, labels? }] in column order; see parallelSets.js
-      // Field names or { field, label?, order?, labels? } objects in column order;
-      // labels and order default to fields.js (see normalizeDimension)
+      // Dimension objects in column order; see parallelSets.js
       dimensions: { type: Array, required: true },
-      // Field of the dimension that colors the links; defaults to the first.
-      // Supports v-model:color-by.
+      // Field of the dimension that colors the links; defaults to the first column
       colorBy: { type: String, default: null },
+      // { domain, range } for the color column's categories; defaults to the
+      // chart library's palette in node order
+      colors: { type: Object, default: null },
       height: { type: Number, default: 480 },
       nodeWidth: { type: Number, default: 4 },
       nodePadding: { type: Number, default: 10 },
       // Noun for the tooltip counts
-      unit: { type: String, default: 'agents' },
+      unit: { type: String, default: 'rows' },
     },
-    emits: ['update:colorBy'],
     data() {
       return {
         width: 640,
         margin: { top: 28, bottom: 4 },
-        // Current color field; starts from the prop (or the first dimension)
-        colorField:
-          this.colorBy ??
-          (this.dimensions[0] ? normalizeDimension(this.dimensions[0]).field : null),
-        // { type: 'node', node } | { type: 'link', link } | null
+        // { type: 'node', node } | { type: 'link', prefix } | null
         hover: null,
         tooltip: null,
         nodeColor: '#333',
       };
     },
     computed: {
-      // Dimensions with label, order and value labels filled in from fields.js
-      dims() {
-        return this.dimensions.map(normalizeDimension);
-      },
       svgHeight() {
         return this.height + this.margin.top + this.margin.bottom;
       },
-      dimensionItems() {
-        return this.dims.map((d) => ({ field: d.field, label: d.label }));
-      },
       // Column index of the color field; falls back to the first column
       colorDim() {
-        const i = this.dims.findIndex((d) => d.field === this.colorField);
+        const i = this.dimensions.findIndex((d) => d.field === this.colorBy);
         return i >= 0 ? i : 0;
       },
       layout() {
-        if (!this.rows.length || this.dims.length < 2) return null;
-        return parallelSetsLayout(this.rows, this.dims, {
+        if (!this.rows.length || this.dimensions.length < 2) return null;
+        return parallelSetsLayout(this.rows, this.dimensions, {
           width: this.width,
           height: this.height,
           nodeWidth: this.nodeWidth,
@@ -184,12 +163,12 @@
           primary: this.colorDim,
         });
       },
-      // Categories of the color column in node order, on the library palette
       colorScale() {
         const column = this.layout?.columns[this.colorDim];
-        const domain = column?.nodes.map((n) => n.key) ?? [];
+        const domain = this.colors?.domain ?? column?.nodes.map((n) => n.key) ?? [];
         // defaultColors(n) returns n colors from the library palette
-        return scaleOrdinal(domain, defaultColors(domain.length)).unknown('#ccc');
+        const range = this.colors?.range ?? defaultColors(domain.length);
+        return scaleOrdinal(domain, range).unknown('#ccc');
       },
       // Node ids touched by any active link, so muting follows whole strands
       activeNodeIds() {
@@ -202,20 +181,12 @@
         return ids;
       },
       ariaLabel() {
-        const names = this.dims.map((d) => d.label).join(', ');
+        const names = this.layout?.columns.map((c) => c.label).join(', ') ?? '';
         return `Parallel sets of ${this.rows.length} ${this.unit} across ${names}`;
       },
       tooltipStyle() {
         if (!this.tooltip) return {};
         return { left: `${this.tooltip.x}px`, top: `${this.tooltip.y}px` };
-      },
-    },
-    watch: {
-      colorBy(field) {
-        if (field && field !== this.colorField) this.colorField = field;
-      },
-      colorField(field) {
-        this.$emit('update:colorBy', field);
       },
     },
     mounted() {
@@ -260,15 +231,15 @@
         const share = count / total;
         return `${(100 * share).toFixed(share < 0.1 ? 1 : 0)}%`;
       },
-      dimLabel(i) {
-        return this.dims[i].label;
+      columnLabel(i) {
+        return this.layout.columns[i].label;
       },
       hoverNode(node, event) {
         this.hover = { type: 'node', node };
         this.tooltip = {
           title: node.name,
           rows: [
-            [this.dimLabel(node.dim), node.name],
+            [this.columnLabel(node.dim), node.name],
             [
               this.unit[0].toUpperCase() + this.unit.slice(1),
               `${node.count} of ${this.layout.total} (${this.percent(node.count)})`,
@@ -287,7 +258,7 @@
           .reduce((sum, l) => sum + l.value, 0);
         this.tooltip = {
           title: `${bandValue} ${this.unit} (${this.percent(bandValue)})`,
-          rows: prefix.map((_, i) => [this.dimLabel(i), link.names[i]]),
+          rows: prefix.map((_, i) => [this.columnLabel(i), link.names[i]]),
           ...this.tooltipPosition(event),
         };
       },
@@ -316,20 +287,6 @@
     width: 100%;
     font-family: inherit;
   }
-  .parallel-sets__controls {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 4px;
-  }
-  .parallel-sets__color-select {
-    flex: 0 0 auto;
-    width: 200px;
-  }
-  .parallel-sets__color-select :deep(.v-field__input),
-  .parallel-sets__color-select :deep(.v-label) {
-    font-size: 0.8125rem;
-  }
-
   .parallel-sets__svg {
     display: block;
     max-width: 100%;

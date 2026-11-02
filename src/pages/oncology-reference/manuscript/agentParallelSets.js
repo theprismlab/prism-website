@@ -1,6 +1,8 @@
-// Config for the test agent parallel sets chart on the manuscript page: the
-// card copy plus the props handed to ParallelSetsChart. Keeping it here leaves
-// manuscript.vue with only the rendering.
+// Config for the test agent breakdown card (AgentBreakdown.vue): the card copy
+// and which CSV columns the parallel sets chart shows. Column labels, value
+// names and value order come from fields.js via toDimension, so the chart
+// receives fully described dimensions and never consults the lookup itself.
+import { toDimension } from './fields.js';
 
 export const AGENT_PARALLEL_SETS = {
   title: 'Test agent breakdown',
@@ -9,22 +11,20 @@ export const AGENT_PARALLEL_SETS = {
     'modality to highest clinical stage. Ribbon width is the number of agents. Hover a ' +
     'category to trace its agents across the chart.',
 
-  // Bound straight onto <parallel-sets-chart> with v-bind. `rows` is passed
-  // separately by the page since it depends on the loaded data.
-  chart: {
-    // Field that colors the ribbons initially; the chart's "Color by" select
-    // can change it
-    colorBy: 'Class',
-    height: 480,
-    // Columns left to right, as CSV field names. Labels, value names and value
-    // order come from fields.js; pass an object ({ field, label, labels, order })
-    // instead of a string to override any of them for this chart only.
-    dimensions: [
-      'PreviouslyScreened',
-      'Class',
-      'TargetPathway',
-      'Modality_summarized',
-      'HighestClinicalStage_summarized',
-    ],
-  },
+  // Columns left to right. Pass an object ({ field, label, labels, order }) in
+  // place of a name to override the lookup for this chart only.
+  dimensions: [
+    'PreviouslyScreened',
+    'Class',
+    'TargetPathway',
+    'Modality_summarized',
+    'HighestClinicalStage_summarized',
+  ].map(toDimension),
+
+  // Field that colors the ribbons when the card first renders
+  defaultColorBy: 'Class',
+  // Plot height in pixels
+  height: 480,
+  // Noun for the tooltip counts
+  unit: 'agents',
 };

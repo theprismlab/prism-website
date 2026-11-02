@@ -62,3 +62,21 @@ export const valueLabel = (field, value) => FIELDS[field]?.values?.[value] ?? va
 
 /** Raw-value display order for a column, or null when there is none. */
 export const valueOrder = (field) => FIELDS[field]?.order ?? null;
+
+/**
+ * Describe a column for a chart: label, value order and value labels from the
+ * lookup. Accepts a bare field name, or an object with `field` plus any of
+ * those keys to override the lookup for one chart.
+ *
+ * @param {string | { field: string, label?: string, order?: string[], labels?: Object }} dim
+ * @returns {{ field: string, label: string, order: string[] | null, labels: Object }}
+ */
+export function toDimension(dim) {
+  const d = typeof dim === 'string' ? { field: dim } : dim;
+  return {
+    ...d,
+    label: d.label ?? fieldLabel(d.field),
+    order: d.order ?? valueOrder(d.field),
+    labels: d.labels ?? FIELDS[d.field]?.values ?? {},
+  };
+}

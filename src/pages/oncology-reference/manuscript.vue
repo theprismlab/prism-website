@@ -93,11 +93,7 @@
     <page-section v-if="agents" width="wide" class="mt-0 pt-0">
       <v-row dense class="mt-0 pt-0">
         <v-col cols="12">
-          <v-card variant="outlined" class="pa-6">
-            <v-card-title class="px-0">{{ parallelSets.title }}</v-card-title>
-            <p class="text-body-2 text-medium-emphasis mb-4">{{ parallelSets.description }}</p>
-            <parallel-sets-chart :rows="breakdownAgents" v-bind="parallelSets.chart" />
-          </v-card>
+          <agent-breakdown :rows="breakdownAgents" />
         </v-col>
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
@@ -221,7 +217,7 @@
   import ImageCard from './manuscript/ImageCard.vue';
   import { categoryColors } from '@/lib/charts/prism-charts.js';
   import StackedBarChart from './manuscript/StackedBarChart.vue';
-  import ParallelSetsChart from './manuscript/ParallelSetsChart.vue';
+  import AgentBreakdown from './manuscript/AgentBreakdown.vue';
   import StatGrid from './manuscript/StatGrid.vue';
   import { getOncRefData } from './manuscript/oncref.js';
   import { assayWorkflow } from './manuscript/assayWorkflow.js';
@@ -234,17 +230,16 @@
     chartCounts,
   } from './manuscript/stats.js';
   import { fieldLabel, valueOrder } from './manuscript/fields.js';
-  import { AGENT_PARALLEL_SETS } from './manuscript/agentParallelSets.js';
   import caseStudies from './manuscript/CaseStudies.json';
   import PageSection from '@/components/PageSection.vue';
 
   export default {
     name: 'OncologyReferenceManuscript',
     components: {
+      AgentBreakdown,
       BarChart,
       DataExplorer,
       ImageCard,
-      ParallelSetsChart,
       StackedBarChart,
       StatGrid,
     },
@@ -252,8 +247,6 @@
       return {
         // Test agent rows from the CSV, loaded in created()
         agents: null,
-        // Copy and chart props for the parallel sets card (see agentParallelSets.js)
-        parallelSets: AGENT_PARALLEL_SETS,
         // PLACEHOLDER: citation details for the OncRef paper. Replace with the real
         // title, author list, venue, date, DOI and links once the manuscript is public.
         manuscript: {
