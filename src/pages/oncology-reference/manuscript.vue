@@ -94,17 +94,9 @@
       <v-row dense class="mt-0 pt-0">
         <v-col cols="12">
           <v-card variant="outlined" class="pa-6">
-            <v-card-title class="px-0">Test agent breakdown</v-card-title>
-            <p class="text-body-2 text-medium-emphasis mb-4">
-              Each ribbon follows a set of test agents from their class through target pathway and
-              modality to highest clinical stage. Ribbon width is the number of agents. Hover a
-              category to trace its agents across the chart.
-            </p>
-            <parallel-sets-chart
-              :rows="breakdownAgents"
-              :dimensions="AGENT_PARALLEL_SETS"
-              :height="480"
-            />
+            <v-card-title class="px-0">{{ parallelSets.title }}</v-card-title>
+            <p class="text-body-2 text-medium-emphasis mb-4">{{ parallelSets.description }}</p>
+            <parallel-sets-chart :rows="breakdownAgents" v-bind="parallelSets.chart" />
           </v-card>
         </v-col>
         <v-col cols="12" md="4">
@@ -238,11 +230,11 @@
     AGENT_CLASS_STATS,
     AGENT_HIGHLIGHT_STATS,
     CLINICAL_STAGE_ORDER,
-    AGENT_PARALLEL_SETS,
     nonControlAgents,
     resolveStats,
     chartCounts,
   } from './manuscript/stats.js';
+  import { AGENT_PARALLEL_SETS } from './manuscript/agentParallelSets.js';
   import caseStudies from './manuscript/CaseStudies.json';
   import PageSection from '@/components/PageSection.vue';
 
@@ -260,8 +252,8 @@
       return {
         // Test agent rows from the CSV, loaded in created()
         agents: null,
-        // Column config for the parallel sets chart (constant, exposed to the template)
-        AGENT_PARALLEL_SETS,
+        // Copy and chart props for the parallel sets card (see agentParallelSets.js)
+        parallelSets: AGENT_PARALLEL_SETS,
         // PLACEHOLDER: citation details for the OncRef paper. Replace with the real
         // title, author list, venue, date, DOI and links once the manuscript is public.
         manuscript: {
