@@ -28,9 +28,12 @@ function orderCategories(counts, dim) {
  *
  * @param {Object[]} rows
  * @param {{ field: string, label?: string, order?: string[], labels?: Object }[]} dimensions
+ * @param {{ primary?: number }} [opts] - index of the dimension to sort strands by
+ *   first (normally the one they are colored by), so same-colored strands stay
+ *   together inside every node. Remaining dimensions follow in column order.
  * @returns {{ nodes: Object[], links: Object[] }}
  */
-export function parallelSetsGraph(rows, dimensions) {
+export function parallelSetsGraph(rows, dimensions, { primary = 0 } = {}) {
   const nodes = [];
   const indexByKey = new Map();
   const nodeId = (dim, key) => `${dim}\u0000${key}`;
@@ -67,10 +70,11 @@ export function parallelSetsGraph(rows, dimensions) {
       value: members.length,
     };
   });
-  // Lexicographic by node position, first column first, so links leaving a node
-  // stay grouped by the first dimension and the colored strands don't tangle.
+  // Lexicographic by node position, primary (color) column first, so links
+  // leaving a node stay grouped by color and the strands don't tangle.
+  const sortOrder = [primary, ...dimensions.map((_, i) => i).filter((i) => i !== primary)];
   paths.sort((a, b) => {
-    for (let i = 0; i < dimensions.length; i++) {
+    for (const i of sortOrder) {
       const d = nodes[a.nodeIndexes[i]].index - nodes[b.nodeIndexes[i]].index;
       if (d) return d;
     }
@@ -99,29 +103,37 @@ export function parallelSetsGraph(rows, dimensions) {
  *
  * @param {Object[]} rows
  * @param {Object[]} dimensions - see parallelSetsGraph
- * @param {{ width: number, height: number, nodeWidth?: number, nodePadding?: number }} opts
+ * @param {{ width: number, height: number, nodeWidth?: number, nodePadding?: number,
+ *           fillColumns?: boolean, primary?: number }} opts
+ *   `nodePadding` is the minimum gap between nodes. With `fillColumns` (default
+ *   true) each column gets its own, larger gap so its nodes span the full height;
+ *   otherwise every column uses `nodePadding` and shorter columns end early.
+ *   `primary` is passed to parallelSetsGraph.
  * @returns {{ nodes: Object[], links: Object[], columns: { label: string, nodes: Object[] }[], total: number }}
  *   nodes carry x0/x1/y0/y1 and links carry y0/y1/width plus a `path` string
  *   from sankeyLinkHorizontal.
  */
 export function parallelSetsLayout(rows, dimensions, opts) {
-  const { width, height, nodeWidth = 4, nodePadding = 20 } = opts;
-  const graph = parallelSetsGraph(rows, dimensions);
+  const { width, height, nodeWidth = 4, nodePadding = 20, fillColumns = true, primary = 0 } = opts;
+  const graph = parallelSetsGraph(rows, dimensions, { primary });
+  const extent = [
+    [0, 5],
+    [width, height - 5],
+  ];
 
   const sankey = d3Sankey()
     .nodeSort(null) // keep the column order from parallelSetsGraph
     .linkSort(null) // keep the strand order from parallelSetsGraph
     .nodeWidth(nodeWidth)
     .nodePadding(nodePadding)
-    .extent([
-      [0, 5],
-      [width, height - 5],
-    ]);
+    .extent(extent);
 
   const { nodes, links } = sankey({
     nodes: graph.nodes.map((d) => ({ ...d })),
     links: graph.links.map((d) => ({ ...d })),
   });
+
+  if (fillColumns) spreadColumns(nodes, dimensions.length, extent[0][1], extent[1][1]);
 
   const linkPath = sankeyLinkHorizontal();
   for (const link of links) link.path = linkPath(link);
@@ -135,4 +147,37 @@ export function parallelSetsLayout(rows, dimensions, opts) {
     })),
     total: rows.length,
   };
+}
+
+// d3-sankey uses one node padding everywhere and sizes the vertical scale from
+// the column with the most nodes, so columns with fewer nodes stop short of the
+// bottom. Re-stack each column with its own padding so the nodes span y0..y1
+// (node heights are untouched, so values stay comparable across columns), then
+// re-stack the link ends the way d3-sankey's computeLinkBreadths does.
+function spreadColumns(nodes, columnCount, y0, y1) {
+  for (let dim = 0; dim < columnCount; dim++) {
+    const column = nodes.filter((n) => n.dim === dim).sort((a, b) => a.y0 - b.y0);
+    if (column.length < 2) continue;
+    const used = column.reduce((sum, n) => sum + (n.y1 - n.y0), 0);
+    const gap = (y1 - y0 - used) / (column.length - 1);
+    let y = y0;
+    for (const node of column) {
+      const h = node.y1 - node.y0;
+      node.y0 = y;
+      node.y1 = y + h;
+      y += h + gap;
+    }
+  }
+  for (const node of nodes) {
+    let out = node.y0;
+    for (const link of node.sourceLinks) {
+      link.y0 = out + link.width / 2;
+      out += link.width;
+    }
+    let inY = node.y0;
+    for (const link of node.targetLinks) {
+      link.y1 = inY + link.width / 2;
+      inY += link.width;
+    }
+  }
 }

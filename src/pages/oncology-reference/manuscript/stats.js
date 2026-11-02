@@ -16,7 +16,9 @@ export const nonControlAgents = (agents) => agents.filter((a) => a.Class !== 'co
 // Columns for the test agent parallel sets chart, left to right. Ribbons are
 // colored by the first entry. See parallelSets.js for the dimension options.
 export const AGENT_PARALLEL_SETS = [
+  { field: 'PreviouslyScreened', label: 'Novel to Public Data' },
   { field: 'Class', label: 'Class', labels: CLASS_LABELS },
+  { field: 'TargetPathway', label: 'Target pathway' },
   { field: 'Modality_summarized', label: 'Modality' },
   {
     field: 'HighestClinicalStage_summarized',
@@ -68,7 +70,7 @@ export const AGENT_HIGHLIGHT_STATS = [
     color: 'var(--v-green-darken-1)',
   },
   {
-    label: 'New to PRISM',
+    label: 'Novel to Public Data',
     value: count('PreviouslyScreened', 'FALSE'),
     color: 'var(--v-orange-darken-1)',
   },

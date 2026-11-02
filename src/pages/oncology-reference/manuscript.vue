@@ -96,15 +96,14 @@
           <v-card variant="outlined" class="pa-6">
             <v-card-title class="px-0">Test agent breakdown</v-card-title>
             <p class="text-body-2 text-medium-emphasis mb-4">
-              Each ribbon follows a set of test agents from their class through modality to highest
-              clinical stage. Ribbon width is the number of agents. Hover a category to trace its
-              agents across the chart.
+              Each ribbon follows a set of test agents from their class through target pathway and
+              modality to highest clinical stage. Ribbon width is the number of agents. Hover a
+              category to trace its agents across the chart.
             </p>
             <parallel-sets-chart
               :rows="breakdownAgents"
               :dimensions="AGENT_PARALLEL_SETS"
-              :colors="classColors"
-              :height="380"
+              :height="480"
             />
           </v-card>
         </v-col>
@@ -304,10 +303,6 @@
       // Rows for the parallel sets chart: controls would add a stray strand
       breakdownAgents() {
         return this.agents ? nonControlAgents(this.agents) : [];
-      },
-      // Class colors from the shared palette, so the ribbons match other charts
-      classColors() {
-        return this.agents ? categoryColors(this.breakdownAgents, 'Class') : null;
       },
       // Horizontal chart: x is the counts axis and y holds the pathways. The color
       // axis comes from the shared pathway colors, so the bars match the UMAP.

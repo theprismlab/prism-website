@@ -1,5 +1,18 @@
 <template>
   <div ref="host" class="parallel-sets" @mouseleave="clearHover">
+    <div class="parallel-sets__controls">
+      <v-select
+        v-model="colorField"
+        :items="dimensionItems"
+        item-title="label"
+        item-value="field"
+        label="Color by"
+        density="compact"
+        variant="outlined"
+        hide-details
+        class="parallel-sets__color-select"
+      />
+    </div>
     <svg
       v-if="layout"
       class="parallel-sets__svg"
@@ -33,7 +46,7 @@
               'is-active': hover && isLinkActive(link),
             }"
             :d="link.path"
-            :stroke="colorOf(link.keys[0])"
+            :stroke="colorOf(link.keys[colorDim])"
             :stroke-width="Math.max(link.width, 1)"
             @mouseenter="hoverLink(link, $event)"
             @mousemove="moveTooltip"
@@ -54,18 +67,17 @@
             :y="node.y0"
             :width="node.x1 - node.x0"
             :height="Math.max(node.y1 - node.y0, 1)"
-            :fill="node.dim === 0 ? colorOf(node.key) : nodeColor"
+            :fill="node.dim === colorDim ? colorOf(node.key) : nodeColor"
           />
           <!-- Wider invisible hit target so thin nodes are easy to hover -->
           <rect
             :x="node.x0 - 6"
-            :y="node.y0"
+            :y="node.y0 - 4"
             :width="node.x1 - node.x0 + 12"
-            :height="Math.max(node.y1 - node.y0, 1)"
+            :height="Math.max(node.y1 - node.y0, 1) + 8"
             fill="transparent"
           />
           <text
-            v-if="node.y1 - node.y0 >= labelMinHeight"
             class="parallel-sets__label"
             :x="labelX(node)"
             :y="(node.y0 + node.y1) / 2"
@@ -99,9 +111,11 @@
   /**
    * Parallel sets chart (d3-sankey layout, see parallelSets.js): a thin column
    * of category nodes per dimension and stroked links between adjacent columns
-   * sized by the rows that share both categories. Links are colored by the
-   * first dimension and blended with multiply, so each first-column category
-   * reads as a strand flowing through the rest of the chart.
+   * sized by the rows that share both categories. Links are colored by one
+   * dimension (the first by default; a "Color by" select in the header switches
+   * it, or set `colorBy`) and blended with multiply, so each category of that
+   * column reads as a strand flowing through the rest of the chart. Strands are
+   * sorted by the color column so same-colored strands stay together.
    *
    * Hovering a node highlights every strand passing through it. Hovering a link
    * highlights the whole band between its two nodes (every strand sharing that
@@ -118,21 +132,22 @@
       rows: { type: Array, required: true },
       // [{ field, label?, order?, labels? }] in column order; see parallelSets.js
       dimensions: { type: Array, required: true },
-      // { domain, range } for the first dimension's categories; defaults to the
-      // chart library's categorical palette in node order
-      colors: { type: Object, default: null },
+      // Field of the dimension that colors the links; defaults to the first.
+      // Supports v-model:color-by.
+      colorBy: { type: String, default: null },
       height: { type: Number, default: 480 },
       nodeWidth: { type: Number, default: 4 },
-      nodePadding: { type: Number, default: 20 },
-      // Nodes shorter than this (px) skip their label; the tooltip still names them
-      labelMinHeight: { type: Number, default: 10 },
+      nodePadding: { type: Number, default: 10 },
       // Noun for the tooltip counts
       unit: { type: String, default: 'agents' },
     },
+    emits: ['update:colorBy'],
     data() {
       return {
         width: 640,
         margin: { top: 28, bottom: 4 },
+        // Current color field; starts from the prop (or the first dimension)
+        colorField: this.colorBy ?? this.dimensions[0]?.field ?? null,
         // { type: 'node', node } | { type: 'link', link } | null
         hover: null,
         tooltip: null,
@@ -143,6 +158,14 @@
       svgHeight() {
         return this.height + this.margin.top + this.margin.bottom;
       },
+      dimensionItems() {
+        return this.dimensions.map((d) => ({ field: d.field, label: d.label ?? d.field }));
+      },
+      // Column index of the color field; falls back to the first column
+      colorDim() {
+        const i = this.dimensions.findIndex((d) => d.field === this.colorField);
+        return i >= 0 ? i : 0;
+      },
       layout() {
         if (!this.rows.length || this.dimensions.length < 2) return null;
         return parallelSetsLayout(this.rows, this.dimensions, {
@@ -150,14 +173,15 @@
           height: this.height,
           nodeWidth: this.nodeWidth,
           nodePadding: this.nodePadding,
+          primary: this.colorDim,
         });
       },
+      // Categories of the color column in node order, on the library palette
       colorScale() {
-        const firstColumn = this.layout?.columns[0];
-        const domain = this.colors?.domain ?? firstColumn?.nodes.map((n) => n.key) ?? [];
+        const column = this.layout?.columns[this.colorDim];
+        const domain = column?.nodes.map((n) => n.key) ?? [];
         // defaultColors(n) returns n colors from the library palette
-        const range = this.colors?.range ?? defaultColors(domain.length);
-        return scaleOrdinal(domain, range).unknown('#ccc');
+        return scaleOrdinal(domain, defaultColors(domain.length)).unknown('#ccc');
       },
       // Node ids touched by any active link, so muting follows whole strands
       activeNodeIds() {
@@ -176,6 +200,14 @@
       tooltipStyle() {
         if (!this.tooltip) return {};
         return { left: `${this.tooltip.x}px`, top: `${this.tooltip.y}px` };
+      },
+    },
+    watch: {
+      colorBy(field) {
+        if (field && field !== this.colorField) this.colorField = field;
+      },
+      colorField(field) {
+        this.$emit('update:colorBy', field);
       },
     },
     mounted() {
@@ -276,6 +308,20 @@
     width: 100%;
     font-family: inherit;
   }
+  .parallel-sets__controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 4px;
+  }
+  .parallel-sets__color-select {
+    flex: 0 0 auto;
+    width: 200px;
+  }
+  .parallel-sets__color-select :deep(.v-field__input),
+  .parallel-sets__color-select :deep(.v-label) {
+    font-size: 0.8125rem;
+  }
+
   .parallel-sets__svg {
     display: block;
     max-width: 100%;
