@@ -1,6 +1,6 @@
 <template>
-  <v-card variant="outlined" class="agent-breakdown pa-6">
-    <div class="agent-breakdown__header">
+  <v-card variant="outlined" class="agent-parallel-sets pa-6">
+    <div class="agent-parallel-sets__header">
       <div>
         <v-card-title class="px-0 pt-0">{{ config.title }}</v-card-title>
         <p class="text-body-2 text-medium-emphasis mb-0">{{ config.description }}</p>
@@ -14,13 +14,13 @@
         density="compact"
         variant="outlined"
         hide-details
-        class="agent-breakdown__color-select"
+        class="agent-parallel-sets__color-select"
       />
     </div>
     <parallel-sets-chart
-      :rows="rows"
+      :data="rows"
       :dimensions="config.dimensions"
-      :color-by="colorBy"
+      :axis="{ color: { field: colorBy } }"
       :height="config.height"
       :unit="config.unit"
       class="mt-4"
@@ -29,17 +29,18 @@
 </template>
 
 <script>
-  import ParallelSetsChart from './ParallelSetsChart.vue';
+  import ParallelSetsChart from '@/lib/charts/ParallelSetsChart.vue';
   import { AGENT_PARALLEL_SETS } from './agentParallelSets.js';
 
   /**
-   * Controller for the test agent breakdown card: card copy, the "Color by"
-   * control, and the parallel sets chart. Owns the color selection and maps
-   * the config (see agentParallelSets.js) onto chart props explicitly, so the
-   * chart stays presentational and the config stays free of prop names.
+   * The test agent parallel sets card: card copy, the "Color by"
+   * control, and the parallel sets chart (the prism-charts ParallelSetsChart via
+   * its Vue wrapper). Owns the color selection and maps the config (see
+   * agentParallelSets.js) onto chart props explicitly, so the chart stays
+   * generic and the config stays free of prop names.
    */
   export default {
-    name: 'AgentBreakdown',
+    name: 'AgentParallelSets',
     components: { ParallelSetsChart },
     props: {
       // Test agent rows to chart (already filtered by the page)
@@ -54,32 +55,32 @@
     },
     computed: {
       colorOptions() {
-        return this.config.dimensions.map((d) => ({ field: d.field, label: d.label ?? d.field }));
+        return this.config.dimensions.map((d) => ({ field: d.field, label: d.title ?? d.field }));
       },
     },
   };
 </script>
 
 <style scoped>
-  .agent-breakdown__header {
+  .agent-parallel-sets__header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
   }
-  .agent-breakdown__color-select {
+  .agent-parallel-sets__color-select {
     flex: 0 0 200px;
   }
-  .agent-breakdown__color-select :deep(.v-field__input),
-  .agent-breakdown__color-select :deep(.v-label) {
+  .agent-parallel-sets__color-select :deep(.v-field__input),
+  .agent-parallel-sets__color-select :deep(.v-label) {
     font-size: 0.8125rem;
   }
 
   @media (max-width: 600px) {
-    .agent-breakdown__header {
+    .agent-parallel-sets__header {
       flex-direction: column;
     }
-    .agent-breakdown__color-select {
+    .agent-parallel-sets__color-select {
       flex-basis: auto;
       width: 100%;
     }

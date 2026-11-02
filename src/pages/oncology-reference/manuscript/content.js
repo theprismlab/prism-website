@@ -1,0 +1,39 @@
+export const CASE_STUDIES = [
+  {
+    title: 'Half of inhibitors hit what they say they hit — at rank 1',
+    body: "For 50% of agents, the annotated target's genetic dependency is the single best predictor of sensitivity across the 891 cell lines. Another 10% have it within the top 10. The strength of this match often tracks with clinical trial success — drugs that fail this test get flagged for closer mechanistic inspection.",
+    caption: 'Figure 1D–E: Rank of annotated target among top correlations',
+    category: 'On-target mapping',
+    image: '',
+  },
+  {
+    title: 'A clear evolution in KRAS G12C selectivity',
+    body: 'Divarasib, sotorasib, and adagrasib show progressively cleaner separation between KRAS G12C-mutant cell lines (red) and everything else (gray). Pan-RAS drugs sub-divide too: daraxonrasib and RMC-7977 favor NRAS/HRAS-mutant contexts, while BI-2865 and BI-2493 are more active in KRAS-amplified lines.',
+    caption: 'Figure 6C · AUC distributions in G12C-mutant vs. all other lines',
+    category: 'KRAS landscape',
+    image: '',
+  },
+  {
+    title: 'A 5-LOX inhibitor that actually hits TEAD1',
+    body: "BW-B70C, annotated as a lipoxygenase inhibitor, sat next to known TEAD inhibitors in profile space. Boltz2 structural co-folding plus molecular dynamics predicted a stable pose in TEAD1's lipid pocket (shown), with hydrogen bonds to S356/P357 maintained throughout the trajectory. A TEAD luciferase reporter confirmed submicromolar inhibition in MCF7 cells.",
+    caption: 'Figure 5G · Predicted BW-B70C pose in TEAD1 hydrophobic pocket',
+    category: 'Hidden polypharmacology',
+    image: '',
+  },
+];
+
+export const ASSAY_WORKFLOW = [
+  {
+    title: 'Pool',
+    caption: '891 barcoded cell lines, ~25 lines per pool',
+    icon: 'mdi-dna',
+  },
+  { title: 'Treat', caption: '265 agents × 8 doses × 3 replicates', icon: 'mdi-pill' },
+  {
+    title: 'Incubate',
+    caption: '5-day exposure across 39 pools × 26 plates',
+    icon: 'mdi-timer-outline',
+  },
+  { title: 'Amplify', caption: 'Biotinylated PCR of barcodes', icon: 'mdi-repeat' },
+  { title: 'Detect', caption: 'Luminex bead fluorescence readout', icon: 'mdi-chart-bar' },
+];

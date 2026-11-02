@@ -64,19 +64,22 @@ export const valueLabel = (field, value) => FIELDS[field]?.values?.[value] ?? va
 export const valueOrder = (field) => FIELDS[field]?.order ?? null;
 
 /**
- * Describe a column for a chart: label, value order and value labels from the
- * lookup. Accepts a bare field name, or an object with `field` plus any of
- * those keys to override the lookup for one chart.
+ * Describe a column for a prism-charts dimension (ParallelSetsChart, TreeChart
+ * levels…): `title`, `domain` (value order) and `format` (value labels) from the
+ * lookup, in the library's axis vocabulary. Accepts a bare field name, or an
+ * object with `field` plus any of those keys to override the lookup for one
+ * chart.
  *
- * @param {string | { field: string, label?: string, order?: string[], labels?: Object }} dim
- * @returns {{ field: string, label: string, order: string[] | null, labels: Object }}
+ * @param {string | { field: string, title?: string, domain?: string[], format?: Function }} dim
+ * @returns {{ field: string, title: string, domain: string[] | null, format: Function | null }}
  */
 export function toDimension(dim) {
   const d = typeof dim === 'string' ? { field: dim } : dim;
+  const values = FIELDS[d.field]?.values;
   return {
     ...d,
-    label: d.label ?? fieldLabel(d.field),
-    order: d.order ?? valueOrder(d.field),
-    labels: d.labels ?? FIELDS[d.field]?.values ?? {},
+    title: d.title ?? fieldLabel(d.field),
+    domain: d.domain ?? valueOrder(d.field),
+    format: d.format ?? (values ? (value) => values[value] ?? value : null),
   };
 }

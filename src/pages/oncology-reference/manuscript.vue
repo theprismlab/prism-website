@@ -93,7 +93,7 @@
     <page-section v-if="agents" width="wide" class="mt-0 pt-0">
       <v-row dense class="mt-0 pt-0">
         <v-col cols="12">
-          <agent-breakdown :rows="breakdownAgents" />
+          <agent-parallel-sets :rows="breakdownAgents" />
         </v-col>
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
@@ -180,7 +180,7 @@
     </page-section>
 
     <page-section width="wide">
-      <data-explorer />
+      <agent-explorer />
     </page-section>
 
     <page-section width="narrow">
@@ -212,15 +212,15 @@
 
 <script>
   import { interpolateBlues, quantize, schemeDark2 } from 'd3';
-  import DataExplorer from './manuscript/DataExplorer.vue';
-  import BarChart from './manuscript/BarChart.vue';
-  import ImageCard from './manuscript/ImageCard.vue';
+  import AgentExplorer from './manuscript/AgentExplorer.vue';
+  import BarChart from '@/lib/charts/BarChart.vue';
+  import ImageCard from '@/components/ImageCard.vue';
   import { categoryColors } from '@/lib/charts/prism-charts.js';
-  import StackedBarChart from './manuscript/StackedBarChart.vue';
-  import AgentBreakdown from './manuscript/AgentBreakdown.vue';
+  import StackedBarChart from '@/lib/charts/StackedBarChart.vue';
+  import AgentParallelSets from './manuscript/AgentParallelSets.vue';
   import StatGrid from './manuscript/StatGrid.vue';
   import { getOncRefData } from './manuscript/oncref.js';
-  import { assayWorkflow } from './manuscript/assayWorkflow.js';
+  import { ASSAY_WORKFLOW, CASE_STUDIES } from './manuscript/content.js';
   import {
     OVERVIEW_STATS,
     AGENT_CLASS_STATS,
@@ -230,15 +230,13 @@
     chartCounts,
   } from './manuscript/stats.js';
   import { fieldLabel, valueOrder } from './manuscript/fields.js';
-  import caseStudies from './manuscript/CaseStudies.json';
-  import PageSection from '@/components/PageSection.vue';
 
   export default {
     name: 'OncologyReferenceManuscript',
     components: {
-      AgentBreakdown,
+      AgentParallelSets,
       BarChart,
-      DataExplorer,
+      AgentExplorer,
       ImageCard,
       StackedBarChart,
       StatGrid,
@@ -266,10 +264,10 @@
         },
         // Highlighted findings from the manuscript, one ImageCard each
         // ({ title, body, caption, category, image })
-        caseStudies,
+        caseStudies: CASE_STUDIES,
         // Dataset totals, matching the figures cited in the page text
         overviewStats: resolveStats(OVERVIEW_STATS),
-        assayWorkflow: assayWorkflow,
+        assayWorkflow: ASSAY_WORKFLOW,
       };
     },
     computed: {

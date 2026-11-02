@@ -1,4 +1,4 @@
-// Config for the test agent breakdown card (AgentBreakdown.vue): the card copy
+// Config for the test agent breakdown card (AgentParallelSets.vue): the card copy
 // and which CSV columns the parallel sets chart shows. Column labels, value
 // names and value order come from fields.js via toDimension, so the chart
 // receives fully described dimensions and never consults the lookup itself.
@@ -11,7 +11,7 @@ export const AGENT_PARALLEL_SETS = {
     'modality to highest clinical stage. Ribbon width is the number of agents. Hover a ' +
     'category to trace its agents across the chart.',
 
-  // Columns left to right. Pass an object ({ field, label, labels, order }) in
+  // Columns left to right. Pass an object ({ field, title, domain, format }) in
   // place of a name to override the lookup for this chart only.
   dimensions: [
     'PreviouslyScreened',

@@ -1,10 +1,10 @@
 <template>
-  <div class="data-explorer">
+  <div class="agent-explorer">
     <p v-if="error" class="text-error">{{ error }}</p>
     <p v-else-if="!loaded" class="prism-text-body-large text-medium-emphasis">Loading data…</p>
 
-    <div v-else class="data-explorer__card">
-      <div class="data-explorer__toolbar">
+    <div v-else class="agent-explorer__card">
+      <div class="agent-explorer__toolbar">
         <v-autocomplete
           v-for="field in filterFields"
           :key="field.key"
@@ -19,7 +19,7 @@
           density="compact"
           variant="outlined"
           bg-color="white"
-          class="data-explorer__filter"
+          class="agent-explorer__filter"
         />
         <v-text-field
           v-model="search"
@@ -30,13 +30,14 @@
           density="compact"
           variant="outlined"
           bg-color="white"
-          class="data-explorer__filter"
+          class="agent-explorer__filter"
         />
       </div>
 
-      <div class="data-explorer__status">
-        <span class="data-explorer__count">
-          Showing <strong>{{ filteredAgents.length }}</strong> of {{ agents.length }} agents
+      <div class="agent-explorer__status">
+        <span class="agent-explorer__count">
+          Showing <strong>{{ filteredAgents.length }}</strong> of {{ agents.length }}
+          {{ config.unit }}
         </span>
         <v-btn
           v-if="activeFilterCount"
@@ -50,12 +51,13 @@
         </v-btn>
       </div>
 
-      <UmapChart
+      <agent-umap
+        :config="config.umap"
         :agents="agents"
         :rows="filteredAgents"
         :genes="crisprGenes"
         :highlighted="searchedAgents"
-        class="data-explorer__plot"
+        class="agent-explorer__plot"
       />
 
       <v-data-table
@@ -64,11 +66,11 @@
         :search="search"
         :items-per-page="10"
         :items-per-page-options="[10, 25, 50, 100, { value: -1, title: 'All' }]"
-        :sort-by="[{ key: 'FormattedName', order: 'asc' }]"
+        :sort-by="[{ key: config.sortBy, order: 'asc' }]"
         density="compact"
         hover
         no-data-text="No agents match the current filters."
-        class="data-explorer__table"
+        class="agent-explorer__table"
       >
         <template #[`item.GeneSymbolOfTargets`]="{ value }">
           {{ splitList(value).join(', ') }}
@@ -83,32 +85,23 @@
 
 <script>
   import { getOncRefData } from './oncref.js';
-  import { fieldLabel } from './fields.js';
-  import UmapChart from './UmapChart.vue';
+  import { AGENT_EXPLORER } from './agentExplorer.js';
+  import AgentUmap from './AgentUmap.vue';
 
-  // Table columns, in order. Header text comes from fields.js.
-  const TABLE_COLUMNS = [
-    'FormattedName',
-    'GeneSymbolOfTargets',
-    'TargetOrMechanism',
-    'Class',
-    'Modality',
-    'TargetPathway',
-    'HighestClinicalStage',
-  ];
-  // Semicolon-delimited CSV fields, where a row matches a filter if any value is selected
-  const LIST_FIELDS = new Set(['GeneSymbolOfTargets', 'TargetOrMechanism']);
-  // Every table column except the agent name gets a multiselect filter
-  const FILTER_FIELDS = TABLE_COLUMNS.filter((key) => key !== 'FormattedName').map((key) => ({
-    key,
-    label: fieldLabel(key),
-    list: LIST_FIELDS.has(key),
-  }));
-
+  /**
+   * The test agent explorer: loads the OncRef data, owns the filter and search
+   * state, and renders the toolbar, the UMAP (AgentUmap) and the table. Columns,
+   * filters and the UMAP's copy come from the config (see agentExplorer.js).
+   */
   export default {
-    name: 'DataExplorer',
-    components: { UmapChart },
+    name: 'AgentExplorer',
+    components: { AgentUmap },
+    props: {
+      // Table columns and filter fields; defaults to the manuscript config
+      config: { type: Object, default: () => AGENT_EXPLORER },
+    },
     data() {
+      const { filterFields, headers } = this.config;
       return {
         // One object per test agent: the CSV row plus `umap` ({ x, y, umapCls, n }
         // from the JSON, or null for agents without a UMAP point)
@@ -117,11 +110,11 @@
         crisprGenes: null,
         error: null,
         search: '',
-        filterFields: FILTER_FIELDS,
+        filterFields,
         // Selected values per filter field, e.g. { Class: ['biologic'], ... }
-        activeFilters: Object.fromEntries(FILTER_FIELDS.map((f) => [f.key, []])),
+        activeFilters: Object.fromEntries(filterFields.map((f) => [f.key, []])),
         // `key` is the CSV column name; `title` is what the header shows
-        headers: TABLE_COLUMNS.map((key) => ({ key, title: fieldLabel(key) })),
+        headers,
       };
     },
     computed: {
@@ -215,7 +208,7 @@
 </script>
 
 <style scoped>
-  .data-explorer__card {
+  .agent-explorer__card {
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 8px;
     background: #fff;
@@ -224,7 +217,7 @@
   }
 
   /* ── Toolbar ──────────────────────────────────────────────────────── */
-  .data-explorer__toolbar {
+  .agent-explorer__toolbar {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
@@ -233,13 +226,13 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
-  .data-explorer__filter {
+  .agent-explorer__filter {
     flex: 1 1 200px;
     min-width: 200px;
     max-width: 320px;
   }
 
-  .data-explorer__status {
+  .agent-explorer__status {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -249,31 +242,31 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
-  .data-explorer__count {
+  .agent-explorer__count {
     font-size: 0.8125rem;
     color: rgba(0, 0, 0, 0.6);
   }
 
-  .data-explorer__count strong {
+  .agent-explorer__count strong {
     color: rgba(0, 0, 0, 0.87);
     font-weight: 600;
   }
 
-  .data-explorer__plot {
+  .agent-explorer__plot {
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   /* ── Table ────────────────────────────────────────────────────────── */
-  .data-explorer__table :deep(table) {
+  .agent-explorer__table :deep(table) {
     table-layout: fixed;
     width: 100%;
   }
 
-  .data-explorer__table :deep(.v-data-table__td) {
+  .agent-explorer__table :deep(.v-data-table__td) {
     overflow-wrap: anywhere;
   }
 
-  .data-explorer__table :deep(.v-data-table__th) {
+  .agent-explorer__table :deep(.v-data-table__th) {
     font-size: 0.7rem !important;
     font-weight: 600 !important;
     letter-spacing: 0.06em;
@@ -284,11 +277,11 @@
     height: 44px !important;
   }
 
-  .data-explorer__table :deep(thead tr) {
+  .agent-explorer__table :deep(thead tr) {
     border-bottom: 2px solid rgba(0, 0, 0, 0.12);
   }
 
-  .data-explorer__table :deep(.v-data-table__td) {
+  .agent-explorer__table :deep(.v-data-table__td) {
     font-size: 0.875rem;
     color: rgba(0, 0, 0, 0.82);
     padding-top: 8px !important;
@@ -297,15 +290,15 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
   }
 
-  .data-explorer__table :deep(tbody tr:nth-child(even) > td) {
+  .agent-explorer__table :deep(tbody tr:nth-child(even) > td) {
     background: rgba(0, 0, 0, 0.012);
   }
 
-  .data-explorer__table :deep(tbody tr:last-child > td) {
+  .agent-explorer__table :deep(tbody tr:last-child > td) {
     border-bottom: 0 !important;
   }
 
-  .data-explorer__table :deep(.v-data-table-footer) {
+  .agent-explorer__table :deep(.v-data-table-footer) {
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     font-size: 0.8125rem;
     color: rgba(0, 0, 0, 0.6);
