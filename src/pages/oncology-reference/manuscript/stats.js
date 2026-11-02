@@ -8,7 +8,22 @@
 // (StatGrid falls back to grey when it is left out). resolveStats() turns a
 // group into the [{ label, value, color }] array StatGrid takes.
 import { countBy, countByStacked } from '@/lib/charts/prism-charts.js';
-import { countValue } from './oncref.js';
+import { CLASS_LABELS, countValue } from './oncref.js';
+
+// Test agents minus the control compounds (inactive analogs etc.)
+export const nonControlAgents = (agents) => agents.filter((a) => a.Class !== 'control');
+
+// Columns for the test agent parallel sets chart, left to right. Ribbons are
+// colored by the first entry. See parallelSets.js for the dimension options.
+export const AGENT_PARALLEL_SETS = [
+  { field: 'Class', label: 'Class', labels: CLASS_LABELS },
+  { field: 'Modality_summarized', label: 'Modality' },
+  {
+    field: 'HighestClinicalStage_summarized',
+    label: 'Clinical stage',
+    order: ['Approved', 'Phase III', 'Phase II', 'Phase I', 'Preclinical'],
+  },
+];
 
 // Shorthand for a stat that counts rows where `field` equals `match`
 const count = (field, match) => (agents) => countValue(agents, field, match);

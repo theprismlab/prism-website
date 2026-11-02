@@ -92,6 +92,22 @@
     </page-section>
     <page-section v-if="agents" width="wide" class="mt-0 pt-0">
       <v-row dense class="mt-0 pt-0">
+        <v-col cols="12">
+          <v-card variant="outlined" class="pa-6">
+            <v-card-title class="px-0">Test agent breakdown</v-card-title>
+            <p class="text-body-2 text-medium-emphasis mb-4">
+              Each ribbon follows a set of test agents from their class through modality to highest
+              clinical stage. Ribbon width is the number of agents. Hover a category to trace its
+              agents across the chart.
+            </p>
+            <parallel-sets-chart
+              :rows="breakdownAgents"
+              :dimensions="AGENT_PARALLEL_SETS"
+              :colors="classColors"
+              :height="380"
+            />
+          </v-card>
+        </v-col>
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Target pathway</v-card-title>
@@ -214,6 +230,7 @@
   import ImageCard from './manuscript/ImageCard.vue';
   import { categoryColors } from '@/lib/charts/prism-charts.js';
   import StackedBarChart from './manuscript/StackedBarChart.vue';
+  import ParallelSetsChart from './manuscript/ParallelSetsChart.vue';
   import StatGrid from './manuscript/StatGrid.vue';
   import { getOncRefData } from './manuscript/oncref.js';
   import { assayWorkflow } from './manuscript/assayWorkflow.js';
@@ -222,6 +239,8 @@
     AGENT_CLASS_STATS,
     AGENT_HIGHLIGHT_STATS,
     CLINICAL_STAGE_ORDER,
+    AGENT_PARALLEL_SETS,
+    nonControlAgents,
     resolveStats,
     chartCounts,
   } from './manuscript/stats.js';
@@ -230,11 +249,20 @@
 
   export default {
     name: 'OncologyReferenceManuscript',
-    components: { BarChart, DataExplorer, ImageCard, StackedBarChart, StatGrid },
+    components: {
+      BarChart,
+      DataExplorer,
+      ImageCard,
+      ParallelSetsChart,
+      StackedBarChart,
+      StatGrid,
+    },
     data() {
       return {
         // Test agent rows from the CSV, loaded in created()
         agents: null,
+        // Column config for the parallel sets chart (constant, exposed to the template)
+        AGENT_PARALLEL_SETS,
         // PLACEHOLDER: citation details for the OncRef paper. Replace with the real
         // title, author list, venue, date, DOI and links once the manuscript is public.
         manuscript: {
@@ -272,6 +300,14 @@
       // Count data for every chart, keyed by chart (see chartCounts in stats.js)
       counts() {
         return this.agents ? chartCounts(this.agents) : {};
+      },
+      // Rows for the parallel sets chart: controls would add a stray strand
+      breakdownAgents() {
+        return this.agents ? nonControlAgents(this.agents) : [];
+      },
+      // Class colors from the shared palette, so the ribbons match other charts
+      classColors() {
+        return this.agents ? categoryColors(this.breakdownAgents, 'Class') : null;
       },
       // Horizontal chart: x is the counts axis and y holds the pathways. The color
       // axis comes from the shared pathway colors, so the bars match the UMAP.

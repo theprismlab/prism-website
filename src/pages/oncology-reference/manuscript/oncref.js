@@ -55,7 +55,7 @@ async function loadOncRefData() {
 
 // Display labels for the CSV `Class` values. Anything not listed falls back to the
 // raw value so a new class in the data still shows up.
-const CLASS_LABELS = {
+export const CLASS_LABELS = {
   'targeted small molecule': 'Targeted small molecules',
   biologic: 'Biologics / ADCs',
   'cytotoxic/genotoxic': 'Cytotoxic agents',
