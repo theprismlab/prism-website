@@ -83,18 +83,27 @@
 
 <script>
   import { getOncRefData } from './oncref.js';
+  import { fieldLabel } from './fields.js';
   import UmapChart from './UmapChart.vue';
 
-  // Columns that get a multiselect filter, in table column order. `list` marks
-  // semicolon-delimited CSV fields, where a row matches if any value is selected.
-  const FILTER_FIELDS = [
-    { key: 'GeneSymbolOfTargets', label: 'Targets', list: true },
-    { key: 'TargetOrMechanism', label: 'Mechanism', list: true },
-    { key: 'Class', label: 'Class' },
-    { key: 'Modality', label: 'Modality' },
-    { key: 'TargetPathway', label: 'Pathway' },
-    { key: 'HighestClinicalStage', label: 'Clinical stage' },
+  // Table columns, in order. Header text comes from fields.js.
+  const TABLE_COLUMNS = [
+    'FormattedName',
+    'GeneSymbolOfTargets',
+    'TargetOrMechanism',
+    'Class',
+    'Modality',
+    'TargetPathway',
+    'HighestClinicalStage',
   ];
+  // Semicolon-delimited CSV fields, where a row matches a filter if any value is selected
+  const LIST_FIELDS = new Set(['GeneSymbolOfTargets', 'TargetOrMechanism']);
+  // Every table column except the agent name gets a multiselect filter
+  const FILTER_FIELDS = TABLE_COLUMNS.filter((key) => key !== 'FormattedName').map((key) => ({
+    key,
+    label: fieldLabel(key),
+    list: LIST_FIELDS.has(key),
+  }));
 
   export default {
     name: 'DataExplorer',
@@ -112,15 +121,7 @@
         // Selected values per filter field, e.g. { Class: ['biologic'], ... }
         activeFilters: Object.fromEntries(FILTER_FIELDS.map((f) => [f.key, []])),
         // `key` is the CSV column name; `title` is what the header shows
-        headers: [
-          { title: 'Agent', key: 'FormattedName' },
-          { title: 'Targets', key: 'GeneSymbolOfTargets' },
-          { title: 'Mechanism', key: 'TargetOrMechanism' },
-          { title: 'Class', key: 'Class' },
-          { title: 'Modality', key: 'Modality' },
-          { title: 'Pathway', key: 'TargetPathway' },
-          { title: 'Clinical stage', key: 'HighestClinicalStage' },
-        ],
+        headers: TABLE_COLUMNS.map((key) => ({ key, title: fieldLabel(key) })),
       };
     },
     computed: {

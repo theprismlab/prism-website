@@ -6,8 +6,27 @@
 // Pure functions, no DOM: ParallelSetsChart.vue renders the result.
 import { rollups } from 'd3';
 import { sankey as d3Sankey, sankeyLinkHorizontal } from 'd3-sankey';
+import { FIELDS, fieldLabel, valueOrder } from './fields.js';
 
 export const BLANK = '(blank)';
+
+/**
+ * Fill in a dimension from fields.js. A dimension may be given as a bare field
+ * name or as { field, label?, order?, labels? }; anything not supplied comes
+ * from the FIELDS lookup for that column.
+ *
+ * @param {string | Object} dim
+ * @returns {{ field: string, label: string, order: string[] | null, labels: Object }}
+ */
+export function normalizeDimension(dim) {
+  const d = typeof dim === 'string' ? { field: dim } : dim;
+  return {
+    ...d,
+    label: d.label ?? fieldLabel(d.field),
+    order: d.order ?? valueOrder(d.field),
+    labels: d.labels ?? FIELDS[d.field]?.values ?? {},
+  };
+}
 
 const valueOf = (row, field) => row[field] || BLANK;
 
@@ -27,13 +46,15 @@ function orderCategories(counts, dim) {
  * any node light up exactly the strands passing through it.
  *
  * @param {Object[]} rows
- * @param {{ field: string, label?: string, order?: string[], labels?: Object }[]} dimensions
+ * @param {(string | Object)[]} dimensions - field names or dimension objects; see
+ *   normalizeDimension
  * @param {{ primary?: number }} [opts] - index of the dimension to sort strands by
  *   first (normally the one they are colored by), so same-colored strands stay
  *   together inside every node. Remaining dimensions follow in column order.
  * @returns {{ nodes: Object[], links: Object[] }}
  */
-export function parallelSetsGraph(rows, dimensions, { primary = 0 } = {}) {
+export function parallelSetsGraph(rows, dims, { primary = 0 } = {}) {
+  const dimensions = dims.map(normalizeDimension);
   const nodes = [];
   const indexByKey = new Map();
   const nodeId = (dim, key) => `${dim}\u0000${key}`;
@@ -113,8 +134,9 @@ export function parallelSetsGraph(rows, dimensions, { primary = 0 } = {}) {
  *   nodes carry x0/x1/y0/y1 and links carry y0/y1/width plus a `path` string
  *   from sankeyLinkHorizontal.
  */
-export function parallelSetsLayout(rows, dimensions, opts) {
+export function parallelSetsLayout(rows, dims, opts) {
   const { width, height, nodeWidth = 4, nodePadding = 20, fillColumns = true, primary = 0 } = opts;
+  const dimensions = dims.map(normalizeDimension);
   const graph = parallelSetsGraph(rows, dimensions, { primary });
   const extent = [
     [0, 5],
@@ -142,7 +164,7 @@ export function parallelSetsLayout(rows, dimensions, opts) {
     nodes,
     links,
     columns: dimensions.map((dim, i) => ({
-      label: dim.label ?? dim.field,
+      label: dim.label,
       nodes: nodes.filter((n) => n.dim === i),
     })),
     total: rows.length,

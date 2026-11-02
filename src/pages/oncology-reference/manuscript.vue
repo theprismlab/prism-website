@@ -101,7 +101,7 @@
         </v-col>
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
-            <v-card-title class="px-0">Target pathway</v-card-title>
+            <v-card-title class="px-0">{{ fieldLabel('TargetPathway') }}</v-card-title>
             <bar-chart
               bar-label="count"
               font-size="medium"
@@ -112,7 +112,7 @@
         </v-col>
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
-            <v-card-title class="px-0">Modality</v-card-title>
+            <v-card-title class="px-0">{{ fieldLabel('Modality') }}</v-card-title>
             <bar-chart
               font-size="medium"
               :data="counts.modality"
@@ -123,7 +123,7 @@
         </v-col>
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
-            <v-card-title class="px-0">Clinical Stage</v-card-title>
+            <v-card-title class="px-0">{{ fieldLabel('HighestClinicalStage') }}</v-card-title>
             <bar-chart
               font-size="medium"
               :data="counts.clinicalStage"
@@ -229,11 +229,11 @@
     OVERVIEW_STATS,
     AGENT_CLASS_STATS,
     AGENT_HIGHLIGHT_STATS,
-    CLINICAL_STAGE_ORDER,
     nonControlAgents,
     resolveStats,
     chartCounts,
   } from './manuscript/stats.js';
+  import { fieldLabel, valueOrder } from './manuscript/fields.js';
   import { AGENT_PARALLEL_SETS } from './manuscript/agentParallelSets.js';
   import caseStudies from './manuscript/CaseStudies.json';
   import PageSection from '@/components/PageSection.vue';
@@ -311,12 +311,13 @@
         };
       },
       clinicalStageAxis() {
+        const stages = valueOrder('HighestClinicalStage');
         return {
           y: { title: 'Test agents', titlePosition: 'top' },
-          x: { domain: CLINICAL_STAGE_ORDER },
+          x: { domain: stages },
           color: {
-            domain: CLINICAL_STAGE_ORDER,
-            range: quantize((t) => interpolateBlues(0.33 + 0.7 * t), CLINICAL_STAGE_ORDER.length),
+            domain: stages,
+            range: quantize((t) => interpolateBlues(0.33 + 0.7 * t), stages.length),
           },
         };
       },
@@ -336,7 +337,7 @@
         console.error(err);
       }
     },
-    methods: {},
+    methods: { fieldLabel },
   };
 </script>
 

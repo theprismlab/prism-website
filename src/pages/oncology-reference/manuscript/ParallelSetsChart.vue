@@ -106,7 +106,7 @@
 <script>
   import { scaleOrdinal } from 'd3';
   import { defaultColors } from '@/lib/charts/prism-charts.js';
-  import { parallelSetsLayout } from './parallelSets.js';
+  import { normalizeDimension, parallelSetsLayout } from './parallelSets.js';
 
   /**
    * Parallel sets chart (d3-sankey layout, see parallelSets.js): a thin column
@@ -131,6 +131,8 @@
     props: {
       rows: { type: Array, required: true },
       // [{ field, label?, order?, labels? }] in column order; see parallelSets.js
+      // Field names or { field, label?, order?, labels? } objects in column order;
+      // labels and order default to fields.js (see normalizeDimension)
       dimensions: { type: Array, required: true },
       // Field of the dimension that colors the links; defaults to the first.
       // Supports v-model:color-by.
@@ -147,7 +149,9 @@
         width: 640,
         margin: { top: 28, bottom: 4 },
         // Current color field; starts from the prop (or the first dimension)
-        colorField: this.colorBy ?? this.dimensions[0]?.field ?? null,
+        colorField:
+          this.colorBy ??
+          (this.dimensions[0] ? normalizeDimension(this.dimensions[0]).field : null),
         // { type: 'node', node } | { type: 'link', link } | null
         hover: null,
         tooltip: null,
@@ -155,20 +159,24 @@
       };
     },
     computed: {
+      // Dimensions with label, order and value labels filled in from fields.js
+      dims() {
+        return this.dimensions.map(normalizeDimension);
+      },
       svgHeight() {
         return this.height + this.margin.top + this.margin.bottom;
       },
       dimensionItems() {
-        return this.dimensions.map((d) => ({ field: d.field, label: d.label ?? d.field }));
+        return this.dims.map((d) => ({ field: d.field, label: d.label }));
       },
       // Column index of the color field; falls back to the first column
       colorDim() {
-        const i = this.dimensions.findIndex((d) => d.field === this.colorField);
+        const i = this.dims.findIndex((d) => d.field === this.colorField);
         return i >= 0 ? i : 0;
       },
       layout() {
-        if (!this.rows.length || this.dimensions.length < 2) return null;
-        return parallelSetsLayout(this.rows, this.dimensions, {
+        if (!this.rows.length || this.dims.length < 2) return null;
+        return parallelSetsLayout(this.rows, this.dims, {
           width: this.width,
           height: this.height,
           nodeWidth: this.nodeWidth,
@@ -194,8 +202,8 @@
         return ids;
       },
       ariaLabel() {
-        const dims = this.dimensions.map((d) => d.label ?? d.field).join(', ');
-        return `Parallel sets of ${this.rows.length} ${this.unit} across ${dims}`;
+        const names = this.dims.map((d) => d.label).join(', ');
+        return `Parallel sets of ${this.rows.length} ${this.unit} across ${names}`;
       },
       tooltipStyle() {
         if (!this.tooltip) return {};
@@ -253,7 +261,7 @@
         return `${(100 * share).toFixed(share < 0.1 ? 1 : 0)}%`;
       },
       dimLabel(i) {
-        return this.dimensions[i].label ?? this.dimensions[i].field;
+        return this.dims[i].label;
       },
       hoverNode(node, event) {
         this.hover = { type: 'node', node };

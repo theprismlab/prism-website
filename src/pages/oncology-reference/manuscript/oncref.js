@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { FIELDS } from './fields.js';
 
 const dataPath = import.meta.env.BASE_URL + 'data/';
 const jsonFile = 'OncRef_LandingPage_v3_data.json';
@@ -53,16 +54,6 @@ async function loadOncRefData() {
   };
 }
 
-// Display labels for the CSV `Class` values. Anything not listed falls back to the
-// raw value so a new class in the data still shows up.
-export const CLASS_LABELS = {
-  'targeted small molecule': 'Targeted small molecules',
-  biologic: 'Biologics / ADCs',
-  'cytotoxic/genotoxic': 'Cytotoxic agents',
-  phenotypic: 'Phenotypic agents',
-  control: 'Controls',
-};
-
 /**
  * Count rows by the distinct values of one field.
  *
@@ -106,7 +97,7 @@ export function countValue(rows, field, value) {
  * controls excluded. See countByField for the result shape.
  */
 export function getTestAgentStats(agents, { exclude = ['control'] } = {}) {
-  return countByField(agents, 'Class', { exclude, labels: CLASS_LABELS });
+  return countByField(agents, 'Class', { exclude, labels: FIELDS.Class.values });
 }
 
 // -- Below are stats from Mustafas mockup --

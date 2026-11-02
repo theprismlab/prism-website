@@ -33,6 +33,7 @@
 
 <script>
   import { ScatterPlot, categoryColors } from '@/lib/charts/prism-charts.js';
+  import { fieldLabel } from './fields.js';
 
   const GENE_COLOR = '#555';
 
@@ -142,7 +143,7 @@
           y: { field: 'y', title: 'Y Axis' },
           color: {
             field: 'pathway',
-            title: 'Pathways',
+            title: fieldLabel('TargetPathway'),
             type: 'categorical',
             domain: this.pathwayColors.domain,
             range: this.pathwayColors.range,
@@ -152,13 +153,7 @@
           {
             id: 'agents',
             mark: 'filled',
-            // The legend title is plural, so the tooltip row uses the singular
-            tooltip: (d, rows) => [
-              ['Agent', d.agent.FormattedName],
-              ...rows.map(([label, value]) =>
-                label === 'Pathways' ? ['Pathway', value] : [label, value],
-              ),
-            ],
+            tooltip: (d, rows) => [[fieldLabel('FormattedName'), d.agent.FormattedName], ...rows],
           },
           {
             id: 'genes',

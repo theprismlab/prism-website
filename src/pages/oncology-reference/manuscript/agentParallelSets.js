@@ -1,7 +1,6 @@
 // Config for the test agent parallel sets chart on the manuscript page: the
 // card copy plus the props handed to ParallelSetsChart. Keeping it here leaves
 // manuscript.vue with only the rendering.
-import { CLASS_LABELS } from './oncref.js';
 
 export const AGENT_PARALLEL_SETS = {
   title: 'Test agent breakdown',
@@ -17,23 +16,15 @@ export const AGENT_PARALLEL_SETS = {
     // can change it
     colorBy: 'Class',
     height: 480,
-    // Columns left to right. See parallelSets.js for the dimension options.
+    // Columns left to right, as CSV field names. Labels, value names and value
+    // order come from fields.js; pass an object ({ field, label, labels, order })
+    // instead of a string to override any of them for this chart only.
     dimensions: [
-      {
-        field: 'PreviouslyScreened',
-        label: 'Novel to Public Data',
-        // The column is "previously screened", so the heading reads inverted
-        labels: { FALSE: 'Novel', TRUE: 'Previously screened' },
-        order: ['FALSE', 'TRUE'],
-      },
-      { field: 'Class', label: 'Class', labels: CLASS_LABELS },
-      { field: 'TargetPathway', label: 'Target pathway' },
-      { field: 'Modality_summarized', label: 'Modality' },
-      {
-        field: 'HighestClinicalStage_summarized',
-        label: 'Clinical stage',
-        order: ['Approved', 'Phase III', 'Phase II', 'Phase I', 'Preclinical'],
-      },
+      'PreviouslyScreened',
+      'Class',
+      'TargetPathway',
+      'Modality_summarized',
+      'HighestClinicalStage_summarized',
     ],
   },
 };

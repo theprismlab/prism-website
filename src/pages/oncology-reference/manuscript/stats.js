@@ -9,12 +9,19 @@
 // group into the [{ label, value, color }] array StatGrid takes.
 import { countBy, countByStacked } from '@/lib/charts/prism-charts.js';
 import { countValue } from './oncref.js';
+import { valueLabel } from './fields.js';
 
 // Test agents minus the control compounds (inactive analogs etc.)
 export const nonControlAgents = (agents) => agents.filter((a) => a.Class !== 'control');
 
 // Shorthand for a stat that counts rows where `field` equals `match`
 const count = (field, match) => (agents) => countValue(agents, field, match);
+// A stat tile for one value of a field, labelled from fields.js
+const valueStat = (field, match, color) => ({
+  label: valueLabel(field, match),
+  value: count(field, match),
+  color,
+});
 
 // Dataset totals cited in the page text. Cell lines and lineages are not in the
 // test agent CSV, so these stay hardcoded.
@@ -26,26 +33,10 @@ export const OVERVIEW_STATS = [
 
 // Test agents by Class (controls left out)
 export const AGENT_CLASS_STATS = [
-  {
-    label: 'Targeted small molecules',
-    value: count('Class', 'targeted small molecule'),
-    color: 'var(--v-teal-darken-1)',
-  },
-  {
-    label: 'Biologics / ADCs',
-    value: count('Class', 'biologic'),
-    color: 'var(--v-blue-darken-1)',
-  },
-  {
-    label: 'Cytotoxic agents',
-    value: count('Class', 'cytotoxic/genotoxic'),
-    color: 'var(--v-purple-darken-1)',
-  },
-  {
-    label: 'Phenotypic agents',
-    value: count('Class', 'phenotypic'),
-    color: 'var(--v-indigo-darken-1)',
-  },
+  valueStat('Class', 'targeted small molecule', 'var(--v-teal-darken-1)'),
+  valueStat('Class', 'biologic', 'var(--v-blue-darken-1)'),
+  valueStat('Class', 'cytotoxic/genotoxic', 'var(--v-purple-darken-1)'),
+  valueStat('Class', 'phenotypic', 'var(--v-indigo-darken-1)'),
 ];
 
 // Single-value highlights on other columns
@@ -77,22 +68,6 @@ export function resolveStats(group, agents = []) {
     value: typeof value === 'function' ? value(agents) : value,
   }));
 }
-
-// Clinical stages from most to least advanced, used to order the stage chart
-export const CLINICAL_STAGE_ORDER = [
-  'Approved',
-  'Approved (non-oncology)',
-  'Phase III',
-  'Phase II/III',
-  'Phase IIa',
-  'Phase II',
-  'Phase Ib/II',
-  'Phase I/II',
-  'Phase I/IIa',
-  'Phase Ib',
-  'Phase I',
-  'Preclinical',
-];
 
 /**
  * Count data for every chart on the page, keyed by chart. Each value is in the
