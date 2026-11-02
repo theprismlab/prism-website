@@ -15,9 +15,9 @@ export const AGENT_PARALLEL_SETS = {
   // place of a name to override the lookup for this chart only.
   dimensions: [
     'PreviouslyScreened',
+    'Modality_summarized',
     'Class',
     'TargetPathway',
-    'Modality_summarized',
     'HighestClinicalStage_summarized',
   ].map(toDimension),
 

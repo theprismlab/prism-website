@@ -95,52 +95,9 @@
         <v-col cols="12">
           <agent-parallel-sets :rows="breakdownAgents" />
         </v-col>
-        <v-col cols="12" md="4">
-          <v-card variant="outlined" class="pa-6 fill-height">
-            <v-card-title class="px-0">{{ fieldLabel('TargetPathway') }}</v-card-title>
-            <bar-chart
-              bar-label="count"
-              font-size="medium"
-              :data="counts.targetPathway"
-              :axis="targetPathwayAxis"
-            />
-          </v-card>
+        <v-col cols="12">
+          <agent-bar-charts :rows="agents" />
         </v-col>
-        <v-col cols="12" md="4">
-          <v-card variant="outlined" class="pa-6 fill-height">
-            <v-card-title class="px-0">{{ fieldLabel('Modality') }}</v-card-title>
-            <bar-chart
-              font-size="medium"
-              :data="counts.modality"
-              :axis="ModalityAxis"
-              bar-label="count"
-            />
-          </v-card>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-card variant="outlined" class="pa-6 fill-height">
-            <v-card-title class="px-0">{{ fieldLabel('HighestClinicalStage') }}</v-card-title>
-            <bar-chart
-              font-size="medium"
-              :data="counts.clinicalStage"
-              :axis="clinicalStageAxis"
-              bar-label="count"
-            />
-          </v-card>
-        </v-col>
-        <!-- <v-col cols="12" md="12">
-          <v-card variant="outlined" class="pa-6 fill-height">
-            <v-card-title class="px-0">Target pathway by modality</v-card-title>
-            <stacked-bar-chart
-              font-size="medium"
-              :data="counts.targetPathwayByModality"
-              :axis="targetPathwayModalityAxis"
-              bar-label="count"
-              id="target-pathway-modality-chart"
-              rowHeight="18"
-            />
-          </v-card>
-        </v-col> -->
       </v-row>
     </page-section>
 
@@ -211,13 +168,10 @@
 </template>
 
 <script>
-  import { interpolateBlues, quantize, schemeDark2 } from 'd3';
+  import AgentBarCharts from './manuscript/AgentBarCharts.vue';
   import AgentExplorer from './manuscript/AgentExplorer.vue';
-  import BarChart from '@/lib/charts/BarChart.vue';
-  import ImageCard from '@/components/ImageCard.vue';
-  import { categoryColors } from '@/lib/charts/prism-charts.js';
-  import StackedBarChart from '@/lib/charts/StackedBarChart.vue';
   import AgentParallelSets from './manuscript/AgentParallelSets.vue';
+  import ImageCard from '@/components/ImageCard.vue';
   import StatGrid from './manuscript/StatGrid.vue';
   import { getOncRefData } from './manuscript/oncref.js';
   import { ASSAY_WORKFLOW, CASE_STUDIES } from './manuscript/content.js';
@@ -227,18 +181,15 @@
     AGENT_HIGHLIGHT_STATS,
     nonControlAgents,
     resolveStats,
-    chartCounts,
   } from './manuscript/stats.js';
-  import { fieldLabel, valueOrder } from './manuscript/fields.js';
 
   export default {
     name: 'OncologyReferenceManuscript',
     components: {
-      AgentParallelSets,
-      BarChart,
+      AgentBarCharts,
       AgentExplorer,
+      AgentParallelSets,
       ImageCard,
-      StackedBarChart,
       StatGrid,
     },
     data() {
@@ -279,45 +230,9 @@
       agentHighlightStats() {
         return resolveStats(AGENT_HIGHLIGHT_STATS, this.agents ?? []);
       },
-      // Count data for every chart, keyed by chart (see chartCounts in stats.js)
-      counts() {
-        return this.agents ? chartCounts(this.agents) : {};
-      },
       // Rows for the parallel sets chart: controls would add a stray strand
       breakdownAgents() {
         return this.agents ? nonControlAgents(this.agents) : [];
-      },
-      // Horizontal chart: x is the counts axis and y holds the pathways. The color
-      // axis comes from the shared pathway colors, so the bars match the UMAP.
-      targetPathwayAxis() {
-        return {
-          y: { title: 'Test agents', titlePosition: 'top' },
-          color: categoryColors(this.agents, 'TargetPathway'),
-        };
-      },
-      ModalityAxis() {
-        return {
-          y: { title: 'Test agents', titlePosition: 'top' },
-          color: { range: [schemeDark2[0]] },
-        };
-      },
-      clinicalStageAxis() {
-        const stages = valueOrder('HighestClinicalStage');
-        return {
-          y: { title: 'Test agents', titlePosition: 'top' },
-          x: { domain: stages },
-          color: {
-            domain: stages,
-            range: quantize((t) => interpolateBlues(0.33 + 0.7 * t), stages.length),
-          },
-        };
-      },
-      // Same pathway bars, stacked and colored by modality
-      targetPathwayModalityAxis() {
-        return {
-          x: { title: 'Test agents', titlePosition: 'top' },
-          color: { ...categoryColors(this.agents, 'Modality'), title: 'Modality' },
-        };
       },
     },
     async created() {
@@ -328,7 +243,6 @@
         console.error(err);
       }
     },
-    methods: { fieldLabel },
   };
 </script>
 
@@ -426,10 +340,6 @@
   .nominations-cta__content {
     max-width: 640px;
   }
-  /* #target-pathway-modality-chart {
-    height: 300px;
-  } */
-
   /* xs */
   @media (max-width: 600px) {
     .manuscript-card {
