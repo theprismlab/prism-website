@@ -2,7 +2,7 @@
   <page>
     <page-header background="multi-focal-cool" narrow>
       <template #title> Oncology Reference </template>
-      <p class="prism-text-headline-medium mb-6">
+      <p class="prism-text-headline-small mb-6">
         A pan-cancer reference of cancer therapeutics from the PRISM platform — 265 clinically
         relevant agents screened across 891 barcoded cancer cell lines spanning 29 tumor lineages,
         integrated with genome-wide CRISPR knockout profiles.
@@ -10,20 +10,8 @@
       <stat-grid :stats="overviewStats" />
     </page-header>
     <page-section width="narrow">
-      <section-overline gradient>About the paper</section-overline>
-
-      <prism-section-title>Abstract</prism-section-title>
-      <p class="prism-text-body-large">
-        Transformative therapeutic approaches are emerging to address cancer complexity and
-        heterogeneity, underscoring the need for systematic drug evaluation methodologies to
-        accelerate the translation to improved patient outcomes. Cell line profiling is a powerful
-        tool; however, mechanistic interpretation requires large-scale collections with extensive
-        molecular characterization. We screened the PRISM collection of 891 deeply characterized
-        barcoded cancer cell lines spanning 29 lineages with 265 clinically relevant agents,
-        encompassing small molecules, protein degraders, and biologics, to generate an Oncology
-        Reference (OncRef) resource.
-      </p>
       <v-card variant="outlined" class="manuscript-card">
+        <section-overline gradient>Broad Institute of MIT & Harvard · 2026</section-overline>
         <h2 class="prism-text-headline-small manuscript-card__title">{{ manuscript.title }}</h2>
         <p class="prism-text-body-medium manuscript-card__authors mb-0">
           <span v-for="(author, i) in manuscript.authors" :key="author.name">
@@ -31,6 +19,19 @@
             ><template v-if="i < manuscript.authors.length - 1">, </template>
           </span>
         </p>
+        <div class="manuscript-card__abstract">
+          <h3 class="manuscript-card__heading">Abstract</h3>
+          <p class="prism-text-body-large mb-0">
+            Transformative therapeutic approaches are emerging to address cancer complexity and
+            heterogeneity, underscoring the need for systematic drug evaluation methodologies to
+            accelerate the translation to improved patient outcomes. Cell line profiling is a
+            powerful tool; however, mechanistic interpretation requires large-scale collections with
+            extensive molecular characterization. We screened the PRISM collection of 891 deeply
+            characterized barcoded cancer cell lines spanning 29 lineages with 265 clinically
+            relevant agents, encompassing small molecules, protein degraders, and biologics, to
+            generate an Oncology Reference (OncRef) resource.
+          </p>
+        </div>
         <dl class="manuscript-card__meta">
           <div>
             <dt>Journal</dt>
@@ -64,15 +65,31 @@
         </div>
       </v-card>
     </page-section>
-    <page-section width="narrow">
-      <section-overline gradient>Dataset Composition</section-overline>
-      <prism-section-title>Coverage at a Glance</prism-section-title>
 
+    <page-section width="narrow">
+      <section-overline gradient>About the dataset</section-overline>
+      <prism-section-title>A Benchmark for Oncology Therapeutics</prism-section-title>
+      <p class="prism-text-body-large">
+        OncRef is generated using
+        <router-link to="/about-us/about-prism" target="_blank">PRISM</router-link> (Profiling
+        Relative Inhibition Simultaneously in Mixtures), a high-throughput drug screening platform
+        developed at the Broad Institute that introduces unique 24-nucleotide DNA barcodes into
+        individual cancer cell lines, enabling pooled multiplexed screening. Each compound was
+        profiled in triplicate 8-point dose-response. <br /><br />
+        The collection encompasses 172 agents (65%) not represented in other large-scale public
+        datasets, spanning small molecules, protein degraders (PROTACs), and biologics including
+        antibody-drug conjugates. Parallel genome-wide CRISPR knockout screens enable a new
+        analytical framework that deconvolves polypharmacology, off-target effects, and on-target
+        selectivity.
+      </p>
       <!-- Stats computed from the test agent CSV once it loads -->
       <template v-if="agents">
         <stat-grid :stats="agentClassStats" class="mt-4" />
         <stat-grid :stats="agentHighlightStats" class="mt-4" />
       </template>
+    </page-section>
+    <page-section width="narrow">
+      <prism-section-title>Coverage at a Glance</prism-section-title>
     </page-section>
     <page-section v-if="agents" width="wide">
       <v-row>
@@ -109,7 +126,7 @@
             />
           </v-card>
         </v-col>
-        <v-col cols="12" md="12">
+        <!-- <v-col cols="12" md="12">
           <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Target pathway by modality</v-card-title>
             <stacked-bar-chart
@@ -121,37 +138,8 @@
               rowHeight="18"
             />
           </v-card>
-        </v-col>
+        </v-col> -->
       </v-row>
-    </page-section>
-    <page-section width="narrow">
-      <p>
-        Most inhibitory molecules produced effects consistent with genetic inactivation of their
-        annotated targets. The strength of these associations frequently aligns with differential
-        clinical trial outcomes. Beyond primary target characterization, we develop a new framework
-        to quantify specificity, selectivity, on-target polypharmacology, and non-target effects,
-        identifying unintended targets and mediators of toxicity modulating cellular response. This
-        resource establishes a benchmark for oncology therapeutics, providing a scalable framework
-        for evaluating new targets and modalities.
-      </p>
-    </page-section>
-
-    <page-section width="narrow">
-      <section-overline gradient>About the dataset</section-overline>
-      <prism-section-title>A Benchmark for Oncology Therapeutics</prism-section-title>
-      <p class="prism-text-body-large">
-        OncRef is generated using
-        <router-link to="/about-us/about-prism" target="_blank">PRISM</router-link> (Profiling
-        Relative Inhibition Simultaneously in Mixtures), a high-throughput drug screening platform
-        developed at the Broad Institute that introduces unique 24-nucleotide DNA barcodes into
-        individual cancer cell lines, enabling pooled multiplexed screening. Each compound was
-        profiled in triplicate 8-point dose-response. <br /><br />
-        The collection encompasses 172 agents (65%) not represented in other large-scale public
-        datasets, spanning small molecules, protein degraders (PROTACs), and biologics including
-        antibody-drug conjugates. Parallel genome-wide CRISPR knockout screens enable a new
-        analytical framework that deconvolves polypharmacology, off-target effects, and on-target
-        selectivity.
-      </p>
     </page-section>
 
     <page-section width="narrow">
@@ -239,6 +227,7 @@
     chartCounts,
   } from './manuscript/stats.js';
   import caseStudies from './manuscript/CaseStudies.json';
+  import PageSection from '@/components/PageSection.vue';
 
   export default {
     name: 'OncologyReferenceManuscript',
@@ -348,6 +337,19 @@
   .manuscript-card__authors sup {
     font-size: 0.7em;
     margin-left: 1px;
+  }
+  .manuscript-card__abstract {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  }
+  .manuscript-card__heading {
+    margin: 0 0 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(var(--v-theme-on-surface), 0.6);
   }
   .manuscript-card__meta {
     display: grid;
