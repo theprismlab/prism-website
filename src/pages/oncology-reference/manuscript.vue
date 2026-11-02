@@ -7,11 +7,10 @@
         relevant agents screened across 891 barcoded cancer cell lines spanning 29 tumor lineages,
         integrated with genome-wide CRISPR knockout profiles.
       </p>
-      <stat-grid :stats="overviewStats" />
+      <!-- <stat-grid :stats="overviewStats" /> -->
     </page-header>
-    <page-section width="narrow">
+    <page-section width="narrow" class="manuscript-overlap">
       <v-card variant="outlined" class="manuscript-card">
-        <section-overline gradient>Broad Institute of MIT & Harvard · 2026</section-overline>
         <h2 class="prism-text-headline-small manuscript-card__title">{{ manuscript.title }}</h2>
         <p class="prism-text-body-medium manuscript-card__authors mb-0">
           <span v-for="(author, i) in manuscript.authors" :key="author.name">
@@ -88,11 +87,11 @@
         <stat-grid :stats="agentHighlightStats" class="mt-4" />
       </template>
     </page-section>
-    <page-section width="narrow">
+    <page-section width="narrow" class="mb-0 pb-0">
       <prism-section-title>Coverage at a Glance</prism-section-title>
     </page-section>
-    <page-section v-if="agents" width="wide">
-      <v-row>
+    <page-section v-if="agents" width="wide" class="mt-0 pt-0">
+      <v-row dense class="mt-0 pt-0">
         <v-col cols="12" md="4">
           <v-card variant="outlined" class="pa-6 fill-height">
             <v-card-title class="px-0">Target pathway</v-card-title>
@@ -319,14 +318,24 @@
 </script>
 
 <style scoped>
+  /* Pull the card section up so the card overlaps the header gradient. The header
+     has 64px of bottom padding, so -64px leaves roughly 32px of card over it
+     (the section's own 32px top padding offsets the rest). */
+  .manuscript-overlap {
+    position: relative;
+    z-index: 1;
+    margin-top: -64px;
+  }
   .manuscript-card {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-top: 16px;
     padding: 28px 32px;
     border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
     border-radius: var(--prism-radius-lg);
+    /* Outlined cards are transparent, so give it a solid fill over the gradient */
+    background: rgb(var(--v-theme-surface));
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   }
   .manuscript-card__title {
     margin: 0;
