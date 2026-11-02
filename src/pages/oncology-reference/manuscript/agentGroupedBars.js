@@ -16,14 +16,13 @@ export const AGENT_GROUPED_BARS = {
 
   // Props for the BarChart wrapper
   chart: {
-    orientation: 'horizontal',
+    orientation: 'vertical',
     barLabel: 'count',
     fontSize: 'medium',
-    rowHeight: 22,
+    // groupPadding: 50,
   },
   axis: {
-    // Horizontal chart: x holds the counts
-    x: { title: 'Test agents', titlePosition: 'top' },
+    value: { title: 'Test agents' },
     // Groups top to bottom in GROUPS order, headed by the field label
     group: { field: 'group', domain: GROUPS.map(fieldLabel) },
     // One color reused for every bar

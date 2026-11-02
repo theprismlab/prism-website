@@ -19,12 +19,12 @@ export const AGENT_BAR_CHARTS = {
       field: 'TargetPathway',
       counts: 'targetPathway',
       // Pathway colors from the shared mapping, so the bars match the UMAP
-      axis: (agents) => ({ y: COUNT_AXIS, color: categoryColors(agents, 'TargetPathway') }),
+      axis: (agents) => ({ value: COUNT_AXIS, color: categoryColors(agents, 'TargetPathway') }),
     },
     {
       field: 'Modality_summarized',
       counts: 'modality',
-      axis: () => ({ y: COUNT_AXIS, color: { range: [schemeDark2[0]] } }),
+      axis: () => ({ value: COUNT_AXIS, color: { range: [schemeDark2[0]] } }),
     },
     {
       field: 'HighestClinicalStage_summarized',
@@ -33,8 +33,8 @@ export const AGENT_BAR_CHARTS = {
       axis: () => {
         const stages = valueOrder('HighestClinicalStage_summarized');
         return {
-          y: COUNT_AXIS,
-          x: { domain: stages },
+          value: COUNT_AXIS,
+          category: { domain: stages },
           color: {
             domain: stages,
             range: quantize((t) => interpolateBlues(0.33 + 0.7 * t), stages.length),
