@@ -19,7 +19,7 @@
       <template #title>{{ manuscript.title }}</template>
 
       <!-- Author list: each name followed by its affiliation marks as superscript -->
-      <p class="prism-text-body-large manuscript-header__authors mb-0">
+      <p class="prism-text-body-medium manuscript-header__authors mb-0">
         <template v-for="(author, i) in manuscript.authors" :key="author.name">
           <template v-if="i === manuscript.authors.length - 1">and </template>
           <span class="text-no-wrap"
@@ -400,7 +400,8 @@
   }
   .manuscript-header__authors sup,
   .manuscript-header__affiliation-list sup {
-    font-size: 0.66em;
+    font-size: 0.7em;
+    font-weight: 700;
     line-height: 0;
     margin-left: 1px;
     color: rgba(var(--v-theme-on-surface), 0.6);
@@ -429,7 +430,7 @@
     outline: none;
   }
   .manuscript-header__affiliation-list {
-    max-width: var(--prism-measure);
+    max-width: calc(var(--prism-measure) + 150px);
     margin: 12px 0 0;
     padding: 0;
     list-style: none;
@@ -452,7 +453,7 @@
   }
 
   .manuscript-header__stats {
-    margin-top: 28px;
+    margin-top: 20px;
   }
 
   /* Citation row: a hairline above, label/value pairs left, the action right */
