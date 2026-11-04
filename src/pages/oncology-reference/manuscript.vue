@@ -59,7 +59,11 @@
       <!-- Headline figures from the abstract, then the response metrics the
            paper's framework quantifies -->
       <abstract-stats :stats="abstractStats" class="manuscript-header__stats" />
-      <abstract-stats :stats="frameworkStats" class="manuscript-header__stats--framework" />
+      <abstract-stats
+        :stats="frameworkStats"
+        sequence
+        class="manuscript-header__stats--framework"
+      />
 
       <!-- Citation details and actions. Each item renders only once its value is
            filled in (see `manuscript` in data). -->
@@ -274,27 +278,25 @@
             icon: 'mdi-sitemap-outline',
           },
         ],
-        // Text-only tiles for what the analytical framework characterizes
+        // The paper's story in three ordered tiles: characterize, quantify, benchmark
         frameworkStats: [
           {
-            label: 'Primary target characterization',
+            step: 'Characterize',
+            label: 'Primary targets',
             detail: 'Most agents act consistently with their annotated targets',
             icon: 'mdi-target',
           },
           {
-            label: 'Specificity & selectivity',
-            detail: 'How narrowly and how strongly each agent acts across cell lines',
-            icon: 'mdi-crosshairs',
+            step: 'Quantify',
+            label: 'Four response metrics',
+            detail: 'Specificity, selectivity, on-target polypharmacology, non-target effects',
+            icon: 'mdi-chart-scatter-plot',
           },
           {
-            label: 'On-target polypharmacology',
-            detail: 'Response driven by more than one intended target',
-            icon: 'mdi-hexagon-multiple-outline',
-          },
-          {
-            label: 'Non-target effects',
-            detail: 'Unintended targets and mediators of toxicity',
-            icon: 'mdi-alert-circle-outline',
+            step: 'Benchmark',
+            label: 'A scalable reference',
+            detail: 'For evaluating new targets and modalities in oncology',
+            icon: 'mdi-ruler-square',
           },
         ],
         // Highlighted findings from the manuscript, one ImageCard each
