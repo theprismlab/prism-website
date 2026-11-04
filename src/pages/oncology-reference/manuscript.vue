@@ -57,14 +57,13 @@
       </div>
 
       <!-- Headline figures from the abstract -->
-      <abstract-stats :stats="abstractStats" class="manuscript-header__stats" />
 
-      <!-- Citation details and actions. Each item renders only once its value is
-           filled in (see `manuscript` in data). -->
+      <!-- Citation details, evenly spaced across the row. Each item renders only
+           once its value is filled in (see `manuscript` in data). -->
       <div v-if="hasMeta" class="manuscript-header__meta">
         <dl class="manuscript-header__citation">
           <div v-if="manuscript.journal">
-            <dt>Venue</dt>
+            <dt>Journal</dt>
             <dd>{{ manuscript.journal }}</dd>
           </div>
           <div v-if="manuscript.date">
@@ -78,31 +77,43 @@
             </dd>
           </div>
         </dl>
-        <div v-if="manuscript.pdfUrl" class="manuscript-header__actions">
-          <v-btn
-            :href="manuscript.pdfUrl"
-            target="_blank"
-            rel="noopener"
-            color="primary"
-            variant="flat"
-            append-icon="mdi-open-in-new"
-          >
-            Read the paper
-          </v-btn>
-        </div>
+      </div>
+
+      <!-- Actions, separate from the citation block. The paper link is the
+           primary action; data access is secondary (outlined). -->
+      <div v-if="manuscript.pdfUrl || manuscript.dataAccess" class="manuscript-header__actions">
+        <v-btn
+          v-if="manuscript.pdfUrl"
+          :href="manuscript.pdfUrl"
+          target="_blank"
+          rel="noopener"
+          color="primary"
+          variant="flat"
+          rounded
+          append-icon="mdi-arrow-right"
+          style="text-transform: none"
+        >
+          Read the paper
+        </v-btn>
+        <v-btn
+          v-if="manuscript.dataAccess"
+          :href="manuscript.dataAccess"
+          target="_blank"
+          rel="noopener"
+          color="primary"
+          variant="outlined"
+          rounded
+          append-icon="mdi-database-arrow-right-outline"
+          style="text-transform: none"
+        >
+          Request data access
+        </v-btn>
       </div>
     </page-header>
 
-    <!-- The paper's argument in three parts, read left to right -->
-    <page-section width="default">
-      <section-overline gradient>At a glance</section-overline>
-      <prism-section-title>The paper in three parts</prism-section-title>
-      <story-cards :cards="storyCards" />
-    </page-section>
-
     <page-section width="narrow">
-      <section-overline gradient>Abstract</section-overline>
-      <p class="prism-text-body-large mt-4">
+      <prism-section-title gradient>Summary</prism-section-title>
+      <p class="prism-text-body-large">
         Transformative therapeutic approaches are emerging to address cancer complexity and
         heterogeneity, underscoring the need for systematic drug evaluation methodologies to
         accelerate the translation to improved patient outcomes. Cell line profiling is a powerful
@@ -119,42 +130,17 @@
       </p>
     </page-section>
 
-    <page-section width="narrow">
-      <section-overline gradient>The Underlying Technology</section-overline>
-      <prism-section-title
-        >The PRISM Platform — Multiplexed Cancer Drug Screening at Scale</prism-section-title
-      >
-      <p class="prism-text-body-large">
-        OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
-        high-throughput multiplexed viability screening platform developed at the Broad Institute.
-        PRISM introduces unique 24-nucleotide DNA barcodes into cancer cell lines, enabling hundreds
-        of cell lines to be screened simultaneously in a single well — dramatically reducing cost
-        and increasing throughput compared to traditional approaches.
-      </p>
-      <workflow-steps :steps="assayWorkflow" color="var(--v-teal-darken-1)" />
-    </page-section>
-
-    <page-section width="narrow">
-      <section-overline gradient>Data Vignettes</section-overline>
-      <prism-section-title>Key findings from the paper</prism-section-title>
-      <p class="prism-text-body-large">
-        OncRef goes beyond cataloging drug sensitivity. By correlating each compound's cell-line
-        response profile with genome-wide CRISPR dependencies, the framework identifies on-target
-        engagement, unexpected polypharmacology, and shared off-target liabilities. Click any figure
-        to view it full-size.
-      </p>
-      <div class="case-studies">
-        <image-card
-          v-for="(study, i) in caseStudies"
-          :key="study.title"
-          v-bind="study"
-          layout="horizontal"
-          :reverse="i % 2 === 1"
-        />
-      </div>
+    <page-section width="normal">
+      <h3 class="prism-text-headline-medium mb-8" style="text-align: center">
+        OncRef composition and association with multiomic features
+      </h3>
+      <manuscript-figures :figures="figures" />
     </page-section>
 
     <page-section width="wide">
+      <h3 class="prism-text-headline-medium mb-8" style="text-align: center">
+        Explore the OncRef similarity map
+      </h3>
       <agent-explorer />
     </page-section>
 
@@ -186,19 +172,19 @@
 </template>
 
 <script>
-  import AbstractStats from './manuscript/AbstractStats.vue';
   import AgentExplorer from './manuscript/AgentExplorer.vue';
-  import ImageCard from '@/components/ImageCard.vue';
-  import StoryCards from './manuscript/StoryCards.vue';
+  import ManuscriptFigures from './manuscript/ManuscriptFigures.vue';
   import { ASSAY_WORKFLOW, CASE_STUDIES } from './manuscript/content.js';
+
+  // Figure images live in public/images/oncref_manuscript/. BASE_URL makes the
+  // path correct both on the dev server and under the production base path.
+  const figurePath = import.meta.env.BASE_URL + 'images/oncref_manuscript/';
 
   export default {
     name: 'OncologyReferenceManuscript',
     components: {
-      AbstractStats,
       AgentExplorer,
-      ImageCard,
-      StoryCards,
+      ManuscriptFigures,
     },
     data() {
       return {
@@ -255,10 +241,11 @@
               text: 'Correspondence: reesm@broadinstitute.org (M.G.R.), jroth@broadinstitute.org (J.A.R.), wsellers@broadinstitute.org (W.R.S.)',
             },
           ],
-          journal: '',
-          date: '',
-          doi: '',
-          pdfUrl: '',
+          journal: 'TBD',
+          date: 'Month DD, YYYY',
+          doi: '10.1101/2025.XX.XX.XXXXXX',
+          pdfUrl: '#',
+          dataAccess: '#',
         },
         // Headline figures as cited in the abstract below; shown as cards in the header
         abstractStats: [
@@ -317,6 +304,35 @@
             ],
           },
         ],
+        // Manuscript figures: { src, alt?, label?, caption, cols?, maxHeight? }.
+        // Leave `src` empty to show a placeholder until the image is in place.
+        // `cols` is the span out of 12 on md+ screens (default 12 = full row);
+        // `maxHeight` caps the image (px as a number, or any CSS length string).
+        figures: [
+          {
+            src: figurePath + 'Figures-01a.png',
+            label: 'Figure 1a.',
+            caption:
+              ' Depiction of 265 test agents in the OncRef dataset by target pathway and modality.',
+            cols: 6,
+            maxHeight: 350,
+          },
+          {
+            src: figurePath + 'Figures-01b.png',
+            label: 'Figure 1b.',
+            caption:
+              'PRISM viability profiles across 891 cell lines are associated with orthogonal baseline feature datasets from DepMap.',
+            cols: 6,
+            maxHeight: 350,
+          },
+          {
+            src: figurePath + 'Figures-01a2.png',
+            label: 'Figure XX.',
+            caption:
+              ' Depiction of 265 test agents in the OncRef dataset by class, clinical stage, and screening status.',
+            maxHeight: 350,
+          },
+        ],
         // Highlighted findings from the manuscript, one ImageCard each
         // ({ title, body, caption, category, image })
         caseStudies: CASE_STUDIES,
@@ -326,8 +342,8 @@
     computed: {
       // Header meta row shows only when at least one citation detail is filled in
       hasMeta() {
-        const { journal, date, doi, pdfUrl } = this.manuscript;
-        return Boolean(journal || date || doi || pdfUrl);
+        const { journal, date, doi } = this.manuscript;
+        return Boolean(journal || date || doi);
       },
       doiUrl() {
         return this.manuscript.doi ? `https://doi.org/${this.manuscript.doi}` : '';
@@ -396,8 +412,9 @@
   }
   .manuscript-header__toggle:hover,
   .manuscript-header__toggle:focus-visible {
-    text-decoration: underline;
+    text-decoration: none;
     outline: none;
+    opacity: 0.8;
   }
   .manuscript-header__affiliation-list {
     max-width: calc(var(--prism-measure) + 150px);
@@ -422,25 +439,17 @@
     overflow-wrap: anywhere;
   }
 
-  .manuscript-header__stats {
-    margin-top: 20px;
-  }
-
-  /* Citation row: a hairline above, label/value pairs left, the action right */
+  /* Citation row: a hairline above, label/value pairs in equal-width columns */
   .manuscript-header__meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 16px 32px;
     margin-top: 28px;
     padding-top: 20px;
     border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   }
   .manuscript-header__citation {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 32px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 12px 24px;
     margin: 0;
   }
   .manuscript-header__citation dt {
@@ -459,13 +468,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-  }
-
-  .case-studies {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    margin-top: 16px;
+    margin-top: 24px;
   }
 
   .nominations-cta {
@@ -490,8 +493,12 @@
     .manuscript-header :deep(h1) {
       max-width: none;
     }
-    .manuscript-header__meta {
-      align-items: stretch;
+    /* One column per line on phones instead of three squeezed columns */
+    .manuscript-header__citation {
+      grid-auto-flow: row;
+    }
+    .manuscript-header__actions {
+      flex-direction: column;
     }
     .manuscript-header__actions .v-btn {
       width: 100%;
