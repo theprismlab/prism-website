@@ -6,7 +6,9 @@
       </span>
       <div class="abstract-stat__body">
         <div class="abstract-stat__headline">
-          <span class="abstract-stat__value">{{ formatValue(stat.value) }}</span>
+          <span v-if="hasValue(stat)" class="abstract-stat__value">
+            {{ formatValue(stat.value) }}
+          </span>
           <span class="abstract-stat__label">{{ stat.label }}</span>
         </div>
         <p v-if="stat.detail" class="abstract-stat__detail">{{ stat.detail }}</p>
@@ -24,7 +26,8 @@
    * large proportional figures in the body sans, ink-colored, with a tinted
    * icon as the only accent.
    *
-   * Props: stats — [{ value, label, icon, detail? }]
+   * Props: stats — [{ value?, label, icon, detail? }]. Leave `value` out for a
+   * text-only tile; the label then takes the headline slot.
    */
   export default {
     name: 'AbstractStats',
@@ -32,6 +35,9 @@
       stats: { type: Array, required: true },
     },
     methods: {
+      hasValue(stat) {
+        return stat.value !== undefined && stat.value !== null && stat.value !== '';
+      },
       formatValue(value) {
         return typeof value === 'number' ? value.toLocaleString('en-US') : value;
       },
@@ -42,7 +48,8 @@
 <style scoped>
   .abstract-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    /* 160px lets four cards share one row inside the 780px narrow container */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 12px;
     margin: 0;
     padding: 0;
