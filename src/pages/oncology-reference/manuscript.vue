@@ -56,14 +56,8 @@
         </v-expand-transition>
       </div>
 
-      <!-- Headline figures from the abstract, then the response metrics the
-           paper's framework quantifies -->
+      <!-- Headline figures from the abstract -->
       <abstract-stats :stats="abstractStats" class="manuscript-header__stats" />
-      <abstract-stats
-        :stats="frameworkStats"
-        sequence
-        class="manuscript-header__stats--framework"
-      />
 
       <!-- Citation details and actions. Each item renders only once its value is
            filled in (see `manuscript` in data). -->
@@ -98,6 +92,13 @@
         </div>
       </div>
     </page-header>
+
+    <!-- The paper's argument in three parts, read left to right -->
+    <page-section width="default">
+      <section-overline gradient>At a glance</section-overline>
+      <prism-section-title>The paper in three parts</prism-section-title>
+      <story-cards :cards="storyCards" />
+    </page-section>
 
     <page-section width="narrow">
       <section-overline gradient>Abstract</section-overline>
@@ -188,6 +189,7 @@
   import AbstractStats from './manuscript/AbstractStats.vue';
   import AgentExplorer from './manuscript/AgentExplorer.vue';
   import ImageCard from '@/components/ImageCard.vue';
+  import StoryCards from './manuscript/StoryCards.vue';
   import { ASSAY_WORKFLOW, CASE_STUDIES } from './manuscript/content.js';
 
   export default {
@@ -196,6 +198,7 @@
       AbstractStats,
       AgentExplorer,
       ImageCard,
+      StoryCards,
     },
     data() {
       return {
@@ -278,25 +281,40 @@
             icon: 'mdi-sitemap-outline',
           },
         ],
-        // The paper's story in three ordered tiles: characterize, quantify, benchmark
-        frameworkStats: [
+        // The abstract's argument in three parts, shown as ordered cards below the
+        // header: the resource that was built, the framework applied to it, and
+        // what the two together establish.
+        storyCards: [
           {
-            step: 'Characterize',
-            label: 'Primary targets',
-            detail: 'Most agents act consistently with their annotated targets',
-            icon: 'mdi-target',
+            eyebrow: 'The resource',
+            title: 'A pan-cancer screen of clinical therapeutics',
+            body: 'Clinically relevant agents were profiled across the PRISM collection of deeply characterized, barcoded cancer cell lines spanning 29 lineages. The result is OncRef, an Oncology Reference for cancer therapeutics.',
+            points: [
+              'Small molecules, protein degraders, and biologics',
+              '891 barcoded cell lines with extensive molecular characterization',
+              'Pooled, multiplexed screening of all lines at once',
+            ],
           },
           {
-            step: 'Quantify',
-            label: 'Four response metrics',
-            detail: 'Specificity, selectivity, on-target polypharmacology, non-target effects',
-            icon: 'mdi-chart-scatter-plot',
+            eyebrow: 'The framework',
+            title: 'Beyond the primary target',
+            body: 'Most agents produced effects consistent with their annotated targets. A new framework then quantifies how each agent behaves beyond that target, surfacing unintended targets and the mediators of toxicity that shape cellular response.',
+            points: [
+              'Specificity',
+              'Selectivity',
+              'On-target polypharmacology',
+              'Non-target effects',
+            ],
           },
           {
-            step: 'Benchmark',
-            label: 'A scalable reference',
-            detail: 'For evaluating new targets and modalities in oncology',
-            icon: 'mdi-ruler-square',
+            eyebrow: 'The benchmark',
+            title: 'A reference that scales',
+            body: 'Together, the resource and the framework establish a benchmark for oncology therapeutics, and a repeatable way to evaluate new targets and new modalities as they emerge.',
+            points: [
+              'Benchmark for oncology therapeutics',
+              'Scalable framework for new targets',
+              'Extends to new modalities',
+            ],
           },
         ],
         // Highlighted findings from the manuscript, one ImageCard each
@@ -406,9 +424,6 @@
 
   .manuscript-header__stats {
     margin-top: 20px;
-  }
-  .manuscript-header__stats--framework {
-    margin-top: 12px;
   }
 
   /* Citation row: a hairline above, label/value pairs left, the action right */
