@@ -28,9 +28,10 @@ const linkPath = d3
  *                  path through every column, ordered by the color column. true
  *                  merges, between each pair of adjacent columns, the ribbons
  *                  that share a source node, target node and color into one,
- *                  and stacks each node's ribbons in the order of the nodes they
- *                  lead to (then by color), so ribbons bound for the same node
- *                  leave together and cross as little as possible. Hovering a
+ *                  and stacks every node's ribbons by color first (the color
+ *                  column's category order), so each color forms one band
+ *                  through every node, then by the position of the node at the
+ *                  other end, so a color's ribbons cross less. Hovering a
  *                  node or ribbon still traces exactly its agents through every
  *                  column: the matching share of each ribbon is drawn on top.
  *   nodeFill       Fill for every node, e.g. '#fff', replacing the library's
@@ -93,8 +94,8 @@ export class ExtendedParallelSetsChart extends ParallelSetsChart {
 
   /**
    * Replace the library's per-path ribbons with one per (column pair, source,
-   * target, color), stacked within each node by the position of the node at
-   * the other end, then by color order.
+   * target, color), stacked within each node by color order, then by the
+   * position of the node at the other end.
    */
   _bundleLinks() {
     const old = this.svg.selectAll('.parallel-sets__link');
@@ -129,18 +130,21 @@ export class ExtendedParallelSetsChart extends ParallelSetsChart {
 
     const colorOrder = new Map(columns[colorIndex].nodes.map((n) => [n.key, n.index]));
     const byColor = (a, b) => (colorOrder.get(a.colorKey) ?? 0) - (colorOrder.get(b.colorKey) ?? 0);
-    // Source side: stack each node's outgoing ribbons by target position
+    // Every node stacks its ribbons in color order on both sides, so each color
+    // keeps one band through the node. Within a color, ribbons follow the
+    // position of the node at their other end, to cross less.
+    // Source side: outgoing ribbons by color, then target position
     for (const group of d3.group(links, (l) => l.source).values()) {
-      group.sort((a, b) => a.target.y0 - b.target.y0 || byColor(a, b));
+      group.sort((a, b) => byColor(a, b) || a.target.y0 - b.target.y0);
       let y = group[0].source.y0;
       for (const l of group) {
         l.y0 = y + l.width / 2;
         y += l.width;
       }
     }
-    // Target side: stack each node's incoming ribbons by source position
+    // Target side: incoming ribbons by color, then source position
     for (const group of d3.group(links, (l) => l.target).values()) {
-      group.sort((a, b) => a.source.y0 - b.source.y0 || byColor(a, b));
+      group.sort((a, b) => byColor(a, b) || a.source.y0 - b.source.y0);
       let y = group[0].target.y0;
       for (const l of group) {
         l.y1 = y + l.width / 2;
