@@ -8,6 +8,7 @@
 import { registerPlugins } from '@/plugins';
 import Prism from './lib/prism.js';
 import './lib/prism.css';
+import './lib/charts/prism-charts.css';
 
 // Components
 import App from './App.vue';

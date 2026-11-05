@@ -1,0 +1,393 @@
+<template>
+  <page>
+    <page-header background="multi-focal-cool" narrow>
+      <template #title> Oncology Reference </template>
+      <p class="prism-text-headline-small mb-6">
+        A pan-cancer reference of cancer therapeutics from the PRISM platform — 265 clinically
+        relevant agents screened across 891 barcoded cancer cell lines spanning 29 tumor lineages,
+        integrated with genome-wide CRISPR knockout profiles.
+      </p>
+      <stat-grid class="pb-8" :stats="overviewStats" />
+    </page-header>
+    <page-section width="narrow" class="manuscript-overlap">
+      <v-card variant="outlined" class="manuscript-card">
+        <h2 class="prism-text-headline-small manuscript-card__title">{{ manuscript.title }}</h2>
+        <p class="prism-text-body-medium manuscript-card__authors mb-0">
+          <span v-for="(author, i) in manuscript.authors" :key="author.name">
+            {{ author.name }}<sup v-if="author.note">{{ author.note }}</sup
+            ><template v-if="i < manuscript.authors.length - 1">, </template>
+          </span>
+        </p>
+        <!-- <div class="manuscript-card__abstract">
+          <h3 class="manuscript-card__heading">Abstract</h3>
+          <p class="prism-text-body-large mb-0">
+            Transformative therapeutic approaches are emerging to address cancer complexity and
+            heterogeneity, underscoring the need for systematic drug evaluation methodologies to
+            accelerate the translation to improved patient outcomes. Cell line profiling is a
+            powerful tool; however, mechanistic interpretation requires large-scale collections with
+            extensive molecular characterization. We screened the PRISM collection of 891 deeply
+            characterized barcoded cancer cell lines spanning 29 lineages with 265 clinically
+            relevant agents, encompassing small molecules, protein degraders, and biologics, to
+            generate an Oncology Reference (OncRef) resource.
+          </p>
+        </div> -->
+        <dl class="manuscript-card__meta">
+          <div>
+            <dt>Journal</dt>
+            <dd>{{ manuscript.journal }}</dd>
+          </div>
+          <div>
+            <dt>Published</dt>
+            <dd>{{ manuscript.date }}</dd>
+          </div>
+          <div>
+            <dt>DOI</dt>
+            <dd>
+              <a :href="`https://doi.org/${manuscript.doi}`" target="_blank" rel="noopener">
+                {{ manuscript.doi }}
+              </a>
+            </dd>
+          </div>
+        </dl>
+        <div class="manuscript-card__actions">
+          <v-btn
+            :href="`https://doi.org/${manuscript.doi}`"
+            target="_blank"
+            rel="noopener"
+            color="primary"
+            variant="flat"
+            rounded
+            append-icon="mdi-arrow-top-right"
+          >
+            Read the manuscript
+          </v-btn>
+        </div>
+      </v-card>
+    </page-section>
+
+    <page-section width="narrow">
+      <section-overline gradient>About the dataset</section-overline>
+      <prism-section-title>A Benchmark for Oncology Therapeutics</prism-section-title>
+      <p class="prism-text-body-large">
+        OncRef is generated using
+        <router-link to="/about-us/about-prism" target="_blank">PRISM</router-link> (Profiling
+        Relative Inhibition Simultaneously in Mixtures), a high-throughput drug screening platform
+        developed at the Broad Institute that introduces unique 24-nucleotide DNA barcodes into
+        individual cancer cell lines, enabling pooled multiplexed screening. Each compound was
+        profiled in triplicate 8-point dose-response. <br /><br />
+        The collection encompasses 172 agents (65%) not represented in other large-scale public
+        datasets, spanning small molecules, protein degraders (PROTACs), and biologics including
+        antibody-drug conjugates. Parallel genome-wide CRISPR knockout screens enable a new
+        analytical framework that deconvolves polypharmacology, off-target effects, and on-target
+        selectivity.
+      </p>
+      <!-- Stats computed from the test agent CSV once it loads -->
+      <template v-if="agents">
+        <stat-grid :stats="agentClassStats" class="mt-4" />
+        <stat-grid :stats="agentHighlightStats" class="mt-4" />
+      </template>
+    </page-section>
+    <page-section width="narrow" class="mb-0 pb-0">
+      <prism-section-title>Coverage at a Glance</prism-section-title>
+    </page-section>
+    <page-section v-if="agents" width="wide" class="mt-0 pt-0">
+      <v-row dense class="mt-0 pt-0">
+        <v-col cols="12">
+          <agent-parallel-sets :rows="breakdownAgents" />
+        </v-col>
+        <v-col cols="12">
+          <agent-bar-charts :rows="breakdownAgents" />
+        </v-col>
+        <v-col cols="12">
+          <agent-grouped-bars :rows="breakdownAgents" />
+        </v-col>
+      </v-row>
+    </page-section>
+
+    <page-section width="narrow">
+      <section-overline gradient>The Underlying Technology</section-overline>
+      <prism-section-title
+        >The PRISM Platform — Multiplexed Cancer Drug Screening at Scale</prism-section-title
+      >
+      <p class="prism-text-body-large">
+        OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
+        high-throughput multiplexed viability screening platform developed at the Broad Institute.
+        PRISM introduces unique 24-nucleotide DNA barcodes into cancer cell lines, enabling hundreds
+        of cell lines to be screened simultaneously in a single well — dramatically reducing cost
+        and increasing throughput compared to traditional approaches.
+      </p>
+      <workflow-steps :steps="assayWorkflow" color="var(--v-teal-darken-1)" />
+    </page-section>
+
+    <page-section width="narrow">
+      <section-overline gradient>Data Vignettes</section-overline>
+      <prism-section-title>Key findings from the paper</prism-section-title>
+      <p class="prism-text-body-large">
+        OncRef goes beyond cataloging drug sensitivity. By correlating each compound's cell-line
+        response profile with genome-wide CRISPR dependencies, the framework identifies on-target
+        engagement, unexpected polypharmacology, and shared off-target liabilities. Click any figure
+        to view it full-size.
+      </p>
+      <div class="case-studies">
+        <image-card
+          v-for="(study, i) in caseStudies"
+          :key="study.title"
+          v-bind="study"
+          layout="horizontal"
+          :reverse="i % 2 === 1"
+        />
+      </div>
+    </page-section>
+
+    <page-section width="wide">
+      <agent-explorer />
+    </page-section>
+
+    <page-section width="narrow">
+      <v-card variant="outlined" class="nominations-cta">
+        <div class="nominations-cta__content">
+          <section-overline gradient>Nominations</section-overline>
+          <h2 class="prism-text-display-small mt-1 mb-3">Help grow the Oncology Reference</h2>
+          <p class="prism-text-body-large mb-0">
+            We are excited to accept nominations from all researchers to continue to grow our
+            Oncology Reference library. Based on our in-process manuscript to create a living
+            resource of Oncology Reference test agents, the PRISM Team will be screening 150 new
+            test agents per year, composed of small molecules, antibodies, and ADCs.
+          </p>
+        </div>
+        <v-btn
+          to="/oncology-reference/nominations"
+          color="primary"
+          variant="flat"
+          size="large"
+          append-icon="mdi-arrow-right"
+          class="align-self-start"
+        >
+          Learn more about nominations
+        </v-btn>
+      </v-card>
+    </page-section>
+  </page>
+</template>
+
+<script>
+  import AgentBarCharts from './manuscript/AgentBarCharts.vue';
+  import AgentExplorer from './manuscript/AgentExplorer.vue';
+  import AgentGroupedBars from './manuscript/AgentGroupedBars.vue';
+  import AgentParallelSets from './manuscript/AgentParallelSets.vue';
+  import ImageCard from '@/components/ImageCard.vue';
+  import StatGrid from './manuscript/StatGrid.vue';
+  import { getOncRefData } from './manuscript/oncref.js';
+  import { ASSAY_WORKFLOW, CASE_STUDIES } from './manuscript/content.js';
+  import {
+    OVERVIEW_STATS,
+    AGENT_CLASS_STATS,
+    AGENT_HIGHLIGHT_STATS,
+    nonControlAgents,
+    resolveStats,
+  } from './manuscript/stats.js';
+
+  export default {
+    name: 'OncologyReferenceManuscript',
+    components: {
+      AgentBarCharts,
+      AgentExplorer,
+      AgentGroupedBars,
+      AgentParallelSets,
+      ImageCard,
+      StatGrid,
+    },
+    data() {
+      return {
+        // Test agent rows from the CSV, loaded in created()
+        agents: null,
+        manuscript: {
+          title: 'OncRef: A pan-cancer PRISM reference of cancer therapeutics',
+          authors: [
+            { name: 'Matthew G. Rees', note: '1,5,7,#' },
+            { name: 'Matthew J. Emmett', note: '1,2,3,4,5' },
+            { name: 'Mustafa A. Kocak', note: '1' },
+            { name: 'Colleen T. Harrington', note: '1' },
+            { name: 'Anthony Fazio', note: '1' },
+            { name: 'Mrinal Shekhar', note: '1' },
+            { name: 'Li Wang', note: '1' },
+            { name: 'Alvin Kalathungal', note: '1' },
+            { name: 'Tenzin Sangpo', note: '1' },
+            { name: 'Emily R. Borr', note: '1' },
+            { name: 'Yiwei Liang', note: '1' },
+            { name: 'Rachael Barry', note: '1' },
+            { name: 'Emily Reeves', note: '1' },
+            { name: 'Aydin Golabi', note: '1' },
+            { name: 'Blanche C. Ip', note: '1' },
+            { name: 'Laura Doherty', note: '1' },
+            { name: 'Jillian Eskra', note: '1' },
+            { name: 'John F. Davis', note: '1' },
+            { name: 'Ashish B. George', note: '1' },
+            { name: 'Dennie T. Frederick', note: '1' },
+            { name: 'Melissa M. Ronan', note: '1' },
+            { name: 'Catarina D. Campbell', note: '1' },
+            { name: 'Jennifer A. Roth', note: '1,6,#' },
+            { name: 'William R. Sellers', note: '1,2,4,6,#' },
+          ],
+          affiliations: [
+            { mark: '1', text: 'Broad Institute of MIT & Harvard, Cambridge, MA 02142, USA' },
+            {
+              mark: '2',
+              text: 'Department of Medical Oncology, Dana-Farber Cancer Institute, Boston, MA 02215, USA',
+            },
+            {
+              mark: '3',
+              text: 'Division of Hematology and Oncology, Mass General Brigham Cancer Institute, Boston, MA 02114, USA',
+            },
+            { mark: '4', text: 'Harvard Medical School, Boston, MA 02115, USA' },
+            { mark: '5', text: 'These authors contributed equally' },
+            { mark: '6', text: 'These authors contributed equally' },
+            { mark: '7', text: 'Lead contact' },
+            {
+              mark: '#',
+              text: 'Correspondence: reesm@broadinstitute.org (M.G.R.), jroth@broadinstitute.org (J.A.R.), wsellers@broadinstitute.org (W.R.S.)',
+            },
+          ],
+          journal: 'bioRxiv (preprint)',
+          date: 'Month DD, YYYY',
+          doi: '10.1101/2025.XX.XX.XXXXXX',
+          pdfUrl: '#',
+        },
+        // Highlighted findings from the manuscript, one ImageCard each
+        // ({ title, body, caption, category, image })
+        caseStudies: CASE_STUDIES,
+        // Dataset totals, matching the figures cited in the page text
+        overviewStats: resolveStats(OVERVIEW_STATS),
+        assayWorkflow: ASSAY_WORKFLOW,
+      };
+    },
+    computed: {
+      // Stat groups resolved against the CSV rows (see stats.js). Empty until
+      // the data loads; the template guards on `agents`.
+      agentClassStats() {
+        return resolveStats(AGENT_CLASS_STATS, this.agents ?? []);
+      },
+      agentHighlightStats() {
+        return resolveStats(AGENT_HIGHLIGHT_STATS, this.agents ?? []);
+      },
+      // Rows for the parallel sets and bar charts: controls would add a stray category
+      breakdownAgents() {
+        return this.agents ? nonControlAgents(this.agents) : [];
+      },
+    },
+    async created() {
+      try {
+        this.agents = (await getOncRefData()).agents;
+      } catch (err) {
+        // The data explorer reports load failures; the charts just stay hidden
+        console.error(err);
+      }
+    },
+  };
+</script>
+
+<style scoped>
+  /* Pull the card section up so the card overlaps the header gradient. The header
+     has 64px of bottom padding, so -64px leaves roughly 32px of card over it
+     (the section's own 32px top padding offsets the rest). */
+  .manuscript-overlap {
+    position: relative;
+    z-index: 1;
+    margin-top: -64px;
+  }
+  .manuscript-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 28px 32px;
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+    border-radius: var(--prism-radius-lg);
+    /* Outlined cards are transparent, so give it a solid fill over the gradient */
+    background: rgb(var(--v-theme-surface));
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+  .manuscript-card__title {
+    margin: 0;
+  }
+  .manuscript-card__authors {
+    color: rgba(var(--v-theme-on-surface), 0.72);
+  }
+  .manuscript-card__authors sup {
+    font-size: 0.7em;
+    margin-left: 1px;
+  }
+  .manuscript-card__abstract {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  }
+  .manuscript-card__heading {
+    margin: 0 0 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(var(--v-theme-on-surface), 0.6);
+  }
+  .manuscript-card__meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px 24px;
+    margin: 8px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  }
+  .manuscript-card__meta dt {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(var(--v-theme-on-surface), 0.6);
+  }
+  .manuscript-card__meta dd {
+    margin: 4px 0 0;
+    font-size: 0.9375rem;
+    overflow-wrap: anywhere;
+  }
+  .manuscript-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .case-studies {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 16px;
+  }
+
+  .nominations-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 28px 32px;
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+    border-radius: var(--prism-radius-lg);
+    background: linear-gradient(
+      180deg,
+      rgba(var(--v-theme-on-surface), 0.035) 0%,
+      rgba(var(--v-theme-on-surface), 0.015) 100%
+    );
+  }
+  .nominations-cta__content {
+    max-width: 640px;
+  }
+  /* xs */
+  @media (max-width: 600px) {
+    .manuscript-card {
+      padding: 20px 16px;
+    }
+    .nominations-cta {
+      gap: 20px;
+      padding: 20px 16px;
+    }
+  }
+</style>
