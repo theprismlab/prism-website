@@ -31,6 +31,8 @@
       nodeStroke: { type: String, default: null },
       // false leaves category counts out of the labels and tooltips
       showCounts: { type: Boolean, default: true },
+      // Merge ribbons sharing source, target and color, ordered to cross less
+      bundleLinks: { type: Boolean, default: false },
       fillColumns: { type: Boolean, default: true },
       hover: { type: Boolean, default: true },
       tooltip: { type: Function, default: null },
@@ -52,6 +54,7 @@
           nodeFill,
           nodeStroke,
           showCounts,
+          bundleLinks,
           fillColumns,
           hover,
           tooltip,
@@ -70,6 +73,7 @@
           nodeFill,
           nodeStroke,
           showCounts,
+          bundleLinks,
           fillColumns,
           hover,
           tooltip,

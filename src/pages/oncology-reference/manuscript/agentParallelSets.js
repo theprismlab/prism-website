@@ -35,6 +35,8 @@ export const AGENT_PARALLEL_SETS = {
   // Counts hidden for now: true brings back the counts in the tooltips (and in
   // the node labels when labelPosition is 'outside')
   showCounts: false,
+  // Merge ribbons that share a source, target and color, ordered to cross less
+  bundleLinks: true,
   // Noun for the tooltip counts
   unit: 'agents',
 };

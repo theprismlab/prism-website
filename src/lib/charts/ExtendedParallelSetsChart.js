@@ -19,11 +19,20 @@ const linkPath = d3
   .target((d) => [d.target.x0, d.y1]);
 
 /**
- * ParallelSetsChart with an option to draw node labels inside the nodes.
- * prism-charts.js is a vendored bundle, so this is added here rather than in
+ * ParallelSetsChart with merged ribbons, inside labels and node styling.
+ * prism-charts.js is a vendored bundle, so these are added here rather than in
  * the library.
  *
  * Extra options:
+ *   bundleLinks    false (default) keeps the library's ribbons: one per full
+ *                  path through every column, ordered by the color column. true
+ *                  merges, between each pair of adjacent columns, the ribbons
+ *                  that share a source node, target node and color into one,
+ *                  and stacks each node's ribbons in the order of the nodes they
+ *                  lead to (then by color), so ribbons bound for the same node
+ *                  leave together and cross as little as possible. Hovering a
+ *                  node or ribbon still traces exactly its agents through every
+ *                  column: the matching share of each ribbon is drawn on top.
  *   nodeFill       Fill for every node, e.g. '#fff', replacing the library's
  *                  dark grey (and the color column's category colors); null
  *                  keeps the library's fills.
@@ -41,16 +50,34 @@ const linkPath = d3
  *                  width, since no space is needed right of the last column.
  *                  Pair it with a wide `nodeWidth` (e.g. 150).
  *
- * This overrides the library's `_nodeTooltip` / `_linkTooltip`, reruns after its `draw` (which also runs on resize and
- * highlight changes) and reads its `svg`, `width`, `options` and `prepared.columns` and the d3 data
- * bound to its `.parallel-sets__*` elements; recheck them when prism-charts.js
- * is updated.
+ * With bundleLinks, `onHover` receives `{ type: 'node', node }` or
+ * `{ type: 'link', link, value }` (link: a merged ribbon), and the `tooltip`
+ * option gets the same objects.
+ *
+ * This reruns after the library's `draw` (which also runs on resize and
+ * highlight changes); overrides its `_bindHover`, `_nodeTooltip` and
+ * `_linkTooltip`; sets its `_applyHover`; and reads its `svg`, `width`,
+ * `options`, `hovered`, `tooltip`, `_setHovered`, `_countRow` and `prepared`
+ * (`columns`, `colorIndex`, `paths`) plus the d3 data bound to its
+ * `.parallel-sets__*` elements. Recheck them when prism-charts.js is updated.
  */
 export class ExtendedParallelSetsChart extends ParallelSetsChart {
   draw() {
+    this.bundledLinks = null;
     super.draw();
+    const nodeG = this.svg.selectAll('.parallel-sets__node');
+    if (nodeG.empty()) return;
+    const inside = this.options.labelPosition === 'inside';
+
     this._styleNodes();
-    if (this.options.labelPosition === 'inside') this._placeLabelsInside();
+    if (inside) this._spreadColumns(nodeG);
+    if (this.options.bundleLinks) {
+      this._bundleLinks();
+      if (this.options.hover) this._bindBundledHover(nodeG);
+    } else if (inside) {
+      this.svg.selectAll('.parallel-sets__link').attr('d', linkPath);
+    }
+    if (inside) this._placeLabelsInside(nodeG);
     else if (!this.options.showCounts) this._removeLabelCounts();
   }
 
@@ -62,23 +89,191 @@ export class ExtendedParallelSetsChart extends ParallelSetsChart {
     if (nodeStroke) rects.attr('stroke', nodeStroke).attr('stroke-width', 1);
   }
 
-  _placeLabelsInside() {
+  // ── Merged ribbons ─────────────────────────────────────────────────────────
+
+  /**
+   * Replace the library's per-path ribbons with one per (column pair, source,
+   * target, color), stacked within each node by the position of the node at
+   * the other end, then by color order.
+   */
+  _bundleLinks() {
+    const old = this.svg.selectAll('.parallel-sets__link');
+    if (old.empty()) return;
+    const linkG = d3.select(old.node().parentNode);
+    const { paths, columns, colorIndex } = this.prepared;
+    const pathByRecords = new Map(paths.map((p) => [p.records, p]));
+
+    const merged = new Map();
+    old.each(function (l) {
+      const id = `${l.pair}|${l.source.id}|${l.target.id}|${l.colorKey}`;
+      let m = merged.get(id);
+      if (!m) {
+        m = {
+          source: l.source,
+          target: l.target,
+          pair: l.pair,
+          colorKey: l.colorKey,
+          value: 0,
+          width: 0,
+          paths: [],
+          // Same for every ribbon of this color, including the legend's greying
+          stroke: d3.select(this).attr('stroke'),
+        };
+        merged.set(id, m);
+      }
+      m.value += l.value;
+      m.width += l.width;
+      m.paths.push(pathByRecords.get(l.records));
+    });
+    const links = [...merged.values()];
+
+    const colorOrder = new Map(columns[colorIndex].nodes.map((n) => [n.key, n.index]));
+    const byColor = (a, b) => (colorOrder.get(a.colorKey) ?? 0) - (colorOrder.get(b.colorKey) ?? 0);
+    // Source side: stack each node's outgoing ribbons by target position
+    for (const group of d3.group(links, (l) => l.source).values()) {
+      group.sort((a, b) => a.target.y0 - b.target.y0 || byColor(a, b));
+      let y = group[0].source.y0;
+      for (const l of group) {
+        l.y0 = y + l.width / 2;
+        y += l.width;
+      }
+    }
+    // Target side: stack each node's incoming ribbons by source position
+    for (const group of d3.group(links, (l) => l.target).values()) {
+      group.sort((a, b) => a.source.y0 - b.source.y0 || byColor(a, b));
+      let y = group[0].target.y0;
+      for (const l of group) {
+        l.y1 = y + l.width / 2;
+        y += l.width;
+      }
+    }
+
+    old.remove();
+    this.bundledLinks = linkG
+      .selectAll('path')
+      .data(links)
+      .join('path')
+      .attr('class', 'parallel-sets__link')
+      .attr('d', linkPath)
+      .attr('stroke', (l) => l.stroke)
+      .attr('stroke-width', (l) => Math.max(l.width, 1));
+    // The hovered agents' share of each ribbon, drawn over the muted ribbons
+    this.hoverLayer = linkG.append('g').style('pointer-events', 'none');
+  }
+
+  // The library binds hover to its own ribbons; with bundleLinks, ours replace them
+  _bindHover(nodeG, links, layout) {
+    if (!this.options.bundleLinks) super._bindHover(nodeG, links, layout);
+  }
+
+  _bindBundledHover(nodeG) {
+    this._applyHover = () => this._applyBundledHover();
+    const move = (event) => this.tooltip.move(event);
+    nodeG
+      .on('mouseenter', (event, node) => {
+        const hovered = { type: 'node', node };
+        this._setHovered(hovered);
+        this.tooltip.show(this._nodeTooltip(hovered), event, node);
+      })
+      .on('mousemove', move);
+    this.bundledLinks
+      .on('mouseenter', (event, link) => {
+        const hovered = { type: 'link', link, value: link.value };
+        this._setHovered(hovered);
+        this.tooltip.show(this._bundledLinkTooltip(hovered), event, link);
+      })
+      .on('mousemove', move);
+  }
+
+  /**
+   * Mute every ribbon and node, then draw the hovered agents' share of each
+   * ribbon on top (at the ribbon's top edge) and unmute the nodes they pass.
+   */
+  _applyBundledHover() {
+    const links = this.bundledLinks;
+    if (!links) return;
     const nodeG = this.svg.selectAll('.parallel-sets__node');
+    const hovered = this.hovered;
+    this.hoverLayer.selectAll('*').remove();
+    links.classed('parallel-sets__link--muted', Boolean(hovered));
+    if (!hovered) {
+      nodeG.classed('parallel-sets__node--muted', false);
+      return;
+    }
+
+    let match;
+    if (hovered.type === 'node') {
+      const { dim, key } = hovered.node;
+      match = (p) => p.keys[dim] === key;
+    } else {
+      const own = new Set(hovered.link.paths);
+      match = (p) => own.has(p);
+    }
+
+    const parts = [];
+    const activeNodes = new Set();
+    for (const l of links.data()) {
+      const value = d3.sum(l.paths, (p) => (match(p) ? p.value : 0));
+      if (!value) continue;
+      const width = (l.width * value) / l.value;
+      const offset = (width - l.width) / 2;
+      parts.push({ ...l, width, y0: l.y0 + offset, y1: l.y1 + offset });
+      activeNodes.add(l.source.id);
+      activeNodes.add(l.target.id);
+    }
+    this.hoverLayer
+      .selectAll('path')
+      .data(parts)
+      .join('path')
+      .attr('class', 'parallel-sets__link parallel-sets__link--active')
+      .attr('d', linkPath)
+      .attr('stroke', (l) => l.stroke)
+      .attr('stroke-width', (l) => Math.max(l.width, 1));
+    nodeG.classed('parallel-sets__node--muted', (n) => !activeNodes.has(n.id));
+  }
+
+  /** Tooltip rows for a merged ribbon: its two columns, its color, its count. */
+  _bundledLinkTooltip(hovered) {
+    const { columns, colorIndex } = this.prepared;
+    const { link } = hovered;
+    const rows = [
+      [columns[link.pair].title, link.source.label],
+      [columns[link.pair + 1].title, link.target.label],
+    ];
+    if (colorIndex !== link.pair && colorIndex !== link.pair + 1) {
+      rows.push([columns[colorIndex].title, link.paths[0].labels[colorIndex]]);
+    }
+    if (this.options.showCounts) rows.push(this._countRow(link.value));
+    return this.options.tooltip ? this.options.tooltip(hovered, rows) : rows;
+  }
+
+  // ── Inside labels ──────────────────────────────────────────────────────────
+
+  /**
+   * Move the columns so the last one ends at the chart's right edge (the
+   * library leaves room there for outside labels), along with the node rects,
+   * their hover targets and the column headers.
+   */
+  _spreadColumns(nodeG) {
     const nodes = nodeG.data();
-    if (!nodes.length) return;
-
-    this._spreadColumns(nodes);
-
-    // Node rects, their (wider) hover targets, and the links between them
+    const nodeWidth = this.options.nodeWidth;
+    const lastX0 = d3.max(nodes, (d) => d.x0);
+    const targetX0 = Math.max(this.width - nodeWidth, 0);
+    if (lastX0 && lastX0 < targetX0) {
+      const k = targetX0 / lastX0;
+      for (const d of nodes) {
+        d.x0 *= k;
+        d.x1 = d.x0 + nodeWidth;
+      }
+    }
     nodeG.select('.parallel-sets__node-rect').attr('x', (d) => d.x0);
     nodeG.select('.parallel-sets__node-hit').attr('x', (d) => d.x0 - HIT_PAD);
-    this.svg.selectAll('.parallel-sets__link').attr('d', linkPath);
-
     // Column headers line up with their nodes' left edges
     const columnX = new Map(nodes.map((d) => [d.dim, d.x0]));
-    const headers = this.svg.selectAll('.parallel-sets__header');
-    headers.attr('x', (col) => columnX.get(col.index) ?? 0);
+    this.svg.selectAll('.parallel-sets__header').attr('x', (col) => columnX.get(col.index) ?? 0);
+  }
 
+  _placeLabelsInside(nodeG) {
     const fontSize = +this.svg.attr('font-size') || 14;
     nodeG.each(function (d) {
       const g = d3.select(this);
@@ -128,22 +323,6 @@ export class ExtendedParallelSetsChart extends ParallelSetsChart {
     if (this.options.showCounts) return super._linkTooltip(hovered);
     const rows = hovered.keys.map((_, i) => [this.prepared.columns[i].title, hovered.labels[i]]);
     return this.options.tooltip ? this.options.tooltip(hovered, rows) : rows;
-  }
-
-  /**
-   * Move the columns so the last one ends at the chart's right edge. The
-   * library leaves room for outside labels there; inside labels don't need it.
-   */
-  _spreadColumns(nodes) {
-    const nodeWidth = this.options.nodeWidth;
-    const lastX0 = d3.max(nodes, (d) => d.x0);
-    const targetX0 = Math.max(this.width - nodeWidth, 0);
-    if (!lastX0 || lastX0 >= targetX0) return;
-    const k = targetX0 / lastX0;
-    for (const d of nodes) {
-      d.x0 *= k;
-      d.x1 = d.x0 + nodeWidth;
-    }
   }
 }
 

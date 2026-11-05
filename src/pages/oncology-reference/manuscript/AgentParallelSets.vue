@@ -30,6 +30,7 @@
         :node-fill="config.nodeFill"
         :node-stroke="config.nodeStroke"
         :show-counts="config.showCounts"
+        :bundle-links="config.bundleLinks"
         :unit="config.unit"
       />
     </div>
