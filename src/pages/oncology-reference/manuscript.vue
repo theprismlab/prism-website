@@ -1,9 +1,9 @@
 <template>
   <page>
     <manuscript-header />
-    <page-section width="narrow">
-      <manuscript-stat-cards class="mb-12" />
-    </page-section>
+    <!-- <page-section width="narrow">
+      <manuscript-stat-cards class="mb-0" />
+    </page-section> -->
     <!-- -------------------------------------------------------
       SECTION 
       ------------------------------------------------------- -->
@@ -34,7 +34,7 @@
       </h3>
       <manuscript-figures />
     </page-section>
-    <page-section width="default">
+    <page-section width="default" v-if="showParallelSets">
       <section-overline gradient>About the dataset</section-overline>
       <prism-section-title gradient>A Benchmark for Oncology Therapeutics</prism-section-title>
       <agent-parallel-sets />
@@ -42,7 +42,7 @@
     <!-- -------------------------------------------------------
       SECTION 
       ------------------------------------------------------- -->
-    <page-section width="default">
+    <page-section width="default" v-if="showAssayWorkflow">
       <section-overline gradient>The Underlying Technology</section-overline>
       <prism-section-title gradient
         >The PRISM Platform — Multiplexed Cancer Drug Screening at Scale</prism-section-title
@@ -59,7 +59,7 @@
     <!-- -------------------------------------------------------
       SECTION 
       ------------------------------------------------------- -->
-    <page-section width="default">
+    <page-section width="default" v-if="showManuscriptVignettes">
       <section-overline gradient>Data Vignettes</section-overline>
       <prism-section-title>Key findings from the paper</prism-section-title>
       <p class="prism-text-body-large">
@@ -72,7 +72,7 @@
     <!-- -------------------------------------------------------
       SECTION 
       ------------------------------------------------------- -->
-    <page-section width="default">
+    <page-section width="default" v-if="showAtAGlance">
       <section-overline gradient>Overview</section-overline>
       <prism-section-title>At-a-glance</prism-section-title>
       <p class="prism-text-body-large">[TEXT]</p>
@@ -96,10 +96,7 @@
           <section-overline gradient>Nominations</section-overline>
           <h2 class="prism-text-display-small mt-1 mb-3">Help grow the Oncology Reference</h2>
           <p class="prism-text-body-large mb-0">
-            We are excited to accept nominations from all researchers to continue to grow our
-            Oncology Reference library. Based on our in-process manuscript to create a living
-            resource of Oncology Reference test agents, the PRISM Team will be screening 150 new
-            test agents per year, composed of small molecules, antibodies, and ADCs.
+            We are excited to accept nominations to continue to grow our Oncology Reference library.
           </p>
         </div>
         <v-btn
@@ -141,7 +138,12 @@
       AgentParallelSets,
     },
     data() {
-      return {};
+      return {
+        showAtAGlance: false,
+        showManuscriptVignettes: false,
+        showAssayWorkflow: false,
+        showParallelSets: false,
+      };
     },
   };
 </script>
