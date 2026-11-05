@@ -14,15 +14,15 @@ export const AGENT_PARALLEL_SETS = {
   // Columns left to right. Pass an object ({ field, title, domain, format }) in
   // place of a name to override the lookup for this chart only.
   dimensions: [
-    'PreviouslyScreened',
-    'Modality_summarized',
+    // 'Modality_summarized',
     'Class',
-    'TargetPathway',
+    // 'TargetPathway',
     'HighestClinicalStage_summarized',
+    'PreviouslyScreened',
   ].map(toDimension),
 
   // Field that colors the ribbons when the card first renders
-  defaultColorBy: 'Class',
+  defaultColorBy: 'PreviouslyScreened',
   // Plot height in pixels
   height: 480,
   // Noun for the tooltip counts

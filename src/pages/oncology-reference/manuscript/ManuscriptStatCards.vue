@@ -30,9 +30,30 @@
    * text-only tile; the label then takes the headline slot.
    */
   export default {
-    name: 'AbstractStats',
-    props: {
-      stats: { type: Array, required: true },
+    name: 'ManuscriptStatCards',
+    data() {
+      return {
+        stats: [
+          {
+            value: 396,
+            label: 'Clinically relevant agents',
+            detail: 'Small molecules, protein degraders, and biologics',
+            icon: 'mdi-flask-outline',
+          },
+          {
+            value: 891,
+            label: 'Barcoded cancer cell lines',
+            detail: 'Deeply characterized PRISM collection',
+            icon: 'mdi-dna',
+          },
+          {
+            value: 29,
+            label: 'Tumor lineages',
+            detail: 'Pan-cancer coverage in pooled screens',
+            icon: 'mdi-sitemap-outline',
+          },
+        ],
+      };
     },
     methods: {
       hasValue(stat) {

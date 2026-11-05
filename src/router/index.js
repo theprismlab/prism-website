@@ -92,16 +92,6 @@ const routes = [
       ],
     },
   },
-  {
-    path: '/oncology-reference/v3',
-    component: () => import('@/pages/oncology-reference/manuscript-v3.vue'),
-    meta: {
-      breadcrumbs: () => [
-        { title: 'Oncology Reference', to: '/oncology-reference' },
-        { title: 'V3' },
-      ],
-    },
-  },
 
   // ─── Submissions layout ───────────────────────────────────────────────────
   {

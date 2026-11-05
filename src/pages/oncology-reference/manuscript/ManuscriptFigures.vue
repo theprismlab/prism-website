@@ -27,6 +27,7 @@
 </template>
 
 <script>
+  const figurePath = import.meta.env.BASE_URL + 'images/oncref_manuscript/';
   /**
    * ManuscriptFigures
    *
@@ -49,8 +50,41 @@
    */
   export default {
     name: 'ManuscriptFigures',
-    props: {
-      figures: { type: Array, required: true },
+    // props: {
+    //   figures: { type: Array, required: true },
+    // },
+    data() {
+      return {
+        // Manuscript figures: { src, alt?, label?, caption, cols?, maxHeight? }.
+        // Leave `src` empty to show a placeholder until the image is in place.
+        // `cols` is the span out of 12 on md+ screens (default 12 = full row);
+        // `maxHeight` caps the image (px as a number, or any CSS length string).
+        figures: [
+          {
+            src: figurePath + 'Figures-01a.png',
+            label: 'Figure 1a.',
+            caption:
+              ' Depiction of 265 test agents in the OncRef dataset by target pathway and modality.',
+            cols: 6,
+            maxHeight: 350,
+          },
+          {
+            src: figurePath + 'Figures-01b.png',
+            label: 'Figure 1b.',
+            caption:
+              'PRISM viability profiles across 891 cell lines are associated with orthogonal baseline feature datasets from DepMap.',
+            cols: 6,
+            maxHeight: 350,
+          },
+          {
+            src: figurePath + 'Figures-01a2.png',
+            label: 'Figure XX.',
+            caption:
+              ' Depiction of 265 test agents in the OncRef dataset by class, clinical stage, and screening status.',
+            maxHeight: 350,
+          },
+        ],
+      };
     },
   };
 </script>

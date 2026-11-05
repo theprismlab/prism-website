@@ -37,3 +37,90 @@ export const ASSAY_WORKFLOW = [
   { title: 'Amplify', caption: 'Biotinylated PCR of barcodes', icon: 'mdi-repeat' },
   { title: 'Detect', caption: 'Luminex bead fluorescence readout', icon: 'mdi-chart-bar' },
 ];
+
+// Publication details for the OncRef paper, shared by ManuscriptHeader and
+// ManuscriptCard. `note` on each author and `mark` on each affiliation render as
+// superscripts. journal / date / doi / pdfUrl / dataAccess render only once
+// they have a value, so leave any of them empty ('') to hide it.
+export const MANUSCRIPT = {
+  title: 'OncRef: A pan-cancer PRISM reference of cancer therapeutics',
+  authors: [
+    { name: 'Matthew G. Rees', note: '1,5,7,#' },
+    { name: 'Matthew J. Emmett', note: '1,2,3,4,5' },
+    { name: 'Mustafa A. Kocak', note: '1' },
+    { name: 'Colleen T. Harrington', note: '1' },
+    { name: 'Anthony Fazio', note: '1' },
+    { name: 'Mrinal Shekhar', note: '1' },
+    { name: 'Li Wang', note: '1' },
+    { name: 'Alvin Kalathungal', note: '1' },
+    { name: 'Tenzin Sangpo', note: '1' },
+    { name: 'Emily R. Borr', note: '1' },
+    { name: 'Yiwei Liang', note: '1' },
+    { name: 'Rachael Barry', note: '1' },
+    { name: 'Emily Reeves', note: '1' },
+    { name: 'Aydin Golabi', note: '1' },
+    { name: 'Blanche C. Ip', note: '1' },
+    { name: 'Laura Doherty', note: '1' },
+    { name: 'Jillian Eskra', note: '1' },
+    { name: 'John F. Davis', note: '1' },
+    { name: 'Ashish B. George', note: '1' },
+    { name: 'Dennie T. Frederick', note: '1' },
+    { name: 'Melissa M. Ronan', note: '1' },
+    { name: 'Catarina D. Campbell', note: '1' },
+    { name: 'Jennifer A. Roth', note: '1,6,#' },
+    { name: 'William R. Sellers', note: '1,2,4,6,#' },
+  ],
+  affiliations: [
+    { mark: '1', text: 'Broad Institute of MIT & Harvard, Cambridge, MA 02142, USA' },
+    {
+      mark: '2',
+      text: 'Department of Medical Oncology, Dana-Farber Cancer Institute, Boston, MA 02215, USA',
+    },
+    {
+      mark: '3',
+      text: 'Division of Hematology and Oncology, Mass General Brigham Cancer Institute, Boston, MA 02114, USA',
+    },
+    { mark: '4', text: 'Harvard Medical School, Boston, MA 02115, USA' },
+    { mark: '5', text: 'These authors contributed equally' },
+    { mark: '6', text: 'These authors contributed equally' },
+    { mark: '7', text: 'Lead contact' },
+    {
+      mark: '#',
+      text: 'Correspondence: reesm@broadinstitute.org (M.G.R.), jroth@broadinstitute.org (J.A.R.), wsellers@broadinstitute.org (W.R.S.)',
+    },
+  ],
+  journal: 'TBD',
+  date: 'Month DD, YYYY',
+  doi: '10.1101/2025.XX.XX.XXXXXX',
+  pdfUrl: '#',
+  dataAccess: '#',
+};
+
+export const STORY_CARDS = [
+  {
+    eyebrow: 'The resource',
+    title: 'A pan-cancer screen of clinical therapeutics',
+    body: 'Clinically relevant agents were profiled across the PRISM collection of deeply characterized, barcoded cancer cell lines spanning 29 lineages. The result is OncRef, an Oncology Reference for cancer therapeutics.',
+    points: [
+      'Small molecules, protein degraders, and biologics',
+      '891 barcoded cell lines with extensive molecular characterization',
+      'Pooled, multiplexed screening of all lines at once',
+    ],
+  },
+  {
+    eyebrow: 'The framework',
+    title: 'Beyond the primary target',
+    body: 'Most agents produced effects consistent with their annotated targets. A new framework then quantifies how each agent behaves beyond that target, surfacing unintended targets and the mediators of toxicity that shape cellular response.',
+    points: ['Specificity', 'Selectivity', 'On-target polypharmacology', 'Non-target effects'],
+  },
+  {
+    eyebrow: 'The benchmark',
+    title: 'A reference that scales',
+    body: 'Together, the resource and the framework establish a benchmark for oncology therapeutics, and a repeatable way to evaluate new targets and new modalities as they emerge.',
+    points: [
+      'Benchmark for oncology therapeutics',
+      'Scalable framework for new targets',
+      'Extends to new modalities',
+    ],
+  },
+];
