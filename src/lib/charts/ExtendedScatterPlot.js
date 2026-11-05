@@ -7,6 +7,10 @@ const LABEL_GAP = 3;
 const MUTED_LABEL_OPACITY = 0.2;
 // Gap in pixels between a selected point's edge and its selection ring
 const SELECTION_GAP = 3;
+// Gap in pixels between a hover-target point's edge and its ring
+const HOVER_TARGET_GAP = 3;
+// Width in pixels of the tooltip's left edge in the hovered point's colour
+const TOOLTIP_ACCENT_WIDTH = 4;
 // Default opacity of every other point and label while a selection is active
 const UNSELECTED_OPACITY = 0.3;
 // Pixels the pointer may move between press and release and still count as a
@@ -14,7 +18,8 @@ const UNSELECTED_OPACITY = 0.3;
 const CLICK_TOLERANCE = 4;
 
 /**
- * ScatterPlot with point labels, point clicks and a selection ring.
+ * ScatterPlot with point labels, point clicks, a selection ring and hover
+ * linking.
  * prism-charts.js is a vendored bundle, so these are added here rather than in
  * the library.
  *
@@ -36,13 +41,23 @@ const CLICK_TOLERANCE = 4;
  *                 layer. Other layers are left out of click hit-testing, so
  *                 they never block a clickable point beneath them.
  *
+ * Extra method:
+ *   setHoverTarget(predicate)  `(record, layerId) => boolean` or null. Rings
+ *                 the matching points as if hovered, e.g. while the mouse is on
+ *                 their row in a linked table.
+ *
+ * A point's label turns bold (class `scatter-plot__label--hovered`) while the
+ * point is hovered in the plot (the point the tooltip shows) or matches the
+ * hover target. The tooltip gets a left edge in the hovered point's colour.
+ *
  * Labels and rings redraw whenever the points do (data/option updates, zoom,
  * pan and highlight changes), sit in the same clipped area, follow the same
  * transitions, and ignore the mouse so the brush and tooltip work as before.
  *
- * This hooks the library's `_drawPoints` and `_buildDelaunay` and reads its
- * `svg`, `root`, `plot`, `layers`, `layerGroups`, `nodes`, `innerSize`,
- * `brushing`, `panning`, `highlight`, `_px/_py/_pr` and `_keys` internals; recheck them when prism-charts.js is
+ * This hooks the library's `_drawPoints`, `_buildDelaunay` and `_setHovered`
+ * and reads its `svg`, `root`, `plot`, `scales`, `layers`, `layerGroups`,
+ * `nodes`, `hovered`, `tooltip.div`, `innerSize`, `brushing`, `panning`, `highlight`,
+ * `_px/_py/_pr`, `_pcolor` and `_keys` internals; recheck them when prism-charts.js is
  * updated.
  */
 export class ExtendedScatterPlot extends ScatterPlot {
@@ -68,6 +83,14 @@ export class ExtendedScatterPlot extends ScatterPlot {
     this._fadeUnselectedPoints();
     this._drawLabels(transition);
     this._drawSelection(transition);
+    this._drawHoverTarget(transition);
+  }
+
+  // Called by the library whenever the point under the mouse changes
+  _setHovered(node) {
+    super._setHovered(node);
+    this._updateHoveredLabels();
+    this._colorTooltip(node);
   }
 
   // The library's Delaunay spans every layer (for the tooltip); clicks get their
@@ -83,6 +106,65 @@ export class ExtendedScatterPlot extends ScatterPlot {
           (node) => this._py(node.d),
         )
       : null;
+  }
+
+  // ── Hover ────────────────────────────────────────────────────────────────────
+  setHoverTarget(predicate) {
+    this.hoverTarget = predicate ?? null;
+    if (!this.scales) return;
+    this._drawHoverTarget(null);
+    this._updateHoveredLabels();
+  }
+
+  /** Hovered in the plot (the library's `hovered` node) or by the hover target. */
+  _isHovered(d, layer) {
+    return this.hovered?.d === d || Boolean(this.hoverTarget?.(d, layer.id));
+  }
+
+  /** Bold the hovered points' labels and lift them above their neighbours. */
+  _updateHoveredLabels() {
+    if (!this.labelsG) return;
+    const isHovered = (item) => this._isHovered(item.d, item.layer);
+    this.labelsG
+      .selectAll('text')
+      .classed('scatter-plot__label--hovered', isHovered)
+      .filter(isHovered)
+      .raise();
+  }
+
+  /**
+   * Edge the tooltip in the hovered point's own colour (its color-axis or
+   * layer colour, not the highlight's grey), so it reads as that point's.
+   */
+  _colorTooltip(node) {
+    const color = node ? this._pcolor(node.d, node.layer) : null;
+    this.tooltip.div.style(
+      'border-left',
+      color ? `${TOOLTIP_ACCENT_WIDTH}px solid ${color}` : null,
+    );
+  }
+
+  _drawHoverTarget(transition) {
+    this.hoverTargetG ??= this._overlayGroup('scatter-plot__hover-target');
+
+    const target = this.hoverTarget;
+    const items = target ? this._collect((d, layer) => target(d, layer.id)) : [];
+
+    const cx = (item) => this._px(item.d);
+    const cy = (item) => this._py(item.d);
+    const r = (item) => this._pr(item.d) + HOVER_TARGET_GAP;
+
+    const rings = this.hoverTargetG
+      .selectAll('circle')
+      .data(items, (item) => item.id)
+      .join((enter) =>
+        enter
+          .append('circle')
+          .attr('class', 'scatter-plot__hover-target-ring')
+          .attr('cx', cx)
+          .attr('cy', cy),
+      );
+    (transition ? rings.transition(transition) : rings).attr('cx', cx).attr('cy', cy).attr('r', r);
   }
 
   // ── Selection state ──────────────────────────────────────────────────────────
@@ -224,6 +306,7 @@ export class ExtendedScatterPlot extends ScatterPlot {
       labels.filter((item) => opacity(item) === 1).raise();
       labels.filter(isSelected).raise();
     }
+    this._updateHoveredLabels();
   }
 
   _drawSelection(transition) {

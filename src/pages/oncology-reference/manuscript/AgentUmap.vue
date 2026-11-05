@@ -37,6 +37,7 @@
       :highlight="highlightPredicate"
       :point-label="pointLabel"
       :selected="selectedPredicate"
+      :hover-target="hoveredPredicate"
       :click-layers="['agents']"
       :height="height"
       :font-size="fontSize"
@@ -80,6 +81,8 @@
    * v-model:selected. Clicking an agent selects it, clicking empty plot space
    * clears the selection, and gene clicks are ignored. The selected agent gets
    * a ring and is always labelled.
+   * `hovered` is the CompoundName of an agent hovered outside the plot (e.g.
+   * its table row), or null; that point is ringed and its label bolded.
    *
    * Agents and genes are adapted into uniform `{ id, x, y, … }` points so the
    * plot's axes read the same fields for both layers.
@@ -94,6 +97,8 @@
       highlighted: { type: Array, default: null },
       // CompoundName of the selected agent, or null (v-model:selected)
       selected: { type: String, default: null },
+      // CompoundName of an agent hovered elsewhere, e.g. its table row, or null
+      hovered: { type: String, default: null },
       // Copy, color column and gene layer; see the `umap` section of agentExplorer.js
       config: { type: Object, default: () => AGENT_EXPLORER.umap },
       // Overrides the config's title
@@ -202,6 +207,10 @@
       selectedPredicate() {
         const selected = this.selected;
         return selected ? (d, layer) => layer === 'agents' && d.id === selected : null;
+      },
+      hoveredPredicate() {
+        const hovered = this.hovered;
+        return hovered ? (d, layer) => layer === 'agents' && d.id === hovered : null;
       },
       highlightedPointCount() {
         const keys = this.highlightedKeys;

@@ -17,9 +17,12 @@
    *                 null or '' draws no label.
    *   selected      `(record, layerId) => boolean` or null: points to ring.
    *   clickLayers   Layer ids whose points can be clicked; null for all.
+   *   hoverTarget   `(record, layerId) => boolean` or null: points to ring as if
+   *                 hovered, e.g. from a linked table row; forwarded to
+   *                 setHoverTarget so it redraws only the ring, not the plot.
    *   @point-click  Emitted with (record, layerId) on a click on a point, or
    *                 (null, null) on a click on empty plot space.
-   * The last four come from ExtendedScatterPlot.js.
+   * The last five come from ExtendedScatterPlot.js.
    *   @zoom-change  Emitted with true after a drag-zoom and false after a reset.
    *   @highlight-change  Emitted with the plot's Highlight after a legend click or
    *                 highlight change.
@@ -57,6 +60,8 @@
       selected: { type: Function, default: null },
       // Layer ids whose points emit point-click; null for every layer
       clickLayers: { type: Array, default: null },
+      // Hover-target predicate `(record, layerId) => boolean`; null for none
+      hoverTarget: { type: Function, default: null },
     },
     emits: ['zoom-change', 'highlight-change', 'point-click'],
     computed: {
@@ -110,6 +115,9 @@
       highlight(predicate) {
         this.plot.setHighlight(predicate);
       },
+      hoverTarget(predicate) {
+        this.plot.setHoverTarget(predicate);
+      },
     },
     mounted() {
       // Stored as a plain property (not in data()) so Vue doesn't wrap the d3
@@ -121,6 +129,7 @@
         onPointClick: (record, layerId) => this.$emit('point-click', record, layerId),
       });
       if (this.highlight) this.plot.setHighlight(this.highlight);
+      if (this.hoverTarget) this.plot.setHoverTarget(this.hoverTarget);
     },
     beforeUnmount() {
       this.plot.destroy();
@@ -158,6 +167,19 @@
     font-weight: 700;
     fill: rgba(0, 0, 0, 0.92);
     stroke-width: 4px;
+  }
+
+  /* The label of a hovered point (in the plot or from a linked table row) */
+  .scatter-plot-host :deep(.scatter-plot__label--hovered) {
+    font-weight: 700;
+  }
+
+  /* Ring around a point hovered from outside the plot, matching the plot's own
+     hover ring */
+  .scatter-plot-host :deep(.scatter-plot__hover-target-ring) {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.75);
+    stroke-width: 2;
   }
 
   /* Ring around the selected point */

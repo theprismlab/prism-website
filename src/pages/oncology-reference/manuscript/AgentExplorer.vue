@@ -64,12 +64,13 @@
       </div>
 
       <agent-umap
+        v-model:selected="selectedName"
         :config="config.umap"
         :agents="agents"
         :rows="filteredAgents"
         :genes="crisprGenes"
         :highlighted="searchedAgents"
-        v-model:selected="selectedName"
+        :hovered="hoveredName"
         class="agent-explorer__plot"
       />
 
@@ -86,6 +87,7 @@
         :row-props="rowProps"
         class="agent-explorer__table"
         @click:row="(event, { item }) => toggleSelected(item)"
+        @mouseleave="hoveredName = null"
       >
         <!-- The selected agent, pinned above the rows on every page and left out
              of `tableAgents` so it is not listed twice. Click it to deselect. -->
@@ -97,6 +99,10 @@
             aria-selected="true"
             @click="toggleSelected(selectedAgent)"
             @keydown.enter.space.prevent="toggleSelected(selectedAgent)"
+            @mouseenter="setHovered(selectedAgent)"
+            @mouseleave="clearHovered(selectedAgent)"
+            @focus="setHovered(selectedAgent)"
+            @blur="clearHovered(selectedAgent)"
           >
             <td v-for="column in columns" :key="column.key" class="v-data-table__td">
               {{ formatCell(column.key, selectedAgent[column.key]) }}
@@ -144,6 +150,9 @@
         // CompoundName of the agent selected in the plot or table, or null.
         // One at a time; it is ringed in the plot and pinned atop the table.
         selectedName: null,
+        // CompoundName of the agent whose table row is under the mouse (or has
+        // keyboard focus), ringed in the plot; null otherwise
+        hoveredName: null,
         filterFields,
         // Selected values per filter field, e.g. { Class: ['biologic'], ... }
         activeFilters: Object.fromEntries(filterFields.map((f) => [f.key, []])),
@@ -243,7 +252,16 @@
       toggleSelected(row) {
         this.selectedName = row.CompoundName === this.selectedName ? null : row.CompoundName;
       },
-      // Clickable, keyboard-focusable table rows
+      setHovered(row) {
+        this.hoveredName = row.CompoundName;
+      },
+      // Only clears if this row is still the hovered one, so moving straight to
+      // another row never wipes the new hover
+      clearHovered(row) {
+        if (this.hoveredName === row.CompoundName) this.hoveredName = null;
+      },
+      // Clickable, keyboard-focusable table rows that ring their point in the
+      // plot on hover or focus
       rowProps({ item }) {
         return {
           class: 'agent-explorer__row',
@@ -253,6 +271,10 @@
             event.preventDefault();
             this.toggleSelected(item);
           },
+          onMouseenter: () => this.setHovered(item),
+          onMouseleave: () => this.clearHovered(item),
+          onFocus: () => this.setHovered(item),
+          onBlur: () => this.clearHovered(item),
         };
       },
       // Table cell text: list fields read as comma/semicolon-separated values
