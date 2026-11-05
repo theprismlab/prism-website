@@ -29,6 +29,8 @@
       // Fill and outline for every node; null keeps the library's look
       nodeFill: { type: String, default: null },
       nodeStroke: { type: String, default: null },
+      // false leaves category counts out of the labels and tooltips
+      showCounts: { type: Boolean, default: true },
       fillColumns: { type: Boolean, default: true },
       hover: { type: Boolean, default: true },
       tooltip: { type: Function, default: null },
@@ -49,6 +51,7 @@
           labelPosition,
           nodeFill,
           nodeStroke,
+          showCounts,
           fillColumns,
           hover,
           tooltip,
@@ -66,6 +69,7 @@
           labelPosition,
           nodeFill,
           nodeStroke,
+          showCounts,
           fillColumns,
           hover,
           tooltip,

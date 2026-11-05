@@ -5,6 +5,13 @@ import { ParallelSetsChart } from '@/lib/charts/prism-charts.js';
 const INSIDE_PADDING = 6;
 // Pixels the library's invisible hover target extends past each side of a node
 const HIT_PAD = 6;
+// Label text color on light fills and over ribbons
+const DARK_INK = 'rgba(0, 0, 0, 0.82)';
+// Halo around labels too tall for their node, so they read over the ribbons
+const GLOW_COLOR = '#fff';
+const GLOW_WIDTH = 4;
+// Line spacing of wrapped inside labels, in ems
+const LINE_HEIGHT = 1.15;
 // Link path between node edges; the same shape the library draws
 const linkPath = d3
   .linkHorizontal()
@@ -21,18 +28,21 @@ const linkPath = d3
  *                  dark grey (and the color column's category colors); null
  *                  keeps the library's fills.
  *   nodeStroke     Outline color for every node, drawn 1px wide; null for none.
+ *   showCounts     true (default) shows each category's count after its label
+ *                  and as a tooltip row; false leaves counts out of both.
  *   labelPosition  'outside' (default, the library's layout: labels to the
- *                  right of each node) or 'inside'. Inside labels sit in the
- *                  node, left-aligned, in black or white to suit the node's
- *                  fill, and are truncated with an ellipsis to fit its width.
- *                  A node shorter than one line of text gets no label (its
- *                  tooltip still names it). Column headers align with the
+ *                  right of each node) or 'inside'. Inside labels are centered
+ *                  in the node, in black or white to suit the node's fill, and
+ *                  wrap onto more lines between words to fit its width. They
+ *                  never show counts. A node too short for its label still
+ *                  shows it, in dark text with a white glow so it reads where
+ *                  it spills over the ribbons. Column headers align with the
  *                  nodes' left edges, and the columns spread across the full
  *                  width, since no space is needed right of the last column.
  *                  Pair it with a wide `nodeWidth` (e.g. 150).
  *
- * This reruns after the library's `draw` (which also runs on resize and
- * highlight changes) and reads its `svg`, `width` and `options` and the d3 data
+ * This overrides the library's `_nodeTooltip` / `_linkTooltip`, reruns after its `draw` (which also runs on resize and
+ * highlight changes) and reads its `svg`, `width`, `options` and `prepared.columns` and the d3 data
  * bound to its `.parallel-sets__*` elements; recheck them when prism-charts.js
  * is updated.
  */
@@ -41,6 +51,7 @@ export class ExtendedParallelSetsChart extends ParallelSetsChart {
     super.draw();
     this._styleNodes();
     if (this.options.labelPosition === 'inside') this._placeLabelsInside();
+    else if (!this.options.showCounts) this._removeLabelCounts();
   }
 
   /** Apply the nodeFill / nodeStroke overrides, if set, to every node rect. */
@@ -72,22 +83,51 @@ export class ExtendedParallelSetsChart extends ParallelSetsChart {
     nodeG.each(function (d) {
       const g = d3.select(this);
       const label = g.select('.parallel-sets__label');
-      // A node shorter than a line of text can't hold its label, so the label
-      // spills over the node's edges onto the ribbons: give it a white glow
-      const overflows = d.y1 - d.y0 < fontSize;
+      const lines = wrapLabel(label.node(), d.label, d.x1 - d.x0 - INSIDE_PADDING * 2);
+      const cx = (d.x0 + d.x1) / 2;
+      // Rebuild the label as one centered tspan per line (the count is dropped),
+      // with the block of lines centered on the node vertically
+      label.text(null).attr('x', cx).attr('text-anchor', 'middle').attr('dy', null);
+      lines.forEach((line, i) => {
+        label
+          .append('tspan')
+          .attr('x', cx)
+          .attr(
+            'dy',
+            i === 0 ? `${0.35 - ((lines.length - 1) * LINE_HEIGHT) / 2}em` : `${LINE_HEIGHT}em`,
+          )
+          .text(line);
+      });
+      // A node shorter than its label can't hold it, so the label spills over
+      // the node's edges onto the ribbons: give it a white glow
+      const overflows = d.y1 - d.y0 < lines.length * LINE_HEIGHT * fontSize;
       const fill = g.select('.parallel-sets__node-rect').attr('fill');
-      const ink = overflows ? DARK_INK : textColorFor(fill);
       label
-        .attr('x', d.x0 + INSIDE_PADDING)
         // Inline styles, so they beat the library's halo and fill rules
-        .style('fill', ink)
+        .style('fill', overflows ? DARK_INK : textColorFor(fill))
         .style('stroke', overflows ? GLOW_COLOR : 'none')
         .style('stroke-width', overflows ? `${GLOW_WIDTH}px` : null)
         .style('stroke-linejoin', 'round')
         .style('paint-order', 'stroke');
-      label.select('.parallel-sets__label-count').style('fill', ink).style('fill-opacity', 0.7);
-      fitLabel(label.node(), d.label, d.x1 - d.x0 - INSIDE_PADDING * 2);
     });
+  }
+
+  /** Outside labels: drop the count after each label when showCounts is false. */
+  _removeLabelCounts() {
+    this.svg.selectAll('.parallel-sets__label-count').remove();
+  }
+
+  // Tooltips: the library adds a count row last; drop it when showCounts is false
+  _nodeTooltip(hovered) {
+    if (this.options.showCounts) return super._nodeTooltip(hovered);
+    const rows = [[this.prepared.columns[hovered.node.dim].title, hovered.node.label]];
+    return this.options.tooltip ? this.options.tooltip(hovered, rows) : rows;
+  }
+
+  _linkTooltip(hovered) {
+    if (this.options.showCounts) return super._linkTooltip(hovered);
+    const rows = hovered.keys.map((_, i) => [this.prepared.columns[i].title, hovered.labels[i]]);
+    return this.options.tooltip ? this.options.tooltip(hovered, rows) : rows;
   }
 
   /**
@@ -110,24 +150,34 @@ export class ExtendedParallelSetsChart extends ParallelSetsChart {
 /** Black or white, whichever reads better on `fill`. */
 function textColorFor(fill) {
   const color = d3.color(fill);
-  if (!color) return 'rgba(0, 0, 0, 0.82)';
-  return d3.lab(color).l > 60 ? 'rgba(0, 0, 0, 0.82)' : '#fff';
+  if (!color) return DARK_INK;
+  return d3.lab(color).l > 60 ? DARK_INK : '#fff';
 }
 
 /**
- * Shorten the label part of a node label (its first text node; the count
- * tspan stays whole) with an ellipsis until the whole text fits `maxWidth`.
+ * Split `label` into lines no wider than `maxWidth`, breaking between words,
+ * measured with `textEl` (whose content this overwrites). A single word wider
+ * than `maxWidth` gets a line to itself and overflows it.
  */
-function fitLabel(textEl, label, maxWidth) {
-  const labelNode = textEl?.firstChild;
-  if (!labelNode || labelNode.nodeType !== Node.TEXT_NODE) return;
-  labelNode.nodeValue = `${label} `;
-  // getComputedTextLength is 0 when the chart isn't laid out; leave it whole then
-  if (textEl.getComputedTextLength() <= maxWidth) return;
-  let n = label.length;
-  while (n > 0) {
-    labelNode.nodeValue = `${label.slice(0, n).trimEnd()}… `;
-    if (textEl.getComputedTextLength() <= maxWidth) return;
-    n -= 1;
+function wrapLabel(textEl, label, maxWidth) {
+  const words = String(label).split(/\s+/).filter(Boolean);
+  if (!textEl || !words.length) return [String(label)];
+  const fits = (text) => {
+    textEl.textContent = text;
+    // 0 when the chart isn't laid out; everything "fits" on one line then
+    return textEl.getComputedTextLength() <= maxWidth;
+  };
+  const lines = [];
+  let line = words[0];
+  for (const word of words.slice(1)) {
+    const candidate = `${line} ${word}`;
+    if (fits(candidate)) {
+      line = candidate;
+    } else {
+      lines.push(line);
+      line = word;
+    }
   }
+  lines.push(line);
+  return lines;
 }

@@ -29,6 +29,7 @@
       :label-position="config.labelPosition"
       :node-fill="config.nodeFill"
       :node-stroke="config.nodeStroke"
+      :show-counts="config.showCounts"
       :unit="config.unit"
       class="mt-4"
     />
