@@ -1,5 +1,5 @@
 <template>
-  <v-card variant="outlined" class="agent-parallel-sets pa-6">
+  <v-card variant="flat" class="agent-parallel-sets pa-6">
     <div class="agent-parallel-sets__header">
       <div>
         <v-card-title class="px-0 pt-0">{{ config.title }}</v-card-title>

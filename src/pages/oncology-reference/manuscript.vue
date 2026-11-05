@@ -34,41 +34,45 @@
       </h3>
       <manuscript-figures />
     </page-section>
-    <page-section>
+    <page-section width="default">
+      <section-overline gradient>About the dataset</section-overline>
+      <prism-section-title gradient>A Benchmark for Oncology Therapeutics</prism-section-title>
       <agent-parallel-sets />
     </page-section>
     <!-- -------------------------------------------------------
       SECTION 
       ------------------------------------------------------- -->
-    <page-section width="narrow">
-      <prism-section-title gradient>Assay workflow</prism-section-title>
+    <page-section width="default">
+      <section-overline gradient>The Underlying Technology</section-overline>
+      <prism-section-title gradient
+        >The PRISM Platform — Multiplexed Cancer Drug Screening at Scale</prism-section-title
+      >
       <p class="prism-text-body-large">
-        The PRISM assay is a pooled screening approach that uses DNA barcodes to track the growth of
-        hundreds of cancer cell lines in a single well. Each cell line is transduced with a unique
-        DNA barcode, and the pooled cell lines are treated with test agents. After treatment, the
-        abundance of each barcode is quantified by sequencing, allowing for the measurement of cell
-        line-specific responses to the agents.
+        OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
+        high-throughput multiplexed viability screening platform developed at the Broad Institute.
+        PRISM introduces unique 24-nucleotide DNA barcodes into cancer cell lines, enabling hundreds
+        of cell lines to be screened simultaneously in a single well — dramatically reducing cost
+        and increasing throughput compared to traditional approaches.
       </p>
       <assay-workflow class="mt-12" />
     </page-section>
     <!-- -------------------------------------------------------
       SECTION 
       ------------------------------------------------------- -->
-    <page-section width="narrow">
+    <page-section width="default">
       <section-overline gradient>Data Vignettes</section-overline>
       <prism-section-title>Key findings from the paper</prism-section-title>
       <p class="prism-text-body-large">
-        The OncRef resource provides a comprehensive view of the landscape of cancer drug responses
-        across a wide range of cell lines and therapeutic agents. By integrating these data with
-        multiomic features, we can identify patterns of sensitivity and resistance, uncover novel
-        therapeutic targets, and inform the development of more effective treatment strategies.
+        OncRef goes beyond cataloging drug sensitivity. By correlating each compound's cell-line
+        response profile with genome-wide CRISPR dependencies, the framework identifies on-target
+        engagement, unexpected polypharmacology, and shared off-target liabilities.
       </p>
       <manuscript-vignettes class="mt-12" />
     </page-section>
     <!-- -------------------------------------------------------
       SECTION 
       ------------------------------------------------------- -->
-    <page-section width="narrow">
+    <page-section width="default">
       <section-overline gradient>Overview</section-overline>
       <prism-section-title>At-a-glance</prism-section-title>
       <p class="prism-text-body-large">[TEXT]</p>
@@ -122,6 +126,7 @@
   import ManuscriptHeader from './manuscript/ManuscriptHeader.vue';
   import ManuscriptVignettes from './manuscript/ManuscriptVignettes.vue';
   import AgentParallelSets from './manuscript/AgentParallelSets.vue';
+  import SectionOverline from '@/components/SectionOverline.vue';
 
   export default {
     name: 'OncologyReferenceManuscript',
