@@ -37,13 +37,18 @@
       items() {
         const fn = this.$route?.meta?.breadcrumbs;
         const raw = fn ? fn(this.$route) : [];
+
         return raw.map((item, i) => {
-          const current = i === raw.length - 1;
-          const link = !current && !!item.to;
+          console.log(this.$route.path);
+          let currentPath = this.$route.path;
+          let isCurrent = item.to === currentPath;
+          // if to is the same as current path, then it is current
+
+          const link = !isCurrent && !!item.to;
           return {
             title: item.title,
             to: link ? item.to : undefined,
-            current,
+            current: isCurrent,
             link,
             disabled: !link,
           };

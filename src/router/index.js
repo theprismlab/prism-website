@@ -80,16 +80,20 @@ const routes = [
     component: () => import('@/pages/oncology-reference/manuscript.vue'),
     meta: {
       // breadcrumbs: () => [{ title: 'Oncology Reference' }, { title: 'Nominations' }],
+      // breadcrumbs: () => [
+      //   { title: 'Oncology Reference' },
+      //   { title: 'Click me to see Version 2', to: '/oncology-reference-version-2' },
+      // ],
     },
   },
   {
-    path: '/oncology-reference/v2',
-    component: () => import('@/pages/oncology-reference/manuscript-v2.vue'),
+    path: '/oncology-reference-version-2',
+    component: () => import('@/pages/oncology-reference/manuscript-version-2.vue'),
     meta: {
-      breadcrumbs: () => [
-        { title: 'Oncology Reference', to: '/oncology-reference' },
-        { title: 'V2' },
-      ],
+      // breadcrumbs: () => [
+      //   { title: 'Oncology Reference', to: '/oncology-reference' },
+      //   { title: 'Version 2' },
+      // ],
     },
   },
 

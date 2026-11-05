@@ -1,133 +1,113 @@
 <template>
-  <!-- Drop-in alternative to ManuscriptHeader: a short "Oncology Reference" page
-       header, with the manuscript title block in a card overlapping its bottom edge.
-       Publication details come from MANUSCRIPT in content.js. -->
-  <page-header background="multi-focal-cool" narrow>
-    <template #title> Oncology Reference </template>
-    <p class="prism-text-headline-small mb-6">
-      A pan-cancer reference of cancer therapeutics from the PRISM platform — clinically relevant
-      agents screened across 891 barcoded cancer cell lines spanning 29 tumor lineages, integrated
-      with genome-wide CRISPR knockout profiles.
-    </p>
-    <stat-grid class="pb-8" :stats="overviewStats" />
-  </page-header>
-  <page-section width="narrow" class="manuscript-overlap">
-    <v-card variant="outlined" class="manuscript-card">
-      <span class="manuscript-card__overline">
-        <v-icon
-          icon="mdi-file-document-outline"
-          size="18"
-          class="manuscript-card__overline-icon"
-          aria-hidden="true"
-        />
-        <span class="manuscript-card__overline-text prism-text-overline font-weight-black">
-          Oncology Reference · Manuscript
-        </span>
+  <v-card variant="outlined" class="manuscript-card">
+    <span class="manuscript-card__overline">
+      <v-icon
+        icon="mdi-file-document-outline"
+        size="18"
+        class="manuscript-card__overline-icon"
+        aria-hidden="true"
+      />
+      <span class="manuscript-card__overline-text prism-text-overline font-weight-black">
+        Oncology Reference · Manuscript
       </span>
+    </span>
 
-      <h2 class="prism-text-headline-medium manuscript-card__title">{{ manuscript.title }}</h2>
+    <h2 class="prism-text-headline-medium manuscript-card__title">{{ manuscript.title }}</h2>
 
-      <!-- Author list: each name followed by its affiliation marks as superscript -->
-      <p class="prism-text-body-medium manuscript-card__authors mb-0">
-        <template v-for="(author, i) in manuscript.authors" :key="author.name">
-          <template v-if="i > 0 && i === manuscript.authors.length - 1">and </template>
-          <span class="text-no-wrap"
-            >{{ author.name }}<sup v-if="author.note">{{ author.note }}</sup></span
-          >
-          <template v-if="i < manuscript.authors.length - 1">, </template>
-        </template>
-      </p>
-
-      <!-- Affiliations and notes keyed by the superscript marks above, collapsed by default -->
-      <div v-if="manuscript.affiliations?.length" class="manuscript-card__affiliations">
-        <button
-          type="button"
-          class="manuscript-card__toggle"
-          :aria-expanded="showAffiliations"
-          :aria-controls="affiliationsId"
-          @click="showAffiliations = !showAffiliations"
+    <!-- Author list: each name followed by its affiliation marks as superscript -->
+    <p class="prism-text-body-medium manuscript-card__authors mb-0">
+      <template v-for="(author, i) in manuscript.authors" :key="author.name">
+        <template v-if="i > 0 && i === manuscript.authors.length - 1">and </template>
+        <span class="text-no-wrap"
+          >{{ author.name }}<sup v-if="author.note">{{ author.note }}</sup></span
         >
-          {{ showAffiliations ? 'Hide' : 'Show' }} affiliations
-          <v-icon :icon="showAffiliations ? 'mdi-chevron-up' : 'mdi-chevron-down'" size="small" />
-        </button>
-        <v-expand-transition>
-          <ul
-            v-show="showAffiliations"
-            :id="affiliationsId"
-            class="manuscript-card__affiliation-list prism-text-body-small"
-          >
-            <li v-for="aff in manuscript.affiliations" :key="aff.mark">
-              <sup>{{ aff.mark }}</sup>
-              <span>{{ aff.text }}</span>
-            </li>
-          </ul>
-        </v-expand-transition>
+        <template v-if="i < manuscript.authors.length - 1">, </template>
+      </template>
+    </p>
+
+    <!-- Affiliations and notes keyed by the superscript marks above, collapsed by default -->
+    <div v-if="manuscript.affiliations?.length" class="manuscript-card__affiliations">
+      <button
+        type="button"
+        class="manuscript-card__toggle"
+        :aria-expanded="showAffiliations"
+        :aria-controls="affiliationsId"
+        @click="showAffiliations = !showAffiliations"
+      >
+        {{ showAffiliations ? 'Hide' : 'Show' }} affiliations
+        <v-icon :icon="showAffiliations ? 'mdi-chevron-up' : 'mdi-chevron-down'" size="small" />
+      </button>
+      <v-expand-transition>
+        <ul
+          v-show="showAffiliations"
+          :id="affiliationsId"
+          class="manuscript-card__affiliation-list prism-text-body-small"
+        >
+          <li v-for="aff in manuscript.affiliations" :key="aff.mark">
+            <sup>{{ aff.mark }}</sup>
+            <span>{{ aff.text }}</span>
+          </li>
+        </ul>
+      </v-expand-transition>
+    </div>
+
+    <!-- Citation details. Each item renders only once its value is filled in. -->
+    <dl v-if="hasMeta" class="manuscript-card__meta">
+      <div v-if="manuscript.journal">
+        <dt>Journal</dt>
+        <dd>{{ manuscript.journal }}</dd>
       </div>
-
-      <!-- Citation details. Each item renders only once its value is filled in. -->
-      <dl v-if="hasMeta" class="manuscript-card__meta">
-        <div v-if="manuscript.journal">
-          <dt>Journal</dt>
-          <dd>{{ manuscript.journal }}</dd>
-        </div>
-        <div v-if="manuscript.date">
-          <dt>Published</dt>
-          <dd>{{ manuscript.date }}</dd>
-        </div>
-        <div v-if="manuscript.doi">
-          <dt>DOI</dt>
-          <dd>
-            <a :href="doiUrl" target="_blank" rel="noopener">{{ manuscript.doi }}</a>
-          </dd>
-        </div>
-      </dl>
-
-      <!-- The paper link is the primary action; data access is secondary (outlined) -->
-      <div v-if="manuscript.pdfUrl || manuscript.dataAccess" class="manuscript-card__actions">
-        <v-btn
-          v-if="manuscript.pdfUrl"
-          :href="manuscript.pdfUrl"
-          target="_blank"
-          rel="noopener"
-          color="primary"
-          variant="flat"
-          rounded
-          append-icon="mdi-arrow-right"
-          style="text-transform: none"
-        >
-          Read the paper
-        </v-btn>
-        <v-btn
-          v-if="manuscript.dataAccess"
-          :href="manuscript.dataAccess"
-          target="_blank"
-          rel="noopener"
-          color="primary"
-          variant="outlined"
-          rounded
-          append-icon="mdi-database-arrow-right-outline"
-          style="text-transform: none"
-        >
-          Request data access
-        </v-btn>
+      <div v-if="manuscript.date">
+        <dt>Published</dt>
+        <dd>{{ manuscript.date }}</dd>
       </div>
-    </v-card>
-  </page-section>
+      <div v-if="manuscript.doi">
+        <dt>DOI</dt>
+        <dd>
+          <a :href="doiUrl" target="_blank" rel="noopener">{{ manuscript.doi }}</a>
+        </dd>
+      </div>
+    </dl>
+
+    <!-- The paper link is the primary action; data access is secondary (outlined) -->
+    <div v-if="manuscript.pdfUrl || manuscript.dataAccess" class="manuscript-card__actions">
+      <v-btn
+        v-if="manuscript.pdfUrl"
+        :href="manuscript.pdfUrl"
+        target="_blank"
+        rel="noopener"
+        color="primary"
+        variant="flat"
+        rounded
+        append-icon="mdi-arrow-right"
+        style="text-transform: none"
+      >
+        Read the paper
+      </v-btn>
+      <v-btn
+        v-if="manuscript.dataAccess"
+        :href="manuscript.dataAccess"
+        target="_blank"
+        rel="noopener"
+        color="primary"
+        variant="outlined"
+        rounded
+        append-icon="mdi-database-arrow-right-outline"
+        style="text-transform: none"
+      >
+        Request data access
+      </v-btn>
+    </div>
+  </v-card>
 </template>
-
 <script>
-  import StatGrid from './StatGrid.vue';
   import { MANUSCRIPT } from './content.js';
-  import { OVERVIEW_STATS, resolveStats } from './stats.js';
 
   export default {
     name: 'ManuscriptCard',
-    components: { StatGrid },
     data() {
       return {
         manuscript: MANUSCRIPT,
-        // Dataset totals shown in the header above the card
-        overviewStats: resolveStats(OVERVIEW_STATS),
         // Affiliation list, collapsed until the reader asks for it
         showAffiliations: false,
         affiliationsId: 'manuscript-card-affiliations',
@@ -146,13 +126,6 @@
 </script>
 
 <style scoped>
-  /* Pull the card section up so the card overlaps the header gradient. The header
-     has 64px of bottom padding, so -64px leaves roughly 32px of card over it. */
-  .manuscript-overlap {
-    position: relative;
-    z-index: 1;
-    margin-top: -64px;
-  }
   .manuscript-card {
     display: flex;
     flex-direction: column;

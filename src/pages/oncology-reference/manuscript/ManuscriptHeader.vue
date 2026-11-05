@@ -107,14 +107,21 @@
         Request data access
       </v-btn>
     </div>
+    <div v-if="showStats">
+      <manuscript-stat-cards class="mb-0" />
+    </div>
   </page-header>
 </template>
 
 <script>
   import { MANUSCRIPT } from './content.js';
-
+  import ManuscriptStatCards from './ManuscriptStatCards.vue';
   export default {
     name: 'ManuscriptHeader',
+    components: { ManuscriptStatCards },
+    props: {
+      showStats: { type: Boolean, default: false },
+    },
     data() {
       return {
         manuscript: MANUSCRIPT,
