@@ -2,21 +2,34 @@ import * as d3 from 'd3';
 import { FIELDS } from './fields.js';
 
 const dataPath = import.meta.env.BASE_URL + 'data/';
-const jsonFile = 'OncRef_LandingPage_v3_data.json';
+const umapFile = '20261104_OncRef_UMAP_coordinates.csv';
 const csvFile = 'OncRefManuscript_Test_Agents.csv';
 
+// UMAP CSV rows with this CompoundName are CRISPR gene points, not test agents
+const GENE_COMPOUND_NAME = 'NA';
+
 /**
- * Attach UMAP coordinates to each CSV agent row, matched by compound name
- * (case-insensitive). Agents with no UMAP point get null coordinates.
+ * Turn a UMAP CSV row into a point: V1/V2 are the coordinates, LabelName the text
+ * shown beside the point when show_label is TRUE.
  */
-function joinUmap(agents, compounds) {
-  const byName = new Map(compounds.map((c) => [c.n.toUpperCase(), c]));
+function umapPoint(row) {
+  return {
+    x: +row.V1,
+    y: +row.V2,
+    label: row.LabelName,
+    showLabel: row.show_label === 'TRUE',
+  };
+}
+
+/**
+ * Attach UMAP coordinates to each test agent row, matched by CompoundName
+ * (case-insensitive). Agents with no UMAP point get `umap: null`.
+ */
+function joinUmap(agents, umapRows) {
+  const byName = new Map(umapRows.map((r) => [r.CompoundName.toUpperCase(), r]));
   return agents.map((row) => {
     const umap = byName.get(row.CompoundName.toUpperCase());
-    return {
-      ...row,
-      umap: umap ? { x: umap.x, y: umap.y, umapCls: umap.umapCls, n: umap.n } : null,
-    };
+    return { ...row, umap: umap ? umapPoint(umap) : null };
   });
 }
 
@@ -24,10 +37,10 @@ function joinUmap(agents, compounds) {
  * Load and parse the OncRef manuscript data.
  *
  * @returns {Promise<{agents: Object[], crisprGenes: Object[]}>}
- *   agents: one object per test agent — the CSV row plus UMAP fields from the
- *     JSON (umapX, umapY, umapClass are null for agents without a UMAP point).
- *   crisprGenes: CRISPR gene UMAP points from the JSON, kept separate for the
- *     scatter plot.
+ *   agents: one object per test agent: the metadata CSV row plus `umap`
+ *     ({ x, y, label, showLabel } from the UMAP CSV, or null without a point).
+ *   crisprGenes: `{ n, x, y, label, showLabel }` CRISPR gene points from the
+ *     UMAP CSV, kept separate for the scatter plot.
  */
 let dataPromise = null;
 
@@ -43,14 +56,18 @@ export function getOncRefData() {
 }
 
 async function loadOncRefData() {
-  const [testAgents, umap] = await Promise.all([
+  const [testAgents, umapRows] = await Promise.all([
     d3.csv(`${dataPath}${csvFile}`),
-    d3.json(`${dataPath}${jsonFile}`),
+    d3.csv(`${dataPath}${umapFile}`),
   ]);
 
+  const isGene = (r) => r.CompoundName === GENE_COMPOUND_NAME;
   return {
-    agents: joinUmap(testAgents, umap.compounds),
-    crisprGenes: umap.crisprGenes,
+    agents: joinUmap(
+      testAgents,
+      umapRows.filter((r) => !isGene(r)),
+    ),
+    crisprGenes: umapRows.filter(isGene).map((r) => ({ n: r.LabelName, ...umapPoint(r) })),
   };
 }
 

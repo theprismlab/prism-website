@@ -39,6 +39,18 @@
           Showing <strong>{{ filteredAgents.length }}</strong> of {{ agents.length }}
           {{ config.unit }}
         </span>
+        <v-chip
+          v-if="selectedAgent"
+          closable
+          size="small"
+          color="primary"
+          variant="tonal"
+          prepend-icon="mdi-target"
+          class="agent-explorer__selected"
+          @click:close="selectedName = null"
+        >
+          Selected: {{ selectedAgent.FormattedName }}
+        </v-chip>
         <v-btn
           v-if="activeFilterCount"
           variant="text"
@@ -57,12 +69,13 @@
         :rows="filteredAgents"
         :genes="crisprGenes"
         :highlighted="searchedAgents"
+        v-model:selected="selectedName"
         class="agent-explorer__plot"
       />
 
       <v-data-table
         :headers="headers"
-        :items="filteredAgents"
+        :items="tableAgents"
         :search="search"
         :items-per-page="10"
         :items-per-page-options="[10, 25, 50, 100, { value: -1, title: 'All' }]"
@@ -70,13 +83,31 @@
         density="compact"
         hover
         no-data-text="No agents match the current filters."
+        :row-props="rowProps"
         class="agent-explorer__table"
+        @click:row="(event, { item }) => toggleSelected(item)"
       >
+        <!-- The selected agent, pinned above the rows on every page and left out
+             of `tableAgents` so it is not listed twice. Click it to deselect. -->
+        <template #[`body.prepend`]="{ columns }">
+          <tr
+            v-if="selectedAgent"
+            class="v-data-table__tr agent-explorer__row agent-explorer__row--selected"
+            tabindex="0"
+            aria-selected="true"
+            @click="toggleSelected(selectedAgent)"
+            @keydown.enter.space.prevent="toggleSelected(selectedAgent)"
+          >
+            <td v-for="column in columns" :key="column.key" class="v-data-table__td">
+              {{ formatCell(column.key, selectedAgent[column.key]) }}
+            </td>
+          </tr>
+        </template>
         <template #[`item.GeneSymbolOfTargets`]="{ value }">
-          {{ splitList(value).join(', ') }}
+          {{ formatCell('GeneSymbolOfTargets', value) }}
         </template>
         <template #[`item.TargetOrMechanism`]="{ value }">
-          {{ splitList(value).join('; ') }}
+          {{ formatCell('TargetOrMechanism', value) }}
         </template>
       </v-data-table>
     </div>
@@ -103,13 +134,16 @@
     data() {
       const { filterFields, headers } = this.config;
       return {
-        // One object per test agent: the CSV row plus `umap` ({ x, y, umapCls, n }
-        // from the JSON, or null for agents without a UMAP point)
+        // One object per test agent: the metadata CSV row plus `umap`
+        // ({ x, y, label, showLabel } from the UMAP CSV, or null without a point)
         agents: null,
-        // CRISPR gene UMAP points from the JSON, kept separate for the scatter plot
+        // CRISPR gene UMAP points from the UMAP CSV, kept separate for the scatter plot
         crisprGenes: null,
         error: null,
         search: '',
+        // CompoundName of the agent selected in the plot or table, or null.
+        // One at a time; it is ringed in the plot and pinned atop the table.
+        selectedName: null,
         filterFields,
         // Selected values per filter field, e.g. { Class: ['biologic'], ... }
         activeFilters: Object.fromEntries(filterFields.map((f) => [f.key, []])),
@@ -128,6 +162,20 @@
         return this.agents.filter((row) =>
           this.filterFields.every((field) => this.matchesFilter(row, field)),
         );
+      },
+      // The selected agent's row, or null when nothing is selected or the
+      // filters have removed it
+      selectedAgent() {
+        if (!this.selectedName) return null;
+        return this.filteredAgents.find((row) => row.CompoundName === this.selectedName) ?? null;
+      },
+      // Table rows: the filtered agents minus the selected one, which the table
+      // pins above them instead
+      tableAgents() {
+        const selected = this.selectedAgent;
+        return selected
+          ? this.filteredAgents.filter((row) => row !== selected)
+          : this.filteredAgents;
       },
       // Filtered agents matching the search box across the table columns, the
       // same case-insensitive substring match v-data-table applies. Null when
@@ -171,6 +219,12 @@
         return options;
       },
     },
+    watch: {
+      // Drop a selection the filters have hidden, so it does not reappear later
+      selectedAgent(agent) {
+        if (!agent) this.selectedName = null;
+      },
+    },
     async mounted() {
       await this.getData();
     },
@@ -184,6 +238,28 @@
           this.error = 'Failed to load OncRef data.';
           console.error(err);
         }
+      },
+      // Click a row to select its agent, or the selected row to deselect it
+      toggleSelected(row) {
+        this.selectedName = row.CompoundName === this.selectedName ? null : row.CompoundName;
+      },
+      // Clickable, keyboard-focusable table rows
+      rowProps({ item }) {
+        return {
+          class: 'agent-explorer__row',
+          tabindex: 0,
+          onKeydown: (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            this.toggleSelected(item);
+          },
+        };
+      },
+      // Table cell text: list fields read as comma/semicolon-separated values
+      formatCell(key, value) {
+        if (key === 'GeneSymbolOfTargets') return this.splitList(value).join(', ');
+        if (key === 'TargetOrMechanism') return this.splitList(value).join('; ');
+        return value;
       },
       splitList(value) {
         return (value || '')
@@ -252,6 +328,10 @@
     font-weight: 600;
   }
 
+  .agent-explorer__selected {
+    margin-left: auto;
+  }
+
   .agent-explorer__plot {
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
@@ -296,6 +376,25 @@
 
   .agent-explorer__table :deep(tbody tr:last-child > td) {
     border-bottom: 0 !important;
+  }
+
+  /* ── Row selection ───────────────────────────────────────────────── */
+  .agent-explorer__table :deep(.agent-explorer__row) {
+    cursor: pointer;
+  }
+
+  .agent-explorer__table :deep(.agent-explorer__row:focus-visible) {
+    outline: 2px solid rgba(var(--v-theme-primary), 0.6);
+    outline-offset: -2px;
+  }
+
+  .agent-explorer__table :deep(.agent-explorer__row--selected > td) {
+    background: rgba(var(--v-theme-primary), 0.08) !important;
+    font-weight: 600;
+  }
+
+  .agent-explorer__table :deep(.agent-explorer__row--selected > td:first-child) {
+    box-shadow: inset 3px 0 0 rgb(var(--v-theme-primary));
   }
 
   .agent-explorer__table :deep(.v-data-table-footer) {

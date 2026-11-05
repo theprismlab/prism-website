@@ -35,9 +35,13 @@
       :axis="axis"
       :point-key="pointKey"
       :highlight="highlightPredicate"
+      :point-label="pointLabel"
+      :selected="selectedPredicate"
+      :click-layers="['agents']"
       :height="height"
       :font-size="fontSize"
       @zoom-change="zoomed = $event"
+      @point-click="onPointClick"
     />
   </div>
 </template>
@@ -65,10 +69,17 @@
    * `agents` is the full list (used to fix the colour domain so filtering never
    * recolours a pathway); `rows` is the subset to plot, typically the filtered
    * table rows. Rows without a `umap` point are counted but not drawn.
-   * `genes` are `{ n, x, y }` CRISPR gene points from the JSON.
+   * `genes` are `{ n, x, y, label, showLabel }` CRISPR gene points from the
+   * UMAP CSV. Agents and genes flagged show_label get their LabelName drawn
+   * beside the point.
    * `highlighted`, when not null, is the subset of rows to emphasise (e.g. search
    * hits); every other agent is drawn grey, as is every gene that none of the
    * highlighted agents target.
+   *
+   * `selected` is the CompoundName of the selected agent (or null), used with
+   * v-model:selected. Clicking an agent selects it, clicking empty plot space
+   * clears the selection, and gene clicks are ignored. The selected agent gets
+   * a ring and is always labelled.
    *
    * Agents and genes are adapted into uniform `{ id, x, y, … }` points so the
    * plot's axes read the same fields for both layers.
@@ -81,6 +92,8 @@
       rows: { type: Array, required: true },
       genes: { type: Array, default: () => [] },
       highlighted: { type: Array, default: null },
+      // CompoundName of the selected agent, or null (v-model:selected)
+      selected: { type: String, default: null },
       // Copy, color column and gene layer; see the `umap` section of agentExplorer.js
       config: { type: Object, default: () => AGENT_EXPLORER.umap },
       // Overrides the config's title
@@ -89,6 +102,7 @@
       // 'small', 'medium' or 'large' (see chartText.js), or a number of pixels
       fontSize: { type: [String, Number], default: 'medium' },
     },
+    emits: ['update:selected'],
     data() {
       return {
         // Mirrors the plot's zoom state so the "Reset zoom" button can react
@@ -106,13 +120,21 @@
             x: row.umap.x,
             y: row.umap.y,
             pathway: row[this.config.colorField] || '(blank)',
+            label: row.umap.showLabel ? row.umap.label : null,
+            labelName: row.umap.label,
             agent: row,
           }));
       },
       // Empty while genes are hidden, so the plot's gene layer simply drains
       genePoints() {
         if (!this.showGenes) return [];
-        return this.genes.map((gene) => ({ id: gene.n, x: gene.x, y: gene.y, gene: gene.n }));
+        return this.genes.map((gene) => ({
+          id: gene.n,
+          x: gene.x,
+          y: gene.y,
+          label: gene.showLabel ? gene.label : null,
+          gene: gene.n,
+        }));
       },
       unplottedCount() {
         return this.rows.length - this.points.length;
@@ -170,9 +192,26 @@
         const keys = this.highlightedKeys;
         return keys ? (d, layer) => keys[layer].has(d.id) : null;
       },
+      // LabelName from the UMAP CSV for points flagged show_label, and always
+      // for the selected agent
+      pointLabel() {
+        const selected = this.selected;
+        return (d, layer) =>
+          layer === 'agents' && d.id === selected ? d.labelName || d.id : d.label;
+      },
+      selectedPredicate() {
+        const selected = this.selected;
+        return selected ? (d, layer) => layer === 'agents' && d.id === selected : null;
+      },
       highlightedPointCount() {
         const keys = this.highlightedKeys;
         return keys ? this.points.filter((p) => keys.agents.has(p.id)).length : 0;
+      },
+    },
+    methods: {
+      // Only agent points are clickable (see click-layers); null is empty space
+      onPointClick(point) {
+        this.$emit('update:selected', point ? point.id : null);
       },
     },
   };

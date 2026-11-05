@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import { ScatterPlot } from '@/lib/charts/prism-charts.js';
+  import { ExtendedScatterPlot } from '@/lib/charts/ExtendedScatterPlot.js';
 
   /**
    * Vue wrapper for ScatterPlot.js: every prop is a ScatterPlot option, and changing
@@ -13,6 +13,13 @@
    *   highlight     `(record, layerId) => boolean` or null, forwarded to
    *                 setHighlight so a parent can emphasise points declaratively.
    *   pointKey      The plot's `key` option (named apart from Vue's reserved `key`).
+   *   pointLabel    `(record, layerId) => string | null`: text drawn beside a point;
+   *                 null or '' draws no label.
+   *   selected      `(record, layerId) => boolean` or null: points to ring.
+   *   clickLayers   Layer ids whose points can be clicked; null for all.
+   *   @point-click  Emitted with (record, layerId) on a click on a point, or
+   *                 (null, null) on a click on empty plot space.
+   * The last four come from ExtendedScatterPlot.js.
    *   @zoom-change  Emitted with true after a drag-zoom and false after a reset.
    *   @highlight-change  Emitted with the plot's Highlight after a legend click or
    *                 highlight change.
@@ -44,8 +51,14 @@
       tooltip: { type: Function, default: null },
       // Highlight predicate `(record, layerId) => boolean`; null for none
       highlight: { type: Function, default: null },
+      // Point label `(record, layerId) => string | null`; null for no labels
+      pointLabel: { type: Function, default: null },
+      // Selection predicate `(record, layerId) => boolean`; null for none
+      selected: { type: Function, default: null },
+      // Layer ids whose points emit point-click; null for every layer
+      clickLayers: { type: Array, default: null },
     },
-    emits: ['zoom-change', 'highlight-change'],
+    emits: ['zoom-change', 'highlight-change', 'point-click'],
     computed: {
       options() {
         const {
@@ -62,6 +75,9 @@
           border,
           duration,
           tooltip,
+          pointLabel,
+          selected,
+          clickLayers,
         } = this;
         const options = {
           data,
@@ -76,6 +92,9 @@
           border,
           duration,
           tooltip,
+          label: pointLabel,
+          selected,
+          clickLayers,
         };
         if (pointKey) options.key = pointKey;
         return options;
@@ -95,10 +114,11 @@
     mounted() {
       // Stored as a plain property (not in data()) so Vue doesn't wrap the d3
       // object graph in reactive proxies.
-      this.plot = new ScatterPlot(this.$refs.chart, {
+      this.plot = new ExtendedScatterPlot(this.$refs.chart, {
         ...this.options,
         onZoomChange: (zoomed) => this.$emit('zoom-change', zoomed),
         onHighlightChange: (highlight) => this.$emit('highlight-change', highlight),
+        onPointClick: (record, layerId) => this.$emit('point-click', record, layerId),
       });
       if (this.highlight) this.plot.setHighlight(this.highlight);
     },
@@ -120,5 +140,35 @@
 <style scoped>
   .scatter-plot-host {
     width: 100%;
+  }
+
+  /* Point labels drawn by ExtendedScatterPlot, with a white halo for legibility */
+  .scatter-plot-host :deep(.scatter-plot__label) {
+    font-size: 0.85em;
+    fill: rgba(0, 0, 0, 0.82);
+    paint-order: stroke;
+    stroke: #fff;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+  }
+
+  /* The selected point's label: bolder and larger */
+  .scatter-plot-host :deep(.scatter-plot__label--selected) {
+    font-size: 1.05em;
+    font-weight: 700;
+    fill: rgba(0, 0, 0, 0.92);
+    stroke-width: 4px;
+  }
+
+  /* Ring around the selected point */
+  .scatter-plot-host :deep(.scatter-plot__selection-ring) {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.85);
+    stroke-width: 2.5;
+  }
+
+  /* Pointer cursor over a clickable point (the brush overlay sits under the mouse) */
+  .scatter-plot-host.scatter-plot--point-hover :deep(.scatter-plot__brush .overlay) {
+    cursor: pointer;
   }
 </style>
