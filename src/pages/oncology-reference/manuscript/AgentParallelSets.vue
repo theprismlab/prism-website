@@ -1,10 +1,7 @@
 <template>
-  <v-card variant="flat" class="agent-parallel-sets pa-6">
-    <div class="agent-parallel-sets__header">
-      <div>
-        <v-card-title class="px-0 pt-0">{{ config.title }}</v-card-title>
-        <p class="text-body-2 text-medium-emphasis mb-0"></p>
-      </div>
+  <div class="agent-parallel-sets">
+    <div class="agent-parallel-sets__toolbar">
+      <h3 class="agent-parallel-sets__title">{{ config.title }}</h3>
       <v-select
         v-model="colorBy"
         :items="colorOptions"
@@ -13,27 +10,30 @@
         label="Color by"
         density="compact"
         variant="outlined"
+        bg-color="white"
         hide-details
-        class="agent-parallel-sets__color-select"
+        class="agent-parallel-sets__filter"
       />
     </div>
-    <p v-if="error" class="text-error mt-4 mb-0">{{ error }}</p>
-    <p v-else-if="!rows" class="text-body-2 text-medium-emphasis mt-4 mb-0">Loading data…</p>
-    <parallel-sets-chart
-      v-else
-      :data="rows"
-      :dimensions="config.dimensions"
-      :axis="{ color: { field: colorBy } }"
-      :height="config.height"
-      :node-width="config.nodeWidth"
-      :label-position="config.labelPosition"
-      :node-fill="config.nodeFill"
-      :node-stroke="config.nodeStroke"
-      :show-counts="config.showCounts"
-      :unit="config.unit"
-      class="mt-4"
-    />
-  </v-card>
+
+    <div class="agent-parallel-sets__body">
+      <p v-if="error" class="text-error mb-0">{{ error }}</p>
+      <p v-else-if="!rows" class="agent-parallel-sets__status mb-0">Loading data…</p>
+      <parallel-sets-chart
+        v-else
+        :data="rows"
+        :dimensions="config.dimensions"
+        :axis="{ color: { field: colorBy } }"
+        :height="config.height"
+        :node-width="config.nodeWidth"
+        :label-position="config.labelPosition"
+        :node-fill="config.nodeFill"
+        :node-stroke="config.nodeStroke"
+        :show-counts="config.showCounts"
+        :unit="config.unit"
+      />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -83,27 +83,54 @@
 </script>
 
 <style scoped>
-  .agent-parallel-sets__header {
+  /* Card styling matches AgentExplorer.vue */
+  .agent-parallel-sets {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+  }
+
+  /* ── Toolbar ──────────────────────────────────────────────────────── */
+  .agent-parallel-sets__toolbar {
     display: flex;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
-  .agent-parallel-sets__color-select {
-    flex: 0 0 200px;
+
+  .agent-parallel-sets__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.87);
   }
-  .agent-parallel-sets__color-select :deep(.v-field__input),
-  .agent-parallel-sets__color-select :deep(.v-label) {
+
+  .agent-parallel-sets__filter {
+    flex: 0 1 240px;
+    min-width: 200px;
+    max-width: 320px;
+  }
+
+  /* ── Chart ────────────────────────────────────────────────────────── */
+  .agent-parallel-sets__body {
+    padding: 16px;
+  }
+
+  .agent-parallel-sets__status {
     font-size: 0.8125rem;
+    color: rgba(0, 0, 0, 0.6);
   }
 
   @media (max-width: 600px) {
-    .agent-parallel-sets__header {
-      flex-direction: column;
-    }
-    .agent-parallel-sets__color-select {
-      flex-basis: auto;
-      width: 100%;
+    .agent-parallel-sets__filter {
+      flex-basis: 100%;
+      max-width: none;
     }
   }
 </style>
