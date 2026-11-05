@@ -25,6 +25,10 @@
       :dimensions="config.dimensions"
       :axis="{ color: { field: colorBy } }"
       :height="config.height"
+      :node-width="config.nodeWidth"
+      :label-position="config.labelPosition"
+      :node-fill="config.nodeFill"
+      :node-stroke="config.nodeStroke"
       :unit="config.unit"
       class="mt-4"
     />

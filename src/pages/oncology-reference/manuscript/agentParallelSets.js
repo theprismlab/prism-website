@@ -25,6 +25,13 @@ export const AGENT_PARALLEL_SETS = {
   defaultColorBy: 'PreviouslyScreened',
   // Plot height in pixels
   height: 480,
+  // Node width in pixels, wide enough to hold the labels drawn inside them
+  nodeWidth: 150,
+  // 'inside' draws each category label in its node; 'outside' to its right
+  labelPosition: 'inside',
+  // Node fill and outline
+  nodeFill: '#fff',
+  nodeStroke: '#000',
   // Noun for the tooltip counts
   unit: 'agents',
 };

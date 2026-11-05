@@ -3,12 +3,12 @@
 </template>
 
 <script>
-  import { ParallelSetsChart } from '@/lib/charts/prism-charts.js';
+  import { ExtendedParallelSetsChart } from '@/lib/charts/ExtendedParallelSetsChart.js';
 
   /**
-   * Vue wrapper for ParallelSetsChart.js: every prop is a ParallelSetsChart option,
-   * and changing one redraws the chart. See ParallelSetsChart.js in prism-charts
-   * for what each means.
+   * Vue wrapper for ExtendedParallelSetsChart.js (prism-charts' ParallelSetsChart
+   * plus `labelPosition`): every prop is a chart option, and changing one redraws
+   * the chart. See ParallelSetsChart.js in prism-charts for what each means.
    *
    * Leave `width` unset to size the chart to its container: the chart measures
    * the container itself and follows its resizes.
@@ -24,6 +24,11 @@
       axis: { type: Object, default: () => ({}) },
       nodeWidth: { type: Number, default: 4 },
       nodePadding: { type: Number, default: 10 },
+      // 'outside' (right of each node) or 'inside' (in the node; needs a wide nodeWidth)
+      labelPosition: { type: String, default: 'outside' },
+      // Fill and outline for every node; null keeps the library's look
+      nodeFill: { type: String, default: null },
+      nodeStroke: { type: String, default: null },
       fillColumns: { type: Boolean, default: true },
       hover: { type: Boolean, default: true },
       tooltip: { type: Function, default: null },
@@ -41,6 +46,9 @@
           axis,
           nodeWidth,
           nodePadding,
+          labelPosition,
+          nodeFill,
+          nodeStroke,
           fillColumns,
           hover,
           tooltip,
@@ -55,6 +63,9 @@
           axis,
           nodeWidth,
           nodePadding,
+          labelPosition,
+          nodeFill,
+          nodeStroke,
           fillColumns,
           hover,
           tooltip,
@@ -76,7 +87,7 @@
     mounted() {
       // Stored as a plain property (not in data()) so Vue doesn't wrap the d3
       // object graph in reactive proxies.
-      this.chart = new ParallelSetsChart(this.$refs.chart, this.options);
+      this.chart = new ExtendedParallelSetsChart(this.$refs.chart, this.options);
     },
     beforeUnmount() {
       this.chart.destroy();
