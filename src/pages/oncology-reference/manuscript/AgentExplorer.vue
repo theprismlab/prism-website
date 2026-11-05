@@ -39,18 +39,20 @@
           Showing <strong>{{ filteredAgents.length }}</strong> of {{ agents.length }}
           {{ config.unit }}
         </span>
-        <v-chip
-          v-if="selectedAgent"
-          closable
-          size="small"
-          color="primary"
-          variant="tonal"
-          prepend-icon="mdi-target"
+        <!-- Pick one agent to select, same as clicking its point or row -->
+        <v-autocomplete
+          v-model="selectedName"
+          :items="agentOptions"
+          placeholder="Select an agent…"
+          aria-label="Selected agent"
+          prepend-inner-icon="mdi-target"
+          clearable
+          hide-details
+          density="compact"
+          variant="outlined"
+          bg-color="white"
           class="agent-explorer__selected"
-          @click:close="selectedName = null"
-        >
-          Selected: {{ selectedAgent.FormattedName }}
-        </v-chip>
+        />
         <v-btn
           v-if="activeFilterCount"
           variant="text"
@@ -177,6 +179,13 @@
       selectedAgent() {
         if (!this.selectedName) return null;
         return this.filteredAgents.find((row) => row.CompoundName === this.selectedName) ?? null;
+      },
+      // Agent picker options: the filtered agents by display name. Hidden agents
+      // are left out, matching the selection being cleared when filters hide it.
+      agentOptions() {
+        return this.filteredAgents
+          .map((row) => ({ title: row.FormattedName, value: row.CompoundName }))
+          .sort((a, b) => a.title.localeCompare(b.title));
       },
       // Table rows: the filtered agents minus the selected one, which the table
       // pins above them instead
@@ -351,6 +360,8 @@
   }
 
   .agent-explorer__selected {
+    flex: 0 1 280px;
+    min-width: 200px;
     margin-left: auto;
   }
 
