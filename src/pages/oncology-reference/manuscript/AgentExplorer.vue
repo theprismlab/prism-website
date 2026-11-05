@@ -74,7 +74,7 @@
         </v-btn>
       </div>
 
-      <agent-umap
+      <agent-explorer-umap
         v-model:selected="selectedName"
         :config="config.umap"
         :agents="agents"
@@ -134,16 +134,16 @@
 <script>
   import { getOncRefData } from './oncref.js';
   import { AGENT_EXPLORER } from './agentExplorer.js';
-  import AgentUmap from './AgentUmap.vue';
+  import AgentExplorerUmap from './AgentExplorerUmap.vue';
 
   /**
    * The test agent explorer: loads the OncRef data, owns the filter and search
-   * state, and renders the toolbar, the UMAP (AgentUmap) and the table. Columns,
+   * state, and renders the toolbar, the UMAP (AgentExplorerUmap) and the table. Columns,
    * filters and the UMAP's copy come from the config (see agentExplorer.js).
    */
   export default {
     name: 'AgentExplorer',
-    components: { AgentUmap },
+    components: { AgentExplorerUmap },
     props: {
       // Table columns and filter fields; defaults to the manuscript config
       config: { type: Object, default: () => AGENT_EXPLORER },

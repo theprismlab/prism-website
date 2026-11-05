@@ -88,7 +88,7 @@
    * plot's axes read the same fields for both layers.
    */
   export default {
-    name: 'AgentUmap',
+    name: 'AgentExplorerUmap',
     components: { ScatterPlot },
     props: {
       agents: { type: Array, required: true },

@@ -1,5 +1,5 @@
 // Config for the test agent explorer (AgentExplorer.vue): which CSV columns the
-// table shows and which get a filter, plus the UMAP it embeds (AgentUmap.vue).
+// table shows and which get a filter, plus the UMAP it embeds (AgentExplorerUmap.vue).
 // Header and filter labels come from fields.js.
 import { fieldLabel } from './fields.js';
 
