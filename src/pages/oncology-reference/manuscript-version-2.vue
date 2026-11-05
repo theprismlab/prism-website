@@ -26,34 +26,55 @@
     <!-- -------------------------------------------------------
       SECTION 
       ------------------------------------------------------- -->
-    <page-section width="default">
+    <page-section width="default" v-if="showManuscriptFigures">
       <h3 class="prism-text-headline-medium mb-8" style="text-align: center">
         OncRef composition and association with multiomic features
       </h3>
       <manuscript-figures />
     </page-section>
-    <page-section width="default" v-if="showParallelSets">
-      <section-overline gradient>About the dataset</section-overline>
-      <prism-section-title gradient>A Benchmark for Oncology Therapeutics</prism-section-title>
 
-      <agent-parallel-sets />
+    <page-section  v-if="showParallelSets">
+      <app-container narrow class="mb-6">
+        <section-overline gradient>About the dataset</section-overline>
+        <prism-section-title gradient>A Benchmark for Oncology Therapeutics</prism-section-title>
+        <p class="prism-text-body-large">
+          OncRef pairs a deliberately diverse therapeutic library with a broad, deeply characterized
+          cell line collection. It spans small molecules, protein degraders, and biologics including
+          antibody-drug conjugates, and 260 of its 396 agents (66%) are not represented in other
+          large-scale public datasets.
+        </p>
+      </app-container>
+      <app-container default>
+          <agent-parallel-sets />
+      </app-container>
     </page-section>
     <!-- -------------------------------------------------------
       SECTION 
       ------------------------------------------------------- -->
-    <page-section width="default" v-if="showAssayWorkflow">
-      <section-overline gradient>The Underlying Technology</section-overline>
-      <prism-section-title gradient
-        >The PRISM Platform — Multiplexed Cancer Drug Screening at Scale</prism-section-title
-      >
-      <p class="prism-text-body-large">
-        OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
-        high-throughput multiplexed viability screening platform developed at the Broad Institute.
-        PRISM introduces unique 24-nucleotide DNA barcodes into cancer cell lines, enabling hundreds
-        of cell lines to be screened simultaneously in a single well — dramatically reducing cost
-        and increasing throughput compared to traditional approaches.
-      </p>
-      <assay-workflow class="mt-12" />
+    <page-section v-if="showAssayWorkflow">
+      <app-container narrow class="mb-6">
+        <section-overline gradient>The Underlying Technology</section-overline>
+        <prism-section-title gradient
+          >The PRISM platform: multiplexed cancer drug screening at scale</prism-section-title
+        >
+        <p class="prism-text-body-large">
+          OncRef is built on PRISM (Profiling Relative Inhibition Simultaneously in Mixtures), a
+          high-throughput multiplexed viability screening platform developed at the Broad Institute.
+          PRISM introduces a unique 24-nucleotide DNA barcode into each cancer cell line, enabling
+          pooled panels of approximately 25 lines to be screened together in a single well. This
+          substantially reduces cost and increases throughput relative to conventional single-line
+          assays.
+        </p>
+
+      </app-container>
+      <app-container>
+        <v-card variant="outlined" class="assay-workflow-card">
+          <h3 class="prism-text-headline-small text-center">Assay workflow</h3>
+          <assay-workflow class="mt-12" />
+        </v-card>
+      </app-container default>
+
+
     </page-section>
     <!-- -------------------------------------------------------
       SECTION 
@@ -124,6 +145,7 @@
   import AgentParallelSets from './manuscript/AgentParallelSets.vue';
   import ManuscriptCard from './manuscript/ManuscriptCard.vue';
   import ManuscriptHeaderBasic from './manuscript/ManuscriptHeaderBasic.vue';
+  import Page from '@/components/Page.vue';
 
   export default {
     name: 'OncologyReferenceManuscript',
@@ -141,10 +163,11 @@
     },
     data() {
       return {
-        showAtAGlance: false,
-        showManuscriptVignettes: false,
-        showAssayWorkflow: false,
+        showAtAGlance: true,
+        showManuscriptVignettes: true,
+        showAssayWorkflow: true,
         showParallelSets: true,
+        showManuscriptFigures: false,
       };
     },
   };
@@ -165,6 +188,11 @@
       rgba(var(--v-theme-on-surface), 0.015) 100%
     );
   }
+  .assay-workflow-card {
+    padding: 28px 32px;
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+    border-radius: var(--prism-radius-lg);
+  }
   .nominations-cta__content {
     max-width: 640px;
   }
@@ -172,6 +200,9 @@
   @media (max-width: 600px) {
     .nominations-cta {
       gap: 20px;
+      padding: 20px 16px;
+    }
+    .assay-workflow-card {
       padding: 20px 16px;
     }
   }

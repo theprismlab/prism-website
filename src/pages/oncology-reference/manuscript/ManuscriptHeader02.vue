@@ -5,20 +5,12 @@
        2. Summary band (optional): headline figures from the abstract, set off
           by a hairline so they read as "about the resource", not citation info.
        Publication details come from MANUSCRIPT in content.js. -->
-  <page-header background="multi-focal-neutral" narrow class="manuscript-header">
-    <template #overline>
-      <span class="manuscript-header__overline">
-        <v-icon
-          icon="mdi-file-document-outline"
-          size="18"
-          class="manuscript-header__overline-icon"
-          aria-hidden="true"
-        />
-        <span class="manuscript-header__overline-text prism-text-overline font-weight-black">
-          Oncology Reference · Manuscript
-        </span>
-      </span>
-    </template>
+  <page-header background="multi-focal-cool" narrow class="manuscript-header">
+    <!-- <template #overline>
+      <accent-overline scheme="blue" icon="mdi-file-document-outline">
+        Oncology Reference · Manuscript
+      </accent-overline>
+    </template> -->
     <template #title>{{ manuscript.title }}</template>
 
     <!-- Author list: each name followed by its affiliation marks as superscript.
@@ -57,9 +49,9 @@
         aria-controls="manuscript-authors manuscript-affiliations"
         @click="expanded = !expanded"
       >
-        {{
+        <span class="manuscript-header__toggle-label">{{
           expanded ? 'Show less' : `Show all ${manuscript.authors.length} authors & affiliations`
-        }}
+        }}</span>
         <v-icon :icon="expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'" size="small" />
       </button>
     </div>
@@ -155,44 +147,11 @@
 </script>
 
 <style scoped>
-  /* Color plan: the header is neutral (gray background, ink text) so the
-     primary-blue buttons are the only solid color. One warm accent, the
-     overline below, adds a touch of brand color.
-     Accent hexes are Material deep-orange darken-2 and pink darken-2. */
-  .manuscript-header {
-    --manuscript-accent-start: #e64a19;
-    --manuscript-accent-end: #c2185b;
-  }
-  /* Gradient overline, matching SectionOverline's `gradient` variant without
-     introducing a second <h2> above the page's <h1>. */
-  .manuscript-header__overline {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  /* Icon takes the gradient's start color so the pair reads as one mark */
-  .manuscript-header__overline-icon {
-    color: var(--manuscript-accent-start);
-  }
-  .manuscript-header__overline-text {
-    display: inline-block;
-    background: linear-gradient(
-      90deg,
-      var(--manuscript-accent-start),
-      var(--manuscript-accent-end)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  /* The paper title is long; tighten the display size so it holds ~2 lines. */
   .manuscript-header :deep(h1) {
-    max-width: 24ch;
-    margin-bottom: 16px !important;
+    max-width: 22ch;
+    margin-bottom: 20px !important;
     line-height: 1.1;
     letter-spacing: -0.015em;
-    text-wrap: balance;
   }
   .manuscript-header__authors {
     color: rgba(var(--v-theme-on-surface), 0.78);
@@ -222,13 +181,21 @@
     font-size: 0.875rem;
     font-weight: 600;
     color: rgba(var(--v-theme-on-surface), 0.85);
+    cursor: pointer;
+  }
+  /* Underline the label only: the chevron is an icon-font glyph with its own
+     size and baseline, so an underline running under it sits at a different
+     height than the text's. */
+  .manuscript-header__toggle-label {
     text-decoration: underline;
     text-decoration-color: rgba(var(--v-theme-on-surface), 0.3);
     text-underline-offset: 3px;
-    cursor: pointer;
   }
   /* Ink at rest, blue only on hover, so links don't add to the header's color */
-  .manuscript-header__toggle:hover,
+  .manuscript-header__toggle:hover {
+    color: rgb(var(--v-theme-primary));
+  }
+  .manuscript-header__toggle:hover .manuscript-header__toggle-label,
   .manuscript-header__citation a:hover {
     color: rgb(var(--v-theme-primary));
     text-decoration-color: currentColor;
@@ -239,6 +206,7 @@
     outline-offset: 2px;
     border-radius: 2px;
   }
+
   .manuscript-header__affiliation-list {
     max-width: calc(var(--prism-measure) + 150px);
     margin: 12px 0 8px;

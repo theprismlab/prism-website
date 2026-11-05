@@ -4,18 +4,11 @@
        Publication details come from MANUSCRIPT in content.js. -->
   <page-header background="multi-focal-cool" narrow class="manuscript-header">
     <template #overline>
-      <span class="manuscript-header__overline">
-        <v-icon
-          icon="mdi-file-document-outline"
-          size="18"
-          class="manuscript-header__overline-icon"
-          aria-hidden="true"
-        />
-        <span class="manuscript-header__overline-text prism-text-overline font-weight-black">
-          Oncology Reference · Manuscript
-        </span>
-      </span>
+      <accent-overline scheme="blue" icon="mdi-file-document-outline">
+        Oncology Reference · Manuscript
+      </accent-overline>
     </template>
+
     <template #title>{{ manuscript.title }}</template>
 
     <!-- Author list: each name followed by its affiliation marks as superscript -->
@@ -143,26 +136,6 @@
 </script>
 
 <style scoped>
-  /* Gradient overline, matching SectionOverline's `gradient` variant without
-     introducing a second <h2> above the page's <h1>. */
-  .manuscript-header__overline {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  /* Icon takes the gradient's start color so the pair reads as one mark */
-  .manuscript-header__overline-icon {
-    color: var(--v-blue-darken-2);
-  }
-  .manuscript-header__overline-text {
-    display: inline-block;
-    background: linear-gradient(90deg, var(--v-blue-darken-2), var(--v-indigo-darken-3));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  /* The paper title is long; tighten the display size so it holds ~2 lines. */
   .manuscript-header :deep(h1) {
     max-width: 22ch;
     margin-bottom: 20px !important;

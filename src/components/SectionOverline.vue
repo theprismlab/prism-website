@@ -34,7 +34,8 @@
 </script>
 <style scoped>
   .overline-gradient {
-    display: inline-block;
+    display: block;
+    width: fit-content;
     background: linear-gradient(90deg, var(--v-blue-darken-2), var(--v-indigo-darken-3));
     -webkit-background-clip: text;
     background-clip: text;
