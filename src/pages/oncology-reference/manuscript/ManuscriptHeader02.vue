@@ -5,7 +5,7 @@
        2. Summary band (optional): headline figures from the abstract, set off
           by a hairline so they read as "about the resource", not citation info.
        Publication details come from MANUSCRIPT in content.js. -->
-  <page-header background="multi-focal-cool" narrow class="manuscript-header">
+  <page-header background="multi-focal-neutral" narrow class="manuscript-header">
     <template #overline>
       <span class="manuscript-header__overline">
         <v-icon
@@ -155,6 +155,14 @@
 </script>
 
 <style scoped>
+  /* Color plan: the header is neutral (gray background, ink text) so the
+     primary-blue buttons are the only solid color. One warm accent, the
+     overline below, adds a touch of brand color.
+     Accent hexes are Material deep-orange darken-2 and pink darken-2. */
+  .manuscript-header {
+    --manuscript-accent-start: #e64a19;
+    --manuscript-accent-end: #c2185b;
+  }
   /* Gradient overline, matching SectionOverline's `gradient` variant without
      introducing a second <h2> above the page's <h1>. */
   .manuscript-header__overline {
@@ -165,11 +173,15 @@
   }
   /* Icon takes the gradient's start color so the pair reads as one mark */
   .manuscript-header__overline-icon {
-    color: var(--v-blue-darken-2);
+    color: var(--manuscript-accent-start);
   }
   .manuscript-header__overline-text {
     display: inline-block;
-    background: linear-gradient(90deg, var(--v-blue-darken-2), var(--v-indigo-darken-3));
+    background: linear-gradient(
+      90deg,
+      var(--manuscript-accent-start),
+      var(--manuscript-accent-end)
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -209,11 +221,17 @@
     font: inherit;
     font-size: 0.875rem;
     font-weight: 600;
-    color: rgb(var(--v-theme-primary));
+    color: rgba(var(--v-theme-on-surface), 0.85);
+    text-decoration: underline;
+    text-decoration-color: rgba(var(--v-theme-on-surface), 0.3);
+    text-underline-offset: 3px;
     cursor: pointer;
   }
-  .manuscript-header__toggle:hover {
-    opacity: 0.8;
+  /* Ink at rest, blue only on hover, so links don't add to the header's color */
+  .manuscript-header__toggle:hover,
+  .manuscript-header__citation a:hover {
+    color: rgb(var(--v-theme-primary));
+    text-decoration-color: currentColor;
   }
   /* Keep a visible focus ring for keyboard users */
   .manuscript-header__toggle:focus-visible {
@@ -263,6 +281,10 @@
     color: rgba(var(--v-theme-on-surface), 0.85);
   }
   .manuscript-header__citation a {
+    color: rgba(var(--v-theme-on-surface), 0.85);
+    text-decoration: underline;
+    text-decoration-color: rgba(var(--v-theme-on-surface), 0.3);
+    text-underline-offset: 3px;
     overflow-wrap: anywhere;
   }
 
@@ -278,6 +300,12 @@
     margin-top: 36px;
     padding-top: 24px;
     border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  }
+  /* Stat icon tiles go neutral here only; the shared ManuscriptStatCards
+     component keeps its blue tiles on the original manuscript page. */
+  .manuscript-header__stats :deep(.abstract-stat__icon) {
+    background: rgba(var(--v-theme-on-surface), 0.06);
+    color: rgba(var(--v-theme-on-surface), 0.72);
   }
   .manuscript-header__stats-label {
     margin: 0 0 12px;
