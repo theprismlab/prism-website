@@ -7,10 +7,10 @@ import { fieldLabel } from './fields.js';
 const TABLE_COLUMNS = [
   'FormattedName',
   'GeneSymbolOfTargets',
-  'TargetOrMechanism',
-  'Class',
   'Modality',
+  'Class',
   'TargetPathway',
+  'TargetOrMechanism',
   'HighestClinicalStage',
 ];
 

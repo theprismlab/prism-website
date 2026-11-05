@@ -5,6 +5,7 @@
 
     <div v-else class="agent-explorer__card">
       <div class="agent-explorer__toolbar">
+        <!-- Multiselect filters: one chip, then a count of the rest -->
         <v-autocomplete
           v-for="field in filterFields"
           :key="field.key"
@@ -14,6 +15,27 @@
           multiple
           chips
           closable-chips
+          clearable
+          hide-details
+          density="compact"
+          variant="outlined"
+          bg-color="white"
+          class="agent-explorer__filter"
+          @update:menu="(open) => open && freezeFilterOrder(field.key)"
+        >
+          <template #chip="{ props, item, index }">
+            <v-chip v-if="index === 0" v-bind="props" :text="item.value" size="small" />
+            <span v-else-if="index === 1" class="agent-explorer__more">
+              (+{{ activeFilters[field.key].length - 1 }} more)
+            </span>
+          </template>
+        </v-autocomplete>
+        <!-- Pick one agent to select, same as clicking its point or row -->
+        <v-autocomplete
+          v-model="selectedName"
+          :items="agentOptions"
+          label="Agent"
+          prepend-inner-icon="mdi-target"
           clearable
           hide-details
           density="compact"
@@ -39,26 +61,13 @@
           Showing <strong>{{ filteredAgents.length }}</strong> of {{ agents.length }}
           {{ config.unit }}
         </span>
-        <!-- Pick one agent to select, same as clicking its point or row -->
-        <v-autocomplete
-          v-model="selectedName"
-          :items="agentOptions"
-          placeholder="Select an agent…"
-          aria-label="Selected agent"
-          prepend-inner-icon="mdi-target"
-          clearable
-          hide-details
-          density="compact"
-          variant="outlined"
-          bg-color="white"
-          class="agent-explorer__selected"
-        />
         <v-btn
           v-if="activeFilterCount"
           variant="text"
           size="small"
           color="primary"
           prepend-icon="mdi-filter-remove-outline"
+          class="agent-explorer__clear"
           @click="clearFilters"
         >
           Clear filters
@@ -158,6 +167,10 @@
         filterFields,
         // Selected values per filter field, e.g. { Class: ['biologic'], ... }
         activeFilters: Object.fromEntries(filterFields.map((f) => [f.key, []])),
+        // Per filter field, the values selected when its menu last opened. They
+        // sort first in the options, frozen while the menu is open so options
+        // don't jump under the cursor as they are ticked.
+        filterOrderValues: Object.fromEntries(filterFields.map((f) => [f.key, []])),
         // `key` is the CSV column name; `title` is what the header shows
         headers,
       };
@@ -180,12 +193,17 @@
         if (!this.selectedName) return null;
         return this.filteredAgents.find((row) => row.CompoundName === this.selectedName) ?? null;
       },
-      // Agent picker options: the filtered agents by display name. Hidden agents
-      // are left out, matching the selection being cleared when filters hide it.
+      // Agent picker options: the filtered agents by display name, the selected
+      // one first. Hidden agents are left out, matching the selection being
+      // cleared when filters hide it.
       agentOptions() {
+        const selected = this.selectedName;
         return this.filteredAgents
           .map((row) => ({ title: row.FormattedName, value: row.CompoundName }))
-          .sort((a, b) => a.title.localeCompare(b.title));
+          .sort(
+            (a, b) =>
+              (b.value === selected) - (a.value === selected) || a.title.localeCompare(b.title),
+          );
       },
       // Table rows: the filtered agents minus the selected one, which the table
       // pins above them instead
@@ -212,6 +230,7 @@
       },
       // Dropdown options per field, with counts that reflect every *other* active
       // filter, so each option shows how many rows selecting it would leave.
+      // Values selected when the menu opened come first, then by count.
       filterOptions() {
         const options = {};
         for (const field of this.filterFields) {
@@ -228,10 +247,14 @@
             for (const v of this.valuesOf(row, field)) counts.set(v, counts.get(v) + 1);
           }
 
+          const first = new Set(this.filterOrderValues[field.key]);
           options[field.key] = [...counts]
             .map(([value, count]) => ({ title: `${value} (${count})`, value }))
             .sort(
-              (a, b) => counts.get(b.value) - counts.get(a.value) || a.value.localeCompare(b.value),
+              (a, b) =>
+                first.has(b.value) - first.has(a.value) ||
+                counts.get(b.value) - counts.get(a.value) ||
+                a.value.localeCompare(b.value),
             );
         }
         return options;
@@ -307,6 +330,10 @@
         if (!selected.length) return true;
         return this.valuesOf(row, field).some((v) => selected.includes(v));
       },
+      // Snapshot a field's selection as its menu opens; see filterOrderValues
+      freezeFilterOrder(key) {
+        this.filterOrderValues[key] = [...this.activeFilters[key]];
+      },
       clearFilters() {
         for (const field of this.filterFields) this.activeFilters[field.key] = [];
       },
@@ -339,6 +366,18 @@
     max-width: 320px;
   }
 
+  .agent-explorer__clear {
+    align-self: center;
+  }
+
+  /* "(+N more)" after a filter's first chip */
+  .agent-explorer__more {
+    margin-left: 4px;
+    font-size: 0.8125rem;
+    color: rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+  }
+
   .agent-explorer__status {
     display: flex;
     align-items: center;
@@ -357,12 +396,6 @@
   .agent-explorer__count strong {
     color: rgba(0, 0, 0, 0.87);
     font-weight: 600;
-  }
-
-  .agent-explorer__selected {
-    flex: 0 1 280px;
-    min-width: 200px;
-    margin-left: auto;
   }
 
   .agent-explorer__plot {
