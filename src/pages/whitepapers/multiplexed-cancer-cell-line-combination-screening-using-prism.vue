@@ -174,6 +174,7 @@
                 :x-title="`${combo.x.name} (µM)`"
                 :value-title="killedLabel"
                 :domain="[0, 100]"
+                log
                 title="Single agent"
               />
               <heatmap
@@ -181,6 +182,7 @@
                 :x-title="`${combo.y.name} (µM)`"
                 :value-title="killedLabel"
                 :domain="[0, 100]"
+                log
                 title="Single agent"
               />
               <heatmap
@@ -189,6 +191,7 @@
                 :y-title="`${combo.y.name} (µM)`"
                 :value-title="killedLabel"
                 :domain="[0, 100]"
+                log
                 title="Combination"
                 legend
               />

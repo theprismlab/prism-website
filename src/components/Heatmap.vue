@@ -62,7 +62,7 @@
                 v-for="t in gradientStops"
                 :key="t"
                 :offset="`${t * 100}%`"
-                :stop-color="color.interpolator()(t)"
+                :stop-color="legendColor(t)"
               />
             </linearGradient>
           </defs>
@@ -99,7 +99,13 @@
 </template>
 
 <script>
-  import { interpolateYlOrRd, scaleSequential } from 'd3';
+  import {
+    interpolateYlOrRd,
+    scaleLinear,
+    scaleSequential,
+    scaleSequentialSymlog,
+    scaleSymlog,
+  } from 'd3';
 
   let instances = 0;
 
@@ -127,6 +133,9 @@
       domain: { type: Array, default: null },
       title: { type: String, default: '' },
       legend: { type: Boolean, default: false },
+      // Symlog color scale: like log, but zero is allowed. Use when most values
+      // are small and a linear scale would wash them out.
+      log: { type: Boolean, default: false },
       // Cell size in SVG units
       size: { type: Number, default: 40 },
     },
@@ -149,9 +158,19 @@
           row: this.yDomain.length - 1 - this.yDomain.indexOf(d.y),
         }));
       },
+      colorDomain() {
+        return this.domain || [0, Math.max(...this.data.map((d) => d.value))];
+      },
       color() {
-        const domain = this.domain || [0, Math.max(...this.data.map((d) => d.value))];
-        return scaleSequential(interpolateYlOrRd).domain(domain);
+        const scale = this.log
+          ? scaleSequentialSymlog(interpolateYlOrRd)
+          : scaleSequential(interpolateYlOrRd);
+        return scale.domain(this.colorDomain);
+      },
+      // Value to position along the legend bar, on the same curve as `color`
+      legendScale() {
+        const scale = this.log ? scaleSymlog() : scaleLinear();
+        return scale.domain(this.colorDomain).range([0, this.plotWidth]);
       },
       margin() {
         return {
@@ -177,7 +196,13 @@
         return Array.from({ length: 11 }, (_, i) => i / 10);
       },
       legendTicks() {
-        return this.color.ticks(4);
+        if (!this.log) return this.legendScale.ticks(4);
+        // Powers of ten between the domain ends, plus the ends themselves
+        const [d0, d1] = this.colorDomain;
+        const ticks = [d0];
+        for (let p = 1; p < d1; p *= 10) ticks.push(p);
+        ticks.push(d1);
+        return [...new Set(ticks)];
       },
     },
     methods: {
@@ -185,8 +210,11 @@
         return Number.isFinite(+v) ? String(parseFloat((+v).toPrecision(3))) : v;
       },
       legendX(v) {
-        const [d0, d1] = this.color.domain();
-        return ((v - d0) / (d1 - d0)) * this.plotWidth;
+        return this.legendScale(v);
+      },
+      // Color at a fraction t along the legend bar
+      legendColor(t) {
+        return this.color(this.legendScale.invert(t * this.plotWidth));
       },
       onHover(cell, event) {
         const box = this.$el.getBoundingClientRect();
@@ -213,6 +241,7 @@
     display: block;
     max-width: 100%;
     height: auto;
+    overflow: visible;
   }
   .heatmap__tick,
   .heatmap__label {
