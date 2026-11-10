@@ -213,6 +213,112 @@
         </section>
 
         <section>
+          <h2 class="prism-text-headline-medium">Synergy by dose</h2>
+
+          <h3 class="prism-text-headline-small">Temozolomide + O6-benzylguanine</h3>
+          <p class="prism-text-body-large">
+            In the presence of O6-benzylguanine, cell lines that expressed MGMT were sensitized to
+            temozolomide (i.e., synergy was observed) (figure 5). Intriguingly, while MGMT
+            expression appeared necessary for sensitization to temozolomide, a subset of cell lines
+            remained resistant to temozolomide even in the presence of O6-benzylguanine.
+            Accordingly, we asked whether any baseline genomic features were associated with the
+            calculated temozolomide+O6-benzylguanine synergy score in MGMT-expressing cell lines
+            (MGMT expression &gt; 1.5, see figure 8). We found that low expression of the MSH6 gene
+            (and low protein levels of MSH6, or its heterodimeric partner protein MSH2) were
+            associated with lack of synergy in MGMT-proficient cell lines. MSH2 and MSH6 are genes
+            involved in DNA mismatch repair, and their loss has been previously suggested to be
+            associated with resistance to temozolomide<sup>17, 18</sup>.
+          </p>
+          <scatter-grid
+            v-if="synergy.temo"
+            :data="synergy.temo"
+            id-key="ccle_name"
+            id-title="Cell line"
+            :column="{ key: 'dose1', title: 'Temozolomide (µM)' }"
+            :row="{ key: 'dose2', title: 'O6-benzylguanine (µM)' }"
+            :x="{ key: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
+            :y="{ key: 'EXP_MGMT', title: 'MGMT expression', threshold: 1.5 }"
+            :color="{ key: 'synergy_count_across_doses', title: 'Synergy count', scheme: 'blues' }"
+            marginals
+          />
+          <p class="prism-text-body-medium text-medium-emphasis mt-4">
+            <b>Fig.5. Synergy in temozolomide + O6-Benzylguanine combination.</b> Many cell lines
+            with high MGMT expression levels were sensitized to temozolomide by the addition of
+            O6-Benzylguanine, and thus exhibited strong synergy. Each point, representing a cell
+            line, is colored by the number of times the synergy score of the cell line was &gt; 0
+            (with a q-value &lt; 0.1). Histograms of the synergy score at each dose and MGMT
+            expression are also shown. Due to the bimodal nature of MGMT expression in the set of
+            cell lines, we set a threshold of 1.5 (dashed line) to differentiate high MGMT
+            expressing lines from low MGMT expressing lines. Statistical significance was evaluated
+            by computing empirical p-values of the corresponding one-sided test followed by multiple
+            hypothesis correction (see Appendix).
+          </p>
+
+          <h3 class="prism-text-headline-small mt-8">ML210 + ferrostatin-1</h3>
+          <p class="prism-text-body-large">
+            As the dose of ML210 increased, we observed that ferrostatin-1 consistently antagonized
+            the effects of ML210 across cell lines (figure 6). For example, the median viability
+            across cell lines at 10µM ML210 was 58.0%, compared with 92.9% at 10µM ML210 +
+            ferrostatin-1, resulting in a median synergy score of S = -0.30.
+          </p>
+          <scatter-grid
+            v-if="synergy.ml210"
+            :data="synergy.ml210"
+            id-key="ccle_name"
+            id-title="Cell line"
+            :column="{ key: 'dose1', title: 'ML210 (µM)' }"
+            :row="{ key: 'dose2', title: 'Ferrostatin-1 (µM)' }"
+            :x="{ key: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
+            :y="{ key: 'XPR_GPX4', title: 'GPX4 dependency' }"
+            :color="{
+              key: 'antagonism_count_across_doses',
+              title: 'Antagonism count',
+              scheme: 'reds',
+            }"
+            marginals
+          />
+          <p class="prism-text-body-medium text-medium-emphasis mt-4">
+            <b>Fig.6. Antagonism in ML210 + Ferrostatin combination.</b> Many cell lines exhibited
+            strong antagonism at higher dose values of ML210. Each point, representing a cell line,
+            is colored by the number of times the synergy score of the cell line was &lt; 0 (with a
+            q-value &lt; 0.1). Histograms of the synergy score at each dose and the CRISPR Chronos
+            dependency score of GPX4 are also shown. Note that, unlike MGMT expression, there is no
+            apparent bimodality in the CRISPR score. Statistical significance was evaluated by
+            computing empirical p-values of the corresponding one-sided test followed by multiple
+            hypothesis correction (see Appendix).
+          </p>
+
+          <h3 class="prism-text-headline-small mt-8">AZD5991 + A-1331852</h3>
+          <p class="prism-text-body-large">
+            Across doses and across cell lines, we observed that BCL-xL and MCL1 inhibition were
+            synergistic: for example, the median synergy score at the highest tested doses (0.37µM
+            AZD5991 + 0.041µM A-1331852) was S = 0.28 (figure 7).
+          </p>
+          <scatter-grid
+            v-if="synergy.azd"
+            :data="synergy.azd"
+            id-key="ccle_name"
+            id-title="Cell line"
+            :column="{ key: 'dose1', title: 'AZD5991 (µM)' }"
+            :row="{ key: 'dose2', title: 'A-1331852 (µM)' }"
+            :x="{ key: 'S', title: 'Synergy score', threshold: 0 }"
+            :y="{ key: 'neg_log10_qval', title: '-log10(q value)', threshold: 1 }"
+            :color="{ key: 'synergy_count_across_doses', title: 'Synergy count', scheme: 'blues' }"
+          />
+          <p class="prism-text-body-medium text-medium-emphasis mt-4">
+            <b>Fig.7. Observed synergy in AZD5991 + A-1331852 combination.</b> Many cell lines
+            exhibited strong synergy at higher doses of the combination. Each point, representing a
+            cell line, is colored by the number of times the synergy score of the cell line was
+            significantly different from 0 (q-value &lt; 0.1). Statistical significance was
+            evaluated by computing empirical p-values from a two-sided test followed by multiple
+            hypothesis correction (see Appendix). The p-values were computed from an empirical null
+            model of synergy values that accounted for cell-line specific variability—reflected in
+            the range of q-values at a given synergy value. The gap at synergy=0 reflects the large
+            number of cases where synergy is zero by our definition.
+          </p>
+        </section>
+
+        <section>
           <h2 class="prism-text-headline-small font-weight-light"></h2>
           <p class="prism-text-body-large"></p>
         </section>
@@ -362,10 +468,21 @@
             cells: null,
           },
         ],
+        // Figs. 5-7: raw CSV rows per combination, filled in once loaded
+        synergy: { temo: null, ml210: null, azd: null },
       };
     },
 
     created() {
+      const synergyFiles = {
+        temo: 'temoO6_updated.csv',
+        ml210: 'MLferro_updated.csv',
+        azd: 'A133AZD_updated.csv',
+      };
+      Object.entries(synergyFiles).forEach(async ([key, file]) => {
+        this.synergy[key] = await csv(dataPath + file);
+      });
+
       this.combinations.forEach(async (combo) => {
         const rows = await csv(dataPath + combo.file);
         const cells = {
