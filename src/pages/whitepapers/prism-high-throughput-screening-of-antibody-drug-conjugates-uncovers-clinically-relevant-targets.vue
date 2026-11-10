@@ -114,6 +114,7 @@
             :y="{ key: 'qval', title: '-log10(q value)' }"
             :initial-selected="['ERBB2']"
             initial-selected-label="Highlight ERBB2"
+            :point-radius="4"
           />
           <p class="prism-text-body-large mt-8">
             Univariate biomarker analysis identified ERBB2 gene expression and copy number as
@@ -133,6 +134,7 @@
             :y="{ key: 'qval', title: '-log10(q value)' }"
             :initial-selected="['ERBB2']"
             initial-selected-label="Highlight ERBB2"
+            :point-radius="4"
           />
         </section>
 
