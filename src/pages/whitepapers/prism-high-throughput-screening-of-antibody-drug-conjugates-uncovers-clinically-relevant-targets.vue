@@ -136,6 +136,58 @@
             initial-selected-label="Highlight ERBB2"
             :point-radius="4"
           />
+
+          <h3 class="prism-text-title-large mt-8">
+            Validation of ADC bystander activity
+          </h3>
+          <p class="prism-text-body-large">
+            Next, we further explored bystander activities of T-DM1 and T-MMAE. Overall, we did
+            not observe robust HER2-independent cytotoxicity by either T-DM1 or T-MMAE. These
+            results are consistent with expected activity for T-DM1; however, T-MMAE releases a
+            cell permeable payload that can kill neighboring cells. To account for our
+            observations, we speculated that the relative abundance of HER2-positive target cells
+            in PRISM pools could be too low to induce a substantial bystander killing effect. We
+            evaluated the quantity and distribution of target cell lines based on ERBB2 gene
+            expression status and identified ten HER2-positive cell lines in the PR500 cell set.
+            Looking across PRISM pools, the number of HER2-positive cell lines ranges from 1-3 cell
+            lines per pool, each of which consist of 20-25 total cell lines.
+          </p>
+          <div class="figure-toolbar">
+            <v-autocomplete
+              v-model="poolSelected"
+              :items="poolCellLines"
+              label="Search cell lines"
+              class="figure-toolbar__search"
+              variant="underlined"
+              density="compact"
+              multiple
+              chips
+              closable-chips
+              clearable
+              hide-details
+            />
+            <v-btn
+              size="small"
+              variant="outlined"
+              rounded
+              @click="poolSelected = [...her2Lines]"
+            >
+              Highlight HER2-overexpressing cell lines
+            </v-btn>
+          </div>
+          <box-plot-chart
+            v-if="adc.pools"
+            :data="adc.pools"
+            orientation="vertical"
+            points
+            :height="400"
+            :axis="{
+              x: { field: 'pool', title: 'PRISM pool' },
+              y: { field: 'expression', title: 'ERBB2 expression' },
+            }"
+            :tooltip="poolTooltip"
+            :highlight="poolHighlight"
+          />
         </section>
 
         <section id="conclusions">
@@ -153,6 +205,21 @@
 
 <script>
   import { csv } from 'd3';
+  import BoxPlotChart from '@/lib/charts/BoxPlotChart.vue';
+
+  // The ten HER2-overexpressing lines in the PR500 set
+  const HER2_LINES = [
+    'BT474',
+    'EFM192A',
+    'HCC1419',
+    'KYSE410',
+    'MKN7',
+    'NCIH2170',
+    'NCIN87',
+    'OE19',
+    'SKOV3',
+    'TE4',
+  ];
 
   const dataPath = import.meta.env.BASE_URL + 'data/2023_07_adc/';
 
@@ -181,6 +248,7 @@
 
   export default {
     name: 'WhitepaperAntibodyDrugConjugates',
+    components: { BoxPlotChart },
     data() {
       return {
         paper: {
@@ -190,27 +258,31 @@
         },
         compounds: ['T-DM1', 'T-MMAE', 'Trastuzumab'],
         // The ten HER2-overexpressing lines in the PR500 set
-        her2Lines: [
-          'BT474',
-          'EFM192A',
-          'HCC1419',
-          'KYSE410',
-          'MKN7',
-          'NCIH2170',
-          'NCIN87',
-          'OE19',
-          'SKOV3',
-          'TE4',
-        ],
-        // Rows for the three scatter figures, filled in once the CSVs load
-        adc: { auc: null, ge: null, shrna: null },
+        her2Lines: HER2_LINES,
+        // Rows for the figures, filled in once the CSVs load
+        adc: { auc: null, ge: null, shrna: null, pools: null },
+        // Cell lines highlighted in the pools box plot
+        poolSelected: [...HER2_LINES],
       };
+    },
+
+    computed: {
+      poolCellLines() {
+        return this.adc.pools ? [...new Set(this.adc.pools.map((r) => r.cellLine))].sort() : [];
+      },
+      // Highlight predicate for the box plot; null when nothing is selected
+      poolHighlight() {
+        if (!this.poolSelected.length) return null;
+        const selected = new Set(this.poolSelected);
+        return (record) => selected.has(record.cellLine);
+      },
     },
 
     created() {
       this.loadAuc();
       this.loadBiomarkers('ge');
       this.loadBiomarkers('shrna');
+      this.loadPools();
     },
 
     methods: {
@@ -229,6 +301,23 @@
           }),
         );
         this.adc.auc = perAgent.flat();
+      },
+      // ERBB2 expression per cell line with its pool; lines without a name are dropped
+      async loadPools() {
+        const rows = await csv(dataPath + 'ERBB2 expression PR500.csv');
+        this.adc.pools = rows
+          .filter((r) => r.cell_line_display_name && r.cell_line_display_name !== 'NA')
+          .map((r) => ({
+            pool: r.pool_id,
+            cellLine: r.cell_line_display_name,
+            expression: +r['ERBB2 expression'],
+            status: r['ERBB2 status'],
+          }))
+          .sort((a, b) => a.pool.localeCompare(b.pool));
+      },
+      // Tooltip rows for the box plot: lead with the cell line
+      poolTooltip(record, rows) {
+        return [['Cell line', record.cellLine], ...rows];
       },
       async loadBiomarkers(kind) {
         const { prefix, files } = BIOMARKER_FILES[kind];
@@ -267,6 +356,19 @@
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
+  }
+
+  /* Search box plus reset button above a figure */
+  .figure-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  .figure-toolbar__search {
+    flex: 1 1 260px;
+    max-width: 360px;
   }
 
   .whitepaper-body h2 {
