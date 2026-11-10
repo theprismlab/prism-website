@@ -24,6 +24,7 @@
     >
       <!-- Column facet: title and one label per column -->
       <text
+        v-if="column.title"
         :x="margin.left + gridWidth / 2"
         y="12"
         class="label"
@@ -96,11 +97,11 @@
             class="threshold"
           />
           <circle
-            v-for="p in panel.points"
-            :key="p.id"
+            v-for="(p, k) in panel.points"
+            :key="k"
             :cx="p.px"
             :cy="p.py"
-            r="2.2"
+            r="2.8"
             :fill="p.fill"
             class="point"
           />
@@ -257,35 +258,57 @@
         {{ y.title }}
       </text>
 
-      <!-- Color legend -->
+      <!-- Color legend: swatches for an ordinal scale, a gradient otherwise -->
       <g
         :transform="`translate(${margin.left + gridWidth / 2 - legendWidth / 2}, ${plotsBottom + 56})`"
       >
-        <defs>
-          <linearGradient :id="gradientId">
-            <stop
-              v-for="t in gradientStops"
-              :key="t"
-              :offset="`${t * 100}%`"
-              :stop-color="colorScale(legendScale.invert(t * legendWidth))"
+        <template v-if="ordinal">
+          <g
+            v-for="item in legendItems"
+            :key="`lg-${item.value}`"
+            :transform="`translate(${item.x}, 0)`"
+          >
+            <rect
+              width="10"
+              height="10"
+              :fill="colorScale(item.value)"
             />
-          </linearGradient>
-        </defs>
-        <rect
-          :width="legendWidth"
-          height="8"
-          :fill="`url(#${gradientId})`"
-        />
-        <text
-          v-for="v in legendScale.ticks(4)"
-          :key="`lg-${v}`"
-          :x="legendScale(v)"
-          y="19"
-          class="tick"
-          text-anchor="middle"
-        >
-          {{ v }}
-        </text>
+            <text
+              x="14"
+              y="9"
+              class="tick"
+            >
+              {{ item.label }}
+            </text>
+          </g>
+        </template>
+        <template v-else>
+          <defs>
+            <linearGradient :id="gradientId">
+              <stop
+                v-for="t in gradientStops"
+                :key="t"
+                :offset="`${t * 100}%`"
+                :stop-color="colorScale(legendScale.invert(t * legendWidth))"
+              />
+            </linearGradient>
+          </defs>
+          <rect
+            :width="legendWidth"
+            height="8"
+            :fill="`url(#${gradientId})`"
+          />
+          <text
+            v-for="v in legendScale.ticks(4)"
+            :key="`lg-${v}`"
+            :x="legendScale(v)"
+            y="19"
+            class="tick"
+            text-anchor="middle"
+          >
+            {{ v }}
+          </text>
+        </template>
         <text
           :x="legendWidth / 2"
           y="34"
@@ -303,7 +326,7 @@
         :key="ring.key"
         :cx="ring.cx"
         :cy="ring.cy"
-        :r="ring.fill ? 4 : 4.5"
+        :r="ring.fill ? 5 : 4.5"
         :fill="ring.fill || 'none'"
         class="ring"
       />
@@ -316,6 +339,12 @@
     >
       <div>
         <b>{{ idTitle }}:</b> {{ hover.point.id }}
+      </div>
+      <div v-if="column.title">
+        <b>{{ column.title }}:</b> {{ sig(hover.point.col) }}
+      </div>
+      <div v-if="row">
+        <b>{{ row.title }}:</b> {{ sig(hover.point.row) }}
       </div>
       <div>
         <b>{{ x.title }}:</b> {{ num(hover.point.x) }}
@@ -337,7 +366,9 @@
     interpolateBlues,
     interpolateRdBu,
     interpolateReds,
+    interpolateViridis,
     scaleLinear,
+    scaleOrdinal,
     scaleSequential,
   } from 'd3';
 
@@ -350,7 +381,11 @@
   const HOVER_RADIUS = 8; // SVG units within which a point counts as hovered
 
   let instances = 0;
-  const uniqueSorted = (values) => [...new Set(values)].sort((a, b) => a - b);
+  // Unique values, sorted numerically when they all parse as numbers
+  const uniqueSorted = (values) => {
+    const unique = [...new Set(values)];
+    return unique.every((v) => Number.isFinite(+v)) ? unique.sort((a, b) => a - b) : unique;
+  };
 
   /**
    * ScatterGrid
@@ -367,9 +402,14 @@
    * and records with a non-numeric x or y are left out.
    *
    *   x, y:   { key, title, domain?: [min, max], threshold?: number }
-   *   color:  { key, title, scheme?: 'blues' | 'reds' | 'rdbu', domain? }
-   *   column: { key, title }
-   *   row:    { key, title } or null for a single row
+   *   color:  { key, title, scheme?: 'blues' | 'reds' | 'rdbu' | 'ordinal', domain?, values? }
+   *   column: { key, title?, values? }
+   *   row:    { key, title, values? } or null for a single row
+   *
+   * `values` fixes the order of a facet or of the ordinal color categories;
+   * otherwise unique values are sorted, numerically when they are numbers.
+   * An 'ordinal' color scheme keeps the raw field value, colors categories
+   * along a viridis ramp (darker for later ones) and draws a swatch legend.
    *
    * `marginals` adds a histogram of x under each column (bars colored by the
    * side of the x threshold they fall on) and a histogram of y, one entry per
@@ -388,24 +428,34 @@
       idKey: { type: String, default: 'id' },
       idTitle: { type: String, default: 'ID' },
       marginals: { type: Boolean, default: false },
+      // Ids highlighted when the grid first renders
+      initialSelected: { type: Array, default: () => [] },
       // Total width in SVG units. Panels are sized to fill it, so grids with
       // different column counts scale to the container by the same factor
       // and their text renders at the same size.
       width: { type: Number, default: 960 },
     },
     data() {
-      return { hover: null, selected: [], gradientId: `scatter-grid-gradient-${++instances}` };
+      return {
+        hover: null,
+        selected: [...this.initialSelected],
+        gradientId: `scatter-grid-gradient-${++instances}`,
+      };
     },
     computed: {
       ids() {
         return [...new Set(this.points.map((p) => p.id))].sort();
       },
+      ordinal() {
+        return this.color.scheme === 'ordinal';
+      },
       columns() {
-        return uniqueSorted(this.data.map((d) => d[this.column.key]));
+        return this.column.values || uniqueSorted(this.data.map((d) => d[this.column.key]));
       },
       // Highest row value at the top, like a y axis
       rows() {
-        return this.row ? uniqueSorted(this.data.map((d) => d[this.row.key])).reverse() : [null];
+        if (!this.row) return [null];
+        return this.row.values || uniqueSorted(this.data.map((d) => d[this.row.key])).reverse();
       },
       points() {
         return this.data
@@ -413,7 +463,7 @@
             id: d[this.idKey],
             x: +d[this.x.key],
             y: +d[this.y.key],
-            c: +d[this.color.key],
+            c: this.ordinal ? d[this.color.key] : +d[this.color.key],
             col: d[this.column.key],
             row: this.row ? d[this.row.key] : null,
           }))
@@ -436,6 +486,13 @@
           .range([this.size - PAD, PAD]);
       },
       colorScale() {
+        if (this.ordinal) {
+          const values = this.color.values || uniqueSorted(this.points.map((p) => p.c));
+          // Viridis from light to dark across the categories, as the original figures used
+          const n = values.length + 2;
+          const palette = values.map((_, i) => interpolateViridis(1 - (i + 1) / n));
+          return scaleOrdinal().domain(values).range(palette);
+        }
         const scheme = SCHEMES[this.color.scheme] || interpolateBlues;
         let domain = this.color.domain;
         if (!domain) {
@@ -458,13 +515,13 @@
                 py: this.yScale(p.y),
                 fill: this.colorScale(p.c),
               }));
-            list.push({
-              key: `${c}/${r}`,
-              x: this.colX(i),
-              y: this.rowY(j),
-              points: pts,
-              byId: new Map(pts.map((p) => [p.id, p])),
+            // An id may appear more than once in a panel (e.g. a feature at several doses)
+            const byId = new Map();
+            pts.forEach((p) => {
+              if (!byId.has(p.id)) byId.set(p.id, []);
+              byId.get(p.id).push(p);
             });
+            list.push({ key: `${c}/${r}`, x: this.colX(i), y: this.rowY(j), points: pts, byId });
           });
         });
         return list;
@@ -577,10 +634,24 @@
       countTicksY() {
         return this.yHistograms.length ? this.yHistograms[0].xScale.ticks(2) : [];
       },
+      // Ordinal legend: swatch plus label per category, laid out in a row
+      legendItems() {
+        if (!this.ordinal) return [];
+        let x = 0;
+        return this.colorScale.domain().map((value) => {
+          const label = this.sig(value);
+          const item = { value, label, x };
+          x += 14 + label.length * 7.5 + 14;
+          return item;
+        });
+      },
       legendWidth() {
-        return 160;
+        if (!this.ordinal) return 160;
+        const last = this.legendItems[this.legendItems.length - 1];
+        return last ? last.x + 14 + last.label.length * 7.5 : 0;
       },
       legendScale() {
+        if (this.ordinal) return null;
         return scaleLinear().domain(this.colorScale.domain()).range([0, this.legendWidth]);
       },
       gradientStops() {
@@ -590,19 +661,14 @@
         const wanted = this.selected.map((id) => ({ id, keep: true }));
         if (this.hover) wanted.push({ id: this.hover.point.id, keep: false });
         return this.panels.flatMap((panel) =>
-          wanted
-            .map(({ id, keep }) => {
-              const p = panel.byId.get(id);
-              return (
-                p && {
-                  key: `${panel.key}/${id}/${keep}`,
-                  cx: panel.x + p.px,
-                  cy: panel.y + p.py,
-                  fill: keep ? p.fill : null,
-                }
-              );
-            })
-            .filter(Boolean),
+          wanted.flatMap(({ id, keep }) =>
+            (panel.byId.get(id) || []).map((p, k) => ({
+              key: `${panel.key}/${id}/${keep}/${k}`,
+              cx: panel.x + p.px,
+              cy: panel.y + p.py,
+              fill: keep ? p.fill : null,
+            })),
+          ),
         );
       },
     },
@@ -618,6 +684,7 @@
         return Number.isFinite(+v) ? String(parseFloat((+v).toPrecision(3))) : v;
       },
       num(v) {
+        if (typeof v !== 'number') return this.sig(v);
         return Number.isInteger(v) ? v : v.toFixed(2);
       },
       // Nearest point in a panel to a mouse event, within HOVER_RADIUS
@@ -685,7 +752,7 @@
     pointer-events: none;
   }
   .is-dimmed .point {
-    fill-opacity: 0.15;
+    fill-opacity: 0.35;
   }
   .panel {
     cursor: crosshair;

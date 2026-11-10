@@ -1,7 +1,9 @@
 <template>
   <page>
     <page-header narrow>
-      <template #title>Multiplexed cancer cell line combination screening using PRISM</template>
+      <template #title>
+        Multiplexed cancer cell line combination screening using PRISM
+      </template>
       <p class="prism-text-body-medium text-medium-emphasis whitepaper-meta">
         <span>{{ paper.author }}</span>
         <span>Published {{ paper.date }}</span>
@@ -25,7 +27,9 @@
       <article class="whitepaper-body">
         <!-- TODO: replace placeholder sections with the white paper content -->
         <section>
-          <h2 class="prism-text-headline-medium">Introduction</h2>
+          <h2 class="prism-text-headline-medium">
+            Introduction
+          </h2>
           <p class="prism-text-body-large">
             Combination therapies are routinely used in cancer care, and patient cure is almost
             never achieved by monotherapy<sup>1</sup>. However, which combinations will benefit
@@ -40,11 +44,16 @@
             that may help identify candidate combinations for clinical trials.
           </p>
 
-          <figure-cards :items="introCards" caption="Fig.1. Schematic of the PRISM assay" />
+          <figure-cards
+            :items="introCards"
+            caption="Fig.1. Schematic of the PRISM assay"
+          />
         </section>
 
         <section>
-          <h2 class="prism-text-headline-medium">Analysis of combination data</h2>
+          <h2 class="prism-text-headline-medium">
+            Analysis of combination data
+          </h2>
           <p class="prism-text-body-large">
             Experimental combinations are generally benchmarked by comparing the effects of two (or
             more) agents to the corresponding single-agent activities, using established metrics to
@@ -67,7 +76,9 @@
         </section>
 
         <section>
-          <h2 class="prism-text-headline-medium">Considerations for dose selection</h2>
+          <h2 class="prism-text-headline-medium">
+            Considerations for dose selection
+          </h2>
           <p class="prism-text-body-large">
             The ideal dose range for the single-agent components in combination screening would span
             at least one concentration with no effect on cell line viability but evidence for
@@ -77,7 +88,7 @@
             agents over a range of concentrations in up to 900 cell lines using PRISM. An
             alternative approach would test single-agent concentration ranges in a number of
             individual cell lines, and/or, if available, leverage published cell biology or
-            screening data (e.g., at depmap.org). <br /><br />
+            screening data (e.g., at depmap.org). <br><br>
             For combination components with minimal differential viability effects, testing a single
             dose may represent the most efficient combinatorial design. By contrast, strong
             differential viability effects of one combination partner across cell lines supports the
@@ -96,8 +107,12 @@
         </section>
 
         <section>
-          <h2 class="prism-text-headline-medium">Results</h2>
-          <h3 class="prism-text-headline-small">Selection of test combinations</h3>
+          <h2 class="prism-text-headline-medium">
+            Results
+          </h2>
+          <h3 class="prism-text-headline-small">
+            Selection of test combinations
+          </h3>
           <p class="prism-text-body-large">
             To test the suitability of PRISM for pooled cell line combination screening, we selected
             three test combinations: temozolomide+O6-benzylguanine, A-1331852+AZD5991, and
@@ -112,33 +127,47 @@
             temozolomide-induced alkylation<sup>11</sup>. As a single agent, we observe that
             resistance to temozolomide is strongly associated with MGMT expression across the large
             panel of cell lines in PRISM (r = 0.63, q = 1.2 x 10<sup>-86</sup>, rank =1;
-            <a :href="correlationLink(compounds.temozolomide)" target="_blank">PRISM Portal</a>).
+            <a
+              :href="correlationLink(compounds.temozolomide)"
+              target="_blank"
+            >PRISM Portal</a>).
             Inhibition of MGMT by agents such as O6-benzylguanine has been reported to enhance
             temozolomide activity in a subset of MGMT-expressing cell lines in vitro<sup>8</sup>.
             O6-benzylguanine does not have appreciable viability effects in PRISM at concentrations
             sufficient to inhibit MGMT and enhance temozolomide sensitivity<sup>8</sup>.
-            <br /><br />
+            <br><br>
             <b>AZD5991+A-1331852.</b> Combined genetic or chemical inhibition of the apoptotic
             regulators MCL1 and BCL2L1 has been reported as strongly synergistic<sup>12,13</sup>.
             AZD5991 is a selective MCL1 inhibitor; in PRISM, we observe that AZD5991 phenocopies
             MCL1 CRISPR dependency (r = 0.3, q = 5.3 x 10<sup>-11</sup>, rank =1;
-            <a :href="correlationLink(compounds.azd5991)" target="_blank">PRISM Portal</a>). In
+            <a
+              :href="correlationLink(compounds.azd5991)"
+              target="_blank"
+            >PRISM Portal</a>). In
             addition, we observe that resistance to AZD5991 is strongly associated with BCL2L1
             expression (r = 0.27, q = 5.8 x 10<sup>-11</sup>, rank =1;
-            <a :href="correlationLink(compounds.azd5991)" target="_blank">PRISM Portal</a>).
+            <a
+              :href="correlationLink(compounds.azd5991)"
+              target="_blank"
+            >PRISM Portal</a>).
             A-1331852 is a selective BCL2L1 (BCL-xL) inhibitor; in PRISM, we observe that A-1331852
             phenocopies BCL2L1 CRISPR dependency (r = 0.47, q = 1.1 x 10<sup>-31</sup>, rank =1;
-            <a :href="correlationLink(compounds.a1331852)" target="_blank">PRISM Portal</a>) and
+            <a
+              :href="correlationLink(compounds.a1331852)"
+              target="_blank"
+            >PRISM Portal</a>) and
             resistance to A-1338152 is associated with MCL1 expression (<a
               :href="correlationLink(compounds.a1331852)"
               target="_blank"
-              >PRISM Portal</a
-            >) . <br /><br />
+            >PRISM Portal</a>) . <br><br>
             <b> ML210+ferrostatin-1.</b> ML210 inhibits GPX4 (glutathione peroxidase 4) and kills
             cells via ferroptosis through generation of reactive lipid peroxide species; in PRISM,
             we observe that ML210 phenocopies GPX4 CRISPR dependency (r = 0.44, q = 1.2 x
             10<sup>-27</sup>, rank =1;
-            <a :href="correlationLink(compounds.ml210)" target="_blank">PRISM Portal</a>).
+            <a
+              :href="correlationLink(compounds.ml210)"
+              target="_blank"
+            >PRISM Portal</a>).
             Ferrostatin-1 is a radical-trapping antioxidant that protects cells from reactive
             species and therefore rescues cells from ferroptosis<sup>14,15</sup>. As ferrostatin-1
             has been reported to have minimal viability effects across cell lines, we tested
@@ -147,7 +176,9 @@
             PRISM<sup>8,14,16</sup>.
           </p>
 
-          <h3 class="prism-text-headline-small">Pooled combination screening results</h3>
+          <h3 class="prism-text-headline-small">
+            Pooled combination screening results
+          </h3>
           <p class="prism-text-body-large">
             Because O6-benzylguanine and ferrostatin-1 demonstrated minimal effects on viability as
             single agents across a large panel of cell lines, we screened a single dose (5 µM and 10
@@ -158,19 +189,29 @@
             concentrations: 0.041 and 0.37µM, respectively). Combinations and all component single
             agents at matching concentrations were plated using an HP D300e drug printer and
             screened in nearly 900 cancer cell lines using standard PRISM conditions and data
-            processing [<a href="https://github.com/cmap/dockerized_mts" target="_blank">link</a>].
+            processing [<a
+              href="https://github.com/cmap/dockerized_mts"
+              target="_blank"
+            >link</a>].
           </p>
-          <div></div>
+          <div />
 
           <div
             v-for="combo in combinations"
             :key="combo.title"
             class="combo-figure"
           >
-            <h4 class="prism-text-title-medium combo-figure__title">{{ combo.title }}</h4>
-            <div v-if="combo.cells" class="combo-figure__panels">
+            <h4 class="prism-text-title-medium combo-figure__title">
+              {{ combo.title }}
+            </h4>
+            <div
+              v-if="combo.cells"
+              class="combo-figure__panels"
+            >
               <div>
-                <p class="combo-figure__label prism-text-title-small">Single agent</p>
+                <p class="combo-figure__label prism-text-title-small">
+                  Single agent
+                </p>
                 <div class="combo-figure__panels">
                   <heatmap
                     :data="combo.cells.x"
@@ -213,9 +254,13 @@
         </section>
 
         <section>
-          <h2 class="prism-text-headline-medium">Synergy by dose</h2>
+          <h2 class="prism-text-headline-medium">
+            Synergy by dose
+          </h2>
 
-          <h3 class="prism-text-headline-small">Temozolomide + O6-benzylguanine</h3>
+          <h3 class="prism-text-headline-small">
+            Temozolomide + O6-benzylguanine
+          </h3>
           <p class="prism-text-body-large">
             In the presence of O6-benzylguanine, cell lines that expressed MGMT were sensitized to
             temozolomide (i.e., synergy was observed) (figure 5). Intriguingly, while MGMT
@@ -254,7 +299,9 @@
             hypothesis correction (see Appendix).
           </p>
 
-          <h3 class="prism-text-headline-small mt-8">ML210 + ferrostatin-1</h3>
+          <h3 class="prism-text-headline-small mt-8">
+            ML210 + ferrostatin-1
+          </h3>
           <p class="prism-text-body-large">
             As the dose of ML210 increased, we observed that ferrostatin-1 consistently antagonized
             the effects of ML210 across cell lines (figure 6). For example, the median viability
@@ -288,7 +335,9 @@
             hypothesis correction (see Appendix).
           </p>
 
-          <h3 class="prism-text-headline-small mt-8">AZD5991 + A-1331852</h3>
+          <h3 class="prism-text-headline-small mt-8">
+            AZD5991 + A-1331852
+          </h3>
           <p class="prism-text-body-large">
             Across doses and across cell lines, we observed that BCL-xL and MCL1 inhibition were
             synergistic: for example, the median synergy score at the highest tested doses (0.37µM
@@ -319,8 +368,55 @@
         </section>
 
         <section>
-          <h2 class="prism-text-headline-small font-weight-light"></h2>
-          <p class="prism-text-body-large"></p>
+          <h2 class="prism-text-headline-medium">
+            Conclusion
+          </h2>
+          <p class="prism-text-body-large">
+            Combination screening is a challenging scientific, analytical, and logistical endeavor.
+            As studies to date have suggested combination partner interactions are difficult to
+            predict and highly context specific, a robust platform for high-throughput screening of
+            combinations could provide substantial value to the scientific community. Multiplexing
+            cell lines using PRISM enables data generation at an unprecedented scale: here, we
+            demonstrate that PRISM can clearly identify synergistic and antagonistic combinations,
+            as well as biomarkers relevant to combination interactions (e.g., MGMT expression in the
+            context of temozolomide + O6-benzylguanine). Analysis of combination data using metrics
+            such as log2(fold-change) (LFC) and area under the dose response curve (AUC) (<a
+              :href="paper.portalLink"
+              target="_blank"
+            >PRISM Portal</a>) can be supplemented with analysis of combination-specific metrics like synergy
+            (figure 8) to aim to identify biomarkers associated with combination treatment after
+            accounting for the effects of the single agents. Such approaches can reveal biomarkers
+            that uniquely underlie sensitivity or resistance to the combination (e.g., MSH6 for
+            MGMT-expressing cell lines).
+          </p>
+          <scatter-grid
+            v-if="biomarkers"
+            :data="biomarkers"
+            id-key="feature"
+            id-title="Feature"
+            :column="{ key: 'featureType', values: featureTypes }"
+            :x="{ key: 'rho', title: 'Correlation', domain: [-0.5, 1], threshold: 0 }"
+            :y="{ key: 'neg_log10_qval', title: '-log10(q value)', domain: [0, 14] }"
+            :color="{ key: 'dose', title: 'Temozolomide (µM)', scheme: 'ordinal' }"
+            :initial-selected="['MSH2', 'MSH6']"
+          />
+          <p class="prism-text-body-medium text-medium-emphasis mt-4">
+            <b>Fig.8. Biomarkers associated with synergy in temozolomide + O6-Benzylguanine are
+              related to DNA mismatch repair.</b>
+            The correlation between the synergy score and multi-omic data can be used to
+            investigate potential mechanisms underlying combination-specific effects. Here, we
+            looked at the subset of high MGMT expressing cell lines (MGMT expression &gt;1.5) to
+            examine biomarkers that may determine whether a high MGMT expressing cell line exhibits
+            synergy on O6-benzylguanine co-treatment. We found genes involved in DNA mismatch repair
+            (MSH6 and MSH2) appeared as significant biomarkers in the proteomics and expression
+            datasets. Such analyses can be used to generate hypotheses regarding the mechanisms
+            underlying sensitivity to drug combinations.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="prism-text-headline-small font-weight-light" />
+          <p class="prism-text-body-large" />
         </section>
       </article>
     </page-section>
@@ -470,10 +566,21 @@
         ],
         // Figs. 5-7: raw CSV rows per combination, filled in once loaded
         synergy: { temo: null, ml210: null, azd: null },
+        // Fig. 8: biomarker correlations, one panel per feature type in this order
+        featureTypes: [
+          'Gene Expression',
+          'Proteomics',
+          'CRISPR Knock-Out',
+          'Copy Number',
+          'Repurposing Compounds',
+        ],
+        biomarkers: null,
       };
     },
 
     created() {
+      this.loadBiomarkers();
+
       const synergyFiles = {
         temo: 'temoO6_updated.csv',
         ml210: 'MLferro_updated.csv',
@@ -500,6 +607,25 @@
     methods: {
       correlationLink(brdId) {
         return `${this.portalBase}/${this.project}/${this.screen}/${brdId}/correlation-analysis`;
+      },
+      async loadBiomarkers() {
+        const typeLabel = {
+          EXP: 'Gene Expression',
+          RPPA: 'Proteomics',
+          XPR: 'CRISPR Knock-Out',
+          CN: 'Copy Number',
+          REP: 'Repurposing Compounds',
+        };
+        const rows = await csv(dataPath + 'temoO6_highMGMT_biomarkers.csv');
+        this.biomarkers = rows.map((r) => {
+          // Proteomics features read "ANTIBODY_GENE"; show just the gene when they agree
+          let feature = r.feature.replace('Caution_', '');
+          const [antibody, gene] = feature.split('_');
+          if (r['feature.set'] === 'RPPA' && antibody === gene) feature = gene;
+          // The y column is "pert1::pert2::dose1::dose2"; O6-benzylguanine is always 5 µM
+          const dose = r.y.split('::')[2];
+          return { ...r, feature, dose, featureType: typeLabel[r['feature.set']] };
+        });
       },
     },
   };
