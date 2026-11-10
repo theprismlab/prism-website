@@ -160,6 +160,50 @@
             screened in nearly 900 cancer cell lines using standard PRISM conditions and data
             processing [<a href="https://github.com/cmap/dockerized_mts" target="_blank">link</a>].
           </p>
+          <div></div>
+
+          <div
+            v-for="combo in combinations"
+            :key="combo.title"
+            class="combo-figure"
+          >
+            <h4 class="prism-text-title-medium combo-figure__title">{{ combo.title }}</h4>
+            <div v-if="combo.cells" class="combo-figure__panels">
+              <heatmap
+                :data="combo.cells.x"
+                :x-title="`${combo.x.name} (µM)`"
+                :value-title="killedLabel"
+                :domain="[0, 100]"
+                title="Single agent"
+              />
+              <heatmap
+                :data="combo.cells.y"
+                :x-title="`${combo.y.name} (µM)`"
+                :value-title="killedLabel"
+                :domain="[0, 100]"
+                title="Single agent"
+              />
+              <heatmap
+                :data="combo.cells.xy"
+                :x-title="`${combo.x.name} (µM)`"
+                :y-title="`${combo.y.name} (µM)`"
+                :value-title="killedLabel"
+                :domain="[0, 100]"
+                title="Combination"
+                legend
+              />
+            </div>
+          </div>
+
+          <p class="prism-text-body-medium text-medium-emphasis mt-4">
+            Fig.4. Combinations tested and their dosing schemes. The dosing schemes of the three
+            combinations tested were determined based on the described procedure. Thus, temozolomide
+            + O6 Benzylguanine and ML210 + Ferrostatin were screened in the 7x1 format since one of
+            the single agents was largely inert. Since both AZD5991 and A-1331852 demonstrated
+            significant viability effects, we employed the 5x5 format for the AZD5991 + A-1331852
+            combination. A cell line was classified as “killed” if its viability (relative to
+            vehicle control) was &lt; 0.3.
+          </p>
         </section>
 
         <section>
@@ -172,7 +216,42 @@
 </template>
 
 <script>
+  import { csv, rollups } from 'd3';
+
   const imagePath = import.meta.env.BASE_URL + 'images/white-paper-cps/';
+  const dataPath = import.meta.env.BASE_URL + 'data/2024_04_cps/';
+  // A cell line counts as killed when its viability relative to vehicle is under this
+  const KILLED_BELOW = 0.3;
+
+  // Percent of rows whose viability is under the threshold
+  function percentKilled(rows, viabilityKey) {
+    const killed = rows.filter((r) => +r[viabilityKey] < KILLED_BELOW).length;
+    return (100 * killed) / rows.length;
+  }
+
+  // Heatmap cells { x, y, value } from CSV rows: one value per (xKey, yKey) pair.
+  // Omit yKey for a one-row strip.
+  function heatmapCells(rows, viabilityKey, xKey, yKey = null) {
+    const grouped = rollups(
+      rows,
+      (group) => percentKilled(group, viabilityKey),
+      (r) => r[xKey],
+      (r) => (yKey ? r[yKey] : '')
+    );
+    return grouped.flatMap(([x, byY]) => byY.map(([y, value]) => ({ x, y, value })));
+  }
+
+  // Single-agent viability is repeated on every combination row, so keep one
+  // row per (dose, cell line) before counting.
+  function singleAgentRows(rows, doseKey) {
+    return rollups(
+      rows,
+      (group) => group[0],
+      (r) => r[doseKey],
+      (r) => r.ccle_name
+    ).flatMap(([, byCellLine]) => byCellLine.map(([, row]) => row));
+  }
+
   export default {
     name: 'WhitepaperMultiplexedCombinationScreening',
     data() {
@@ -238,7 +317,58 @@
             image: imagePath + 'PRISM-Combination-Dose-Selection-5x5.svg',
           },
         ],
+        viabilityCards: [
+          {
+            title: 'Temozolomide + O6-Benzylguanine',
+            body: '<b>Temozolomide</b><br>7 concentrations <br>top concentration: 100µM; threefold dilution<br><br><b>O6-Benzylguanine</b><br>1 concentration: 5 µM<br><br>',
+          },
+          {
+            title: 'ML210 + Ferrostatin-1',
+            body: '<b>ML210</b><br>7 concentrations <br>top concentration: 10µM; threefold dilution<br><br><b>Ferrostatin-1</b><br>1 concentration:  10 µM <br><br>',
+          },
+          {
+            title: 'AZD5991 + A-1331852',
+            body: '<b>AZD5991</b><br>5 concentrations <br>top concentration: 0.037µM; threefold dilution<br><br><b>A-1331852</b><br>5 concentrations <br>top concentration: 0.041µM; threefold dilution',
+          },
+        ],
+        killedLabel: 'Cell lines killed (%)',
+        // Fig. 4: one CSV per combination. x is the library compound (dose1),
+        // y the anchor (dose2). `cells` is filled in once the CSV loads.
+        combinations: [
+          {
+            title: 'Temozolomide + O6-Benzylguanine',
+            file: 'temoO6_updated.csv',
+            x: { name: 'Temozolomide' },
+            y: { name: 'O6-Benzylguanine' },
+            cells: null,
+          },
+          {
+            title: 'ML210 + Ferrostatin-1',
+            file: 'MLferro_updated.csv',
+            x: { name: 'ML210' },
+            y: { name: 'Ferrostatin-1' },
+            cells: null,
+          },
+          {
+            title: 'AZD5991 + A-1331852',
+            file: 'A133AZD_updated.csv',
+            x: { name: 'AZD5991' },
+            y: { name: 'A-1331852' },
+            cells: null,
+          },
+        ],
       };
+    },
+
+    created() {
+      this.combinations.forEach(async (combo) => {
+        const rows = await csv(dataPath + combo.file);
+        combo.cells = {
+          x: heatmapCells(singleAgentRows(rows, 'dose1'), 'capped_library', 'dose1'),
+          y: heatmapCells(singleAgentRows(rows, 'dose2'), 'capped_anchor', 'dose2'),
+          xy: heatmapCells(rows, 'capped_combination', 'dose1', 'dose2'),
+        };
+      });
     },
 
     methods: {
@@ -261,6 +391,20 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
+  }
+
+  /* Fig. 4: three heatmap panels per combination */
+  .combo-figure {
+    margin-top: 1.5rem;
+  }
+  .combo-figure__title {
+    margin: 0 0 0.5rem;
+  }
+  .combo-figure__panels {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 24px;
   }
 
   .whitepaper-body {
