@@ -398,9 +398,9 @@
         return this.marginals ? Math.round(this.size * 0.55) : 0;
       },
       // Side margins hold the tick labels plus a rotated title; widths are
-      // estimated from the longest label at the 10px tick font.
+      // estimated from the longest label at the 11.5px tick font.
       margin() {
-        const longest = (labels) => Math.max(0, ...labels.map((l) => String(l).length)) * 6.5;
+        const longest = (labels) => Math.max(0, ...labels.map((l) => String(l).length)) * 7.5;
         const left = longest(this.yTicks) + 28;
         const right = this.row ? longest(this.rows.map(this.sig)) + 28 : 8;
         return { top: 34, right, bottom: 84, left };
@@ -585,12 +585,12 @@
   }
   .tick,
   .label {
-    font-size: 10px;
+    font-size: 11.5px;
     fill: currentColor;
     pointer-events: none;
   }
   .label {
-    font-size: 11px;
+    font-size: 12.5px;
   }
   .scatter-grid__tooltip {
     position: absolute;
