@@ -3,19 +3,30 @@
     class="scatter-grid"
     @mouseleave="hover = null"
   >
-    <v-autocomplete
-      v-model="selected"
-      :items="ids"
-      :label="`Search ${idTitle.toLowerCase()}s`"
-      class="scatter-grid__search"
-      variant="underlined"
-      density="compact"
-      multiple
-      chips
-      closable-chips
-      clearable
-      hide-details
-    />
+    <div class="scatter-grid__toolbar">
+      <v-autocomplete
+        v-model="selected"
+        :items="ids"
+        :label="`Search ${idTitle.toLowerCase()}s`"
+        class="scatter-grid__search"
+        variant="underlined"
+        density="compact"
+        multiple
+        chips
+        closable-chips
+        clearable
+        hide-details
+      />
+      <v-btn
+        v-if="initialSelected.length"
+        size="small"
+        variant="outlined"
+        rounded
+        @click="selected = [...initialSelected]"
+      >
+        {{ initialSelectedLabel }}
+      </v-btn>
+    </div>
 
     <svg
       ref="svg"
@@ -104,7 +115,7 @@
             :key="k"
             :cx="p.px"
             :cy="p.py"
-            r="2.8"
+            :r="pointRadius"
             :fill="p.fill"
             class="point"
           />
@@ -280,6 +291,7 @@
 
       <!-- Color legend: swatches for an ordinal scale, a gradient otherwise -->
       <g
+        v-if="color"
         :transform="`translate(${margin.left + gridWidth / 2 - legendWidth / 2}, ${plotsBottom + 56})`"
       >
         <template v-if="ordinal">
@@ -346,7 +358,7 @@
         :key="ring.key"
         :cx="ring.cx"
         :cy="ring.cy"
-        :r="ring.fill ? 5 : 4.5"
+        :r="pointRadius + (ring.fill ? 2.2 : 1.7)"
         :fill="ring.fill || 'none'"
         class="ring"
       />
@@ -372,7 +384,7 @@
       <div>
         <b>{{ y.title }}:</b> {{ num(hover.point.y) }}
       </div>
-      <div>
+      <div v-if="color">
         <b>{{ color.title }}:</b> {{ num(hover.point.c) }}
       </div>
     </div>
@@ -396,11 +408,15 @@
   // Histogram bar colors either side of the x threshold (schemeRdBu[7][5] and [1])
   const ABOVE = '#67a9cf';
   const BELOW = '#ef8a62';
+  const SINGLE = '#4c78a8'; // point color when no color scale is given
   const PAD = 8; // inset between a panel's edge and its axis range; covers a selected marker
   const GAP = 6; // space between panels
   const HOVER_RADIUS = 8; // SVG units within which a point counts as hovered
 
   let instances = 0;
+  // Data extent rounded outward to round numbers
+  const niceExtent = (points, accessor) =>
+    scaleLinear().domain(extent(points, accessor)).nice().domain();
   // Unique values, sorted numerically when they all parse as numbers
   const uniqueSorted = (values) => {
     const unique = [...new Set(values)];
@@ -423,6 +439,7 @@
    *
    *   x, y:   { key, title, domain?: [min, max], threshold?: number }
    *   color:  { key, title, scheme?: 'blues' | 'reds' | 'rdbu' | 'ordinal', domain?, values? }
+   *           or omitted for one color and no legend
    *   column: { key, title?, values? }
    *   row:    { key, title, values? } or null for a single row
    *
@@ -441,15 +458,20 @@
       data: { type: Array, required: true },
       x: { type: Object, required: true },
       y: { type: Object, required: true },
-      color: { type: Object, required: true },
+      // Omit for a single point color and no legend
+      color: { type: Object, default: null },
       column: { type: Object, required: true },
       row: { type: Object, default: null },
       // Field that identifies a record across panels, and its tooltip label
       idKey: { type: String, default: 'id' },
       idTitle: { type: String, default: 'ID' },
       marginals: { type: Boolean, default: false },
-      // Ids highlighted when the grid first renders
+      // Point radius in SVG units; highlight rings grow with it
+      pointRadius: { type: Number, default: 2.8 },
+      // Ids highlighted when the grid first renders, and the label of the
+      // button that restores them
       initialSelected: { type: Array, default: () => [] },
+      initialSelectedLabel: { type: String, default: 'Reset highlights' },
       // Total width in SVG units. Panels are sized to fill it, so grids with
       // different column counts scale to the container by the same factor
       // and their text renders at the same size.
@@ -467,7 +489,7 @@
         return [...new Set(this.points.map((p) => p.id))].sort();
       },
       ordinal() {
-        return this.color.scheme === 'ordinal';
+        return this.color?.scheme === 'ordinal';
       },
       columns() {
         return this.column.values || uniqueSorted(this.data.map((d) => d[this.column.key]));
@@ -483,17 +505,18 @@
             id: d[this.idKey],
             x: +d[this.x.key],
             y: +d[this.y.key],
-            c: this.ordinal ? d[this.color.key] : +d[this.color.key],
+            c: !this.color ? null : this.ordinal ? d[this.color.key] : +d[this.color.key],
             col: d[this.column.key],
             row: this.row ? d[this.row.key] : null,
           }))
           .filter((p) => Number.isFinite(p.x) && Number.isFinite(p.y));
       },
+      // An automatic domain is rounded out to tick-friendly ends
       xDomain() {
-        return this.x.domain || extent(this.points, (p) => p.x);
+        return this.x.domain || niceExtent(this.points, (p) => p.x);
       },
       yDomain() {
-        return this.y.domain || extent(this.points, (p) => p.y);
+        return this.y.domain || niceExtent(this.points, (p) => p.y);
       },
       xScale() {
         return scaleLinear()
@@ -506,6 +529,7 @@
           .range([this.size - PAD, PAD]);
       },
       colorScale() {
+        if (!this.color) return () => SINGLE;
         if (this.ordinal) {
           const values = this.color.values || uniqueSorted(this.points.map((p) => p.c));
           // Viridis from light to dark across the categories, as the original figures used
@@ -563,7 +587,8 @@
         const longest = (labels) => Math.max(0, ...labels.map((l) => String(l).length)) * 8.5;
         const left = longest(this.yTicks) + 32;
         const right = this.row ? longest(this.rows.map(this.sig)) + 32 : 8;
-        return { top: 38, right, bottom: 108, left };
+        // The bottom holds x ticks and title, plus the legend when there is a color scale
+        return { top: 38, right, bottom: this.color ? 108 : 48, left };
       },
       gridWidth() {
         return this.columns.length * this.size + (this.columns.length - 1) * GAP;
@@ -671,7 +696,7 @@
         return last ? last.x + 14 + last.label.length * 7.5 : 0;
       },
       legendScale() {
-        if (this.ordinal) return null;
+        if (!this.color || this.ordinal) return null;
         return scaleLinear().domain(this.colorScale.domain()).range([0, this.legendWidth]);
       },
       gradientStops() {
@@ -763,9 +788,16 @@
     fill: #fafafa;
     stroke: #ddd;
   }
-  .scatter-grid__search {
-    max-width: 360px;
+  .scatter-grid__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
     margin-bottom: 12px;
+  }
+  .scatter-grid__search {
+    flex: 1 1 260px;
+    max-width: 360px;
   }
   .point {
     fill-opacity: 0.75;
