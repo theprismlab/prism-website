@@ -1,6 +1,9 @@
 <template>
   <figure class="figure-cards">
-    <div class="figure-cards__grid" :style="gridStyle">
+    <div
+      class="figure-cards__grid"
+      :style="gridStyle"
+    >
       <v-card
         v-for="item in items"
         :key="item.title"
@@ -8,15 +11,43 @@
         class="figure-card"
         :class="`figure-card--${align}`"
       >
-        <h3 class="figure-card__title prism-text-title-medium">{{ item.title }}</h3>
+        <h3 class="figure-card__title prism-text-title-medium">
+          {{ item.title }}
+        </h3>
         <div class="figure-card__media">
-          <img :src="item.image" :alt="item.alt || item.title" class="figure-card__img" />
+          <img
+            v-if="item.image"
+            :src="item.image"
+            :alt="item.alt || item.title"
+            class="figure-card__img"
+          >
+          <!-- No image yet: a labeled placeholder of the same width -->
+          <div
+            v-else
+            class="figure-card__placeholder"
+            role="img"
+            :aria-label="`${item.title} (image to come)`"
+          >
+            <v-icon
+              icon="mdi-image-outline"
+              size="32"
+            />
+            <span
+              v-if="item.placeholder"
+              class="prism-text-body-small"
+            >{{ item.placeholder }}</span>
+          </div>
         </div>
       </v-card>
     </div>
-    <figcaption v-if="caption || $slots.caption" class="figure-cards__caption">
+    <figcaption
+      v-if="caption || $slots.caption"
+      class="figure-cards__caption"
+    >
       <slot name="caption">
-        <p class="prism-text-body-medium text-medium-emphasis">{{ caption }}</p>
+        <p class="prism-text-body-medium text-medium-emphasis">
+          {{ caption }}
+        </p>
       </slot>
     </figcaption>
   </figure>
@@ -39,7 +70,9 @@
    *
    * Usage:
    *   <figure-cards :items="panels" caption="Fig.1. Schematic of the PRISM assay" />
-   *   items: [{ title, image, alt? }]
+   *   items: [{ title, image?, alt?, placeholder? }]
+   * An item without `image` shows a placeholder box, with `placeholder` as its
+   * text, so a figure can be laid out before its artwork exists.
    */
   export default {
     name: 'FigureCards',
@@ -107,6 +140,21 @@
     display: block;
     width: 100%;
     height: auto;
+  }
+
+  .figure-card__placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    aspect-ratio: 1;
+    color: var(--v-grey-darken-1);
+    text-align: center;
+    background: rgba(var(--v-theme-on-surface), 0.035);
+    border: 1px dashed rgba(var(--v-theme-on-surface), 0.25);
+    border-radius: var(--prism-radius-md, 12px);
   }
 
   .figure-cards__caption {
