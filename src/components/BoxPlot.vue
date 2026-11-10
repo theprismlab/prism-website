@@ -50,13 +50,22 @@
           class="gridline"
         />
 
-        <!-- One box per category: whiskers, box, median, then the points -->
+        <!-- One box per category: the points first, then whiskers, box and
+             median drawn over them so the box outline stays readable -->
         <g :class="{ 'is-dimmed': selected.length }">
           <g
             v-for="box in boxes"
             :key="box.name"
             :transform="`translate(${box.x}, 0)`"
           >
+            <circle
+              v-for="p in box.points"
+              :key="p.id"
+              :cx="p.px"
+              :cy="p.py"
+              :r="pointRadius"
+              class="point"
+            />
             <line
               :x1="band / 2"
               :x2="band / 2"
@@ -91,14 +100,6 @@
               :y1="yScale(box.stats.median)"
               :y2="yScale(box.stats.median)"
               class="median"
-            />
-            <circle
-              v-for="p in box.points"
-              :key="p.id"
-              :cx="p.px"
-              :cy="p.py"
-              :r="pointRadius"
-              class="point"
             />
           </g>
         </g>
@@ -275,7 +276,7 @@
           const x = i * this.band;
           const points = members.map((d) => ({
             ...d,
-            px: this.band / 2 + jitter(d.id) * (this.boxWidth / 2) * 0.8,
+            px: this.band / 2 + jitter(d.id) * (this.boxWidth / 2) * 0.7,
             py: this.yScale(d.y),
           }));
           return { name, x, stats, points };
@@ -368,27 +369,27 @@
   }
   .whisker,
   .median {
-    stroke: #666;
-    stroke-width: 1;
+    stroke: #444;
+    stroke-width: 1.25;
     pointer-events: none;
   }
   .median {
-    stroke: #333;
-    stroke-width: 1.5;
+    stroke: #222;
+    stroke-width: 2;
   }
   .box {
-    fill: rgba(76, 120, 168, 0.12);
-    stroke: #888;
-    stroke-width: 1;
+    fill: rgba(76, 120, 168, 0.2);
+    stroke: #444;
+    stroke-width: 1.25;
     pointer-events: none;
   }
   .point {
     fill: #4c78a8;
-    fill-opacity: 0.75;
+    fill-opacity: 0.45;
     pointer-events: none;
   }
   .is-dimmed .point {
-    fill-opacity: 0.25;
+    fill-opacity: 0.3;
   }
   .ring {
     stroke: #000;
