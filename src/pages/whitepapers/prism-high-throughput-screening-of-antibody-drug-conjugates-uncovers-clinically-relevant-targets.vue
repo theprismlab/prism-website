@@ -88,11 +88,6 @@
             :column="{ key: 'compound', values: compounds }"
             :x="{ key: 'auc', title: 'AUC' }"
             :y="{ key: 'expression', title: 'ERBB2 expression, log2(TPM+1)' }"
-            :color="{
-              scheme: 'corners',
-              title: 'Color deepens with ERBB2 expression',
-              labels: ['Low AUC (sensitive)', 'High AUC'],
-            }"
             :initial-selected="her2Lines"
             initial-selected-label="Highlight HER2-overexpressing cell lines"
             :point-radius="4"
@@ -117,11 +112,6 @@
             :column="{ key: 'compound', title: 'Gene expression', values: compounds.slice(0, 2) }"
             :x="{ key: 'coef', title: 'Correlation', domain: [-0.6, 0.6], threshold: 0 }"
             :y="{ key: 'qval', title: '-log10(q value)' }"
-            :color="{
-              scheme: 'corners',
-              title: 'Color deepens with significance',
-              labels: ['Negative correlation', 'Positive correlation'],
-            }"
             :initial-selected="['ERBB2']"
             initial-selected-label="Highlight ERBB2"
             :point-radius="4"
@@ -142,11 +132,6 @@
             :column="{ key: 'compound', title: 'shRNA knockdown', values: compounds.slice(0, 2) }"
             :x="{ key: 'coef', title: 'Correlation', domain: [-1, 1], threshold: 0 }"
             :y="{ key: 'qval', title: '-log10(q value)' }"
-            :color="{
-              scheme: 'corners',
-              title: 'Color deepens with significance',
-              labels: ['Negative correlation', 'Positive correlation'],
-            }"
             :initial-selected="['ERBB2']"
             initial-selected-label="Highlight ERBB2"
             :point-radius="4"
