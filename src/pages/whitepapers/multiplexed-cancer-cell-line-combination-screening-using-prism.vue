@@ -403,6 +403,7 @@
               type: 'categorical',
             }"
             :initial-selected="['MSH2', 'MSH6']"
+            label-selected
           />
           <p class="prism-text-body-medium text-medium-emphasis mt-4">
             <b>Fig.8. Biomarkers associated with synergy in temozolomide + O6-Benzylguanine are

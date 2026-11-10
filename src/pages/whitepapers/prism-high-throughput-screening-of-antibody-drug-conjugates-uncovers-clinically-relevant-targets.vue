@@ -90,6 +90,7 @@
             :y="{ field: 'expression', title: 'ERBB2 expression, log2(TPM+1)' }"
             :initial-selected="her2Lines"
             initial-selected-label="Highlight HER2-overexpressing cell lines"
+            label-selected
             :point-radius="4"
           />
 
@@ -114,6 +115,7 @@
             :y="{ field: 'qval', title: '-log10(q value)' }"
             :initial-selected="['ERBB2']"
             initial-selected-label="Highlight ERBB2"
+            label-selected
             :point-radius="4"
           />
           <p class="prism-text-body-large mt-8">
@@ -134,6 +136,7 @@
             :y="{ field: 'qval', title: '-log10(q value)' }"
             :initial-selected="['ERBB2']"
             initial-selected-label="Highlight ERBB2"
+            label-selected
             :point-radius="4"
           />
 
@@ -161,6 +164,7 @@
             :y="{ field: 'expression', title: 'ERBB2 expression' }"
             :initial-selected="her2Lines"
             initial-selected-label="Highlight HER2-overexpressing cell lines"
+            label-selected
             :point-radius="3"
           />
 

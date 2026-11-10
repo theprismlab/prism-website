@@ -155,6 +155,18 @@
           :fill="ring.fill || 'none'"
           class="ring"
         />
+        <!-- Labels for selected ids, placed so they never overlap -->
+        <text
+          v-for="l in labels"
+          :key="l.key"
+          :x="l.x"
+          :y="l.y"
+          :text-anchor="l.anchor"
+          dominant-baseline="middle"
+          class="point-label"
+        >
+          {{ l.text }}
+        </text>
       </g>
     </svg>
 
@@ -182,6 +194,50 @@
   const POINT = '#4c78a8';
   const PAD = 8; // inset between the panel edge and the y range
   const HOVER_RADIUS = 8; // SVG units within which a point counts as hovered
+
+  // Label layout: each label sits beside its point and is nudged up or down
+  // until clear of the labels placed before it; one with no clear slot is
+  // dropped, so labels never overlap. Coordinates are local to `bounds`.
+  const LABEL_HEIGHT = 11;
+  const LABEL_CHAR = 6.2;
+  const LABEL_OFFSETS = [0, -12, 12, -24, 24, -36, 36];
+  function placeLabels(items, bounds, gap) {
+    const placed = [];
+    const labels = [];
+    for (const item of [...items].sort((a, b) => a.cy - b.cy)) {
+      const w = String(item.text).length * LABEL_CHAR;
+      let x = item.cx + gap + 3;
+      let anchor = 'start';
+      if (x + w > bounds.width) {
+        x = item.cx - gap - 3;
+        anchor = 'end';
+      }
+      const x0 = anchor === 'start' ? x : x - w;
+      for (const dy of LABEL_OFFSETS) {
+        const y = item.cy + dy;
+        const box = { x0, x1: x0 + w, y0: y - LABEL_HEIGHT / 2, y1: y + LABEL_HEIGHT / 2 };
+        if (box.y0 < 0 || box.y1 > bounds.height) continue;
+        const clear = placed.every(
+          (b) => box.x1 < b.x0 || box.x0 > b.x1 || box.y1 < b.y0 || box.y0 > b.y1,
+        );
+        if (clear) {
+          placed.push(box);
+          // A nudged label gets a connector from its point to its near edge
+          const lx = anchor === 'start' ? x - 2 : x + 2;
+          labels.push({
+            key: item.key,
+            x,
+            y,
+            anchor,
+            text: item.text,
+            connector: dy ? { x1: item.cx, y1: item.cy, x2: lx, y2: y } : null,
+          });
+          break;
+        }
+      }
+    }
+    return labels;
+  }
 
   // Deterministic jitter in [-1, 1] from a string, so points stay put across redraws
   function jitter(id) {
@@ -221,6 +277,8 @@
       // button that restores them
       initialSelected: { type: Array, default: () => [] },
       initialSelectedLabel: { type: String, default: 'Reset highlights' },
+      // Write each selected id beside its point
+      labelSelected: { type: Boolean, default: false },
       // Size in SVG units; the SVG scales to its container
       width: { type: Number, default: 960 },
       height: { type: Number, default: 420 },
@@ -297,6 +355,17 @@
               })),
           ),
         );
+      },
+      labels() {
+        if (!this.labelSelected || !this.selected.length) return [];
+        const ids = new Set(this.selected);
+        const items = this.boxes.flatMap((box) =>
+          box.points
+            .filter((p) => ids.has(p.id))
+            .map((p) => ({ key: `${box.name}/${p.id}`, cx: box.x + p.px, cy: p.py, text: p.id })),
+        );
+        const bounds = { width: this.plotWidth, height: this.plotHeight };
+        return placeLabels(items, bounds, this.pointRadius + 2.2);
       },
     },
     methods: {
@@ -394,6 +463,16 @@
   .ring {
     stroke: #000;
     stroke-width: 1.5;
+    pointer-events: none;
+  }
+  .point-label {
+    font-size: 11px;
+    font-weight: 600;
+    fill: #222;
+    paint-order: stroke;
+    stroke: #fff;
+    stroke-width: 3px;
+    stroke-linejoin: round;
     pointer-events: none;
   }
   .tick,

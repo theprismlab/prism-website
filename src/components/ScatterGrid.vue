@@ -362,6 +362,29 @@
         :fill="ring.fill || 'none'"
         class="ring"
       />
+      <!-- Labels for selected ids, placed so they never overlap; a label that
+           was moved away from its point gets a connector line -->
+      <template v-for="l in labels" :key="`c-${l.key}`">
+        <line
+          v-if="l.connector"
+          :x1="l.connector.x1"
+          :y1="l.connector.y1"
+          :x2="l.connector.x2"
+          :y2="l.connector.y2"
+          class="point-label-line"
+        />
+      </template>
+      <text
+        v-for="l in labels"
+        :key="l.key"
+        :x="l.x"
+        :y="l.y"
+        :text-anchor="l.anchor"
+        dominant-baseline="middle"
+        class="point-label"
+      >
+        {{ l.text }}
+      </text>
     </svg>
 
     <div
@@ -414,6 +437,51 @@
   const HOVER_RADIUS = 8; // SVG units within which a point counts as hovered
 
   let instances = 0;
+
+  // Label layout: each label sits beside its point and is nudged up or down
+  // until clear of the labels placed before it; one with no clear slot is
+  // dropped, so labels never overlap. Coordinates are local to `bounds`.
+  const LABEL_HEIGHT = 11;
+  const LABEL_CHAR = 6.2;
+  const LABEL_OFFSETS = [0, -12, 12, -24, 24, -36, 36];
+  function placeLabels(items, bounds, gap) {
+    const placed = [];
+    const labels = [];
+    for (const item of [...items].sort((a, b) => a.cy - b.cy)) {
+      const w = String(item.text).length * LABEL_CHAR;
+      let x = item.cx + gap + 3;
+      let anchor = 'start';
+      if (x + w > bounds.width) {
+        x = item.cx - gap - 3;
+        anchor = 'end';
+      }
+      const x0 = anchor === 'start' ? x : x - w;
+      for (const dy of LABEL_OFFSETS) {
+        const y = item.cy + dy;
+        const box = { x0, x1: x0 + w, y0: y - LABEL_HEIGHT / 2, y1: y + LABEL_HEIGHT / 2 };
+        if (box.y0 < 0 || box.y1 > bounds.height) continue;
+        const clear = placed.every(
+          (b) => box.x1 < b.x0 || box.x0 > b.x1 || box.y1 < b.y0 || box.y0 > b.y1,
+        );
+        if (clear) {
+          placed.push(box);
+          // A nudged label gets a connector from its point to its near edge
+          const lx = anchor === 'start' ? x - 2 : x + 2;
+          labels.push({
+            key: item.key,
+            x,
+            y,
+            anchor,
+            text: item.text,
+            connector: dy ? { x1: item.cx, y1: item.cy, x2: lx, y2: y } : null,
+          });
+          break;
+        }
+      }
+    }
+    return labels;
+  }
+
   // Data extent rounded outward to round numbers
   const niceExtent = (points, accessor) =>
     scaleLinear().domain(extent(points, accessor)).nice().domain();
@@ -475,6 +543,8 @@
       // button that restores them
       initialSelected: { type: Array, default: () => [] },
       initialSelectedLabel: { type: String, default: 'Reset highlights' },
+      // Write each selected id beside its point (once per panel, at its highest point)
+      labelSelected: { type: Boolean, default: false },
       // Total width in SVG units. Panels are sized to fill it, so grids with
       // different column counts scale to the container by the same factor
       // and their text renders at the same size.
@@ -721,6 +791,31 @@
           ),
         );
       },
+      labels() {
+        if (!this.labelSelected || !this.selected.length) return [];
+        return this.panels.flatMap((panel) => {
+          // One label per id per panel, on its highest point
+          const items = this.selected
+            .map((id) => {
+              const pts = panel.byId.get(id) || [];
+              const top = pts.reduce((a, p) => (!a || p.py < a.py ? p : a), null);
+              return top && { key: `${panel.key}/${id}`, cx: top.px, cy: top.py, text: id };
+            })
+            .filter(Boolean);
+          const bounds = { width: this.size, height: this.size };
+          return placeLabels(items, bounds, this.pointRadius + 2.2).map((l) => ({
+            ...l,
+            x: panel.x + l.x,
+            y: panel.y + l.y,
+            connector: l.connector && {
+              x1: panel.x + l.connector.x1,
+              y1: panel.y + l.connector.y1,
+              x2: panel.x + l.connector.x2,
+              y2: panel.y + l.connector.y2,
+            },
+          }));
+        });
+      },
     },
     methods: {
       colX(i) {
@@ -828,6 +923,21 @@
   .ring {
     stroke: #000;
     stroke-width: 1.5;
+    pointer-events: none;
+  }
+  .point-label-line {
+    stroke: #555;
+    stroke-width: 0.75;
+    pointer-events: none;
+  }
+  .point-label {
+    font-size: 11px;
+    font-weight: 600;
+    fill: #222;
+    paint-order: stroke;
+    stroke: #fff;
+    stroke-width: 3px;
+    stroke-linejoin: round;
     pointer-events: none;
   }
   .tick,
