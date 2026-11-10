@@ -188,6 +188,66 @@
             :tooltip="poolTooltip"
             :highlight="poolHighlight"
           />
+
+          <p class="prism-text-body-large mt-8">
+            Next, we developed a co-culture assay system consisting of fluorescently labeled
+            HER2-positive NCIN87 cells and HER2-negative HCC1806 cells to confirm bystander killing
+            capabilities of T-DM1 and T-MMAE. Co-cultures of GFP-NCIN87 cells and RFP-HCC1806 cells
+            were seeded at 4 different ratios (1:1, 1:2, 1:5, and 1:20). In addition, each cell
+            line was plated and treated individually. Cells were exposed to T-MMAE and T-DM1 at the
+            same concentrations and treatment conditions as performed in the PRISM screen. Cell
+            counts of each line were quantified by fluorescent imaging.
+          </p>
+          <p class="prism-text-body-large">
+            Treatment of each cell line individually confirmed target-specific killing of T-DM1 and
+            T-MMAE. Results showed some dose-related nonspecific cytotoxicity at the highest
+            concentrations for both ADCs, but at lower doses both T-DM1 and T-MMAE were able to
+            kill NCIN87 cells without affecting HCC1806 cells. In the co-culture system, both T-DM1
+            and T-MMAE efficiently killed the target NCIN87 cells.
+          </p>
+          <p class="prism-text-body-large">
+            Cytotoxicity of T-DM1 on HCC1806 was limited to the highest concentrations, consistent
+            with the nonspecific high dose cytotoxicity observed in monoculture format. However, at
+            low doses, HCC1806 cells were unaffected by T-DM1 and there was no shift in sensitivity
+            across different ratios of NCIN87 cells, validating a lack of bystander killing
+            activity by T-DM1.
+          </p>
+          <div
+            v-if="adc.coCulture"
+            class="line-chart-pair"
+          >
+            <line-chart
+              v-for="panel in coCulturePanels('T-DM1')"
+              :key="panel.title"
+              v-bind="panel"
+            />
+          </div>
+
+          <p class="prism-text-body-large mt-8">
+            In contrast, we observed pronounced cytotoxicity by T-MMAE in HCC1806 that was both
+            dependent on T-MMAE dose and the amount of NCIN87 cells present. Notably, at a ratio of
+            1:20, which is approximately similar to the expected abundance of HER2-positive and
+            HER2-negative cells in PRISM pools, T-MMAE did not induce bystander killing of HCC1806
+            cells.
+          </p>
+          <div
+            v-if="adc.coCulture"
+            class="line-chart-pair"
+          >
+            <line-chart
+              v-for="panel in coCulturePanels('T-MMAE')"
+              :key="panel.title"
+              v-bind="panel"
+            />
+          </div>
+
+          <p class="prism-text-body-large mt-8">
+            Collectively, these results confirm that T-MMAE has bystander killing activity, the
+            extent of which in vitro is dependent on the presence of a sufficient number of
+            HER2-positive cells. Taking this into consideration, given the relatively low number of
+            HER2-positive cell lines in the PRISM set, the minimal off-target cell killing by
+            T-MMAE is not unexpected.
+          </p>
         </section>
 
         <section id="conclusions">
@@ -260,7 +320,7 @@
         // The ten HER2-overexpressing lines in the PR500 set
         her2Lines: HER2_LINES,
         // Rows for the figures, filled in once the CSVs load
-        adc: { auc: null, ge: null, shrna: null, pools: null },
+        adc: { auc: null, ge: null, shrna: null, pools: null, coCulture: null },
         // Cell lines highlighted in the pools box plot
         poolSelected: [...HER2_LINES],
       };
@@ -283,9 +343,53 @@
       this.loadBiomarkers('ge');
       this.loadBiomarkers('shrna');
       this.loadPools();
+      this.loadCoCulture();
     },
 
     methods: {
+      // Co-culture viability for both ADCs, one row per cell line, ratio, dose and replicate
+      async loadCoCulture() {
+        const perAgent = await Promise.all(
+          ['T-DM1', 'T-MMAE'].map(async (compound) => {
+            const rows = await csv(dataPath + `co-culture results_normalized_${compound}.csv`);
+            return rows.map((r) => ({
+              compound,
+              cells: r.Cells,
+              // Doses carry float noise (0.1111111 vs 0.111111111), so round to 3 digits
+              dose: +(+r.pert_dose).toPrecision(3),
+              viability: +r.Viability,
+              // Ratios arrive spreadsheet-mangled as "1:01"; the monoculture rows keep their name
+              ratio: r.ratio.replace(/:0+(\d)/, ':$1'),
+            }));
+          }),
+        );
+        this.adc.coCulture = perAgent.flat();
+      },
+      // The two LineChart panels for one ADC: HCC1806 (HER2-negative) and NCIN87 (HER2-positive)
+      coCulturePanels(compound) {
+        const rows = this.adc.coCulture.filter((r) => r.compound === compound);
+        const palettes = {
+          HCC1806: ['#d0d1e6', '#a6bddb', '#74a9cf', '#2b8cbe', '#045a8d'],
+          NCIN87: ['#bfd3e6', '#9ebcda', '#8c96c6', '#8856a7', '#810f7c'],
+        };
+        return ['HCC1806', 'NCIN87'].map((cells) => {
+          const other = cells === 'HCC1806' ? 'NCIN87' : 'HCC1806';
+          return {
+            title: `${compound} – ${cells}`,
+            data: rows.filter((r) => r.cells === cells),
+            x: { field: 'dose', title: 'Concentration (µg/mL)', type: 'log' },
+            // One viability range for all four panels; the data tops out at 1.23
+            y: { field: 'viability', title: 'Viability', domain: [0, 1.25] },
+            yTickCount: 6,
+            series: {
+              field: 'ratio',
+              title: `${other} : ${cells} cell ratio`,
+              domain: ['1:1', '1:2', '1:5', '1:20', `${cells} only`],
+              range: palettes[cells],
+            },
+          };
+        });
+      },
       // Merge the per-agent files into one list with a `compound` column
       async loadAuc() {
         const perAgent = await Promise.all(
@@ -369,6 +473,18 @@
   .figure-toolbar__search {
     flex: 1 1 260px;
     max-width: 360px;
+  }
+
+  /* Two co-culture panels side by side, stacked on narrow screens */
+  .line-chart-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  @media (max-width: 600px) {
+    .line-chart-pair {
+      grid-template-columns: 1fr;
+    }
   }
 
   .whitepaper-body h2 {
