@@ -152,41 +152,16 @@
             Looking across PRISM pools, the number of HER2-positive cell lines ranges from 1-3 cell
             lines per pool, each of which consist of 20-25 total cell lines.
           </p>
-          <div class="figure-toolbar">
-            <v-autocomplete
-              v-model="poolSelected"
-              :items="poolCellLines"
-              label="Search cell lines"
-              class="figure-toolbar__search"
-              variant="underlined"
-              density="compact"
-              multiple
-              chips
-              closable-chips
-              clearable
-              hide-details
-            />
-            <v-btn
-              size="small"
-              variant="outlined"
-              rounded
-              @click="poolSelected = [...her2Lines]"
-            >
-              Highlight HER2-overexpressing cell lines
-            </v-btn>
-          </div>
-          <box-plot-chart
+          <box-plot
             v-if="adc.pools"
             :data="adc.pools"
-            orientation="vertical"
-            points
-            :height="400"
-            :axis="{
-              x: { field: 'pool', title: 'PRISM pool' },
-              y: { field: 'expression', title: 'ERBB2 expression' },
-            }"
-            :tooltip="poolTooltip"
-            :highlight="poolHighlight"
+            id-field="cellLine"
+            id-title="Cell line"
+            :x="{ field: 'pool', title: 'PRISM pool' }"
+            :y="{ field: 'expression', title: 'ERBB2 expression' }"
+            :initial-selected="her2Lines"
+            initial-selected-label="Highlight HER2-overexpressing cell lines"
+            :point-radius="3"
           />
 
           <p class="prism-text-body-large mt-8">
@@ -265,7 +240,6 @@
 
 <script>
   import { csv } from 'd3';
-  import BoxPlotChart from '@/lib/charts/BoxPlotChart.vue';
 
   // The ten HER2-overexpressing lines in the PR500 set
   const HER2_LINES = [
@@ -308,7 +282,6 @@
 
   export default {
     name: 'WhitepaperAntibodyDrugConjugates',
-    components: { BoxPlotChart },
     data() {
       return {
         paper: {
@@ -321,21 +294,7 @@
         her2Lines: HER2_LINES,
         // Rows for the figures, filled in once the CSVs load
         adc: { auc: null, ge: null, shrna: null, pools: null, coCulture: null },
-        // Cell lines highlighted in the pools box plot
-        poolSelected: [...HER2_LINES],
       };
-    },
-
-    computed: {
-      poolCellLines() {
-        return this.adc.pools ? [...new Set(this.adc.pools.map((r) => r.cellLine))].sort() : [];
-      },
-      // Highlight predicate for the box plot; null when nothing is selected
-      poolHighlight() {
-        if (!this.poolSelected.length) return null;
-        const selected = new Set(this.poolSelected);
-        return (record) => selected.has(record.cellLine);
-      },
     },
 
     created() {
@@ -419,10 +378,6 @@
           }))
           .sort((a, b) => a.pool.localeCompare(b.pool));
       },
-      // Tooltip rows for the box plot: lead with the cell line
-      poolTooltip(record, rows) {
-        return [['Cell line', record.cellLine], ...rows];
-      },
       async loadBiomarkers(kind) {
         const { prefix, files } = BIOMARKER_FILES[kind];
         const perAgent = await Promise.all(
@@ -460,19 +415,6 @@
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
-  }
-
-  /* Search box plus reset button above a figure */
-  .figure-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 16px;
-    margin-bottom: 12px;
-  }
-  .figure-toolbar__search {
-    flex: 1 1 260px;
-    max-width: 360px;
   }
 
   /* Two co-culture panels side by side, stacked on narrow screens */
