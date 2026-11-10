@@ -447,9 +447,32 @@
   const LABEL_HEIGHT = 11;
   const LABEL_CHAR = 6.2;
   const LABEL_STEPS = [0, 12, 24, 36, 48, 60, 72];
-  // Candidate spots for one label, cheapest first: beside the point on either
-  // side, directly above or below, then nudged up or down in growing steps
-  function labelCandidates(item, gap) {
+  // Costs: 'cost' of a candidate is its distance from the point plus side
+  // penalties; connectors that cross another connector, a point or a label
+  // add these on top
+  const CROSS_CONNECTOR = 40;
+  const CROSS_OBSTACLE = 20;
+
+  const overlaps = (a, b) => !(a.x1 < b.x0 || a.x0 > b.x1 || a.y1 < b.y0 || a.y0 > b.y1);
+  const orient = (p, q, r) => Math.sign((q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y));
+  const segmentsCross = (a, b) =>
+    orient(a.p, a.q, b.p) !== orient(a.p, a.q, b.q) && orient(b.p, b.q, a.p) !== orient(b.p, b.q, a.q);
+  const inside = (p, b) => p.x >= b.x0 && p.x <= b.x1 && p.y >= b.y0 && p.y <= b.y1;
+  const segmentHitsBox = (s, b) => {
+    if (inside(s.p, b) || inside(s.q, b)) return true;
+    const c = [
+      { x: b.x0, y: b.y0 },
+      { x: b.x1, y: b.y0 },
+      { x: b.x1, y: b.y1 },
+      { x: b.x0, y: b.y1 },
+    ];
+    return c.some((p, i) => segmentsCross(s, { p, q: c[(i + 1) % 4] }));
+  };
+
+  // Candidate spots for one label, cheapest first: directly above or below the
+  // point, beside it on either side, then nudged up or down in growing steps.
+  // `side` penalises the busier side so labels spread away from a cluster.
+  function labelCandidates(item, gap, side) {
     const right = item.cx + gap + 3;
     const left = item.cx - gap - 3;
     const list = [
@@ -458,17 +481,19 @@
     ];
     for (const step of LABEL_STEPS) {
       for (const dy of step ? [-step, step] : [0]) {
-        list.push({ x: right, y: item.cy + dy, anchor: 'start', cost: step });
-        list.push({ x: left, y: item.cy + dy, anchor: 'end', cost: step + 4 });
+        list.push({ x: right, y: item.cy + dy, anchor: 'start', cost: step + side.start });
+        list.push({ x: left, y: item.cy + dy, anchor: 'end', cost: step + side.end });
       }
     }
-    return list.sort((a, b) => a.cost - b.cost);
+    return list;
   }
-  // Label layout: every point is an obstacle, as is every label already placed.
-  // Each label takes its cheapest clear candidate inside `bounds`; one with no
-  // clear candidate is dropped, so labels never overlap points or each other.
+
+  // Label layout. Every point is an obstacle. Labels are placed greedily at
+  // their cheapest clear candidate, then refined for a few passes in which
+  // each label may move to a cheaper spot given all the others, which untangles
+  // connectors. A label with no clear candidate is dropped, so labels never
+  // overlap points or each other. Coordinates are local to `bounds`.
   function placeLabels(items, bounds, gap) {
-    const overlaps = (a, b) => !(a.x1 < b.x0 || a.x0 > b.x1 || a.y1 < b.y0 || a.y0 > b.y1);
     const obstacles = items.map((p) => ({
       key: p.key,
       x0: p.cx - gap,
@@ -476,32 +501,91 @@
       y0: p.cy - gap,
       y1: p.cy + gap,
     }));
-    const placed = [];
-    const labels = [];
-    for (const item of [...items].sort((a, b) => a.cy - b.cy)) {
+    // How crowded each side of a point is, to prefer the emptier side
+    const sideFor = (item) => {
+      const near = (o, lo, hi) => {
+        const ox = (o.x0 + o.x1) / 2;
+        const oy = (o.y0 + o.y1) / 2;
+        return o.key !== item.key && ox > item.cx + lo && ox <= item.cx + hi && Math.abs(oy - item.cy) < 30;
+      };
+      const right = obstacles.filter((o) => near(o, 0, 70)).length;
+      const left = obstacles.filter((o) => near(o, -70, 0)).length;
+      return { start: right * 6, end: 4 + left * 6 };
+    };
+    const placement = (item, c, w) => {
+      const x0 = c.anchor === 'start' ? c.x : c.anchor === 'end' ? c.x - w : c.x - w / 2;
+      const box = { x0, x1: x0 + w, y0: c.y - LABEL_HEIGHT / 2, y1: c.y + LABEL_HEIGHT / 2 };
+      const nudged = Math.abs(c.y - item.cy) >= LABEL_STEPS[1];
+      const lx = c.anchor === 'start' ? c.x - 2 : c.x + 2;
+      const connector = nudged ? { p: { x: item.cx, y: item.cy }, q: { x: lx, y: c.y } } : null;
+      return { key: item.key, box, connector, c };
+    };
+    // Cost of a placement against the others, or Infinity when it collides
+    const score = (item, pl, others) => {
+      const { box, connector } = pl;
+      if (box.x0 < 0 || box.x1 > bounds.width || box.y0 < 0 || box.y1 > bounds.height) return Infinity;
+      if (others.some((o) => overlaps(box, o.box))) return Infinity;
+      if (obstacles.some((o) => o.key !== item.key && overlaps(box, o))) return Infinity;
+      let cost = pl.c.cost;
+      if (connector) {
+        for (const o of others) {
+          if (o.connector && segmentsCross(connector, o.connector)) cost += CROSS_CONNECTOR;
+          if (segmentHitsBox(connector, o.box)) cost += CROSS_OBSTACLE;
+        }
+        for (const o of obstacles) {
+          if (o.key !== item.key && segmentHitsBox(connector, o)) cost += CROSS_OBSTACLE;
+        }
+      }
+      // A label box that another connector runs through is penalised too
+      for (const o of others) {
+        if (o.connector && segmentHitsBox(o.connector, box)) cost += CROSS_OBSTACLE;
+      }
+      return cost;
+    };
+    const best = (item, others) => {
       const w = String(item.text).length * LABEL_CHAR;
-      for (const c of labelCandidates(item, gap)) {
-        const x0 = c.anchor === 'start' ? c.x : c.anchor === 'end' ? c.x - w : c.x - w / 2;
-        const box = { x0, x1: x0 + w, y0: c.y - LABEL_HEIGHT / 2, y1: c.y + LABEL_HEIGHT / 2 };
-        if (box.x0 < 0 || box.x1 > bounds.width || box.y0 < 0 || box.y1 > bounds.height) continue;
-        if (placed.some((b) => overlaps(box, b))) continue;
-        if (obstacles.some((o) => o.key !== item.key && overlaps(box, o))) continue;
-        placed.push(box);
-        // A label nudged away from its point gets a connector to its near edge
-        const nudged = Math.abs(c.y - item.cy) >= LABEL_STEPS[1];
-        const lx = c.anchor === 'start' ? c.x - 2 : c.x + 2;
-        labels.push({
+      let found = null;
+      for (const c of labelCandidates(item, gap, sideFor(item))) {
+        const pl = placement(item, c, w);
+        const cost = score(item, pl, others);
+        if (cost < (found ? found.cost : Infinity)) found = { ...pl, cost };
+      }
+      return found;
+    };
+
+    const sorted = [...items].sort((a, b) => a.cy - b.cy);
+    const chosen = new Map();
+    for (const item of sorted) {
+      const pl = best(item, [...chosen.values()]);
+      if (pl) chosen.set(item.key, pl);
+    }
+    for (let pass = 0; pass < 4; pass++) {
+      let moved = false;
+      for (const item of sorted) {
+        const current = chosen.get(item.key);
+        const others = [...chosen.values()].filter((o) => o.key !== item.key);
+        const pl = best(item, others);
+        if (pl && (!current || pl.cost < current.cost - 1)) {
+          chosen.set(item.key, pl);
+          moved = true;
+        }
+      }
+      if (!moved) break;
+    }
+
+    return sorted
+      .filter((item) => chosen.has(item.key))
+      .map((item) => {
+        const { c, connector } = chosen.get(item.key);
+        return {
           key: item.key,
           x: c.x,
           y: c.y,
           anchor: c.anchor,
           text: item.text,
-          connector: nudged ? { x1: item.cx, y1: item.cy, x2: lx, y2: c.y } : null,
-        });
-        break;
-      }
-    }
-    return labels;
+          connector: connector && { x1: connector.p.x, y1: connector.p.y, x2: connector.q.x, y2: connector.q.y },
+        };
+      });
   }
 
   // Data extent rounded outward to round numbers
