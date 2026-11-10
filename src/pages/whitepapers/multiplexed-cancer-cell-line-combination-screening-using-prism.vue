@@ -350,7 +350,7 @@
             id-title="Cell line"
             :column="{ key: 'dose1', title: 'AZD5991 (µM)' }"
             :row="{ key: 'dose2', title: 'A-1331852 (µM)' }"
-            :x="{ key: 'S', title: 'Synergy score', threshold: 0 }"
+            :x="{ key: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
             :y="{ key: 'neg_log10_qval', title: '-log10(q value)', threshold: 1 }"
             :color="{ key: 'S', title: 'Synergy score', scheme: 'rdbu' }"
           />
@@ -395,7 +395,7 @@
             id-key="feature"
             id-title="Feature"
             :column="{ key: 'featureType', values: featureTypes }"
-            :x="{ key: 'rho', title: 'Correlation', domain: [-0.5, 1], threshold: 0 }"
+            :x="{ key: 'rho', title: 'Correlation', domain: [-0.5, 0.5], threshold: 0 }"
             :y="{ key: 'neg_log10_qval', title: '-log10(q value)', domain: [0, 14] }"
             :color="{ key: 'dose', title: 'Temozolomide (µM)', scheme: 'ordinal' }"
             :initial-selected="['MSH2', 'MSH6']"
