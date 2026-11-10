@@ -294,7 +294,7 @@
         v-if="color"
         :transform="`translate(${margin.left + gridWidth / 2 - legendWidth / 2}, ${plotsBottom + 56})`"
       >
-        <template v-if="ordinal">
+        <template v-if="swatchLegend">
           <g
             v-for="item in legendItems"
             :key="`lg-${item.value}`"
@@ -303,7 +303,7 @@
             <rect
               width="10"
               height="10"
-              :fill="colorScale(item.value)"
+              :fill="item.fill"
             />
             <text
               x="14"
@@ -384,7 +384,7 @@
       <div>
         <b>{{ y.title }}:</b> {{ num(hover.point.y) }}
       </div>
-      <div v-if="color">
+      <div v-if="color && !corners">
         <b>{{ color.title }}:</b> {{ num(hover.point.c) }}
       </div>
     </div>
@@ -396,6 +396,7 @@
     bin,
     extent,
     interpolateBlues,
+    interpolateLab,
     interpolateRdBu,
     interpolateReds,
     interpolateViridis,
@@ -409,6 +410,10 @@
   const ABOVE = '#67a9cf';
   const BELOW = '#ef8a62';
   const SINGLE = '#4c78a8'; // point color when no color scale is given
+  // 'corners' scheme: hue by side of the x center, fading to grey toward low y
+  const CORNER_LEFT = '#d6604d';
+  const CORNER_RIGHT = '#4393c3';
+  const CORNER_BASE = '#cfcfcf';
   const PAD = 8; // inset between a panel's edge and its axis range; covers a selected marker
   const GAP = 6; // space between panels
   const HOVER_RADIUS = 8; // SVG units within which a point counts as hovered
@@ -439,6 +444,9 @@
    *
    *   x, y:   { key, title, domain?: [min, max], threshold?: number }
    *   color:  { key, title, scheme?: 'blues' | 'reds' | 'rdbu' | 'ordinal', domain?, values? }
+   *           or { scheme: 'corners', title, labels?: [left, right] } to color by
+   *           position: hue by side of the x threshold (or center), fading to
+   *           grey toward low y, so the upper corners stand out;
    *           or omitted for one color and no legend
    *   column: { key, title?, values? }
    *   row:    { key, title, values? } or null for a single row
@@ -491,6 +499,13 @@
       ordinal() {
         return this.color?.scheme === 'ordinal';
       },
+      corners() {
+        return this.color?.scheme === 'corners';
+      },
+      // Legends drawn as labeled swatches rather than a gradient bar
+      swatchLegend() {
+        return this.ordinal || this.corners;
+      },
       columns() {
         return this.column.values || uniqueSorted(this.data.map((d) => d[this.column.key]));
       },
@@ -505,7 +520,12 @@
             id: d[this.idKey],
             x: +d[this.x.key],
             y: +d[this.y.key],
-            c: !this.color ? null : this.ordinal ? d[this.color.key] : +d[this.color.key],
+            c:
+              !this.color || this.corners
+                ? null
+                : this.ordinal
+                  ? d[this.color.key]
+                  : +d[this.color.key],
             col: d[this.column.key],
             row: this.row ? d[this.row.key] : null,
           }))
@@ -529,7 +549,7 @@
           .range([this.size - PAD, PAD]);
       },
       colorScale() {
-        if (!this.color) return () => SINGLE;
+        if (!this.color || this.corners) return () => SINGLE;
         if (this.ordinal) {
           const values = this.color.values || uniqueSorted(this.points.map((p) => p.c));
           // Viridis from light to dark across the categories, as the original figures used
@@ -557,7 +577,7 @@
                 ...p,
                 px: this.xScale(p.x),
                 py: this.yScale(p.y),
-                fill: this.colorScale(p.c),
+                fill: this.corners ? this.cornerColor(p) : this.colorScale(p.c),
               }));
             // An id may appear more than once in a panel (e.g. a feature at several doses)
             const byId = new Map();
@@ -681,22 +701,33 @@
       },
       // Ordinal legend: swatch plus label per category, laid out in a row
       legendItems() {
-        if (!this.ordinal) return [];
+        if (!this.swatchLegend) return [];
+        let entries;
+        if (this.corners) {
+          const [left, right] = this.color.labels || [`Low ${this.x.title}`, `High ${this.x.title}`];
+          entries = [
+            { value: 'left', label: left, fill: CORNER_LEFT },
+            { value: 'right', label: right, fill: CORNER_RIGHT },
+          ];
+        } else {
+          entries = this.colorScale
+            .domain()
+            .map((value) => ({ value, label: this.sig(value), fill: this.colorScale(value) }));
+        }
         let x = 0;
-        return this.colorScale.domain().map((value) => {
-          const label = this.sig(value);
-          const item = { value, label, x };
-          x += 14 + label.length * 7.5 + 14;
+        return entries.map((entry) => {
+          const item = { ...entry, x };
+          x += 14 + entry.label.length * 7.5 + 14;
           return item;
         });
       },
       legendWidth() {
-        if (!this.ordinal) return 160;
+        if (!this.swatchLegend) return 160;
         const last = this.legendItems[this.legendItems.length - 1];
         return last ? last.x + 14 + last.label.length * 7.5 : 0;
       },
       legendScale() {
-        if (!this.color || this.ordinal) return null;
+        if (!this.color || this.swatchLegend) return null;
         return scaleLinear().domain(this.colorScale.domain()).range([0, this.legendWidth]);
       },
       gradientStops() {
@@ -723,6 +754,18 @@
       },
       rowY(j) {
         return this.margin.top + j * (this.size + GAP);
+      },
+      // 'corners' color: left or right hue by the side of the x center the point
+      // is on, blended from grey by how far it sits toward that upper corner
+      cornerColor(p) {
+        const [x0, x1] = this.xDomain;
+        const mid = this.x.threshold ?? (x0 + x1) / 2;
+        const half = Math.max(mid - x0, x1 - mid) || 1;
+        const tx = Math.max(-1, Math.min(1, (p.x - mid) / half));
+        const [y0, y1] = this.yDomain;
+        const ty = Math.max(0, Math.min(1, (p.y - y0) / (y1 - y0 || 1)));
+        const strength = Math.pow(Math.abs(tx) * ty, 0.6);
+        return interpolateLab(CORNER_BASE, tx < 0 ? CORNER_LEFT : CORNER_RIGHT)(strength);
       },
       // Three significant digits, for dose labels
       sig(v) {
