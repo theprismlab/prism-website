@@ -169,22 +169,25 @@
           >
             <h4 class="prism-text-title-medium combo-figure__title">{{ combo.title }}</h4>
             <div v-if="combo.cells" class="combo-figure__panels">
-              <heatmap
-                :data="combo.cells.x"
-                :x-title="`${combo.x.name} (µM)`"
-                :value-title="killedLabel"
-                :domain="combo.cells.domain"
-                log
-                title="Single agent"
-              />
-              <heatmap
-                :data="combo.cells.y"
-                :x-title="`${combo.y.name} (µM)`"
-                :value-title="killedLabel"
-                :domain="combo.cells.domain"
-                log
-                title="Single agent"
-              />
+              <div>
+                <p class="combo-figure__label prism-text-title-small">Single agent</p>
+                <div class="combo-figure__panels">
+                  <heatmap
+                    :data="combo.cells.x"
+                    :x-title="`${combo.x.name} (µM)`"
+                    :value-title="killedLabel"
+                    :domain="combo.cells.domain"
+                    log
+                  />
+                  <heatmap
+                    :data="combo.cells.y"
+                    :x-title="`${combo.y.name} (µM)`"
+                    :value-title="killedLabel"
+                    :domain="combo.cells.domain"
+                    log
+                  />
+                </div>
+              </div>
               <heatmap
                 :data="combo.cells.xy"
                 :x-title="`${combo.x.name} (µM)`"
@@ -411,6 +414,10 @@
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 24px;
+  }
+  /* Same spacing as the title inside Heatmap, so the panels line up */
+  .combo-figure__label {
+    margin: 0 0 4px;
   }
 
   .whitepaper-body {

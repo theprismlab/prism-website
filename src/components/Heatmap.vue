@@ -45,8 +45,20 @@
           >
             {{ tick(y) }}
           </text>
+          <!-- One row: the title reads as a row label, left of the tick -->
           <text
-            :transform="`translate(${-margin.left + 14}, ${plotHeight / 2}) rotate(-90)`"
+            v-if="singleRow"
+            :x="-tickWidth - 14"
+            :y="plotHeight / 2"
+            class="heatmap__label"
+            text-anchor="end"
+            dominant-baseline="middle"
+          >
+            {{ yTitle }}
+          </text>
+          <text
+            v-else
+            :transform="`translate(${-margin.left + 12}, ${plotHeight / 2}) rotate(-90)`"
             class="heatmap__label"
             text-anchor="middle"
           >
@@ -172,12 +184,26 @@
         const scale = this.log ? scaleSymlog() : scaleLinear();
         return scale.domain(this.colorDomain).range([0, this.plotWidth]);
       },
+      singleRow() {
+        return this.yDomain.length === 1;
+      },
+      // Approximate text widths (11px and 12px fonts) to size the left margin
+      tickWidth() {
+        return Math.max(...this.yDomain.map((y) => this.tick(y).length)) * 6.5;
+      },
+      titleWidth() {
+        return this.yTitle.length * 7;
+      },
       margin() {
+        let left = 8;
+        if (this.yTitle) {
+          left = this.singleRow ? this.tickWidth + this.titleWidth + 22 : this.tickWidth + 30;
+        }
         return {
           top: 4,
           right: 8,
           bottom: 40 + (this.legend ? 52 : 0),
-          left: this.yTitle ? 64 : 8,
+          left,
         };
       },
       plotWidth() {
