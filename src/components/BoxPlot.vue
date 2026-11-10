@@ -17,15 +17,14 @@
         clearable
         hide-details
       />
-      <v-btn
+      <v-checkbox
         v-if="initialSelected.length"
-        size="small"
-        variant="outlined"
-        rounded
-        @click="selected = [...initialSelected]"
-      >
-        {{ initialSelectedLabel }}
-      </v-btn>
+        :model-value="defaultsOn"
+        :label="initialSelectedLabel"
+        density="compact"
+        hide-details
+        @update:model-value="toggleDefaults"
+      />
     </div>
 
     <svg
@@ -421,6 +420,10 @@
       ids() {
         return [...new Set(this.records.map((d) => d.id))].sort();
       },
+      // Whether every default id is currently selected
+      defaultsOn() {
+        return this.initialSelected.every((id) => this.selected.includes(id));
+      },
       categories() {
         return this.x.domain || [...new Set(this.records.map((d) => d.x))].sort();
       },
@@ -486,6 +489,12 @@
       },
     },
     methods: {
+      // Checking adds the default ids to the selection; unchecking removes them
+      toggleDefaults(on) {
+        this.selected = on
+          ? [...new Set([...this.selected, ...this.initialSelected])]
+          : this.selected.filter((id) => !this.initialSelected.includes(id));
+      },
       // Nearest point to a mouse event, within HOVER_RADIUS
       nearest(event) {
         const svgBox = this.$refs.svg.getBoundingClientRect();
