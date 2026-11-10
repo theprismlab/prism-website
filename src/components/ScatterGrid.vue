@@ -434,18 +434,21 @@
    * while the other points are dimmed.
    *
    * `data` is a flat list of records; `x`, `y`, `color`, `column`, `row` each
-   * name a field with `key` and carry a `title`. Values are coerced to numbers
+   * name a field with `field` and carry a `title`, following the axis config
+   * shape used by the charts in src/lib/charts. Values are coerced to numbers
    * and records with a non-numeric x or y are left out.
    *
-   *   x, y:   { key, title, domain?: [min, max], threshold?: number }
-   *   color:  { key, title, scheme?: 'blues' | 'reds' | 'rdbu' | 'ordinal', domain?, values? }
+   *   x, y:   { field, title, domain?: [min, max], threshold?: number }
+   *   color:  { field, title, type?: 'sequential' | 'categorical', domain?, range? }
+   *           sequential range: 'blues' (default) | 'reds' | 'rdbu' or a d3
+   *           interpolator; categorical range: a list of colors
    *           or omitted for one color and no legend
-   *   column: { key, title?, values? }
-   *   row:    { key, title, values? } or null for a single row
+   *   column: { field, title?, domain? }
+   *   row:    { field, title, domain? } or null for a single row
    *
-   * `values` fixes the order of a facet or of the ordinal color categories;
-   * otherwise unique values are sorted, numerically when they are numbers.
-   * An 'ordinal' color scheme keeps the raw field value, colors categories
+   * A categorical `domain` fixes the order of a facet or of the color
+   * categories; otherwise unique values are sorted, numerically when they are
+   * numbers. A categorical color keeps the raw field value, colors categories
    * along a viridis ramp (darker for later ones) and draws a swatch legend.
    *
    * `marginals` adds a histogram of x under each column (bars colored by the
@@ -463,7 +466,7 @@
       column: { type: Object, required: true },
       row: { type: Object, default: null },
       // Field that identifies a record across panels, and its tooltip label
-      idKey: { type: String, default: 'id' },
+      idField: { type: String, default: 'id' },
       idTitle: { type: String, default: 'ID' },
       marginals: { type: Boolean, default: false },
       // Point radius in SVG units; highlight rings grow with it
@@ -489,25 +492,25 @@
         return [...new Set(this.points.map((p) => p.id))].sort();
       },
       ordinal() {
-        return this.color?.scheme === 'ordinal';
+        return this.color?.type === 'categorical';
       },
       columns() {
-        return this.column.values || uniqueSorted(this.data.map((d) => d[this.column.key]));
+        return this.column.domain || uniqueSorted(this.data.map((d) => d[this.column.field]));
       },
       // Highest row value at the top, like a y axis
       rows() {
         if (!this.row) return [null];
-        return this.row.values || uniqueSorted(this.data.map((d) => d[this.row.key])).reverse();
+        return this.row.domain || uniqueSorted(this.data.map((d) => d[this.row.field])).reverse();
       },
       points() {
         return this.data
           .map((d) => ({
-            id: d[this.idKey],
-            x: +d[this.x.key],
-            y: +d[this.y.key],
-            c: !this.color ? null : this.ordinal ? d[this.color.key] : +d[this.color.key],
-            col: d[this.column.key],
-            row: this.row ? d[this.row.key] : null,
+            id: d[this.idField],
+            x: +d[this.x.field],
+            y: +d[this.y.field],
+            c: !this.color ? null : this.ordinal ? d[this.color.field] : +d[this.color.field],
+            col: d[this.column.field],
+            row: this.row ? d[this.row.field] : null,
           }))
           .filter((p) => Number.isFinite(p.x) && Number.isFinite(p.y));
       },
@@ -531,21 +534,23 @@
       colorScale() {
         if (!this.color) return () => SINGLE;
         if (this.ordinal) {
-          const values = this.color.values || uniqueSorted(this.points.map((p) => p.c));
+          const values = this.color.domain || uniqueSorted(this.points.map((p) => p.c));
           // Viridis from light to dark across the categories, as the original figures used
           const n = values.length + 2;
-          const palette = values.map((_, i) => interpolateViridis(1 - (i + 1) / n));
+          const palette =
+            this.color.range || values.map((_, i) => interpolateViridis(1 - (i + 1) / n));
           return scaleOrdinal().domain(values).range(palette);
         }
-        const scheme = SCHEMES[this.color.scheme] || interpolateBlues;
+        const range = this.color.range;
+        const interpolator = typeof range === 'function' ? range : SCHEMES[range] || SCHEMES.blues;
         let domain = this.color.domain;
         if (!domain) {
           const [lo, hi] = extent(this.points, (p) => p.c);
           // A diverging scale is centered on zero
           const m = Math.max(Math.abs(lo), Math.abs(hi));
-          domain = this.color.scheme === 'rdbu' ? [-m, m] : [0, hi];
+          domain = range === 'rdbu' ? [-m, m] : [0, hi];
         }
-        return scaleSequential(scheme).domain(domain);
+        return scaleSequential(interpolator).domain(domain);
       },
       panels() {
         const list = [];

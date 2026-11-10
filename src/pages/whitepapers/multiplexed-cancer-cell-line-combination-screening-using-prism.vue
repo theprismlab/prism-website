@@ -277,13 +277,13 @@
           <scatter-grid
             v-if="synergy.temo"
             :data="synergy.temo"
-            id-key="ccle_name"
+            id-field="ccle_name"
             id-title="Cell line"
-            :column="{ key: 'dose1', title: 'Temozolomide (µM)' }"
-            :row="{ key: 'dose2', title: 'O6-benzylguanine (µM)' }"
-            :x="{ key: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
-            :y="{ key: 'EXP_MGMT', title: 'MGMT expression', threshold: 1.5 }"
-            :color="{ key: 'synergy_count_across_doses', title: 'Synergy count', scheme: 'blues' }"
+            :column="{ field: 'dose1', title: 'Temozolomide (µM)' }"
+            :row="{ field: 'dose2', title: 'O6-benzylguanine (µM)' }"
+            :x="{ field: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
+            :y="{ field: 'EXP_MGMT', title: 'MGMT expression', threshold: 1.5 }"
+            :color="{ field: 'synergy_count_across_doses', title: 'Synergy count', type: 'sequential', range: 'blues' }"
             marginals
           />
           <p class="prism-text-body-medium text-medium-emphasis mt-4">
@@ -311,16 +311,16 @@
           <scatter-grid
             v-if="synergy.ml210"
             :data="synergy.ml210"
-            id-key="ccle_name"
+            id-field="ccle_name"
             id-title="Cell line"
-            :column="{ key: 'dose1', title: 'ML210 (µM)' }"
-            :row="{ key: 'dose2', title: 'Ferrostatin-1 (µM)' }"
-            :x="{ key: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
-            :y="{ key: 'XPR_GPX4', title: 'GPX4 dependency' }"
+            :column="{ field: 'dose1', title: 'ML210 (µM)' }"
+            :row="{ field: 'dose2', title: 'Ferrostatin-1 (µM)' }"
+            :x="{ field: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
+            :y="{ field: 'XPR_GPX4', title: 'GPX4 dependency' }"
             :color="{
-              key: 'antagonism_count_across_doses',
+              field: 'antagonism_count_across_doses',
               title: 'Antagonism count',
-              scheme: 'reds',
+              type: 'sequential', range: 'reds',
             }"
             marginals
           />
@@ -346,13 +346,13 @@
           <scatter-grid
             v-if="synergy.azd"
             :data="synergy.azd"
-            id-key="ccle_name"
+            id-field="ccle_name"
             id-title="Cell line"
-            :column="{ key: 'dose1', title: 'AZD5991 (µM)' }"
-            :row="{ key: 'dose2', title: 'A-1331852 (µM)' }"
-            :x="{ key: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
-            :y="{ key: 'neg_log10_qval', title: '-log10(q value)', threshold: 1 }"
-            :color="{ key: 'S', title: 'Synergy score', scheme: 'rdbu' }"
+            :column="{ field: 'dose1', title: 'AZD5991 (µM)' }"
+            :row="{ field: 'dose2', title: 'A-1331852 (µM)' }"
+            :x="{ field: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
+            :y="{ field: 'neg_log10_qval', title: '-log10(q value)', threshold: 1 }"
+            :color="{ field: 'S', title: 'Synergy score', type: 'sequential', range: 'rdbu' }"
           />
           <p class="prism-text-body-medium text-medium-emphasis mt-4">
             <b>Fig.7. Observed synergy in AZD5991 + A-1331852 combination.</b> Many cell lines
@@ -392,15 +392,15 @@
           <scatter-grid
             v-if="biomarkers"
             :data="biomarkers"
-            id-key="feature"
+            id-field="feature"
             id-title="Feature"
-            :column="{ key: 'featureType', values: featureTypes }"
-            :x="{ key: 'rho', title: 'Correlation', domain: [-0.5, 0.5], threshold: 0 }"
-            :y="{ key: 'neg_log10_qval', title: '-log10(q value)', domain: [0, 14] }"
+            :column="{ field: 'featureType', domain: featureTypes }"
+            :x="{ field: 'rho', title: 'Correlation', domain: [-0.5, 0.5], threshold: 0 }"
+            :y="{ field: 'neg_log10_qval', title: '-log10(q value)', domain: [0, 14] }"
             :color="{
-              key: 'dose',
+              field: 'dose',
               title: 'Temozolomide (µM) + O6-benzylguanine 5 µM',
-              scheme: 'ordinal',
+              type: 'categorical',
             }"
             :initial-selected="['MSH2', 'MSH6']"
           />
