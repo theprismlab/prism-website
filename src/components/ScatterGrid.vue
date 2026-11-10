@@ -435,7 +435,6 @@
   const BELOW = '#ef8a62';
   const SINGLE = '#4c78a8'; // point color when no color scale is given
   const PAD = 8; // inset between a panel's edge and its axis range; covers a selected marker
-  const GAP = 6; // space between panels
   const HOVER_RADIUS = 8; // SVG units within which a point counts as hovered
 
   let instances = 0;
@@ -644,6 +643,8 @@
       marginals: { type: Boolean, default: false },
       // Point radius in SVG units; highlight rings grow with it
       pointRadius: { type: Number, default: 2.8 },
+      // Space between panels in SVG units
+      gap: { type: Number, default: 6 },
       // Ids highlighted when the grid first renders, and the label of the
       // button that restores them
       initialSelected: { type: Array, default: () => [] },
@@ -758,7 +759,7 @@
       // Layout. A marginal histogram is 0.55 of a panel thick.
       size() {
         const cols = this.columns.length;
-        const gaps = (cols - 1 + (this.marginals ? 1 : 0)) * GAP;
+        const gaps = (cols - 1 + (this.marginals ? 1 : 0)) * this.gap;
         const available = this.width - this.margin.left - this.margin.right - gaps;
         return available / (cols + (this.marginals ? 0.55 : 0));
       },
@@ -775,22 +776,22 @@
         return { top: 38, right, bottom: this.color ? 108 : 48, left };
       },
       gridWidth() {
-        return this.columns.length * this.size + (this.columns.length - 1) * GAP;
+        return this.columns.length * this.size + (this.columns.length - 1) * this.gap;
       },
       gridHeight() {
-        return this.rows.length * this.size + (this.rows.length - 1) * GAP;
+        return this.rows.length * this.size + (this.rows.length - 1) * this.gap;
       },
       histY() {
-        return this.margin.top + this.gridHeight + GAP;
+        return this.margin.top + this.gridHeight + this.gap;
       },
       marginX() {
-        return this.margin.left + this.gridWidth + GAP;
+        return this.margin.left + this.gridWidth + this.gap;
       },
       plotsBottom() {
         return this.marginals ? this.histY + this.side : this.margin.top + this.gridHeight;
       },
       rowLabelX() {
-        return this.marginX + (this.marginals ? this.side + GAP : 0) + 4;
+        return this.marginX + (this.marginals ? this.side + this.gap : 0) + 4;
       },
       height() {
         return this.plotsBottom + this.margin.bottom;
@@ -934,10 +935,10 @@
           : this.selected.filter((id) => !this.initialSelected.includes(id));
       },
       colX(i) {
-        return this.margin.left + i * (this.size + GAP);
+        return this.margin.left + i * (this.size + this.gap);
       },
       rowY(j) {
-        return this.margin.top + j * (this.size + GAP);
+        return this.margin.top + j * (this.size + this.gap);
       },
       // Three significant digits, for dose labels
       sig(v) {
