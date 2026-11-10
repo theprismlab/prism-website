@@ -1,16 +1,11 @@
 <template>
-  <div
-    class="box-plot"
-    @mouseleave="hover = null"
-  >
+  <div class="box-plot" @mouseleave="hover = null">
     <div class="box-plot__toolbar">
       <v-autocomplete
         v-model="selected"
         :items="ids"
         :label="`Search ${idTitle.toLowerCase()}s`"
-        class="box-plot__search"
         variant="underlined"
-        density="compact"
         multiple
         chips
         closable-chips
@@ -27,18 +22,9 @@
       />
     </div>
 
-    <svg
-      ref="svg"
-      :viewBox="`0 0 ${width} ${height}`"
-      class="box-plot__svg"
-    >
+    <svg ref="svg" :viewBox="`0 0 ${width} ${height}`" class="box-plot__svg">
       <g :transform="`translate(${margin.left}, ${margin.top})`">
-        <rect
-          :width="plotWidth"
-          :height="plotHeight"
-          class="panel"
-          @mousemove="onMove($event)"
-        />
+        <rect :width="plotWidth" :height="plotHeight" class="panel" @mousemove="onMove($event)" />
         <line
           v-for="v in yTicks"
           :key="`gy-${v}`"
@@ -52,11 +38,7 @@
         <!-- One box per category: the points first, then whiskers, box and
              median drawn over them so the box outline stays readable -->
         <g :class="{ 'is-dimmed': selected.length }">
-          <g
-            v-for="box in boxes"
-            :key="box.name"
-            :transform="`translate(${box.x}, 0)`"
-          >
+          <g v-for="box in boxes" :key="box.name" :transform="`translate(${box.x}, 0)`">
             <circle
               v-for="p in box.points"
               :key="p.id"
@@ -127,12 +109,7 @@
         </text>
 
         <!-- Axis titles -->
-        <text
-          :x="plotWidth / 2"
-          :y="plotHeight + 34"
-          class="label"
-          text-anchor="middle"
-        >
+        <text :x="plotWidth / 2" :y="plotHeight + 34" class="label" text-anchor="middle">
           {{ x.title }}
         </text>
         <text
@@ -156,10 +133,7 @@
         />
         <!-- Labels for selected ids, placed so they never overlap; a label that
              was moved away from its point gets a connector line -->
-        <template
-          v-for="l in labels"
-          :key="`c-${l.key}`"
-        >
+        <template v-for="l in labels" :key="`c-${l.key}`">
           <line
             v-if="l.connector"
             :x1="l.connector.x1"
@@ -183,11 +157,7 @@
       </g>
     </svg>
 
-    <div
-      v-if="hover"
-      class="box-plot__tooltip"
-      :style="{ left: hover.left, top: hover.top }"
-    >
+    <div v-if="hover" class="box-plot__tooltip" :style="{ left: hover.left, top: hover.top }">
       <div>
         <b>{{ idTitle }}:</b> {{ hover.point.id }}
       </div>
@@ -223,7 +193,8 @@
   const overlaps = (a, b) => !(a.x1 < b.x0 || a.x0 > b.x1 || a.y1 < b.y0 || a.y0 > b.y1);
   const orient = (p, q, r) => Math.sign((q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y));
   const segmentsCross = (a, b) =>
-    orient(a.p, a.q, b.p) !== orient(a.p, a.q, b.q) && orient(b.p, b.q, a.p) !== orient(b.p, b.q, a.q);
+    orient(a.p, a.q, b.p) !== orient(a.p, a.q, b.q) &&
+    orient(b.p, b.q, a.p) !== orient(b.p, b.q, a.q);
   const inside = (p, b) => p.x >= b.x0 && p.x <= b.x1 && p.y >= b.y0 && p.y <= b.y1;
   const segmentHitsBox = (s, b) => {
     if (inside(s.p, b) || inside(s.q, b)) return true;
@@ -273,7 +244,12 @@
       const near = (o, lo, hi) => {
         const ox = (o.x0 + o.x1) / 2;
         const oy = (o.y0 + o.y1) / 2;
-        return o.key !== item.key && ox > item.cx + lo && ox <= item.cx + hi && Math.abs(oy - item.cy) < 30;
+        return (
+          o.key !== item.key &&
+          ox > item.cx + lo &&
+          ox <= item.cx + hi &&
+          Math.abs(oy - item.cy) < 30
+        );
       };
       const right = obstacles.filter((o) => near(o, 0, 70)).length;
       const left = obstacles.filter((o) => near(o, -70, 0)).length;
@@ -290,7 +266,8 @@
     // Cost of a placement against the others, or Infinity when it collides
     const score = (item, pl, others) => {
       const { box, connector } = pl;
-      if (box.x0 < 0 || box.x1 > bounds.width || box.y0 < 0 || box.y1 > bounds.height) return Infinity;
+      if (box.x0 < 0 || box.x1 > bounds.width || box.y0 < 0 || box.y1 > bounds.height)
+        return Infinity;
       if (others.some((o) => overlaps(box, o.box))) return Infinity;
       if (obstacles.some((o) => o.key !== item.key && overlaps(box, o))) return Infinity;
       let cost = pl.c.cost;
@@ -350,7 +327,12 @@
           y: c.y,
           anchor: c.anchor,
           text: item.text,
-          connector: connector && { x1: connector.p.x, y1: connector.p.y, x2: connector.q.x, y2: connector.q.y },
+          connector: connector && {
+            x1: connector.p.x,
+            y1: connector.p.y,
+            x2: connector.q.x,
+            y2: connector.q.y,
+          },
         };
       });
   }

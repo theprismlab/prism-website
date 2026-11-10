@@ -1,9 +1,6 @@
 <template>
   <figure class="figure-cards">
-    <div
-      class="figure-cards__grid"
-      :style="gridStyle"
-    >
+    <div class="figure-cards__grid" :style="gridStyle">
       <v-card
         v-for="item in items"
         :key="item.title"
@@ -11,16 +8,24 @@
         class="figure-card"
         :class="`figure-card--${align}`"
       >
-        <h3 class="figure-card__title prism-text-title-medium">
-          {{ item.title }}
-        </h3>
+        <div class="figure-card__header">
+          <h3 class="figure-card__title prism-text-title-medium">
+            {{ item.title }}
+          </h3>
+          <p
+            v-if="item.subtitle"
+            class="figure-card__subtitle prism-text-body-medium text-medium-emphasis"
+          >
+            {{ item.subtitle }}
+          </p>
+        </div>
         <div class="figure-card__media">
           <img
             v-if="item.image"
             :src="item.image"
             :alt="item.alt || item.title"
             class="figure-card__img"
-          >
+          />
           <!-- No image yet: a labeled placeholder of the same width -->
           <div
             v-else
@@ -28,26 +33,17 @@
             role="img"
             :aria-label="`${item.title} (image to come)`"
           >
-            <v-icon
-              icon="mdi-image-outline"
-              size="32"
-            />
-            <span
-              v-if="item.placeholder"
-              class="prism-text-body-small"
-            >{{ item.placeholder }}</span>
+            <v-icon icon="mdi-image-outline" size="32" />
+            <span v-if="item.placeholder" class="prism-text-body-small">{{
+              item.placeholder
+            }}</span>
           </div>
         </div>
       </v-card>
     </div>
-    <figcaption
-      v-if="caption || $slots.caption"
-      class="figure-cards__caption"
-    >
+    <figcaption v-if="caption || $slots.caption" class="figure-cards__caption">
       <slot name="caption">
-        <p class="prism-text-body-medium text-medium-emphasis">
-          {{ caption }}
-        </p>
+        <figure-caption>{{ caption }}</figure-caption>
       </slot>
     </figcaption>
   </figure>
@@ -70,23 +66,24 @@
    *
    * Usage:
    *   <figure-cards :items="panels" caption="Fig.1. Schematic of the PRISM assay" />
-   *   items: [{ title, image?, alt?, placeholder? }]
+   *   items: [{ title, subtitle?, image?, alt?, placeholder? }]
+   * An item with `subtitle` shows it in smaller, muted text under the title.
    * An item without `image` shows a placeholder box, with `placeholder` as its
    * text, so a figure can be laid out before its artwork exists.
    */
   export default {
     name: 'FigureCards',
     props: {
-      // [{ title: String, image: String, alt?: String }]
+      // [{ title: String, subtitle?: String, image: String, alt?: String }]
       items: { type: Array, required: true },
       // Caption rendered under the row. Use the `caption` slot for markup.
       caption: { type: String, default: '' },
       // Vertical alignment of the image inside the card when cards in a row
-      // have different image heights: 'start' | 'center'
+      // have different image heights: 'start' | 'center' | 'end' (bottom)
       align: {
         type: String,
-        default: 'start',
-        validator: (v) => ['start', 'center'].includes(v),
+        default: 'end',
+        validator: (v) => ['start', 'center', 'end'].includes(v),
       },
       // Largest number of columns on wide screens. Defaults to one per item;
       // lower it to wrap a long list onto several rows.
@@ -122,15 +119,28 @@
     border-radius: var(--prism-radius-lg);
   }
 
-  .figure-card__title {
-    margin: 0;
+  .figure-card__header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
 
+  .figure-card__title,
+  .figure-card__subtitle {
+    margin: 0;
+    line-height: 1.33em !important;
+  }
+
+  /* Images sit on the bottom edge by default, so a row of cards with
+     different image heights shares one baseline */
   .figure-card__media {
     display: flex;
     flex: 1;
-    align-items: flex-start;
+    align-items: flex-end;
     min-width: 0;
+  }
+  .figure-card--start .figure-card__media {
+    align-items: flex-start;
   }
   .figure-card--center .figure-card__media {
     align-items: center;
@@ -157,10 +167,8 @@
     border-radius: var(--prism-radius-md, 12px);
   }
 
+  /* The caption component carries its own top margin */
   .figure-cards__caption {
-    margin-top: 0.75rem;
-  }
-  .figure-cards__caption p {
     margin: 0;
   }
 

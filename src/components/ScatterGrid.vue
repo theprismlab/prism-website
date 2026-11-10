@@ -1,37 +1,32 @@
 <template>
-  <div
-    class="scatter-grid"
-    @mouseleave="hover = null"
-  >
-    <div class="scatter-grid__toolbar">
-      <v-autocomplete
-        v-model="selected"
-        :items="ids"
-        :label="`Search ${idTitle.toLowerCase()}s`"
-        class="scatter-grid__search"
-        variant="underlined"
-        density="compact"
-        multiple
-        chips
-        closable-chips
-        clearable
-        hide-details
-      />
-      <v-checkbox
-        v-if="initialSelected.length"
-        :model-value="defaultsOn"
-        :label="initialSelectedLabel"
-        density="compact"
-        hide-details
-        @update:model-value="toggleDefaults"
-      />
-    </div>
+  <div class="scatter-grid" @mouseleave="hover = null">
+    <v-row>
+      <v-col cols="8" sm="12" md="8" lg="8" xl="8">
+        <v-autocomplete
+          v-model="selected"
+          :items="ids"
+          :label="`Search ${idTitle.toLowerCase()}s`"
+          class="scatter-grid__search"
+          variant="underlined"
+          multiple
+          chips
+          closable-chips
+          clearable
+          hide-details
+      /></v-col>
+      <v-col cols="auto">
+        <v-checkbox
+          v-if="initialSelected.length"
+          :model-value="defaultsOn"
+          :label="initialSelectedLabel"
+          class="scatter-grid__checkbox"
+          hide-details
+          @update:model-value="toggleDefaults"
+        />
+      </v-col>
+    </v-row>
 
-    <svg
-      ref="svg"
-      :viewBox="`0 0 ${width} ${height}`"
-      class="scatter-grid__svg"
-    >
+    <svg ref="svg" :viewBox="`0 0 ${width} ${height}`" class="scatter-grid__svg">
       <!-- Column facet: title and one label per column -->
       <text
         v-if="column.title"
@@ -145,11 +140,7 @@
         v-memo="[h]"
         :transform="`translate(${h.x}, ${h.y})`"
       >
-        <rect
-          :width="size"
-          :height="side"
-          class="panel"
-        />
+        <rect :width="size" :height="side" class="panel" />
         <rect
           v-for="(b, k) in h.bars"
           :key="k"
@@ -176,11 +167,7 @@
         v-memo="[h]"
         :transform="`translate(${h.x}, ${h.y})`"
       >
-        <rect
-          :width="side"
-          :height="size"
-          class="panel"
-        />
+        <rect :width="side" :height="size" class="panel" />
         <rect
           v-for="(b, k) in h.bars"
           :key="k"
@@ -201,10 +188,7 @@
       </g>
 
       <!-- Axis ticks on the outer edges only -->
-      <template
-        v-for="(c, i) in columns"
-        :key="`xt-${c}`"
-      >
+      <template v-for="(c, i) in columns" :key="`xt-${c}`">
         <text
           v-for="v in xTicks"
           :key="v"
@@ -216,10 +200,7 @@
           {{ v }}
         </text>
       </template>
-      <template
-        v-for="(r, j) in rows"
-        :key="`yt-${r}`"
-      >
+      <template v-for="(r, j) in rows" :key="`yt-${r}`">
         <text
           v-for="v in yTicks"
           :key="v"
@@ -254,12 +235,7 @@
         >
           {{ v }}
         </text>
-        <text
-          :x="marginX + side / 2"
-          :y="rowY(0) + size + 26"
-          class="label"
-          text-anchor="middle"
-        >
+        <text :x="marginX + side / 2" :y="rowY(0) + size + 26" class="label" text-anchor="middle">
           Cell lines
         </text>
         <text
@@ -299,16 +275,8 @@
             :key="`lg-${item.value}`"
             :transform="`translate(${item.x}, 0)`"
           >
-            <rect
-              width="10"
-              height="10"
-              :fill="colorScale(item.value)"
-            />
-            <text
-              x="14"
-              y="9"
-              class="tick"
-            >
+            <rect width="10" height="10" :fill="colorScale(item.value)" />
+            <text x="14" y="9" class="tick">
               {{ item.label }}
             </text>
           </g>
@@ -324,11 +292,7 @@
               />
             </linearGradient>
           </defs>
-          <rect
-            :width="legendWidth"
-            height="8"
-            :fill="`url(#${gradientId})`"
-          />
+          <rect :width="legendWidth" height="8" :fill="`url(#${gradientId})`" />
           <text
             v-for="v in legendScale.ticks(4)"
             :key="`lg-${v}`"
@@ -340,12 +304,7 @@
             {{ v }}
           </text>
         </template>
-        <text
-          :x="legendWidth / 2"
-          y="34"
-          class="label"
-          text-anchor="middle"
-        >
+        <text :x="legendWidth / 2" y="34" class="label" text-anchor="middle">
           {{ color.title }}
         </text>
       </g>
@@ -363,10 +322,7 @@
       />
       <!-- Labels for selected ids, placed so they never overlap; a label that
            was moved away from its point gets a connector line -->
-      <template
-        v-for="l in labels"
-        :key="`c-${l.key}`"
-      >
+      <template v-for="l in labels" :key="`c-${l.key}`">
         <line
           v-if="l.connector"
           :x1="l.connector.x1"
@@ -389,11 +345,7 @@
       </text>
     </svg>
 
-    <div
-      v-if="hover"
-      class="scatter-grid__tooltip"
-      :style="{ left: hover.left, top: hover.top }"
-    >
+    <div v-if="hover" class="scatter-grid__tooltip" :style="{ left: hover.left, top: hover.top }">
       <div>
         <b>{{ idTitle }}:</b> {{ hover.point.id }}
       </div>
@@ -454,7 +406,8 @@
   const overlaps = (a, b) => !(a.x1 < b.x0 || a.x0 > b.x1 || a.y1 < b.y0 || a.y0 > b.y1);
   const orient = (p, q, r) => Math.sign((q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y));
   const segmentsCross = (a, b) =>
-    orient(a.p, a.q, b.p) !== orient(a.p, a.q, b.q) && orient(b.p, b.q, a.p) !== orient(b.p, b.q, a.q);
+    orient(a.p, a.q, b.p) !== orient(a.p, a.q, b.q) &&
+    orient(b.p, b.q, a.p) !== orient(b.p, b.q, a.q);
   const inside = (p, b) => p.x >= b.x0 && p.x <= b.x1 && p.y >= b.y0 && p.y <= b.y1;
   const segmentHitsBox = (s, b) => {
     if (inside(s.p, b) || inside(s.q, b)) return true;
@@ -504,7 +457,12 @@
       const near = (o, lo, hi) => {
         const ox = (o.x0 + o.x1) / 2;
         const oy = (o.y0 + o.y1) / 2;
-        return o.key !== item.key && ox > item.cx + lo && ox <= item.cx + hi && Math.abs(oy - item.cy) < 30;
+        return (
+          o.key !== item.key &&
+          ox > item.cx + lo &&
+          ox <= item.cx + hi &&
+          Math.abs(oy - item.cy) < 30
+        );
       };
       const right = obstacles.filter((o) => near(o, 0, 70)).length;
       const left = obstacles.filter((o) => near(o, -70, 0)).length;
@@ -521,7 +479,8 @@
     // Cost of a placement against the others, or Infinity when it collides
     const score = (item, pl, others) => {
       const { box, connector } = pl;
-      if (box.x0 < 0 || box.x1 > bounds.width || box.y0 < 0 || box.y1 > bounds.height) return Infinity;
+      if (box.x0 < 0 || box.x1 > bounds.width || box.y0 < 0 || box.y1 > bounds.height)
+        return Infinity;
       if (others.some((o) => overlaps(box, o.box))) return Infinity;
       if (obstacles.some((o) => o.key !== item.key && overlaps(box, o))) return Infinity;
       let cost = pl.c.cost;
@@ -581,7 +540,12 @@
           y: c.y,
           anchor: c.anchor,
           text: item.text,
-          connector: connector && { x1: connector.p.x, y1: connector.p.y, x2: connector.q.x, y2: connector.q.y },
+          connector: connector && {
+            x1: connector.p.x,
+            y1: connector.p.y,
+            x2: connector.q.x,
+            y2: connector.q.y,
+          },
         };
       });
   }
@@ -1011,10 +975,11 @@
     gap: 16px;
     margin-bottom: 12px;
   }
-  .scatter-grid__search {
-    flex: 1 1 260px;
-    max-width: 360px;
+  .grid__checkbox {
+    height: 1rem;
+    margin-top: 0px;
   }
+
   .point {
     fill-opacity: 0.75;
     pointer-events: none;
