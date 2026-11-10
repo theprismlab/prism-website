@@ -80,6 +80,25 @@
             @mousemove="onMove(panel, $event)"
             @click="onClick(panel, $event)"
           />
+          <!-- Light gridlines at the tick positions -->
+          <line
+            v-for="v in xTicks"
+            :key="`gx-${v}`"
+            :x1="xScale(v)"
+            :x2="xScale(v)"
+            y1="0"
+            :y2="size"
+            class="gridline"
+          />
+          <line
+            v-for="v in yTicks"
+            :key="`gy-${v}`"
+            x1="0"
+            :x2="size"
+            :y1="yScale(v)"
+            :y2="yScale(v)"
+            class="gridline"
+          />
           <line
             v-if="x.threshold != null"
             :x1="xScale(x.threshold)"
@@ -756,6 +775,11 @@
   }
   .panel {
     cursor: crosshair;
+  }
+  .gridline {
+    stroke: #e4e4e4;
+    stroke-width: 0.75;
+    pointer-events: none;
   }
   .threshold {
     stroke: #333;
