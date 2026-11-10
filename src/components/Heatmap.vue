@@ -197,10 +197,14 @@
       },
       legendTicks() {
         if (!this.log) return this.legendScale.ticks(4);
-        // Powers of ten between the domain ends, plus the ends themselves
+        // Powers of ten between the domain ends, plus the ends themselves.
+        // A power of ten that would collide with the end label is dropped.
         const [d0, d1] = this.colorDomain;
+        const minGap = 28;
         const ticks = [d0];
-        for (let p = 1; p < d1; p *= 10) ticks.push(p);
+        for (let p = 1; p < d1; p *= 10) {
+          if (this.legendScale(d1) - this.legendScale(p) >= minGap) ticks.push(p);
+        }
         ticks.push(d1);
         return [...new Set(ticks)];
       },
