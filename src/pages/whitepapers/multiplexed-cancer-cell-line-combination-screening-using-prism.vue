@@ -2,7 +2,7 @@
   <page>
     <page-header narrow>
       <template #title>Multiplexed cancer cell line combination screening using PRISM</template>
-      <p class="prism-text-body-large text-medium-emphasis whitepaper-meta">
+      <p class="prism-text-body-medium text-medium-emphasis whitepaper-meta">
         <span>{{ paper.author }}</span>
         <span>Published {{ paper.date }}</span>
       </p>
@@ -44,16 +44,7 @@
             <v-card v-for="card in introCards" :key="card.title" variant="flat" class="intro-card">
               <h3 class="intro-card__title prism-text-title-medium">{{ card.title }}</h3>
               <div class="intro-card__media">
-                <v-img
-                  v-if="card.image"
-                  eager
-                  :src="card.image"
-                  :alt="card.title"
-                  class="intro-card__img"
-                />
-                <div v-else class="intro-card__placeholder">
-                  <v-icon icon="mdi-image-outline" size="36" />
-                </div>
+                <v-img eager :src="card.image" :alt="card.title" class="intro-card__img" />
               </div>
             </v-card>
           </div>
@@ -80,6 +71,22 @@
             heterogeneity; this behavior is characteristic of many effective clinical combinations
             (and most curative combinations) described to date<sup>9, 10</sup>.
           </p>
+          <div class="intro-cards">
+            <v-card
+              v-for="card in combinationEffects"
+              :key="card.title"
+              variant="flat"
+              class="intro-card"
+            >
+              <h3 class="intro-card__title prism-text-title-medium">{{ card.title }}</h3>
+              <div class="intro-card__media">
+                <v-img eager :src="card.image" :alt="card.title" class="intro-card__img" />
+              </div>
+            </v-card>
+          </div>
+          <p class="prism-text-body-medium text-medium-emphasis">
+            Fig.2. Classifications of combination effects
+          </p>
         </section>
 
         <section>
@@ -104,6 +111,22 @@
             effects) to facilitate identification of increased cell killing (e.g., additivity or
             synergy)–unless the experimental goal is to identify and characterize antagonistic
             combinations (e.g., drug rescue screens).
+          </p>
+          <div class="intro-cards">
+            <v-card
+              v-for="(card, index) in doseSelection"
+              :key="card.title"
+              variant="flat"
+              class="intro-card"
+            >
+              <h3 class="intro-card__title prism-text-title-medium">{{ card.title }}</h3>
+              <div class="intro-card__media">
+                <v-img eager :src="card.image" :alt="card.title" class="intro-card__img" />
+              </div>
+            </v-card>
+          </div>
+          <p class="prism-text-body-medium text-medium-emphasis">
+            Fig.3. Dosing schemes of combinations based on single agent viability results
           </p>
         </section>
 
@@ -226,8 +249,33 @@
             image: imagePath + 'PRISM-CPS-Assay-Discover.svg',
           },
         ],
+        combinationEffects: [
+          {
+            title: 'Independent Action',
+            image: imagePath + 'Combination-Effects-Independent-Action.svg',
+          },
+          {
+            title: 'Antagonistic',
+            image: imagePath + 'Combination-Effects-Antagonistic.svg',
+          },
+          {
+            title: 'Synergistic',
+            image: imagePath + 'Combination-Effects-Synergistic.svg',
+          },
+        ],
+        doseSelection: [
+          {
+            title: '7x1 Dose Scheme',
+            image: imagePath + 'PRISM-Combination-Dose-Selection-7x1.svg',
+          },
+          {
+            title: '5x5 Dose Scheme',
+            image: imagePath + 'PRISM-Combination-Dose-Selection-5x5.svg',
+          },
+        ],
       };
     },
+
     methods: {
       correlationLink(brdId) {
         return `${this.portalBase}/${this.project}/${this.screen}/${brdId}/correlation-analysis`;
@@ -256,7 +304,8 @@
     gap: 2.5rem;
   }
 
-  .whitepaper-body h2 {
+  .whitepaper-body h2,
+  .whitepaper h3 {
     margin-bottom: 0.75rem;
   }
 
@@ -264,7 +313,7 @@
   .intro-cards {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
+    gap: 6px;
     margin: 2rem 0 0.75rem;
   }
 
