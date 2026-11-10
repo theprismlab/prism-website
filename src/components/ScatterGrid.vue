@@ -174,12 +174,7 @@
         >
           {{ v }}
         </text>
-        <text
-          :x="marginX + side / 2"
-          :y="rowY(0) + size + 26"
-          class="label"
-          text-anchor="middle"
-        >
+        <text :x="marginX + side / 2" :y="rowY(0) + size + 26" class="label" text-anchor="middle">
           Cell lines
         </text>
         <text
@@ -209,7 +204,9 @@
       </text>
 
       <!-- Color legend -->
-      <g :transform="`translate(${margin.left + gridWidth / 2 - legendWidth / 2}, ${plotsBottom + 40})`">
+      <g
+        :transform="`translate(${margin.left + gridWidth / 2 - legendWidth / 2}, ${plotsBottom + 56})`"
+      >
         <defs>
           <linearGradient :id="gradientId">
             <stop
@@ -320,8 +317,10 @@
       idKey: { type: String, default: 'id' },
       idTitle: { type: String, default: 'ID' },
       marginals: { type: Boolean, default: false },
-      // Panel size in SVG units; the SVG scales to its container
-      size: { type: Number, default: 110 },
+      // Total width in SVG units. Panels are sized to fill it, so grids with
+      // different column counts scale to the container by the same factor
+      // and their text renders at the same size.
+      width: { type: Number, default: 960 },
     },
     data() {
       return { hover: null, gradientId: `scatter-grid-gradient-${++instances}` };
@@ -353,10 +352,14 @@
         return this.y.domain || extent(this.points, (p) => p.y);
       },
       xScale() {
-        return scaleLinear().domain(this.xDomain).range([PAD, this.size - PAD]);
+        return scaleLinear()
+          .domain(this.xDomain)
+          .range([PAD, this.size - PAD]);
       },
       yScale() {
-        return scaleLinear().domain(this.yDomain).range([this.size - PAD, PAD]);
+        return scaleLinear()
+          .domain(this.yDomain)
+          .range([this.size - PAD, PAD]);
       },
       colorScale() {
         const scheme = SCHEMES[this.color.scheme] || interpolateBlues;
@@ -393,17 +396,23 @@
         return list;
       },
 
-      // Layout
+      // Layout. A marginal histogram is 0.55 of a panel thick.
+      size() {
+        const cols = this.columns.length;
+        const gaps = (cols - 1 + (this.marginals ? 1 : 0)) * GAP;
+        const available = this.width - this.margin.left - this.margin.right - gaps;
+        return available / (cols + (this.marginals ? 0.55 : 0));
+      },
       side() {
-        return this.marginals ? Math.round(this.size * 0.55) : 0;
+        return this.marginals ? this.size * 0.55 : 0;
       },
       // Side margins hold the tick labels plus a rotated title; widths are
-      // estimated from the longest label at the 11.5px tick font.
+      // estimated from the longest label at the 13px tick font.
       margin() {
-        const longest = (labels) => Math.max(0, ...labels.map((l) => String(l).length)) * 7.5;
-        const left = longest(this.yTicks) + 28;
-        const right = this.row ? longest(this.rows.map(this.sig)) + 28 : 8;
-        return { top: 34, right, bottom: 84, left };
+        const longest = (labels) => Math.max(0, ...labels.map((l) => String(l).length)) * 8.5;
+        const left = longest(this.yTicks) + 32;
+        const right = this.row ? longest(this.rows.map(this.sig)) + 32 : 8;
+        return { top: 38, right, bottom: 108, left };
       },
       gridWidth() {
         return this.columns.length * this.size + (this.columns.length - 1) * GAP;
@@ -423,9 +432,6 @@
       rowLabelX() {
         return this.marginX + (this.marginals ? this.side + GAP : 0) + 4;
       },
-      width() {
-        return this.marginX + (this.marginals ? this.side + GAP : 0) + this.margin.right;
-      },
       height() {
         return this.plotsBottom + this.margin.bottom;
       },
@@ -435,10 +441,12 @@
         if (!this.marginals) return [];
         const binner = bin().domain(this.xDomain).thresholds(25);
         const hists = this.columns.map((c) =>
-          binner(this.points.filter((p) => p.col === c).map((p) => p.x))
+          binner(this.points.filter((p) => p.col === c).map((p) => p.x)),
         );
         const max = Math.max(...hists.flat().map((b) => b.length));
-        const yScale = scaleLinear().domain([0, max]).range([this.side - PAD, PAD]);
+        const yScale = scaleLinear()
+          .domain([0, max])
+          .range([this.side - PAD, PAD]);
         const split = this.x.threshold ?? 0;
         return hists.map((bins, i) => ({
           key: `xh-${i}`,
@@ -463,7 +471,9 @@
           return binner([...perId.values()]);
         });
         const max = Math.max(...hists.flat().map((b) => b.length));
-        const xScale = scaleLinear().domain([0, max]).range([PAD, this.side - PAD]);
+        const xScale = scaleLinear()
+          .domain([0, max])
+          .range([PAD, this.side - PAD]);
         return hists.map((bins, j) => ({
           key: `yh-${j}`,
           x: this.marginX,
@@ -479,11 +489,13 @@
       },
 
       // Ticks and legend
+      // Ticks depend on the domain only, so they can size the margins before
+      // the panel size is known.
       xTicks() {
-        return this.xScale.ticks(3);
+        return scaleLinear().domain(this.xDomain).ticks(3);
       },
       yTicks() {
-        return this.yScale.ticks(3);
+        return scaleLinear().domain(this.yDomain).ticks(3);
       },
       countTicksX() {
         return this.xHistograms.length ? this.xHistograms[0].yScale.ticks(2) : [];
@@ -585,12 +597,12 @@
   }
   .tick,
   .label {
-    font-size: 11.5px;
+    font-size: 12px;
     fill: currentColor;
     pointer-events: none;
   }
   .label {
-    font-size: 12.5px;
+    font-size: 14px;
   }
   .scatter-grid__tooltip {
     position: absolute;
