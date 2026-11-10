@@ -376,7 +376,7 @@
   // Histogram bar colors either side of the x threshold (schemeRdBu[7][5] and [1])
   const ABOVE = '#67a9cf';
   const BELOW = '#ef8a62';
-  const PAD = 4; // inset between a panel's edge and its axis range
+  const PAD = 8; // inset between a panel's edge and its axis range; covers a selected marker
   const GAP = 6; // space between panels
   const HOVER_RADIUS = 8; // SVG units within which a point counts as hovered
 
