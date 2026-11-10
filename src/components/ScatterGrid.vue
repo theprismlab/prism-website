@@ -99,6 +99,16 @@
             :y2="yScale(v)"
             class="gridline"
           />
+          <circle
+            v-for="(p, k) in panel.points"
+            :key="k"
+            :cx="p.px"
+            :cy="p.py"
+            r="2.8"
+            :fill="p.fill"
+            class="point"
+          />
+          <!-- Reference lines sit above the points so they stay visible in dense regions -->
           <line
             v-if="x.threshold != null"
             :x1="xScale(x.threshold)"
@@ -114,15 +124,6 @@
             :y1="yScale(y.threshold)"
             :y2="yScale(y.threshold)"
             class="threshold"
-          />
-          <circle
-            v-for="(p, k) in panel.points"
-            :key="k"
-            :cx="p.px"
-            :cy="p.py"
-            r="2.8"
-            :fill="p.fill"
-            class="point"
           />
         </g>
       </g>

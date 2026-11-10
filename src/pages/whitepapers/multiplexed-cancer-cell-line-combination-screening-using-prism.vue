@@ -397,7 +397,11 @@
             :column="{ key: 'featureType', values: featureTypes }"
             :x="{ key: 'rho', title: 'Correlation', domain: [-0.5, 0.5], threshold: 0 }"
             :y="{ key: 'neg_log10_qval', title: '-log10(q value)', domain: [0, 14] }"
-            :color="{ key: 'dose', title: 'Temozolomide (µM)', scheme: 'ordinal' }"
+            :color="{
+              key: 'dose',
+              title: 'Temozolomide (µM) + O6-benzylguanine 5 µM',
+              scheme: 'ordinal',
+            }"
             :initial-selected="['MSH2', 'MSH6']"
           />
           <p class="prism-text-body-medium text-medium-emphasis mt-4">
