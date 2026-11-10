@@ -155,7 +155,21 @@
           :fill="ring.fill || 'none'"
           class="ring"
         />
-        <!-- Labels for selected ids, placed so they never overlap -->
+        <!-- Labels for selected ids, placed so they never overlap; a label that
+             was moved away from its point gets a connector line -->
+        <template
+          v-for="l in labels"
+          :key="`c-${l.key}`"
+        >
+          <line
+            v-if="l.connector"
+            :x1="l.connector.x1"
+            :y1="l.connector.y1"
+            :x2="l.connector.x2"
+            :y2="l.connector.y2"
+            class="point-label-line"
+          />
+        </template>
         <text
           v-for="l in labels"
           :key="l.key"
@@ -200,40 +214,59 @@
   // dropped, so labels never overlap. Coordinates are local to `bounds`.
   const LABEL_HEIGHT = 11;
   const LABEL_CHAR = 6.2;
-  const LABEL_OFFSETS = [0, -12, 12, -24, 24, -36, 36];
+  const LABEL_STEPS = [0, 12, 24, 36, 48, 60, 72];
+  // Candidate spots for one label, cheapest first: beside the point on either
+  // side, directly above or below, then nudged up or down in growing steps
+  function labelCandidates(item, gap) {
+    const right = item.cx + gap + 3;
+    const left = item.cx - gap - 3;
+    const list = [
+      { x: item.cx, y: item.cy - gap - 7, anchor: 'middle', cost: 2 },
+      { x: item.cx, y: item.cy + gap + 7, anchor: 'middle', cost: 2 },
+    ];
+    for (const step of LABEL_STEPS) {
+      for (const dy of step ? [-step, step] : [0]) {
+        list.push({ x: right, y: item.cy + dy, anchor: 'start', cost: step });
+        list.push({ x: left, y: item.cy + dy, anchor: 'end', cost: step + 4 });
+      }
+    }
+    return list.sort((a, b) => a.cost - b.cost);
+  }
+  // Label layout: every point is an obstacle, as is every label already placed.
+  // Each label takes its cheapest clear candidate inside `bounds`; one with no
+  // clear candidate is dropped, so labels never overlap points or each other.
   function placeLabels(items, bounds, gap) {
+    const overlaps = (a, b) => !(a.x1 < b.x0 || a.x0 > b.x1 || a.y1 < b.y0 || a.y0 > b.y1);
+    const obstacles = items.map((p) => ({
+      key: p.key,
+      x0: p.cx - gap,
+      x1: p.cx + gap,
+      y0: p.cy - gap,
+      y1: p.cy + gap,
+    }));
     const placed = [];
     const labels = [];
     for (const item of [...items].sort((a, b) => a.cy - b.cy)) {
       const w = String(item.text).length * LABEL_CHAR;
-      let x = item.cx + gap + 3;
-      let anchor = 'start';
-      if (x + w > bounds.width) {
-        x = item.cx - gap - 3;
-        anchor = 'end';
-      }
-      const x0 = anchor === 'start' ? x : x - w;
-      for (const dy of LABEL_OFFSETS) {
-        const y = item.cy + dy;
-        const box = { x0, x1: x0 + w, y0: y - LABEL_HEIGHT / 2, y1: y + LABEL_HEIGHT / 2 };
-        if (box.y0 < 0 || box.y1 > bounds.height) continue;
-        const clear = placed.every(
-          (b) => box.x1 < b.x0 || box.x0 > b.x1 || box.y1 < b.y0 || box.y0 > b.y1,
-        );
-        if (clear) {
-          placed.push(box);
-          // A nudged label gets a connector from its point to its near edge
-          const lx = anchor === 'start' ? x - 2 : x + 2;
-          labels.push({
-            key: item.key,
-            x,
-            y,
-            anchor,
-            text: item.text,
-            connector: dy ? { x1: item.cx, y1: item.cy, x2: lx, y2: y } : null,
-          });
-          break;
-        }
+      for (const c of labelCandidates(item, gap)) {
+        const x0 = c.anchor === 'start' ? c.x : c.anchor === 'end' ? c.x - w : c.x - w / 2;
+        const box = { x0, x1: x0 + w, y0: c.y - LABEL_HEIGHT / 2, y1: c.y + LABEL_HEIGHT / 2 };
+        if (box.x0 < 0 || box.x1 > bounds.width || box.y0 < 0 || box.y1 > bounds.height) continue;
+        if (placed.some((b) => overlaps(box, b))) continue;
+        if (obstacles.some((o) => o.key !== item.key && overlaps(box, o))) continue;
+        placed.push(box);
+        // A label nudged away from its point gets a connector to its near edge
+        const nudged = Math.abs(c.y - item.cy) >= LABEL_STEPS[1];
+        const lx = c.anchor === 'start' ? c.x - 2 : c.x + 2;
+        labels.push({
+          key: item.key,
+          x: c.x,
+          y: c.y,
+          anchor: c.anchor,
+          text: item.text,
+          connector: nudged ? { x1: item.cx, y1: item.cy, x2: lx, y2: c.y } : null,
+        });
+        break;
       }
     }
     return labels;
@@ -463,6 +496,11 @@
   .ring {
     stroke: #000;
     stroke-width: 1.5;
+    pointer-events: none;
+  }
+  .point-label-line {
+    stroke: #555;
+    stroke-width: 0.75;
     pointer-events: none;
   }
   .point-label {
