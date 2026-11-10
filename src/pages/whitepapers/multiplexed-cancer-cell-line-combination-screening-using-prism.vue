@@ -40,18 +40,7 @@
             that may help identify candidate combinations for clinical trials.
           </p>
 
-          <div class="intro-cards">
-            <v-card v-for="card in introCards" :key="card.title" variant="flat" class="intro-card">
-              <h3 class="intro-card__title prism-text-title-medium">{{ card.title }}</h3>
-              <div class="intro-card__media">
-                <v-img eager :src="card.image" :alt="card.title" class="intro-card__img" />
-              </div>
-            </v-card>
-          </div>
-
-          <p class="prism-text-body-medium text-medium-emphasis">
-            Fig.1. Schematic of the PRISM assay
-          </p>
+          <figure-cards :items="introCards" caption="Fig.1. Schematic of the PRISM assay" />
         </section>
 
         <section>
@@ -71,22 +60,10 @@
             heterogeneity; this behavior is characteristic of many effective clinical combinations
             (and most curative combinations) described to date<sup>9, 10</sup>.
           </p>
-          <div class="intro-cards">
-            <v-card
-              v-for="card in combinationEffects"
-              :key="card.title"
-              variant="flat"
-              class="intro-card"
-            >
-              <h3 class="intro-card__title prism-text-title-medium">{{ card.title }}</h3>
-              <div class="intro-card__media">
-                <v-img eager :src="card.image" :alt="card.title" class="intro-card__img" />
-              </div>
-            </v-card>
-          </div>
-          <p class="prism-text-body-medium text-medium-emphasis">
-            Fig.2. Classifications of combination effects
-          </p>
+          <figure-cards
+            :items="combinationEffects"
+            caption="Fig.2. Classifications of combination effects"
+          />
         </section>
 
         <section>
@@ -112,22 +89,10 @@
             synergy)–unless the experimental goal is to identify and characterize antagonistic
             combinations (e.g., drug rescue screens).
           </p>
-          <div class="intro-cards">
-            <v-card
-              v-for="(card, index) in doseSelection"
-              :key="card.title"
-              variant="flat"
-              class="intro-card"
-            >
-              <h3 class="intro-card__title prism-text-title-medium">{{ card.title }}</h3>
-              <div class="intro-card__media">
-                <v-img eager :src="card.image" :alt="card.title" class="intro-card__img" />
-              </div>
-            </v-card>
-          </div>
-          <p class="prism-text-body-medium text-medium-emphasis">
-            Fig.3. Dosing schemes of combinations based on single agent viability results
-          </p>
+          <figure-cards
+            :items="doseSelection"
+            caption="Fig.3. Dosing schemes of combinations based on single agent viability results"
+          />
         </section>
 
         <section>
@@ -305,60 +270,7 @@
   }
 
   .whitepaper-body h2,
-  .whitepaper h3 {
+  .whitepaper-body h3 {
     margin-bottom: 0.75rem;
-  }
-
-  /* Four cards after the introduction: title on top, image below */
-  .intro-cards {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-    margin: 2rem 0 0.75rem;
-  }
-
-  .intro-card {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    border-radius: var(--prism-radius-lg);
-  }
-
-  .intro-card__title {
-    margin: 0;
-  }
-
-  .intro-card__media {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    min-height: 140px;
-    overflow: hidden;
-  }
-
-  .intro-card__img {
-    width: 100%;
-  }
-
-  .intro-card__placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    color: var(--v-grey-darken-1);
-  }
-
-  @media (max-width: 960px) {
-    .intro-cards {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 600px) {
-    .intro-cards {
-      grid-template-columns: 1fr;
-    }
   }
 </style>
