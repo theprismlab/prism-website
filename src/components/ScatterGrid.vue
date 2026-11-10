@@ -1,8 +1,34 @@
 <template>
-  <div class="scatter-grid" @mouseleave="hover = null">
-    <svg ref="svg" :viewBox="`0 0 ${width} ${height}`" class="scatter-grid__svg">
+  <div
+    class="scatter-grid"
+    @mouseleave="hover = null"
+  >
+    <v-autocomplete
+      v-model="selected"
+      :items="ids"
+      :label="`Search ${idTitle.toLowerCase()}s`"
+      class="scatter-grid__search"
+      variant="underlined"
+      density="compact"
+      multiple
+      chips
+      closable-chips
+      clearable
+      hide-details
+    />
+
+    <svg
+      ref="svg"
+      :viewBox="`0 0 ${width} ${height}`"
+      class="scatter-grid__svg"
+    >
       <!-- Column facet: title and one label per column -->
-      <text :x="margin.left + gridWidth / 2" y="12" class="label" text-anchor="middle">
+      <text
+        :x="margin.left + gridWidth / 2"
+        y="12"
+        class="label"
+        text-anchor="middle"
+      >
         {{ column.title }}
       </text>
       <text
@@ -37,39 +63,48 @@
         </text>
       </template>
 
-      <!-- Scatter panels. Points never change after load, so each panel is memoized. -->
-      <g
-        v-for="panel in panels"
-        :key="panel.key"
-        v-memo="[panel]"
-        :transform="`translate(${panel.x}, ${panel.y})`"
-      >
-        <rect :width="size" :height="size" class="panel" @mousemove="onMove(panel, $event)" />
-        <line
-          v-if="x.threshold != null"
-          :x1="xScale(x.threshold)"
-          :x2="xScale(x.threshold)"
-          y1="0"
-          :y2="size"
-          class="threshold"
-        />
-        <line
-          v-if="y.threshold != null"
-          x1="0"
-          :x2="size"
-          :y1="yScale(y.threshold)"
-          :y2="yScale(y.threshold)"
-          class="threshold"
-        />
-        <circle
-          v-for="p in panel.points"
-          :key="p.id"
-          :cx="p.px"
-          :cy="p.py"
-          r="2.2"
-          :fill="p.fill"
-          class="point"
-        />
+      <!-- Scatter panels. Points never change after load, so each panel is
+           memoized; the dimming class sits on the wrapper so it still updates. -->
+      <g :class="{ 'is-dimmed': selected.length }">
+        <g
+          v-for="panel in panels"
+          :key="panel.key"
+          v-memo="[panel]"
+          :transform="`translate(${panel.x}, ${panel.y})`"
+        >
+          <rect
+            :width="size"
+            :height="size"
+            class="panel"
+            @mousemove="onMove(panel, $event)"
+            @click="onClick(panel, $event)"
+          />
+          <line
+            v-if="x.threshold != null"
+            :x1="xScale(x.threshold)"
+            :x2="xScale(x.threshold)"
+            y1="0"
+            :y2="size"
+            class="threshold"
+          />
+          <line
+            v-if="y.threshold != null"
+            x1="0"
+            :x2="size"
+            :y1="yScale(y.threshold)"
+            :y2="yScale(y.threshold)"
+            class="threshold"
+          />
+          <circle
+            v-for="p in panel.points"
+            :key="p.id"
+            :cx="p.px"
+            :cy="p.py"
+            r="2.2"
+            :fill="p.fill"
+            class="point"
+          />
+        </g>
       </g>
 
       <!-- Histogram of x per column, under the panels -->
@@ -79,7 +114,11 @@
         v-memo="[h]"
         :transform="`translate(${h.x}, ${h.y})`"
       >
-        <rect :width="size" :height="side" class="panel" />
+        <rect
+          :width="size"
+          :height="side"
+          class="panel"
+        />
         <rect
           v-for="(b, k) in h.bars"
           :key="k"
@@ -106,7 +145,11 @@
         v-memo="[h]"
         :transform="`translate(${h.x}, ${h.y})`"
       >
-        <rect :width="side" :height="size" class="panel" />
+        <rect
+          :width="side"
+          :height="size"
+          class="panel"
+        />
         <rect
           v-for="(b, k) in h.bars"
           :key="k"
@@ -127,7 +170,10 @@
       </g>
 
       <!-- Axis ticks on the outer edges only -->
-      <template v-for="(c, i) in columns" :key="`xt-${c}`">
+      <template
+        v-for="(c, i) in columns"
+        :key="`xt-${c}`"
+      >
         <text
           v-for="v in xTicks"
           :key="v"
@@ -139,7 +185,10 @@
           {{ v }}
         </text>
       </template>
-      <template v-for="(r, j) in rows" :key="`yt-${r}`">
+      <template
+        v-for="(r, j) in rows"
+        :key="`yt-${r}`"
+      >
         <text
           v-for="v in yTicks"
           :key="v"
@@ -174,7 +223,12 @@
         >
           {{ v }}
         </text>
-        <text :x="marginX + side / 2" :y="rowY(0) + size + 26" class="label" text-anchor="middle">
+        <text
+          :x="marginX + side / 2"
+          :y="rowY(0) + size + 26"
+          class="label"
+          text-anchor="middle"
+        >
           Cell lines
         </text>
         <text
@@ -217,7 +271,11 @@
             />
           </linearGradient>
         </defs>
-        <rect :width="legendWidth" height="8" :fill="`url(#${gradientId})`" />
+        <rect
+          :width="legendWidth"
+          height="8"
+          :fill="`url(#${gradientId})`"
+        />
         <text
           v-for="v in legendScale.ticks(4)"
           :key="`lg-${v}`"
@@ -228,23 +286,34 @@
         >
           {{ v }}
         </text>
-        <text :x="legendWidth / 2" y="34" class="label" text-anchor="middle">
+        <text
+          :x="legendWidth / 2"
+          y="34"
+          class="label"
+          text-anchor="middle"
+        >
           {{ color.title }}
         </text>
       </g>
 
-      <!-- Hover: ring the hovered cell line in every panel -->
+      <!-- Selected ids are drawn in color over the dimmed points; the hovered
+           id gets an empty ring. Both appear in every panel. -->
       <circle
         v-for="ring in rings"
         :key="ring.key"
         :cx="ring.cx"
         :cy="ring.cy"
-        r="4"
+        :r="ring.fill ? 4 : 4.5"
+        :fill="ring.fill || 'none'"
         class="ring"
       />
     </svg>
 
-    <div v-if="hover" class="scatter-grid__tooltip" :style="{ left: hover.left, top: hover.top }">
+    <div
+      v-if="hover"
+      class="scatter-grid__tooltip"
+      :style="{ left: hover.left, top: hover.top }"
+    >
       <div>
         <b>{{ idTitle }}:</b> {{ hover.point.id }}
       </div>
@@ -289,7 +358,9 @@
    * A lattice of small scatter plots, one per `column` value (and per `row`
    * value when `row` is given), drawn as one SVG. Every panel shares the x, y
    * and color scales; ticks sit on the outer edges only. Hovering a point
-   * rings that id in every panel and shows a tooltip.
+   * rings that id in every panel and shows a tooltip. Ids picked in the
+   * search box, or by clicking a point, stay highlighted in every panel
+   * while the other points are dimmed.
    *
    * `data` is a flat list of records; `x`, `y`, `color`, `column`, `row` each
    * name a field with `key` and carry a `title`. Values are coerced to numbers
@@ -323,9 +394,12 @@
       width: { type: Number, default: 960 },
     },
     data() {
-      return { hover: null, gradientId: `scatter-grid-gradient-${++instances}` };
+      return { hover: null, selected: [], gradientId: `scatter-grid-gradient-${++instances}` };
     },
     computed: {
+      ids() {
+        return [...new Set(this.points.map((p) => p.id))].sort();
+      },
       columns() {
         return uniqueSorted(this.data.map((d) => d[this.column.key]));
       },
@@ -513,13 +587,23 @@
         return Array.from({ length: 11 }, (_, i) => i / 10);
       },
       rings() {
-        if (!this.hover) return [];
-        return this.panels
-          .map((panel) => {
-            const p = panel.byId.get(this.hover.point.id);
-            return p && { key: panel.key, cx: panel.x + p.px, cy: panel.y + p.py };
-          })
-          .filter(Boolean);
+        const wanted = this.selected.map((id) => ({ id, keep: true }));
+        if (this.hover) wanted.push({ id: this.hover.point.id, keep: false });
+        return this.panels.flatMap((panel) =>
+          wanted
+            .map(({ id, keep }) => {
+              const p = panel.byId.get(id);
+              return (
+                p && {
+                  key: `${panel.key}/${id}/${keep}`,
+                  cx: panel.x + p.px,
+                  cy: panel.y + p.py,
+                  fill: keep ? p.fill : null,
+                }
+              );
+            })
+            .filter(Boolean),
+        );
       },
     },
     methods: {
@@ -536,7 +620,8 @@
       num(v) {
         return Number.isInteger(v) ? v : v.toFixed(2);
       },
-      onMove(panel, event) {
+      // Nearest point in a panel to a mouse event, within HOVER_RADIUS
+      nearest(panel, event) {
         const svgBox = this.$refs.svg.getBoundingClientRect();
         const k = this.width / svgBox.width; // CSS px -> SVG units
         const mx = (event.clientX - svgBox.left) * k - panel.x;
@@ -550,6 +635,10 @@
             best = p;
           }
         }
+        return best;
+      },
+      onMove(panel, event) {
+        const best = this.nearest(panel, event);
         if (!best) {
           this.hover = null;
           return;
@@ -560,6 +649,14 @@
           left: `${event.clientX - box.left + 12}px`,
           top: `${event.clientY - box.top - 12}px`,
         };
+      },
+      // Clicking a point toggles it in the selection
+      onClick(panel, event) {
+        const best = this.nearest(panel, event);
+        if (!best) return;
+        this.selected = this.selected.includes(best.id)
+          ? this.selected.filter((id) => id !== best.id)
+          : [...this.selected, best.id];
       },
     },
   };
@@ -579,9 +676,19 @@
     fill: #fafafa;
     stroke: #ddd;
   }
+  .scatter-grid__search {
+    max-width: 360px;
+    margin-bottom: 12px;
+  }
   .point {
     fill-opacity: 0.75;
     pointer-events: none;
+  }
+  .is-dimmed .point {
+    fill-opacity: 0.15;
+  }
+  .panel {
+    cursor: crosshair;
   }
   .threshold {
     stroke: #333;
@@ -590,7 +697,6 @@
     pointer-events: none;
   }
   .ring {
-    fill: none;
     stroke: #000;
     stroke-width: 1.5;
     pointer-events: none;
