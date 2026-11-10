@@ -303,7 +303,7 @@
             :row="{ key: 'dose2', title: 'A-1331852 (µM)' }"
             :x="{ key: 'S', title: 'Synergy score', threshold: 0 }"
             :y="{ key: 'neg_log10_qval', title: '-log10(q value)', threshold: 1 }"
-            :color="{ key: 'synergy_count_across_doses', title: 'Synergy count', scheme: 'blues' }"
+            :color="{ key: 'S', title: 'Synergy score', scheme: 'rdbu' }"
           />
           <p class="prism-text-body-medium text-medium-emphasis mt-4">
             <b>Fig.7. Observed synergy in AZD5991 + A-1331852 combination.</b> Many cell lines

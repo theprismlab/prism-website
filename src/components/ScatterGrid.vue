@@ -29,7 +29,7 @@
           {{ sig(r) }}
         </text>
         <text
-          :transform="`translate(${width - 6}, ${margin.top + gridHeight / 2}) rotate(90)`"
+          :transform="`translate(${width - 12}, ${margin.top + gridHeight / 2}) rotate(90)`"
           class="label"
           text-anchor="middle"
         >
@@ -168,11 +168,19 @@
           v-for="v in countTicksY"
           :key="`cy-${v}`"
           :x="marginX + yHistograms[0].xScale(v)"
-          :y="rowY(rows.length - 1) + size + 11"
+          :y="rowY(0) + size + 11"
           class="tick"
           text-anchor="middle"
         >
           {{ v }}
+        </text>
+        <text
+          :x="marginX + side / 2"
+          :y="rowY(0) + size + 26"
+          class="label"
+          text-anchor="middle"
+        >
+          Cell lines
         </text>
         <text
           :transform="`translate(12, ${histY + side / 2}) rotate(-90)`"
@@ -389,8 +397,13 @@
       side() {
         return this.marginals ? Math.round(this.size * 0.55) : 0;
       },
+      // Side margins hold the tick labels plus a rotated title; widths are
+      // estimated from the longest label at the 10px tick font.
       margin() {
-        return { top: 34, right: this.row ? 44 : 8, bottom: 84, left: 44 };
+        const longest = (labels) => Math.max(0, ...labels.map((l) => String(l).length)) * 6.5;
+        const left = longest(this.yTicks) + 28;
+        const right = this.row ? longest(this.rows.map(this.sig)) + 28 : 8;
+        return { top: 34, right, bottom: 84, left };
       },
       gridWidth() {
         return this.columns.length * this.size + (this.columns.length - 1) * GAP;
