@@ -19,6 +19,7 @@ const TILT = 40; // degrees the column labels rise at when they don't fit level
 const TILT_COS = Math.cos((TILT * Math.PI) / 180);
 const TILT_SIN = Math.sin((TILT * Math.PI) / 180);
 const UNIT_RADIUS = 2; // px corner radius of a unit
+const MIN_PER_LINE = 3; // units a line per column the plot always has room for (see layoutUnitMatrix)
 
 /**
  * Options, all optional. Change any of them later with `update()`.
@@ -395,11 +396,12 @@ function cellLines(count, perLine, slots) {
  * prepareUnitMatrix returns and the sizes, exported so the layout can be tested
  * without a DOM.
  *
- * Each column gets a whole number of units per line. Starting from one each, the
- * spare width goes a unit at a time to the column whose fullest cell needs the
- * most lines, until the width is used up or every cell fits one line; what is
- * left over is shared equally, so the columns always span the plot. A row is as
- * tall as the most lines any of its cells needs.
+ * Each column gets a whole number of units per line. Starting from one each (or,
+ * while the column labels sit level, from what a column as wide as its label
+ * holds), the spare width goes a unit at a time to the column whose fullest cell
+ * needs the most lines, until the width is used up or every cell fits one line;
+ * what is left over is shared equally, so the columns always span the plot. A
+ * row is as tall as the most lines any of its cells needs.
  *
  * @param {Object} prepared what prepareUnitMatrix returns
  * @param {Object} config
@@ -448,7 +450,8 @@ export function layoutUnitMatrix(prepared, config) {
   );
   const plotLeft = rowLabelWidth ? rowLabelWidth + Math.round(fs * LABEL_GAP_EM) : 0;
 
-  // Columns: units per line and px width for each, within `available` px
+  // Columns: units per line and px width for each, within `available` px, none
+  // narrower than its entry in `least`
   const columnCells = columns.map((_, j) => rows.map((row) => row.cells[j]));
   const linesNeeded = (j, perLine) =>
     Math.max(1, ...columnCells[j].map((cell) => cellLines(cell.count, perLine, slots(cell.count))));
@@ -456,15 +459,21 @@ export function layoutUnitMatrix(prepared, config) {
   const mostUseful = columnCells.map((cells) =>
     Math.max(1, ...cells.map((cell) => cell.count + slots(cell.count))),
   );
-  const columnWidth = (perLine) => 2 * padX + perLine * unitSize + (perLine - 1) * unitPadding;
-  const sizeColumns = (available) => {
-    const perLine = columns.map(() => 1);
-    let used = perLine.reduce((sum, n) => sum + columnWidth(n), 0);
-    while (used + pitch <= available) {
+  const unitsWidth = (perLine) => 2 * padX + perLine * unitSize + (perLine - 1) * unitPadding;
+  const sizeColumns = (available, least) => {
+    const widthOf = (j, perLine) => Math.max(unitsWidth(perLine), least[j]);
+    // Start from one unit per line, or as many as a column's least width has
+    // room for anyway
+    const perLine = columns.map((_, j) => {
+      const roomFor = Math.floor((least[j] - 2 * padX + unitPadding) / pitch);
+      return Math.min(mostUseful[j], Math.max(1, roomFor));
+    });
+    let used = perLine.reduce((sum, n, j) => sum + widthOf(j, n), 0);
+    for (;;) {
       let next = -1;
       let most = 1;
       perLine.forEach((n, j) => {
-        if (n >= mostUseful[j]) return;
+        if (n >= mostUseful[j] || used + widthOf(j, n + 1) - widthOf(j, n) > available) return;
         const lines = linesNeeded(j, n);
         if (lines > most) {
           next = j;
@@ -472,38 +481,48 @@ export function layoutUnitMatrix(prepared, config) {
         }
       });
       if (next < 0) break;
+      used += widthOf(next, perLine[next] + 1) - widthOf(next, perLine[next]);
       perLine[next] += 1;
-      used += pitch;
     }
     const spare = Math.max(0, available - used) / columns.length;
-    const widths = perLine.map((n) => columnWidth(n) + spare);
+    const widths = perLine.map((n, j) => widthOf(j, n) + spare);
     return { perLine, widths, total: widths.reduce((sum, w) => sum + w, 0) };
   };
+  // The plot is never narrower than MIN_PER_LINE units a line in every column
+  // would need: a chart with less room scrolls sideways instead of growing very
+  // tall. The width is still shared out by need, so sparse columns may get less.
+  const leastPlot = columns.reduce(
+    (sum, _, j) => sum + unitsWidth(Math.min(MIN_PER_LINE, mostUseful[j])),
+    0,
+  );
+  const room = (margin) => Math.max(width - plotLeft - margin, leastPlot);
 
-  // Column labels sit level when each fits its own column; otherwise they all
-  // tilt, and the plot gives up the width the last ones reach past its right edge
+  // Column labels sit level when every column can be as wide as its label and
+  // they still fit the plot. Otherwise they all tilt and the columns are sized by
+  // their units alone.
   const columnText = columns.map((band) => (hasColumns ? labelWidth(band) : 0));
-  let sized = sizeColumns(width - plotLeft);
-  const tilt = hasColumns && columnText.some((w, j) => w > sized.widths[j] - padX);
-  const tiltX = (x) => x + padX + fs * 0.35;
-  const reach = () => {
-    if (!tilt) return 0;
-    let x = plotLeft;
-    let over = 0;
-    sized.widths.forEach((w, j) => {
-      over = Math.max(over, tiltX(x) + TILT_COS * columnText[j] - (plotLeft + sized.total));
-      x += w;
-    });
-    return Math.max(0, Math.ceil(over));
-  };
-  let marginRight = reach();
-  for (let pass = 0; pass < 2 && marginRight > 0; pass += 1) {
-    sized = sizeColumns(width - plotLeft - marginRight);
-    const next = reach();
-    if (next <= marginRight) break;
-    marginRight = next;
+  const level = columnText.map((w) => (hasColumns ? Math.ceil(w) + padX : 0));
+  let sized = sizeColumns(room(0), level);
+  const tilt = hasColumns && sized.total > room(0) + 0.5;
+  const tiltOffset = padX + fs * 0.35; // from a column's left edge to where its tilted label starts
+  let marginRight = 0;
+  if (tilt) {
+    // Tilted labels reach past the plot's right edge, so the plot gives up that
+    // width: what each label needs beyond the columns to its right, were those
+    // as narrow as they can get
+    let toRight = 0;
+    for (let j = columns.length - 1; j >= 0; j -= 1) {
+      toRight += unitsWidth(1);
+      marginRight = Math.max(
+        marginRight,
+        Math.ceil(tiltOffset + TILT_COS * columnText[j] - toRight),
+      );
+    }
+    sized = sizeColumns(
+      room(marginRight),
+      columns.map(() => 0),
+    );
   }
-  marginRight = reach();
   const plotRight = plotLeft + sized.total;
 
   // Header: the x title's lane, then the column labels' lane; the y title shares
@@ -531,7 +550,7 @@ export function layoutUnitMatrix(prepared, config) {
       out.label = tilt
         ? {
             text: band.label,
-            x: tiltX(x),
+            x: x + tiltOffset,
             y: headerHeight - Math.round(fs * 0.45),
             tilt: true,
             middle: false,
@@ -605,7 +624,8 @@ export function layoutUnitMatrix(prepared, config) {
   });
 
   return {
-    width: Math.max(width, Math.ceil(plotRight + marginRight)),
+    // The small allowance keeps a float sum from rounding a fitting chart up a pixel
+    width: Math.max(width, Math.ceil(plotRight + marginRight - 0.01)),
     height: y + 1,
     headerHeight,
     plotLeft,
