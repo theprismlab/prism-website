@@ -227,6 +227,53 @@
               employed the 5x5 format for the AZD5991 + A-1331852 combination. A cell line was
               classified as “killed” if its viability (relative to vehicle control) was &lt; 0.3.
             </figure-caption>
+            <p class="prism-text-body-large mt-6">
+              We calculated a synergy score for combination effects at each dose combination using
+              both the Highest Single Agent (HSA) and Bliss models to generate a null expectation
+              for the viability at the combination dose (see figure 2 Eqs. 1,2). In the HSA model,
+              the expected viability of the combination is the minimum of the two single agent
+              viabilities. In the Bliss model, viability effects are multiplicative (i.e.,
+              log-viability effects are additive)一based on the assumption of independent action of
+              the two single agents. The synergy score is computed as the difference between the
+              model expectation and the observed viability <sup>1</sup> — a positive value indicates
+              synergy while a negative value indicates antagonism. For robustness, we combine both
+              model expectations into a single synergy score (Eq. 3), which effectively considers
+              the lower viability of the two model expectations when looking for synergy and the
+              higher viability of the two model expectations when looking for
+              antagonism<sup>2</sup>. Significance (q values) for synergy scores were calculated
+              using an empirical null model of synergy scores generated using negative control data
+              from the experiment that accounts for cell-line specific variability (see Appendix).
+            </p>
+          </section>
+          <section>
+            <figure-cards
+              align="start"
+              :items="equationCards.filter((d, i) => i < 2)"
+              caption=""
+              color="grey-lighten-5"
+              border
+              :max-image-width="220"
+            />
+            <figure-cards
+              align="start"
+              :items="equationCards.filter((d, i) => i == 2)"
+              caption=""
+              color="grey-lighten-5"
+              border
+              class="mt-2"
+              :max-image-width="400"
+            />
+            <figure-caption>
+              <sup>1</sup> Note that the synergy score is measured in terms of viability rather than
+              in terms of log2fold-change (LFC) as used on the PRISM portal (<a
+                href="https://theprismlab.org/portal/CPS009/CPS_WHITEPAPER/PCPS019/BRD-K32107296_BRD-K92041145/synergy-by-dose"
+                target="_blank"
+                >PRISM Portal</a
+              >). This is done to better align with literature.<br /><br />
+              <sup>2</sup> We cap viabilities at 1 before calculating null model expectations for
+              synergy computation. For viabilities capped at 1, the Bliss expectation is always
+              &lt;= HSA.
+            </figure-caption>
           </section>
         </section>
 
@@ -640,6 +687,20 @@
           {
             title: 'AZD5991 + A-1331852',
             body: '<b>AZD5991</b><br>5 concentrations <br>top concentration: 0.037µM; threefold dilution<br><br><b>A-1331852</b><br>5 concentrations <br>top concentration: 0.041µM; threefold dilution',
+          },
+        ],
+        equationCards: [
+          {
+            title: 'Eqn.1',
+            image: imagePath + 'PRISM-CPS-Equation-1.svg',
+          },
+          {
+            title: 'Eqn.2',
+            image: imagePath + 'PRISM-CPS-Equation-2.svg',
+          },
+          {
+            title: 'Eqn.3',
+            image: imagePath + 'PRISM-CPS-Equation-3.svg',
           },
         ],
         killedLabel: 'Cell lines killed (viability < 0.3)',

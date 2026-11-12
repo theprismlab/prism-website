@@ -5,6 +5,8 @@
         v-for="item in items"
         :key="item.title"
         variant="flat"
+        :color="color"
+        :border="border"
         class="figure-card"
         :class="`figure-card--${align}`"
       >
@@ -25,11 +27,13 @@
             :src="item.image"
             :alt="item.alt || item.title"
             class="figure-card__img"
+            :style="imageStyle"
           />
           <!-- No image yet: a labeled placeholder of the same width -->
           <div
             v-else
             class="figure-card__placeholder"
+            :style="imageStyle"
             role="img"
             :aria-label="`${item.title} (image to come)`"
           >
@@ -66,6 +70,7 @@
    *
    * Usage:
    *   <figure-cards :items="panels" caption="Fig.1. Schematic of the PRISM assay" />
+   *   <figure-cards :items="panels" color="grey-lighten-5" border :max-image-width="240" />
    *   items: [{ title, subtitle?, image?, alt?, placeholder? }]
    * An item with `subtitle` shows it in smaller, muted text under the title.
    * An item without `image` shows a placeholder box, with `placeholder` as its
@@ -88,11 +93,25 @@
       // Largest number of columns on wide screens. Defaults to one per item;
       // lower it to wrap a long list onto several rows.
       maxColumns: { type: Number, default: null },
+      // Card background: a Vuetify color name ('grey-lighten-5', 'primary')
+      // or a CSS color. Transparent by default.
+      color: { type: String, default: undefined },
+      // Card border: `border` for the default thin border, or a Vuetify
+      // border value such as 'sm' or 'md'. None by default.
+      border: { type: [Boolean, String], default: false },
+      // Cap on the image width, in px (number) or any CSS length (string).
+      // Images narrower than the card are centered. Unlimited by default.
+      maxImageWidth: { type: [Number, String], default: null },
     },
     computed: {
       gridStyle() {
         const columns = Math.max(1, this.maxColumns || this.items.length);
         return { '--figure-cards-columns': columns };
+      },
+      imageStyle() {
+        if (this.maxImageWidth == null) return null;
+        const width = this.maxImageWidth;
+        return { maxWidth: typeof width === 'number' ? `${width}px` : width };
       },
     },
   };
@@ -137,6 +156,7 @@
     display: flex;
     flex: 1;
     align-items: flex-end;
+    justify-content: center;
     min-width: 0;
   }
   .figure-card--start .figure-card__media {
