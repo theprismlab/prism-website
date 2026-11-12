@@ -59,7 +59,7 @@
             lines simultaneously.
           </p>
           <h3 class="prism-text-headline-small">The PRISM assay</h3>
-          <figure-cards :items="assayCards" class="mt-0" />
+          <figure-cards :items="assayCards" class="mb-8 mt-4" border shaded-title center-title />
           <p class="prism-text-body-large">
             Our multiplexed cell viability platform, PRISM (profiling relative inhibition
             simultaneously in mixtures), enables screening of potential cancer therapeutics at an

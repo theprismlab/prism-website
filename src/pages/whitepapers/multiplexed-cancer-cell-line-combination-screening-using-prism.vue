@@ -22,7 +22,7 @@
       </div>
     </page-header>
 
-    <page-section width="narrow" class="mt-0 pt-4">
+    <page-section width="narrow" class="pt-4">
       <article class="whitepaper-body">
         <section id="introduction">
           <h2 class="prism-text-headline-medium">Introduction</h2>

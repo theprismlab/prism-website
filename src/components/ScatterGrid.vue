@@ -27,11 +27,12 @@
     </v-row>
 
     <svg ref="svg" :viewBox="`0 0 ${width} ${height}`" class="scatter-grid__svg">
-      <!-- Column facet: title and one label per column -->
+      <!-- Column facet: title and one label per column. With no title, the
+           labels are the panels' titles and are set at title size. -->
       <text
         v-if="column.title"
         :x="margin.left + gridWidth / 2"
-        y="12"
+        y="14"
         class="label"
         text-anchor="middle"
       >
@@ -41,8 +42,8 @@
         v-for="(c, i) in columns"
         :key="`col-${c}`"
         :x="colX(i) + size / 2"
-        :y="margin.top - 6"
-        class="tick"
+        :y="margin.top - (column.title ? 6 : 8)"
+        :class="column.title ? 'tick' : 'label'"
         text-anchor="middle"
       >
         {{ sig(c) }}
@@ -61,7 +62,7 @@
           {{ sig(r) }}
         </text>
         <text
-          :transform="`translate(${width - 12}, ${margin.top + gridHeight / 2}) rotate(90)`"
+          :transform="`translate(${width - 14}, ${margin.top + gridHeight / 2}) rotate(90)`"
           class="label"
           text-anchor="middle"
         >
@@ -235,11 +236,11 @@
         >
           {{ v }}
         </text>
-        <text :x="marginX + side / 2" :y="rowY(0) + size + 26" class="label" text-anchor="middle">
+        <text :x="marginX + side / 2" :y="rowY(0) + size + 29" class="label" text-anchor="middle">
           Cell lines
         </text>
         <text
-          :transform="`translate(12, ${histY + side / 2}) rotate(-90)`"
+          :transform="`translate(14, ${histY + side / 2}) rotate(-90)`"
           class="label"
           text-anchor="middle"
         >
@@ -250,14 +251,14 @@
       <!-- Axis titles -->
       <text
         :x="margin.left + gridWidth / 2"
-        :y="plotsBottom + 28"
+        :y="plotsBottom + 31"
         class="label"
         text-anchor="middle"
       >
         {{ x.title }}
       </text>
       <text
-        :transform="`translate(12, ${margin.top + gridHeight / 2}) rotate(-90)`"
+        :transform="`translate(14, ${margin.top + gridHeight / 2}) rotate(-90)`"
         class="label"
         text-anchor="middle"
       >
@@ -267,7 +268,7 @@
       <!-- Color legend: swatches for an ordinal scale, a gradient otherwise -->
       <g
         v-if="color"
-        :transform="`translate(${margin.left + gridWidth / 2 - legendWidth / 2}, ${plotsBottom + 56})`"
+        :transform="`translate(${margin.left + gridWidth / 2 - legendWidth / 2}, ${plotsBottom + 59})`"
       >
         <template v-if="ordinal">
           <g
@@ -304,7 +305,7 @@
             {{ v }}
           </text>
         </template>
-        <text :x="legendWidth / 2" y="34" class="label" text-anchor="middle">
+        <text :x="legendWidth / 2" y="37" class="label" text-anchor="middle">
           {{ color.title }}
         </text>
       </g>
@@ -582,6 +583,7 @@
    *           categorical range: a list of colors
    *           or omitted for one color and no legend
    *   column: { field, title?, domain? }
+   *           without a title, the column labels are drawn as panel titles
    *   row:    { field, title, domain? } or null for a single row
    *
    * A categorical `domain` fixes the order of a facet or of the color
@@ -733,14 +735,14 @@
       side() {
         return this.marginals ? this.size * 0.55 : 0;
       },
-      // Side margins hold the tick labels plus a rotated title; widths are
+      // Side margins hold the tick labels plus a rotated 16px title; widths are
       // estimated from the longest label at the 13px tick font.
       margin() {
         const longest = (labels) => Math.max(0, ...labels.map((l) => String(l).length)) * 8.5;
-        const left = longest(this.yTicks) + 32;
-        const right = this.row ? longest(this.rows.map(this.sig)) + 32 : 8;
+        const left = longest(this.yTicks) + 34;
+        const right = this.row ? longest(this.rows.map(this.sig)) + 34 : 8;
         // The bottom holds x ticks and title, plus the legend when there is a color scale
-        return { top: 38, right, bottom: this.color ? 108 : 48, left };
+        return { top: 40, right, bottom: this.color ? 114 : 51, left };
       },
       gridWidth() {
         return this.columns.length * this.size + (this.columns.length - 1) * this.gap;
@@ -1031,7 +1033,7 @@
     pointer-events: none;
   }
   .label {
-    font-size: 14px;
+    font-size: 16px;
   }
   .scatter-grid__tooltip {
     position: absolute;
