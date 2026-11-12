@@ -2,39 +2,32 @@
   <div class="agent-breakdown">
     <div class="agent-breakdown__toolbar">
       <h3 class="agent-breakdown__title">{{ config.title }}</h3>
-      <div class="agent-breakdown__controls">
-        <v-select
-          :model-value="yField"
-          :items="fieldOptions"
-          label="Rows"
-          density="compact"
-          variant="outlined"
-          bg-color="white"
-          hide-details
-          class="agent-breakdown__select"
-          @update:model-value="setY"
-        />
-        <v-select
-          :model-value="xField ?? noColumns"
-          :items="columnOptions"
-          label="Columns"
-          density="compact"
-          variant="outlined"
-          bg-color="white"
-          hide-details
-          class="agent-breakdown__select"
-          @update:model-value="setX"
-        />
-        <v-select
-          v-model="colorField"
-          :items="fieldOptions"
-          label="Color by"
-          density="compact"
-          variant="outlined"
-          bg-color="white"
-          hide-details
-          class="agent-breakdown__select"
-        />
+      <!-- The inputs the config's `controls` lists, in that order -->
+      <div v-if="controls.length" class="agent-breakdown__controls">
+        <template v-for="control in controls" :key="control">
+          <v-btn
+            v-if="control === 'swap'"
+            icon="mdi-swap-horizontal"
+            variant="text"
+            size="small"
+            :disabled="!xField"
+            aria-label="Swap rows and columns"
+            title="Swap rows and columns"
+            @click="swapAxes"
+          />
+          <v-select
+            v-else
+            :model-value="selected(control)"
+            :items="control === 'columns' ? columnOptions : fieldOptions"
+            :label="labels[control]"
+            density="compact"
+            variant="outlined"
+            bg-color="white"
+            hide-details
+            class="agent-breakdown__select"
+            @update:model-value="select(control, $event)"
+          />
+        </template>
       </div>
     </div>
 
@@ -44,13 +37,16 @@
       <template v-else>
         <p v-if="config.description" class="agent-breakdown__status">{{ config.description }}</p>
         <unit-matrix-chart
+          ref="chart"
           :data="rows"
+          :dimensions="dimensions"
           :axis="axis"
           :tooltip="tooltip"
           :unit-size="config.unitSize"
           :unit-padding="config.unitPadding"
           :show-counts="config.showCounts"
           :unit="config.unit"
+          @axis-change="onAxisChange"
         />
       </template>
     </div>
@@ -64,23 +60,27 @@
 
   // Value of the "Columns" select for a matrix with a single column
   const NO_COLUMNS = '(none)';
+  // The inputs the config's `controls` can list, with the label of each select
+  const LABELS = { rows: 'Rows', columns: 'Columns', color: 'Color by' };
 
   /**
-   * The test agent breakdown card: card copy, the "Rows", "Columns" and "Color
-   * by" controls, and the unit matrix (UnitMatrixChart via its Vue wrapper), with
-   * one square per agent. Self-contained: loads the test agent rows itself
-   * through the shared, cached getOncRefData(). Owns the three field selections
-   * and maps the config (see agentBreakdown.js) onto chart props explicitly, so
-   * the chart stays generic and the config stays free of prop names.
+   * The test agent breakdown card: card copy, the inputs the config's `controls`
+   * lists ("Rows", "Columns", "Color by" and a swap button), and the unit matrix
+   * (prism-charts' UnitMatrixChart via its Vue wrapper), with one square per
+   * agent. Self-contained: loads the test agent rows itself through the shared,
+   * cached getOncRefData(). Owns the three field selections and maps the config
+   * (see agentBreakdown.js) onto chart props explicitly, so the chart stays
+   * generic and the config stays free of prop names.
    *
-   * Highlighting belongs to the chart: a click on a legend entry highlights its
-   * agents, as in every prism-charts chart.
+   * The swap is the chart's own (`swapAxes`); the card follows it through
+   * `axis-change`. Highlighting belongs to the chart too: a click on a legend
+   * entry highlights its agents, as in every prism-charts chart.
    */
   export default {
     name: 'AgentBreakdown',
     components: { UnitMatrixChart },
     props: {
-      // Card copy, dimensions, defaults and colors; defaults to the manuscript config
+      // Card copy, dimensions, defaults, controls and colors; defaults to the manuscript config
       config: { type: Object, default: () => AGENT_BREAKDOWN },
     },
     data() {
@@ -93,28 +93,36 @@
         yField: defaults.y,
         xField: defaults.x ?? null,
         colorField: defaults.color,
-        noColumns: NO_COLUMNS,
+        labels: LABELS,
       };
     },
     computed: {
+      // The config's controls this card knows, in the config's order
+      controls() {
+        return (this.config.controls ?? []).filter((c) => c === 'swap' || c in LABELS);
+      },
       fieldOptions() {
         return this.config.dimensions.map((d) => ({ title: d.title ?? d.field, value: d.field }));
       },
       columnOptions() {
         return [{ title: 'None', value: NO_COLUMNS }, ...this.fieldOptions];
       },
-      // The chart's axes: each dimension is already an axis config ({ field,
-      // title, domain, format }); the color axis adds its field's scale
+      // The chart's dimensions: each config dimension is already an axis config
+      // ({ field, title, domain, format }); `color` adds its field's color scale,
+      // which applies when the field colors the squares
+      dimensions() {
+        const { colors, defaultColors } = this.config;
+        return this.config.dimensions.map((dimension) => ({
+          ...dimension,
+          color: (colors?.[dimension.field] ?? defaultColors)(this.rows, dimension.field),
+        }));
+      },
+      // The chart's axes, each naming a dimension by its field
       axis() {
-        const color = this.dimension(this.colorField);
-        const scale = (this.config.colors?.[color.field] ?? this.config.defaultColors)(
-          this.rows,
-          color.field,
-        );
         return {
-          y: this.dimension(this.yField),
-          x: this.xField ? this.dimension(this.xField) : {},
-          color: { ...color, ...scale },
+          y: { field: this.yField },
+          x: this.xField ? { field: this.xField } : {},
+          color: { field: this.colorField },
         };
       },
       // Tooltip rows for one square: its agent's fields, skipping empty values
@@ -139,8 +147,16 @@
       }
     },
     methods: {
-      dimension(field) {
-        return this.config.dimensions.find((d) => d.field === field);
+      // Value shown by a control's select
+      selected(control) {
+        if (control === 'rows') return this.yField;
+        if (control === 'columns') return this.xField ?? NO_COLUMNS;
+        return this.colorField;
+      },
+      select(control, value) {
+        if (control === 'rows') this.setY(value);
+        else if (control === 'columns') this.setX(value);
+        else this.colorField = value;
       },
       // Rows and columns never show the same field: picking the other axis'
       // field for one swaps the two
@@ -155,6 +171,15 @@
           this.yField = this.xField ?? this.config.dimensions.find((d) => d.field !== field).field;
         }
         this.xField = field;
+      },
+      // The chart trades its row and column fields and reports the result
+      swapAxes() {
+        this.$refs.chart?.swapAxes();
+      },
+      onAxisChange(axis) {
+        this.yField = axis.y?.field ?? this.yField;
+        this.xField = axis.x?.field ?? null;
+        this.colorField = axis.color?.field ?? this.colorField;
       },
     },
   };
@@ -193,8 +218,9 @@
     display: flex;
     flex: 1 1 480px;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: flex-end;
-    gap: 12px;
+    gap: 8px;
   }
 
   .agent-breakdown__select {

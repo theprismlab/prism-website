@@ -86,8 +86,8 @@ export const AGENT_BREAKDOWN = {
     'Each square is one test agent. Click a legend entry to highlight its agents, and hover ' +
     'a square for the agent behind it.',
 
-  // The columns offered for rows, columns and color, in the order the selects
-  // list them. Pass an object ({ field, title, domain, format }) in place of a
+  // The columns the reader can put on the rows, columns and color, in the order
+  // the inputs list them. Pass an object ({ field, title, domain, format }) in place of a
   // name to override the lookup for this card only.
   dimensions: [
     'Class',
@@ -104,6 +104,11 @@ export const AGENT_BREAKDOWN = {
     x: 'HighestClinicalStage_summarized',
     color: 'PreviouslyScreened',
   },
+
+  // Which inputs the card's toolbar gives the reader, in this order: any of
+  // 'rows', 'columns', 'color' and 'swap' (a button trading rows and columns).
+  // Leave one out to fix that axis to its default; an empty list shows no inputs.
+  controls: ['rows', 'swap', 'columns', 'color'],
 
   colors: COLORS,
   // Scale for a dimension with no entry in `colors`
