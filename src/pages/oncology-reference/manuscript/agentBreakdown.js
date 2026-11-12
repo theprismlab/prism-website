@@ -1,9 +1,9 @@
 // Config for the test agent breakdown card (AgentBreakdown.vue): the card copy,
-// which CSV columns the matrix can use as rows, columns or color, and the color
-// scale of each. Column labels, value names and value order come from fields.js
-// via toDimension, as for the parallel sets.
+// which CSV columns the unit matrix can use as rows, columns or color, and the
+// color scale of each. Column labels, value names and value order come from
+// fields.js via toDimension, as for the parallel sets, so the chart receives
+// fully described axes and never consults the lookup itself.
 import { categoryColors } from '@/lib/charts/prism-charts.js';
-import { NEUTRAL_COLOR as NEUTRAL } from './breakdown.js';
 import { fieldLabel, toDimension, valueLabel, valueOrder } from './fields.js';
 
 // Categorical hues, in an order where neighbors stay distinct under color
@@ -18,13 +18,14 @@ const GREEN = '#008300';
 const VIOLET = '#6250d6';
 const RED = '#e34948';
 const SERIES = [BLUE, ORANGE, AQUA, YELLOW, MAGENTA, GREEN, VIOLET, RED];
+const NEUTRAL = '#9a9a9a';
 
 // One blue from dark to light, for values that have an order
 const BLUE_RAMP = ['#104281', '#1c5cab', '#2a78d6', '#5598e7', '#86b6ef'];
 
 /**
- * A scale for a field with no natural order: its values by count descending,
- * the largest on the SERIES hues and the rest neutral.
+ * A color scale for a field with no natural order: its values by count
+ * descending, the largest on the SERIES hues and the rest neutral.
  */
 function seriesByCount(agents, field) {
   const counts = new Map();
@@ -35,9 +36,9 @@ function seriesByCount(agents, field) {
   return { domain, range: domain.map((_, i) => SERIES[i] ?? NEUTRAL) };
 }
 
-// Color scale per field, as a function of the agent rows: { domain, range },
-// where domain[i] is drawn in range[i]. A field left out falls back to
-// seriesByCount.
+// Color scale per field, as a function of the agent rows: the `domain` and
+// `range` of the chart's color axis, where domain[i] is drawn in range[i]. A
+// field left out falls back to seriesByCount.
 const COLORS = {
   // Four hues that stay apart in any pairing; controls are not a drug class
   Class: () => ({
@@ -65,9 +66,11 @@ function formatList(value, max = 6) {
   return items.length > max ? `${shown} +${items.length - max} more` : shown;
 }
 
-// Columns listed in an agent's tooltip, in order. The detailed modality and
-// clinical stage columns, not the summarized ones the matrix groups by.
+// Columns listed in an agent's tooltip, in order, the agent's name first. The
+// detailed modality and clinical stage columns, not the summarized ones the
+// matrix groups by.
 const TOOLTIP_FIELDS = [
+  'FormattedName',
   'TargetOrMechanism',
   'GeneSymbolOfTargets',
   'Class',
@@ -79,8 +82,9 @@ const TOOLTIP_FIELDS = [
 
 export const AGENT_BREAKDOWN = {
   title: 'Test agent composition',
-  // Shown above the matrix until something is selected
-  hint: 'Each square is one test agent. Click a color in the legend to focus on that group.',
+  description:
+    'Each square is one test agent. Click a legend entry to highlight its agents, and hover ' +
+    'a square for the agent behind it.',
 
   // The columns offered for rows, columns and color, in the order the selects
   // list them. Pass an object ({ field, title, domain, format }) in place of a
@@ -93,7 +97,7 @@ export const AGENT_BREAKDOWN = {
     'PreviouslyScreened',
   ].map(toDimension),
 
-  // What the matrix shows when the card first renders: a small grid to start
+  // The fields on each axis when the card first renders: a small grid to start
   // from. `x` may be null for a single column.
   defaults: {
     y: 'Class',
@@ -105,9 +109,6 @@ export const AGENT_BREAKDOWN = {
   // Scale for a dimension with no entry in `colors`
   defaultColors: seriesByCount,
 
-  // Agent name shown as the tooltip heading, and the unique key per agent
-  labelField: 'FormattedName',
-  keyField: 'CompoundName',
   // Tooltip rows: { field, title, format }
   tooltip: TOOLTIP_FIELDS.map((field) => ({
     field,
@@ -118,6 +119,11 @@ export const AGENT_BREAKDOWN = {
         : (value) => valueLabel(field, value),
   })),
 
+  // Px side of a square, and px between squares
+  unitSize: 12,
+  unitPadding: 2,
+  // Counts after every label and at the end of every cell
+  showCounts: true,
   // Noun for the counts
   unit: 'agents',
 };
