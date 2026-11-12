@@ -183,7 +183,7 @@
 
             <div class="combo-grid">
               <div v-for="combo in combinations" :key="combo.title" class="combo-figure">
-                <div>
+                <div class="combo-figure__text">
                   <h4 class="prism-text-title-medium mb-2 combo-figure__title">
                     {{ combo.title }}
                   </h4>
@@ -761,8 +761,8 @@
           },
         ],
         killedLabel: 'Cell lines killed (viability < 0.3)',
-        // Fig. 4 cell size in px: the largest at which a 7-dose heatmap fits one
-        // of the three columns of the narrow text column (228px each)
+        // Fig. 4 cell size in px: small enough that the dosing text and both
+        // heatmap columns sit side by side in the narrow text column
         heatmapCellSize: 26,
         // Fig. 4: one CSV per combination. x is the library compound (dose1),
         // y the anchor (dose2). `cells` is filled in once the CSV loads.
@@ -878,64 +878,52 @@
     gap: 2.5rem;
   }
 
-  /* Fig. 4: one column per combination on large screens, broken out of the
-     narrow text column so every heatmap renders at its natural size with
-     matching label sizes. Each column is a subgrid, so the titles, the
-     single-agent strips and the combination heatmaps line up across columns.
-     Below lg the combinations stack, each laying its panels out in a row. */
+  /* Fig. 4: one row per combination. Every row is a subgrid of the same three
+     columns (dosing text, single-agent strips, combination heatmap), so the
+     panels line up from row to row. The two heatmap columns take their natural
+     width and the text gets what is left. */
   .combo-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px 32px;
-    /* width: min(1200px, 92vw);
-    margin: 1.5rem 0 0 calc(50% - min(1200px, 92vw) / 2); */
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 40px 32px;
+    margin-top: 1.5rem;
   }
   .combo-figure {
     display: grid;
-    grid-row: span 3;
-    grid-template-rows: subgrid;
-    min-width: 0;
-    overflow-x: auto;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: start;
   }
+  /* The label has the same spacing as the title inside Heatmap */
   .combo-figure__title,
   .combo-figure__label {
     margin: 0 0 4px;
     font-weight: 700;
   }
-
   .combo-figure__strips {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  /* Never scale the SVGs down: label sizes must match across columns */
+  /* Never scale the SVGs down: label sizes must match from row to row */
   .combo-figure :deep(.heatmap__svg) {
     max-width: none;
   }
-  @media (max-width: 1279.98px) {
+  /* Too narrow for three columns: the text sits above the two panels, which
+     stay side by side while there is room and stack when there is not */
+  @media (max-width: 959.98px) {
     .combo-grid {
-      grid-template-columns: 1fr;
-      gap: 32px;
+      grid-template-columns: minmax(0, 1fr);
     }
     .combo-figure {
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-start;
-      gap: 24px;
+      gap: 16px 32px;
     }
-    .combo-figure__title {
+    .combo-figure__text {
       flex-basis: 100%;
     }
-    .combo-figure__strips {
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 24px;
-    }
-  }
-  /* Same spacing as the title inside Heatmap, so the panels line up */
-  .combo-figure__label {
-    margin: 0 0 4px;
   }
 
   .whitepaper-body {
