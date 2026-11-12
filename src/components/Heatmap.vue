@@ -104,7 +104,11 @@
       </g>
     </svg>
 
-    <div v-if="hover" class="heatmap__tooltip" :style="{ left: hover.left, top: hover.top }">
+    <div
+      v-if="tooltip && hover"
+      class="heatmap__tooltip"
+      :style="{ left: hover.left, top: hover.top }"
+    >
       <div>
         <b>{{ xTitle }}:</b> {{ tick(hover.cell.x) }}
       </div>
@@ -133,7 +137,7 @@
    * Heatmap
    *
    * A grid of colored squares with x/y tick labels, axis titles, an optional
-   * legend and a hover tooltip. Nothing else.
+   * legend and an optional hover tooltip (`tooltip`, off by default). Nothing else.
    *
    * `data` is a flat list of cells: [{ x, y, value }]. x and y may be numbers
    * or numeric strings; they are sorted numerically to form the axes and
@@ -158,6 +162,8 @@
       log: { type: Boolean, default: false },
       // Cell size in SVG units
       size: { type: Number, default: 40 },
+      // Show the cell's doses and value in a tooltip on hover
+      tooltip: { type: Boolean, default: false },
     },
     data() {
       return { hover: null, gradientId: `heatmap-gradient-${++instances}` };
@@ -278,6 +284,7 @@
         return this.color(this.legendScale.invert(t * this.plotWidth));
       },
       onHover(cell, event) {
+        if (!this.tooltip) return;
         const box = this.$el.getBoundingClientRect();
         this.hover = {
           cell,
