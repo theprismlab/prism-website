@@ -83,8 +83,22 @@ const routes = [
     },
   },
   {
+    path: '/oncology-reference-version-1',
+    component: () => import('@/pages/oncology-reference/manuscript-version-1.vue'),
+    meta: {
+      breadcrumbs: () => [{ title: 'Oncology Reference' }, { title: 'Manuscript' }],
+    },
+  },
+  {
     path: '/oncology-reference-version-2',
     component: () => import('@/pages/oncology-reference/manuscript-version-2.vue'),
+    meta: {
+      breadcrumbs: () => [{ title: 'Oncology Reference' }, { title: 'Manuscript' }],
+    },
+  },
+  {
+    path: '/oncology-reference-version-3',
+    component: () => import('@/pages/oncology-reference/manuscript-version-3.vue'),
     meta: {
       breadcrumbs: () => [{ title: 'Oncology Reference' }, { title: 'Manuscript' }],
     },
