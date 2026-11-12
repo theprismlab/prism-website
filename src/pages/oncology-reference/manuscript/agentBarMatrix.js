@@ -33,6 +33,22 @@ export const AGENT_BAR_MATRIX = {
   // list shows no inputs.
   controls: ['rows', 'swap', 'columns', 'groups', 'series', 'color'],
 
+  // Whether every row lists every bar group, and every group every series, even
+  // the empty ones (true), or each lists only its own (false), so rows and
+  // groups differ in size but nothing empty is drawn.
+  shared: { groups: false, series: false },
+
+  // Which axes show their tick labels: the row, column, group and series names,
+  // and the count axis under the plot. Series are off because the color legend
+  // names them when the bars are colored by series; turn them on to label
+  // every bar.
+  ticks: { rows: true, columns: true, groups: true, series: true, value: true },
+
+  // Where the bar group names sit: 'column' in a column of their own left of
+  // the bars, or 'heading' on a line above each group's bars, which also sets
+  // the groups apart.
+  groupLabels: 'heading',
+
   colors: AGENT_BREAKDOWN.colors,
   // Scale for a dimension with no entry in `colors`
   defaultColors: AGENT_BREAKDOWN.defaultColors,

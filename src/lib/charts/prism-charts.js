@@ -29,18 +29,18 @@ const Ps = [
   "#be95ff"
   // Purple 40
 ];
-function Mt(n) {
+function Tt(n) {
   return n <= M.schemeTableau10.length ? M.schemeTableau10 : Ps;
 }
-function Xn(n, t) {
+function Kn(n, t) {
   const e = M.rollup(
     n,
     (s) => s.length,
     (s) => s[t] || "(blank)"
   ), o = Array.from(e).sort((s, a) => a[1] - s[1]).map(([s]) => s);
-  return { domain: o, range: Mt(o.length) };
+  return { domain: o, range: Tt(o.length) };
 }
-const us = {
+const gs = {
   field: "label",
   title: null,
   domain: null,
@@ -50,7 +50,7 @@ const us = {
   format: null,
   showTicks: !0,
   showTitle: !0
-}, ds = {
+}, ms = {
   field: null,
   title: null,
   type: "linear",
@@ -61,7 +61,7 @@ const us = {
   format: null,
   showTicks: !0,
   showTitle: !0
-}, ps = {
+}, xs = {
   field: null,
   title: null,
   domain: null,
@@ -72,7 +72,7 @@ const us = {
   showTicks: !0,
   showTitle: !0,
   position: "inline"
-}, fs = {
+}, ys = {
   field: null,
   title: null,
   type: "categorical",
@@ -84,36 +84,36 @@ const us = {
   showTicks: !0,
   showTitle: !0
 };
-function fe(n) {
+function be(n) {
   return n.showTitle === !1 ? null : n.title;
 }
-function gs(n) {
+function _s(n) {
   return n.showTicks === !1 ? null : n.showTitle === !1 ? n.title == null ? null : "" : n.title;
 }
-function ms(n, t) {
+function ws(n, t) {
   return {
     category: n.category ?? (t ? n.y : n.x),
     value: n.value ?? (t ? n.x : n.y)
   };
 }
-function xs(n) {
+function vs(n) {
   return n == null ? null : typeof n == "function" ? n : (t) => t[n];
 }
-function ot(n, t = {}) {
+function it(n, t = {}) {
   const e = { ...n, ...t };
-  return e.accessor = xs(e.field), e;
+  return e.accessor = vs(e.field), e;
 }
-function Q(n, t) {
+function st(n, t) {
   return n.title ?? (typeof n.field == "string" ? n.field : t);
 }
 function _t(n, t) {
   return [.../* @__PURE__ */ new Set([...n ?? [], ...t])];
 }
-function Pe(n) {
+function je(n) {
   var t;
   return ((t = n.tickValues) == null ? void 0 : t.filter((e) => n.domain.includes(e))) ?? null;
 }
-function Ft(n) {
+function qt(n) {
   switch (n) {
     case "log":
       return M.scaleLog();
@@ -123,46 +123,46 @@ function Ft(n) {
       return M.scaleLinear();
   }
 }
-function Ut(n, t = [0, 1]) {
+function te(n, t = [0, 1]) {
   const [e, o] = M.extent(n);
   return e === void 0 ? t : e === o ? [e - 1, o + 1] : [e, o];
 }
-function xe(n, t, e) {
-  return Ft(n).domain(t).nice(e ?? void 0).domain();
+function Me(n, t, e) {
+  return qt(n).domain(t).nice(e ?? void 0).domain();
 }
-function oe(n, t) {
+function fe(n, t) {
   return t.tickValues ? t.tickValues : n.ticks ? n.ticks(t.ticks ?? void 0) : n.domain();
 }
-function Gt(n, t) {
+function Qt(n, t) {
   return t.tickValues ? n.tickValues(t.tickValues) : t.ticks != null && n.ticks(t.ticks), t.format && n.tickFormat(t.format), n;
 }
-function ie(n) {
+function me(n) {
   if (!n.accessor)
-    return () => Array.isArray(n.range) ? n.range[0] : Mt(1)[0];
+    return () => Array.isArray(n.range) ? n.range[0] : Tt(1)[0];
   if (n.type === "sequential") {
     const t = typeof n.range == "function" ? n.range : M.interpolateRgbBasis(n.range);
     return M.scaleSequential(n.domain, t);
   }
   return M.scaleOrdinal(n.domain, n.range);
 }
-function Is(n) {
-  return !n.accessor || n.type === "constant" ? () => n.range[0] : Ft(n.type).domain(n.domain).range(n.range);
+function Bs(n) {
+  return !n.accessor || n.type === "constant" ? () => n.range[0] : qt(n.type).domain(n.domain).range(n.range);
 }
-const Bs = { ...ds, field: "count" };
-function Un(n, t, { sort: e, group: o } = {}) {
+const Ds = { ...ms, field: "count" };
+function Yn(n, t, { sort: e, group: o } = {}) {
   const s = (i) => (r) => r[i] || "(blank)", a = (i, r) => {
-    const l = M.rollup(i, (d) => d.length, s(t)), c = Array.from(
+    const l = M.rollup(i, (u) => u.length, s(t)), c = Array.from(
       l,
-      ([d, p]) => o == null ? { label: d, count: p } : { group: r, label: d, count: p }
+      ([u, f]) => o == null ? { label: u, count: f } : { group: r, label: u, count: f }
     );
-    return e === "descending" ? c.sort((d, p) => p.count - d.count) : e === "ascending" && c.sort((d, p) => d.count - p.count), c;
+    return e === "descending" ? c.sort((u, f) => f.count - u.count) : e === "ascending" && c.sort((u, f) => u.count - f.count), c;
   };
   return o == null ? a(n) : Array.from(
     M.group(n, s(o)),
     ([i, r]) => a(r, i)
   ).flat();
 }
-function ge(n, t, e = "both") {
+function ke(n, t, e = "both") {
   const o = `${t ? Math.round(n / t * 100) : 0}%`;
   switch (e) {
     case "count":
@@ -175,39 +175,39 @@ function ge(n, t, e = "both") {
       return `${n} (${o})`;
   }
 }
-function Ds(n = [], t = {}) {
-  const e = t.axis ?? {}, o = ms(e, t.orientation === "horizontal"), s = ot(us, o.category), a = ot(Bs, o.value), i = ot(ps, e.group), r = ot(fs, e.color), l = r.accessor ?? s.accessor, c = (u) => ({
-    count: M.sum(u, a.accessor),
-    color: l(u[0])
+function Ns(n = [], t = {}) {
+  const e = t.axis ?? {}, o = ws(e, t.orientation === "horizontal"), s = it(gs, o.category), a = it(Ds, o.value), i = it(xs, e.group), r = it(ys, e.color), l = r.accessor ?? s.accessor, c = (d) => ({
+    count: M.sum(d, a.accessor),
+    color: l(d[0])
   });
-  let d;
+  let u;
   if (i.accessor) {
-    const u = M.rollup(n, c, i.accessor, s.accessor);
-    i.domain = _t(i.domain, u.keys()), d = i.domain.flatMap((w) => {
-      const _ = u.get(w) ?? /* @__PURE__ */ new Map();
-      return _t(s.domain, _.keys()).filter((m) => _.has(m)).map((m) => ({ group: w, label: m, ..._.get(m) }));
-    }), s.domain = [...new Set(d.map((w) => w.label))];
+    const d = M.rollup(n, c, i.accessor, s.accessor);
+    i.domain = _t(i.domain, d.keys()), u = i.domain.flatMap((v) => {
+      const _ = d.get(v) ?? /* @__PURE__ */ new Map();
+      return _t(s.domain, _.keys()).filter((x) => _.has(x)).map((x) => ({ group: v, label: x, ..._.get(x) }));
+    }), s.domain = [...new Set(u.map((v) => v.label))];
   } else {
-    const u = M.rollup(n, c, s.accessor);
-    s.domain = _t(s.domain, u.keys()), d = s.domain.map((w) => {
-      var _, m;
+    const d = M.rollup(n, c, s.accessor);
+    s.domain = _t(s.domain, d.keys()), u = s.domain.map((v) => {
+      var _, x;
       return {
         group: null,
-        label: w,
-        count: ((_ = u.get(w)) == null ? void 0 : _.count) ?? 0,
-        color: ((m = u.get(w)) == null ? void 0 : m.color) ?? w
+        label: v,
+        count: ((_ = d.get(v)) == null ? void 0 : _.count) ?? 0,
+        color: ((x = d.get(v)) == null ? void 0 : x.color) ?? v
       };
     });
   }
-  s.tickValues = Pe(s), a.domain ?? (a.domain = xe(a.type, [0, M.max(d, (u) => u.count) || 1], a.ticks)), r.domain = _t(
+  s.tickValues = je(s), a.domain ?? (a.domain = Me(a.type, [0, M.max(u, (d) => d.count) || 1], a.ticks)), r.domain = _t(
     r.domain,
-    d.map((u) => u.color)
-  ), r.range ?? (r.range = Mt(r.domain.length));
-  const p = t.total ?? M.sum(d, (u) => u.count);
-  return { axes: { category: s, value: a, group: i, color: r }, bars: d, total: p };
+    u.map((d) => d.color)
+  ), r.range ?? (r.range = Tt(r.domain.length));
+  const f = t.total ?? M.sum(u, (d) => d.count);
+  return { axes: { category: s, value: a, group: i, color: r }, bars: u, total: f };
 }
-const Tt = "#cfcfcf";
-class It {
+const Ht = "#cfcfcf";
+class Vt {
   /** @param {() => void} [onChange] called after every change of state */
   constructor(t) {
     this.predicate = null, this.selection = /* @__PURE__ */ new Map(), this.onChange = t ?? null;
@@ -261,15 +261,15 @@ class It {
   }
   /** The color to draw a mark in: `base` when highlighted, MUTED_COLOR otherwise. */
   color(t, e, o, s) {
-    return this.includes(e, o, s) ? t : Tt;
+    return this.includes(e, o, s) ? t : Ht;
   }
   _changed() {
     var t;
     (t = this.onChange) == null || t.call(this, this);
   }
 }
-const Pt = 6, Wt = 12, ys = 8, _s = 0.35, ws = 0.3, Te = "rgba(0,0,0,0.7)", ye = "rgba(0,0,0,0.5)", Ns = "rgba(0,0,0,0.08)";
-function vs(n, t, e) {
+const Nt = 6, ee = 12, bs = 8, ks = 0.35, Ls = 0.3, Pe = "rgba(0,0,0,0.7)", Ae = "rgba(0,0,0,0.5)", Vs = "rgba(0,0,0,0.08)";
+function Ms(n, t, e) {
   return {
     horizontal: n,
     innerWidth: t,
@@ -281,114 +281,114 @@ function vs(n, t, e) {
     outward: n ? -1 : 1
   };
 }
-function bs(n, { grouped: t, padding: e, groupPadding: o, headingLanes: s = !0 }) {
-  var d;
+function As(n, { grouped: t, padding: e, groupPadding: o, headingLanes: s = !0 }) {
+  var u;
   const a = t ? o ?? e : 0, i = [];
-  for (const p of n) {
-    const u = t && p.group !== ((d = i.at(-1)) == null ? void 0 : d.group);
-    u && s && i.push({ group: p.group, item: null, starts: !1 }), i.push({ group: p.group, item: p, starts: u });
+  for (const f of n) {
+    const d = t && f.group !== ((u = i.at(-1)) == null ? void 0 : u.group);
+    d && s && i.push({ group: f.group, item: null, starts: !1 }), i.push({ group: f.group, item: f, starts: d });
   }
   const r = t && s ? (1 + e) / 2 + a / 2 : e;
   let l = 0;
-  i.forEach((p, u) => {
-    const w = !p.item;
-    !s && u > 0 && p.starts && (l += a), w && u > 0 && (l += a / 2), p.offset = l, l += 1, w && (l += a / 2);
+  i.forEach((f, d) => {
+    const v = !f.item;
+    !s && d > 0 && f.starts && (l += a), v && d > 0 && (l += a / 2), f.offset = l, l += 1, v && (l += a / 2);
   });
   const c = 2 * r + l - e;
   return {
     lanes: i,
     totalSteps: c,
     firstFraction: (r + (1 - e) / 2) / c,
-    place([p, u]) {
-      const w = (u - p) / c, _ = w * (1 - e);
-      for (const v of i)
-        v.pos = p + (r + v.offset) * w + _ / 2, v.item && (v.item.pos = v.pos);
-      const m = [];
+    place([f, d]) {
+      const v = (d - f) / c, _ = v * (1 - e);
+      for (const b of i)
+        b.pos = f + (r + b.offset) * v + _ / 2, b.item && (b.item.pos = b.pos);
+      const x = [];
       if (t) {
-        for (const v of i) {
-          if (!v.item) continue;
-          const L = v.pos + _ / 2;
-          v.starts ? m.push({ group: v.group, from: v.pos - _ / 2, to: L, sep: null }) : m.at(-1).to = L;
+        for (const b of i) {
+          if (!b.item) continue;
+          const L = b.pos + _ / 2;
+          b.starts ? x.push({ group: b.group, from: b.pos - _ / 2, to: L, sep: null }) : x.at(-1).to = L;
         }
-        m.forEach((v, L) => {
-          L > 0 && (v.sep = (m[L - 1].to + v.from) / 2);
+        x.forEach((b, L) => {
+          L > 0 && (b.sep = (x[L - 1].to + b.from) / 2);
         });
       }
-      return { step: w, bandwidth: _, spans: m };
+      return { step: v, bandwidth: _, spans: x };
     }
   };
 }
-function ks({ fontSize: n, labelWidth: t, totalSteps: e, firstFraction: o, width: s, left: a, right: i }) {
-  const r = (s - a - i) / e < t, l = Pt + 3 + n, c = r ? (t + Pt + 3 + 0.75 * n) * Math.SQRT1_2 + 0.3 * n : l;
+function Ss({ fontSize: n, labelWidth: t, totalSteps: e, firstFraction: o, width: s, left: a, right: i }) {
+  const r = (s - a - i) / e < t, l = Nt + 3 + n, c = r ? (t + Nt + 3 + 0.75 * n) * Math.SQRT1_2 + 0.3 * n : l;
   if (!r) return { tilt: r, depth: c, extra: 0, left: a };
-  const d = Math.round(t * Math.SQRT1_2), p = o;
+  const u = Math.round(t * Math.SQRT1_2), f = o;
   return {
     tilt: r,
     depth: c,
     extra: c - l,
-    left: Math.max(a, Math.ceil((d - p * (s - i)) / (1 - p)))
+    left: Math.max(a, Math.ceil((u - f * (s - i)) / (1 - f)))
   };
 }
-function qt(n, t, e) {
+function se(n, t, e) {
   return n.attr("x1", (o) => t(o)[0]).attr("y1", (o) => t(o)[1]).attr("x2", (o) => e(o)[0]).attr("y2", (o) => e(o)[1]);
 }
-function Ls(n, t, e, o) {
+function Ts(n, t, e, o) {
   const s = n.append("g").selectAll("line").data(o).join("line");
-  return s.attr("stroke", Ns), qt(
+  return s.attr("stroke", Vs), se(
     s,
     (a) => t.at(0, e(a)),
     (a) => t.at(t.catExtent, e(a))
   );
 }
-function Ms(n, t, e = !1) {
+function $s(n, t, e = !1) {
   const { innerWidth: o, innerHeight: s } = t;
-  return n.append("path").attr("d", e ? `M0,0H${o}V${s}H0Z` : `M0,0V${s}H${o}`).attr("fill", "none").attr("stroke", ye);
+  return n.append("path").attr("d", e ? `M0,0H${o}V${s}H0Z` : `M0,0V${s}H${o}`).attr("fill", "none").attr("stroke", Ae);
 }
-function As(n, t, e, { fontSize: o, tickValues: s, format: a }) {
+function zs(n, t, e, { fontSize: o, tickValues: s, format: a }) {
   const i = t.horizontal ? M.axisBottom(e) : M.axisLeft(e), r = n.append("g").attr("transform", t.horizontal ? `translate(0,${t.innerHeight})` : null).call(i.tickValues(s).tickFormat(a).tickSizeOuter(0));
-  return r.attr("font-family", null).attr("font-size", o), r.selectAll("text").attr("fill", Te), r.selectAll(".tick line").attr("stroke", ye), r.select(".domain").remove(), r;
+  return r.attr("font-family", null).attr("font-size", o), r.selectAll("text").attr("fill", Pe), r.selectAll(".tick line").attr("stroke", Ae), r.select(".domain").remove(), r;
 }
-function Ss(n, t, e, { fontSize: o, ticked: s, label: a, heading: i, tilt: r, groups: l }) {
-  const { horizontal: c, at: d, axisAcross: p, outward: u, valExtent: w } = t, _ = n.append("g").attr("font-size", o), m = _.selectAll("g").data(e.filter((f) => !f.item || s(f.item))).join("g").attr("transform", (f) => `translate(${d(f.pos, p).join(",")})`);
-  qt(
-    m.append("line"),
-    () => d(0, u * Pt),
-    (f) => d(0, f.item ? 0 : -u * w)
+function Es(n, t, e, { fontSize: o, ticked: s, label: a, heading: i, tilt: r, groups: l }) {
+  const { horizontal: c, at: u, axisAcross: f, outward: d, valExtent: v } = t, _ = n.append("g").attr("font-size", o), x = _.selectAll("g").data(e.filter((p) => !p.item || s(p.item))).join("g").attr("transform", (p) => `translate(${u(p.pos, f).join(",")})`);
+  se(
+    x.append("line"),
+    () => u(0, d * Nt),
+    (p) => u(0, p.item ? 0 : -d * v)
   );
-  const [v, L] = d(0, u * (Pt + 3)), S = m.append("text").attr("x", v).attr("y", L).attr("text-anchor", c ? "end" : "middle").attr("dy", c ? "0.32em" : "0.71em").attr("fill", Te).each(function(f) {
+  const [b, L] = u(0, d * (Nt + 3)), S = x.append("text").attr("x", b).attr("y", L).attr("text-anchor", c ? "end" : "middle").attr("dy", c ? "0.32em" : "0.71em").attr("fill", Pe).each(function(p) {
     const z = M.select(this);
-    f.item ? a(z, f.item) : z.attr("font-weight", 600).text(i(f.group));
+    p.item ? a(z, p.item) : z.attr("font-weight", 600).text(i(p.group));
   });
   if (r && S.attr("transform", "rotate(-45)").attr("text-anchor", "end").attr("dx", "-0.6em").attr("dy", "0.15em"), l) {
-    const { spans: f, position: z, across: I } = l;
-    qt(
-      _.selectAll(".separator").data(f.slice(1)).join("line"),
-      (P) => d(P.sep, p),
-      (P) => d(P.sep, p - u * w)
+    const { spans: p, position: z, across: N } = l;
+    se(
+      _.selectAll(".separator").data(p.slice(1)).join("line"),
+      (B) => u(B.sep, f),
+      (B) => u(B.sep, f - d * v)
     );
-    const R = _.selectAll(".heading").data(f).join("text").attr("font-weight", 600).attr("fill", Te).text((P) => i(P.group));
-    z === "outside" ? R.attr("transform", (P) => {
-      const [q, K] = d((P.from + P.to) / 2, I);
-      return `translate(${q},${K})` + (c ? " rotate(90)" : "");
-    }).attr("text-anchor", "middle") : R.attr("x", (P) => d((P.from + P.to) / 2, I)[0]).attr("y", (P) => d((P.from + P.to) / 2, I)[1]).attr("text-anchor", c ? "end" : "middle").attr("dy", c ? "0.32em" : "0.71em");
+    const R = _.selectAll(".heading").data(p).join("text").attr("font-weight", 600).attr("fill", Pe).text((B) => i(B.group));
+    z === "outside" ? R.attr("transform", (B) => {
+      const [K, Y] = u((B.from + B.to) / 2, N);
+      return `translate(${K},${Y})` + (c ? " rotate(90)" : "");
+    }).attr("text-anchor", "middle") : R.attr("x", (B) => u((B.from + B.to) / 2, N)[0]).attr("y", (B) => u((B.from + B.to) / 2, N)[1]).attr("text-anchor", c ? "end" : "middle").attr("dy", c ? "0.32em" : "0.71em");
   }
-  return _.selectAll("line").attr("stroke", ye), _;
+  return _.selectAll("line").attr("stroke", Ae), _;
 }
-const Vs = /* @__PURE__ */ new Set(["square", "circle", "ring"]);
-function Et(n, t, e) {
-  const { title: o, tickValues: s, fontSize: a, highlight: i, dimension: r = "color" } = e, l = e.format ?? ((v) => v), c = e.key ?? ((v) => v), d = typeof e.shape == "function" ? e.shape : () => e.shape ?? "square", p = (v) => Vs.has(d(v)) ? d(v) : "square";
+const Xs = /* @__PURE__ */ new Set(["square", "circle", "ring"]);
+function Rt(n, t, e) {
+  const { title: o, tickValues: s, fontSize: a, highlight: i, dimension: r = "color" } = e, l = e.format ?? ((b) => b), c = e.key ?? ((b) => b), u = typeof e.shape == "function" ? e.shape : () => e.shape ?? "square", f = (b) => Xs.has(u(b)) ? u(b) : "square";
   if (n.selectAll("*").remove(), o == null) {
     n.style("display", "none");
     return;
   }
   n.attr("class", "chart-legend").style("display", null).style("font-size", a ? `${a}px` : null), o && n.append("div").attr("class", "chart-legend__title").text(o);
-  const u = i != null, w = (v) => u && i.active && !i.isSelected(r, c(v)), _ = (v, L) => i.toggle(r, c(L), { extend: v.shiftKey || v.metaKey }), m = n.append("div").attr("class", "chart-legend__items").selectAll("span").data(s || t.domain()).join("span").attr("class", "chart-legend__item").classed("chart-legend__item--toggle", u).classed("chart-legend__item--muted", w);
-  u && m.attr("role", "button").attr("tabindex", 0).attr("aria-pressed", (v) => i.isSelected(r, c(v))).on("click", _).on("keydown", (v, L) => {
-    v.key !== "Enter" && v.key !== " " || (v.preventDefault(), _(v, L));
-  }), m.append("i").attr("class", (v) => `chart-legend__swatch chart-legend__swatch--${p(v)}`).style("color", (v) => w(v) ? Tt : t(v)), m.append("span").text((v) => l(v));
+  const d = i != null, v = (b) => d && i.active && !i.isSelected(r, c(b)), _ = (b, L) => i.toggle(r, c(L), { extend: b.shiftKey || b.metaKey }), x = n.append("div").attr("class", "chart-legend__items").selectAll("span").data(s || t.domain()).join("span").attr("class", "chart-legend__item").classed("chart-legend__item--toggle", d).classed("chart-legend__item--muted", v);
+  d && x.attr("role", "button").attr("tabindex", 0).attr("aria-pressed", (b) => i.isSelected(r, c(b))).on("click", _).on("keydown", (b, L) => {
+    b.key !== "Enter" && b.key !== " " || (b.preventDefault(), _(b, L));
+  }), x.append("i").attr("class", (b) => `chart-legend__swatch chart-legend__swatch--${f(b)}`).style("color", (b) => v(b) ? Ht : t(b)), x.append("span").text((b) => l(b));
 }
-let Fs = 0;
-function js(n, t, e) {
+let js = 0;
+function Fs(n, t, e) {
   const { title: o, fontSize: s, width: a = 160 } = e;
   if (n.selectAll("*").remove(), o == null) {
     n.style("display", "none");
@@ -396,59 +396,59 @@ function js(n, t, e) {
   }
   const i = s ?? 12;
   n.attr("class", "chart-legend").style("display", null).style("font-size", s ? `${s}px` : null), o && n.append("div").attr("class", "chart-legend__title").text(o);
-  const [r, l] = t.domain(), c = Math.ceil(i * 1.5), d = Math.round(i * 0.67), p = n.append("svg").attr("class", "chart-legend__ramp").attr("width", a + c * 2).attr("height", d + 3 + Math.ceil(i * 1.4)), u = `chart-legend-ramp-${Fs += 1}`;
-  p.append("linearGradient").attr("id", u).selectAll("stop").data(M.ticks(0, 1, 10)).join("stop").attr("offset", (m) => m).attr("stop-color", (m) => t(r + m * (l - r)));
-  const w = p.append("g").attr("transform", `translate(${c},0)`);
-  w.append("rect").attr("width", a).attr("height", d).attr("fill", `url(#${u})`);
+  const [r, l] = t.domain(), c = Math.ceil(i * 1.5), u = Math.round(i * 0.67), f = n.append("svg").attr("class", "chart-legend__ramp").attr("width", a + c * 2).attr("height", u + 3 + Math.ceil(i * 1.4)), d = `chart-legend-ramp-${js += 1}`;
+  f.append("linearGradient").attr("id", d).selectAll("stop").data(M.ticks(0, 1, 10)).join("stop").attr("offset", (x) => x).attr("stop-color", (x) => t(r + x * (l - r)));
+  const v = f.append("g").attr("transform", `translate(${c},0)`);
+  v.append("rect").attr("width", a).attr("height", u).attr("fill", `url(#${d})`);
   const _ = M.axisBottom(M.scaleLinear([r, l], [0, a]));
-  w.append("g").attr("transform", `translate(0,${d})`).call(Gt(_, e).tickSize(3).tickSizeOuter(0)).attr("font-family", null).attr("font-size", i);
+  v.append("g").attr("transform", `translate(0,${u})`).call(Qt(_, e).tickSize(3).tickSizeOuter(0)).attr("font-family", null).attr("font-size", i);
 }
-const Fe = { small: 10, medium: 12, large: 14 };
-function Bt(n = "medium") {
+const Ue = { small: 10, medium: 12, large: 14 };
+function Xt(n = "medium") {
   if (typeof n == "number") return n;
-  if (!(n in Fe)) throw new Error(`Unknown chart font size "${n}"`);
-  return Fe[n];
+  if (!(n in Ue)) throw new Error(`Unknown chart font size "${n}"`);
+  return Ue[n];
 }
-function At(n, t) {
+function Et(n, t) {
   return t ? n + 16 : 0;
 }
-const Gs = 0.5, Xs = 0.72, Us = 5, $s = 8;
-function ne(n) {
+const Gs = 0.5, Us = 0.72, Ws = 5, Cs = 8;
+function ge(n) {
   return !!n.title && n.titlePosition === "top";
 }
-function Kt(n) {
-  return n * 1.5 + $s;
+function oe(n) {
+  return n * 1.5 + Cs;
 }
-function _e(n, t, { fontSize: e, color: o }) {
-  const s = e * Gs, a = -(e / 2 + $s), i = n.append("g").attr("class", "axis-title axis-title--top"), r = i.append("text").attr("x", s + Us).attr("y", a).attr("text-anchor", "start").attr("font-size", e).attr("font-weight", 600).text(t), l = s / 2, c = s / 2, d = a - e * Xs, p = i.append("path").attr(
+function Se(n, t, { fontSize: e, color: o }) {
+  const s = e * Gs, a = -(e / 2 + Cs), i = n.append("g").attr("class", "axis-title axis-title--top"), r = i.append("text").attr("x", s + Ws).attr("y", a).attr("text-anchor", "start").attr("font-size", e).attr("font-weight", 600).text(t), l = s / 2, c = s / 2, u = a - e * Us, f = i.append("path").attr(
     "d",
-    `M${l},${a}V${d}M${l - c},${d + c}L${l},${d}L${l + c},${d + c}`
+    `M${l},${a}V${u}M${l - c},${u + c}L${l},${u}L${l + c},${u + c}`
   ).attr("fill", "none").attr("stroke-width", 1.5).attr("stroke-linecap", "round").attr("stroke-linejoin", "round");
-  return o && (r.attr("fill", o), p.attr("stroke", o)), i;
+  return o && (r.attr("fill", o), f.attr("stroke", o)), i;
 }
-let Qt;
-const Ws = 0.55;
-function Rt(n, t, e, o = 400) {
-  if (Qt === void 0 && (Qt = document.createElement("canvas").getContext("2d")), !Qt) return String(n).length * t * Ws;
+let le;
+const qs = 0.55;
+function Dt(n, t, e, o = 400) {
+  if (le === void 0 && (le = document.createElement("canvas").getContext("2d")), !le) return String(n).length * t * qs;
   const s = e ? getComputedStyle(e).fontFamily : "sans-serif";
-  return Qt.font = `${o} ${t}px ${s}`, Qt.measureText(String(n)).width;
+  return le.font = `${o} ${t}px ${s}`, le.measureText(String(n)).width;
 }
-function Lt(n, t, e, o) {
+function St(n, t, e, o) {
   let s = 0;
   for (const a of n)
-    s = Math.max(s, Rt(a, t, e, o));
+    s = Math.max(s, Dt(a, t, e, o));
   return s;
 }
-function ze(n, t, e) {
+function he(n, t, e) {
   if (e(n) <= t) return n;
   let o = n.length - 1;
   for (; o > 1 && e(`${n.slice(0, o).trimEnd()}…`) > t; ) o -= 1;
   return `${n.slice(0, o).trimEnd()}…`;
 }
-function qs(n) {
+function Ks(n) {
   return String(n).split(/\s+/).flatMap((t) => t.split(new RegExp("(?<=\\/)"))).filter(Boolean);
 }
-function Ts(n, t, e) {
+function Hs(n, t, e) {
   const o = [];
   let s = "";
   for (const a of String(n).split(/\s+/).filter(Boolean))
@@ -458,7 +458,7 @@ function Ts(n, t, e) {
     });
   return (s !== "" || !o.length) && o.push(s), o;
 }
-class Dt {
+class jt {
   /** @param {Element} root the chart's root element */
   constructor(t) {
     this.root = t, this.target = null, this.div = M.select(t).append("div").attr("class", "chart-tooltip").style("display", "none");
@@ -494,7 +494,7 @@ class Dt {
     return this.target !== null;
   }
 }
-const je = 6, ve = 0.85, Ks = "rgba(0,0,0,0.55)", Ge = "rgba(0,0,0,0.6)", Ys = {
+const We = 6, $e = 0.85, Ys = "rgba(0,0,0,0.55)", qe = "rgba(0,0,0,0.6)", Zs = {
   data: [],
   orientation: "vertical",
   total: null,
@@ -511,10 +511,10 @@ const je = 6, ve = 0.85, Ks = "rgba(0,0,0,0.55)", Ge = "rgba(0,0,0,0.6)", Ys = {
   onHover: null,
   onHighlightChange: null
 };
-class Wn {
+class Zn {
   constructor(t, e = {}) {
     if (!t) throw new Error("BarChart: a container element is required");
-    this.container = t, this.options = { ...Ys, ...e }, this.highlight = new It(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("bar-chart", !0), this.legend = this.root.append("div"), this.svg = this.root.append("svg").attr("class", "bar-chart__svg").attr("role", "img"), this.tooltip = new Dt(t), this.draw();
+    this.container = t, this.options = { ...Zs, ...e }, this.highlight = new Vt(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("bar-chart", !0), this.legend = this.root.append("div"), this.svg = this.root.append("svg").attr("class", "bar-chart__svg").attr("role", "img"), this.tooltip = new jt(t), this.draw();
   }
   /** Replace the records and redraw. */
   setData(t) {
@@ -556,98 +556,98 @@ class Wn {
    * coordinates: the one place the orientation turns the layout.
    */
   draw() {
-    const { width: t, rowHeight: e, groupPadding: o, rangePadding: s, border: a } = this.options, i = this.options.orientation === "horizontal", r = this.svg.node(), l = Bt(this.options.fontSize);
+    const { width: t, rowHeight: e, groupPadding: o, rangePadding: s, border: a } = this.options, i = this.options.orientation === "horizontal", r = this.svg.node(), l = Xt(this.options.fontSize);
     this.tooltip.fontSize(l), this._setHovered(null);
-    const { axes: c, bars: d, total: p } = Ds(this.options.data, this.options), { category: u, value: w, group: _, color: m } = c, v = !!_.accessor, L = u.domain, S = u.format ?? String, f = _.format ?? String, z = (O) => (v ? `${f(O.group)} / ` : "") + S(O.label), I = this.options.barLabel !== "none", R = (O) => ge(O.count, p, this.options.barLabel);
-    this._tooltipRows = (O) => {
-      const ft = ge(O.count, p, "percent"), k = [
-        [Q(u, "category"), S(O.label)],
-        [Q(w, "count"), `${O.count} of ${p} (${ft})`]
+    const { axes: c, bars: u, total: f } = Ns(this.options.data, this.options), { category: d, value: v, group: _, color: x } = c, b = !!_.accessor, L = d.domain, S = d.format ?? String, p = _.format ?? String, z = (H) => (b ? `${p(H.group)} / ` : "") + S(H.label), N = this.options.barLabel !== "none", R = (H) => ke(H.count, f, this.options.barLabel);
+    this._tooltipRows = (H) => {
+      const dt = ke(H.count, f, "percent"), At = [
+        [st(d, "category"), S(H.label)],
+        [st(v, "count"), `${H.count} of ${f} (${dt})`]
       ];
-      return v && k.unshift([Q(_, "group"), f(O.group)]), this.options.tooltip ? this.options.tooltip(O, k) : k;
+      return b && At.unshift([st(_, "group"), p(H.group)]), this.options.tooltip ? this.options.tooltip(H, At) : At;
     };
-    const P = Ft(w.type).domain(w.domain), q = oe(P, w), K = w.format ?? P.tickFormat(w.ticks ?? void 0), ct = new Set(u.tickValues ?? L), at = u.showTicks !== !1, nt = w.showTicks !== !1, U = v && _.showTicks !== !1 ? _.position : null, et = U === "inline", h = U === "axis", A = bs(d, {
-      grouped: v,
-      padding: i ? ws : _s,
+    const B = qt(v.type).domain(v.domain), K = fe(B, v), Y = v.format ?? B.tickFormat(v.ticks ?? void 0), at = new Set(d.tickValues ?? L), rt = d.showTicks !== !1, lt = v.showTicks !== !1, G = b && _.showTicks !== !1 ? _.position : null, ct = G === "inline", h = G === "axis", $ = As(u, {
+      grouped: b,
+      padding: i ? Ls : ks,
       groupPadding: o,
-      headingLanes: et
-    }), { lanes: $, totalSteps: b } = A, x = v ? _.domain.map(f) : [], [T, B] = [fe(u), fe(w)], [J, st] = i ? [B, T] : [T, B], lt = !!st && ne(i ? u : w), ht = lt ? 0 : At(l, st), rt = Lt(x, l, r, 600), tt = Math.max(
-      at ? Lt(L.map(S), l, r) : 0,
-      et ? rt : 0
-    ), ut = at || et, dt = U === "outside" ? l + ys : 0, pt = Lt(d.map(R), l * ve, r, 600);
-    let X, xt, bt = !1, E;
+      headingLanes: ct
+    }), { lanes: T, totalSteps: w } = $, m = b ? _.domain.map(p) : [], [A, P] = [be(d), be(v)], [nt, D] = i ? [P, A] : [A, P], Z = !!D && ge(i ? d : v), Q = Z ? 0 : Et(l, D), et = St(m, l, r, 600), ot = Math.max(
+      rt ? St(L.map(S), l, r) : 0,
+      ct ? et : 0
+    ), ht = rt || ct, ft = G === "outside" ? l + bs : 0, xt = St(u.map(R), l * $e, r, 600);
+    let U, mt, Lt = !1, C;
     if (i)
-      E = ut ? tt + Wt : 0, X = {
-        top: lt ? Kt(l) : l,
-        right: pt + je + 8 + dt,
-        bottom: (nt ? l + 16 : 8) + At(l, J),
-        left: ht + E + (h ? rt + Wt : 0)
-      }, xt = X.top + (v ? b : $.length) * e + X.bottom;
+      C = ht ? ot + ee : 0, U = {
+        top: Z ? oe(l) : l,
+        right: xt + We + 8 + ft,
+        bottom: (lt ? l + 16 : 8) + Et(l, nt),
+        left: Q + C + (h ? et + ee : 0)
+      }, mt = U.top + (b ? w : T.length) * e + U.bottom;
     else {
-      X = {
+      U = {
         // The label above the tallest bar, or the title above the top tick
-        top: Math.max((I ? l * ve : 0) + 16, lt ? Kt(l) : 0) + dt,
+        top: Math.max((N ? l * $e : 0) + 16, Z ? oe(l) : 0) + ft,
         right: 16,
         bottom: 0,
         // below
-        left: ht + (nt ? Lt(q.map(K), l, r) + Wt : 0)
+        left: Q + (lt ? St(K.map(Y), l, r) + ee : 0)
       };
-      const O = ut ? ks({
+      const H = ht ? Ss({
         fontSize: l,
-        labelWidth: tt,
-        totalSteps: b,
-        firstFraction: A.firstFraction,
+        labelWidth: ot,
+        totalSteps: w,
+        firstFraction: $.firstFraction,
         width: t,
-        left: X.left,
-        right: X.right
-      }) : { tilt: !1, depth: 0, extra: 0, left: X.left };
-      bt = O.tilt, E = O.depth, X.bottom = E + (h ? Pt + 3 + l : 0) + 15 + At(l, J), X.left = O.left, xt = this.options.height + O.extra;
+        left: U.left,
+        right: U.right
+      }) : { tilt: !1, depth: 0, extra: 0, left: U.left };
+      Lt = H.tilt, C = H.depth, U.bottom = C + (h ? Nt + 3 + l : 0) + 15 + Et(l, nt), U.left = H.left, mt = this.options.height + H.extra;
     }
-    const C = t - X.left - X.right, F = xt - X.top - X.bottom, Y = vs(i, C, F), { at: Z, outward: V } = Y, { bandwidth: g, spans: H } = A.place(u.range || [0, Y.catExtent]), D = P.range(
-      w.range || (i ? [s, C - s] : [F - s, s])
-    ), N = D(P.domain()[0]), G = M.scaleOrdinal(m.domain, m.range), it = (O) => this.highlight.color(G(O.color), O, { color: O.color });
+    const E = t - U.left - U.right, F = mt - U.top - U.bottom, J = Ms(i, E, F), { at: tt, outward: j } = J, { bandwidth: y, spans: O } = $.place(d.range || [0, J.catExtent]), V = B.range(
+      v.range || (i ? [s, E - s] : [F - s, s])
+    ), X = V(B.domain()[0]), q = M.scaleOrdinal(x.domain, x.range), ut = (H) => this.highlight.color(q(H.color), H, { color: H.color });
     this.root.style("max-width", `${t}px`);
-    const yt = this.svg.attr("viewBox", `0 0 ${t} ${xt}`).attr(
+    const yt = this.svg.attr("viewBox", `0 0 ${t} ${mt}`).attr(
       "aria-label",
-      `Bar chart of ${Q(w, "count")} by ${Q(u, "category")}` + (v ? ` within ${Q(_, "group")}` : "") + `. ${d.map((O) => `${z(O)}: ${O.count}`).join(", ")}`
+      `Bar chart of ${st(v, "count")} by ${st(d, "category")}` + (b ? ` within ${st(_, "group")}` : "") + `. ${u.map((H) => `${z(H)}: ${H.count}`).join(", ")}`
     );
     yt.selectAll("*").remove();
-    const W = yt.append("g").attr("transform", `translate(${X.left},${X.top})`);
-    Ls(W, Y, D, q), nt && As(W, Y, D, { fontSize: l, tickValues: q, format: K }), Ms(W, Y, a);
-    const vt = U && !et ? {
-      spans: H,
-      position: U,
-      across: U === "outside" ? i ? C + X.right - l : -X.top + l : Y.axisAcross + V * (E + Pt + 3)
+    const W = yt.append("g").attr("transform", `translate(${U.left},${U.top})`);
+    Ts(W, J, V, K), lt && zs(W, J, V, { fontSize: l, tickValues: K, format: Y }), $s(W, J, a);
+    const Mt = G && !ct ? {
+      spans: O,
+      position: G,
+      across: G === "outside" ? i ? E + U.right - l : -U.top + l : J.axisAcross + j * (C + Nt + 3)
     } : null;
-    Ss(W, Y, $, {
+    Es(W, J, T, {
       fontSize: l,
-      ticked: (O) => at && ct.has(O.label),
-      label: (O, ft) => O.text(S(ft.label)),
-      heading: f,
-      tilt: bt,
-      groups: vt
+      ticked: (H) => rt && at.has(H.label),
+      label: (H, dt) => H.text(S(dt.label)),
+      heading: p,
+      tilt: Lt,
+      groups: Mt
     });
-    const kt = (O) => {
-      const [ft, k] = Z(O.pos - g / 2, Math.min(N, D(O.count))), [gt, wt] = Z(g, Math.abs(D(O.count) - N));
-      return { x: ft, y: k, w: gt, h: wt };
-    }, Ct = W.append("g").selectAll("g").data(d).join("g");
-    if (Ct.append("rect").attr("rx", 3).attr("fill", it).attr("x", (O) => kt(O).x).attr("y", (O) => kt(O).y).attr("width", (O) => kt(O).w).attr("height", (O) => kt(O).h).on("mouseenter", (O, ft) => this._setHovered(ft, O)).on("mousemove", (O) => this.tooltip.move(O)).on("mouseleave", () => this._setHovered(null)), I) {
-      const O = (ft) => Z(ft.pos, D(ft.count) - V * je);
-      Ct.append("text").attr("x", (ft) => O(ft)[0]).attr("y", (ft) => O(ft)[1]).attr("dy", i ? "0.35em" : null).attr("text-anchor", i ? "start" : "middle").attr("font-size", l * ve).attr("font-weight", 600).attr("fill", Ks).text(R);
+    const wt = (H) => {
+      const [dt, At] = tt(H.pos - y / 2, Math.min(X, V(H.count))), [Kt, vt] = tt(y, Math.abs(V(H.count) - X));
+      return { x: dt, y: At, w: Kt, h: vt };
+    }, It = W.append("g").selectAll("g").data(u).join("g");
+    if (It.append("rect").attr("rx", 3).attr("fill", ut).attr("x", (H) => wt(H).x).attr("y", (H) => wt(H).y).attr("width", (H) => wt(H).w).attr("height", (H) => wt(H).h).on("mouseenter", (H, dt) => this._setHovered(dt, H)).on("mousemove", (H) => this.tooltip.move(H)).on("mouseleave", () => this._setHovered(null)), N) {
+      const H = (dt) => tt(dt.pos, V(dt.count) - j * We);
+      It.append("text").attr("x", (dt) => H(dt)[0]).attr("y", (dt) => H(dt)[1]).attr("dy", i ? "0.35em" : null).attr("text-anchor", i ? "start" : "middle").attr("font-size", l * $e).attr("font-weight", 600).attr("fill", Ys).text(R);
     }
-    const St = (O) => yt.append("text").attr("text-anchor", "middle").attr("font-size", l).attr("font-weight", 600).attr("fill", Ge).text(O || "");
-    St(J).attr("x", X.left + C / 2).attr("y", xt - l), lt ? _e(W, st, { fontSize: l, color: Ge }) : St(st).attr(
+    const $t = (H) => yt.append("text").attr("text-anchor", "middle").attr("font-size", l).attr("font-weight", 600).attr("fill", qe).text(H || "");
+    $t(nt).attr("x", U.left + E / 2).attr("y", mt - l), Z ? Se(W, D, { fontSize: l, color: qe }) : $t(D).attr(
       "transform",
-      `translate(${l + 2},${X.top + F / 2}) rotate(-90)`
-    ), Et(this.legend, G, {
-      ...m,
-      title: gs(m),
+      `translate(${l + 2},${U.top + F / 2}) rotate(-90)`
+    ), Rt(this.legend, q, {
+      ...x,
+      title: _s(x),
       fontSize: l,
       highlight: this.highlight
     });
   }
 }
-const Zs = {
+const Qs = {
   field: "label",
   title: null,
   domain: null,
@@ -655,7 +655,7 @@ const Zs = {
   ticks: null,
   tickValues: null,
   format: null
-}, Qs = {
+}, Js = {
   field: "count",
   title: null,
   type: "linear",
@@ -664,7 +664,7 @@ const Zs = {
   ticks: 5,
   tickValues: null,
   format: null
-}, Js = {
+}, to = {
   field: "key",
   title: null,
   type: "categorical",
@@ -674,7 +674,7 @@ const Zs = {
   tickValues: null,
   format: null
 };
-function qn(n, t, e, { sort: o } = {}) {
+function Qn(n, t, e, { sort: o } = {}) {
   const s = M.group(n, (i) => i[t] || "(blank)"), a = Array.from(s, ([i, r]) => ({ label: i, count: r.length, group: r }));
   return o === "descending" ? a.sort((i, r) => r.count - i.count) : o === "ascending" && a.sort((i, r) => i.count - r.count), a.flatMap(
     ({ label: i, group: r }) => Array.from(
@@ -687,29 +687,29 @@ function qn(n, t, e, { sort: o } = {}) {
     )
   );
 }
-function to(n = [], t = {}) {
-  const e = t.axis ?? {}, o = ot(Zs, e.y), s = ot(Qs, e.x), a = ot(Js, e.color), i = M.rollup(
+function eo(n = [], t = {}) {
+  const e = t.axis ?? {}, o = it(Qs, e.y), s = it(Js, e.x), a = it(to, e.color), i = M.rollup(
     n,
     (c) => M.sum(c, s.accessor),
     o.accessor,
     a.accessor
   );
-  o.domain = _t(o.domain, i.keys()), o.tickValues = Pe(o), a.domain = _t(a.domain, n.map(a.accessor));
+  o.domain = _t(o.domain, i.keys()), o.tickValues = je(o), a.domain = _t(a.domain, n.map(a.accessor));
   const r = o.domain.map((c) => {
-    const d = i.get(c);
-    let p = 0;
-    const u = [];
-    for (const w of a.domain) {
-      const _ = (d == null ? void 0 : d.get(w)) ?? 0;
-      _ > 0 && u.push({ key: w, count: _, start: p, end: p += _ });
+    const u = i.get(c);
+    let f = 0;
+    const d = [];
+    for (const v of a.domain) {
+      const _ = (u == null ? void 0 : u.get(v)) ?? 0;
+      _ > 0 && d.push({ key: v, count: _, start: f, end: f += _ });
     }
-    return { label: c, count: p, segments: u };
+    return { label: c, count: f, segments: d };
   });
-  s.domain ?? (s.domain = xe(s.type, [0, M.max(r, (c) => c.count) || 1], s.ticks)), a.range ?? (a.range = Mt(a.domain.length));
+  s.domain ?? (s.domain = Me(s.type, [0, M.max(r, (c) => c.count) || 1], s.ticks)), a.range ?? (a.range = Tt(a.domain.length));
   const l = t.total ?? M.sum(r, (c) => c.count);
   return { axes: { category: o, value: s, color: a }, bars: r, total: l };
 }
-const eo = 12, Xe = 6, Ue = 0.85, so = "rgba(0,0,0,0.55)", oo = {
+const so = 12, Ke = 6, Ye = 0.85, oo = "rgba(0,0,0,0.55)", no = {
   data: [],
   total: null,
   barLabel: "both",
@@ -721,10 +721,10 @@ const eo = 12, Xe = 6, Ue = 0.85, so = "rgba(0,0,0,0.55)", oo = {
   onHover: null,
   onHighlightChange: null
 };
-class Kn {
+class Jn {
   constructor(t, e = {}) {
     if (!t) throw new Error("StackedBarChart: a container element is required");
-    this.container = t, this.options = { ...oo, ...e }, this.highlight = new It(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("stacked-bar-chart", !0), this.legend = this.root.append("div"), this.svg = this.root.append("svg").attr("class", "stacked-bar-chart__svg").attr("role", "img"), this.tooltip = new Dt(t), this.draw();
+    this.container = t, this.options = { ...no, ...e }, this.highlight = new Vt(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("stacked-bar-chart", !0), this.legend = this.root.append("div"), this.svg = this.root.append("svg").attr("class", "stacked-bar-chart__svg").attr("role", "img"), this.tooltip = new jt(t), this.draw();
   }
   /** Replace the records and redraw. */
   setData(t) {
@@ -759,49 +759,49 @@ class Kn {
     t ? this.tooltip.show(this._tooltipRows(t), e, t) : this.tooltip.hide(), t !== this.hovered && (this.hovered = t, (s = (o = this.options).onHover) == null || s.call(o, t));
   }
   draw() {
-    const { width: t, rowHeight: e } = this.options, o = this.svg.node(), s = Bt(this.options.fontSize);
+    const { width: t, rowHeight: e } = this.options, o = this.svg.node(), s = Xt(this.options.fontSize);
     this.tooltip.fontSize(s), this._setHovered(null);
-    const { axes: a, bars: i, total: r } = to(this.options.data, this.options), { category: l, value: c, color: d } = a, p = l.domain, u = l.format ?? String, w = d.format ?? String, _ = (b) => ge(b.count, r, this.options.barLabel);
-    this._tooltipRows = (b) => {
-      const x = [
-        [Q(l, "category"), u(b.label)],
-        [Q(d, "group"), w(b.key)],
-        [Q(c, "count"), `${b.count} of ${b.barCount}`],
-        ["Share of total", ge(b.count, r, "percent")]
+    const { axes: a, bars: i, total: r } = eo(this.options.data, this.options), { category: l, value: c, color: u } = a, f = l.domain, d = l.format ?? String, v = u.format ?? String, _ = (w) => ke(w.count, r, this.options.barLabel);
+    this._tooltipRows = (w) => {
+      const m = [
+        [st(l, "category"), d(w.label)],
+        [st(u, "group"), v(w.key)],
+        [st(c, "count"), `${w.count} of ${w.barCount}`],
+        ["Share of total", ke(w.count, r, "percent")]
       ];
-      return this.options.tooltip ? this.options.tooltip(b, x) : x;
+      return this.options.tooltip ? this.options.tooltip(w, m) : m;
     };
-    const m = ne(l), v = Lt(p.map(u), s, o), L = {
-      top: m ? Kt(s) : s,
-      right: Lt(i.map(_), s * Ue, o, 600) + Xe + 8,
-      bottom: s + 16 + At(s, c.title),
-      left: (m ? 0 : At(s, l.title)) + v + eo
-    }, S = t - L.left - L.right, f = p.length * e, z = L.top + f + L.bottom, I = M.scaleBand().domain(p).range(l.range || [0, f]).padding(0.3), R = Ft(c.type).domain(c.domain).range(c.range || [0, S]), P = M.scaleOrdinal(d.domain, d.range), q = (b) => this.highlight.color(P(b.key), b, { color: b.key }), K = oe(R, c), ct = c.format ?? R.tickFormat(c.ticks ?? void 0);
+    const x = ge(l), b = St(f.map(d), s, o), L = {
+      top: x ? oe(s) : s,
+      right: St(i.map(_), s * Ye, o, 600) + Ke + 8,
+      bottom: s + 16 + Et(s, c.title),
+      left: (x ? 0 : Et(s, l.title)) + b + so
+    }, S = t - L.left - L.right, p = f.length * e, z = L.top + p + L.bottom, N = M.scaleBand().domain(f).range(l.range || [0, p]).padding(0.3), R = qt(c.type).domain(c.domain).range(c.range || [0, S]), B = M.scaleOrdinal(u.domain, u.range), K = (w) => this.highlight.color(B(w.key), w, { color: w.key }), Y = fe(R, c), at = c.format ?? R.tickFormat(c.ticks ?? void 0);
     this.root.style("max-width", `${t}px`);
-    const at = i.map((b) => {
-      const x = b.segments.map((T) => `${w(T.key)} ${T.count}`).join(", ");
-      return `${u(b.label)}: ${b.count} (${x})`;
-    }).join("; "), nt = this.svg.attr("viewBox", `0 0 ${t} ${z}`).attr(
+    const rt = i.map((w) => {
+      const m = w.segments.map((A) => `${v(A.key)} ${A.count}`).join(", ");
+      return `${d(w.label)}: ${w.count} (${m})`;
+    }).join("; "), lt = this.svg.attr("viewBox", `0 0 ${t} ${z}`).attr(
       "aria-label",
-      `Stacked bar chart of ${Q(c, "count")} by ${Q(l, "category")}, split by ${Q(d, "group")}. ${at}`
+      `Stacked bar chart of ${st(c, "count")} by ${st(l, "category")}, split by ${st(u, "group")}. ${rt}`
     );
-    nt.selectAll("*").remove();
-    const U = nt.append("g").attr("transform", `translate(${L.left},${L.top})`), et = U.append("g").call(
-      M.axisLeft(I).tickValues(l.tickValues ?? p).tickFormat(u).tickSizeOuter(0)
-    ), h = U.append("g").attr("transform", `translate(0,${f})`).call(M.axisBottom(R).tickValues(K).tickFormat(ct).tickSizeOuter(0));
-    for (const b of [et, h])
-      b.attr("font-family", null).attr("font-size", s), b.selectAll("text").attr("fill", "rgba(0,0,0,0.7)"), b.selectAll(".domain, .tick line").attr("stroke", "rgba(0,0,0,0.5)");
-    U.insert("g", ":first-child").selectAll("line").data(K).join("line").attr("y2", f).attr("x1", (b) => R(b)).attr("x2", (b) => R(b)).attr("stroke", "rgba(0,0,0,0.08)");
-    const A = U.append("g").selectAll("g").data(i).join("g");
-    A.selectAll("rect").data((b) => b.segments.map((x) => ({ ...x, label: b.label, barCount: b.count }))).join("rect").attr("x", (b) => R(b.start)).attr("y", (b) => I(b.label)).attr("width", (b) => Math.max(0, R(b.end) - R(b.start))).attr("height", I.bandwidth()).attr("fill", q).attr("stroke", "#fff").attr("stroke-width", 1).on("mouseenter", (b, x) => this._setHovered(x, b)).on("mousemove", (b) => this.tooltip.move(b)).on("mouseleave", () => this._setHovered(null)), this.options.barLabel !== "none" && A.append("text").attr("x", (b) => R(b.count) + Xe).attr("y", (b) => I(b.label) + I.bandwidth() / 2).attr("dy", "0.35em").attr("font-size", s * Ue).attr("font-weight", 600).attr("fill", so).text(_);
-    const $ = (b) => nt.append("text").attr("text-anchor", "middle").attr("font-size", s).attr("font-weight", 600).attr("fill", "rgba(0,0,0,0.6)").text(b || "");
-    $(c.title).attr("x", L.left + S / 2).attr("y", z - s), m ? _e(U, l.title, { fontSize: s, color: "rgba(0,0,0,0.6)" }) : $(l.title).attr(
+    lt.selectAll("*").remove();
+    const G = lt.append("g").attr("transform", `translate(${L.left},${L.top})`), ct = G.append("g").call(
+      M.axisLeft(N).tickValues(l.tickValues ?? f).tickFormat(d).tickSizeOuter(0)
+    ), h = G.append("g").attr("transform", `translate(0,${p})`).call(M.axisBottom(R).tickValues(Y).tickFormat(at).tickSizeOuter(0));
+    for (const w of [ct, h])
+      w.attr("font-family", null).attr("font-size", s), w.selectAll("text").attr("fill", "rgba(0,0,0,0.7)"), w.selectAll(".domain, .tick line").attr("stroke", "rgba(0,0,0,0.5)");
+    G.insert("g", ":first-child").selectAll("line").data(Y).join("line").attr("y2", p).attr("x1", (w) => R(w)).attr("x2", (w) => R(w)).attr("stroke", "rgba(0,0,0,0.08)");
+    const $ = G.append("g").selectAll("g").data(i).join("g");
+    $.selectAll("rect").data((w) => w.segments.map((m) => ({ ...m, label: w.label, barCount: w.count }))).join("rect").attr("x", (w) => R(w.start)).attr("y", (w) => N(w.label)).attr("width", (w) => Math.max(0, R(w.end) - R(w.start))).attr("height", N.bandwidth()).attr("fill", K).attr("stroke", "#fff").attr("stroke-width", 1).on("mouseenter", (w, m) => this._setHovered(m, w)).on("mousemove", (w) => this.tooltip.move(w)).on("mouseleave", () => this._setHovered(null)), this.options.barLabel !== "none" && $.append("text").attr("x", (w) => R(w.count) + Ke).attr("y", (w) => N(w.label) + N.bandwidth() / 2).attr("dy", "0.35em").attr("font-size", s * Ye).attr("font-weight", 600).attr("fill", oo).text(_);
+    const T = (w) => lt.append("text").attr("text-anchor", "middle").attr("font-size", s).attr("font-weight", 600).attr("fill", "rgba(0,0,0,0.6)").text(w || "");
+    T(c.title).attr("x", L.left + S / 2).attr("y", z - s), x ? Se(G, l.title, { fontSize: s, color: "rgba(0,0,0,0.6)" }) : T(l.title).attr(
       "transform",
-      `translate(${s + 2},${L.top + f / 2}) rotate(-90)`
-    ), Et(this.legend, P, { ...d, fontSize: s, highlight: this.highlight });
+      `translate(${s + 2},${L.top + p / 2}) rotate(-90)`
+    ), Rt(this.legend, B, { ...u, fontSize: s, highlight: this.highlight });
   }
 }
-const Ie = (n) => typeof n == "number" ? M.format(".2f")(n) : String(n), zs = {
+const Fe = (n) => typeof n == "number" ? M.format(".2f")(n) : String(n), Os = {
   field: "x",
   title: null,
   type: "linear",
@@ -809,8 +809,8 @@ const Ie = (n) => typeof n == "number" ? M.format(".2f")(n) : String(n), zs = {
   range: null,
   ticks: 6,
   tickValues: null,
-  format: Ie
-}, no = { ...zs, field: "y" }, io = {
+  format: Fe
+}, io = { ...Os, field: "y" }, ao = {
   field: null,
   title: null,
   type: "categorical",
@@ -818,8 +818,8 @@ const Ie = (n) => typeof n == "number" ? M.format(".2f")(n) : String(n), zs = {
   range: null,
   ticks: 5,
   tickValues: null,
-  format: Ie
-}, ao = {
+  format: Fe
+}, ro = {
   field: null,
   title: null,
   type: "constant",
@@ -827,8 +827,8 @@ const Ie = (n) => typeof n == "number" ? M.format(".2f")(n) : String(n), zs = {
   range: [4, 4],
   ticks: 3,
   tickValues: null,
-  format: Ie
-}, ro = {
+  format: Fe
+}, lo = {
   id: "points",
   data: null,
   label: null,
@@ -837,25 +837,25 @@ const Ie = (n) => typeof n == "number" ? M.format(".2f")(n) : String(n), zs = {
   key: null,
   tooltip: null
 };
-function lo(n = [{}], t = []) {
+function co(n = [{}], t = []) {
   const e = n.map((s, a) => ({
-    ...ro,
+    ...lo,
     ...s,
     data: a === 0 ? t : s.data ?? []
   }));
   if (new Set(e.map((s) => s.id)).size !== e.length) throw new Error("ScatterPlot: layer ids must be unique");
   return e;
 }
-function co(n = [], t = {}) {
-  const e = t.axis ?? {}, o = ot(zs, e.x), s = ot(no, e.y), a = ot(io, e.color), i = ot(ao, e.radius), r = lo(t.layers, n), l = r.flatMap((c) => c.data);
-  for (const c of [o, s]) c.domain ?? (c.domain = xe(c.type, Ut(l.map(c.accessor))));
+function ho(n = [], t = {}) {
+  const e = t.axis ?? {}, o = it(Os, e.x), s = it(io, e.y), a = it(ao, e.color), i = it(ro, e.radius), r = co(t.layers, n), l = r.flatMap((c) => c.data);
+  for (const c of [o, s]) c.domain ?? (c.domain = Me(c.type, te(l.map(c.accessor))));
   if (a.accessor) {
-    const c = r.filter((d) => !d.color).flatMap((d) => d.data.map(a.accessor));
-    a.type === "sequential" ? (a.domain ?? (a.domain = Ut(c)), a.range ?? (a.range = M.interpolateViridis)) : (a.domain = _t(a.domain, c), a.range ?? (a.range = Mt(a.domain.length)));
+    const c = r.filter((u) => !u.color).flatMap((u) => u.data.map(a.accessor));
+    a.type === "sequential" ? (a.domain ?? (a.domain = te(c)), a.range ?? (a.range = M.interpolateViridis)) : (a.domain = _t(a.domain, c), a.range ?? (a.range = Tt(a.domain.length)));
   }
-  return i.accessor && i.type !== "constant" && (i.domain ?? (i.domain = Ut(l.map(i.accessor)))), { axes: { x: o, y: s, color: a, radius: i }, layers: r };
+  return i.accessor && i.type !== "constant" && (i.domain ?? (i.domain = te(l.map(i.accessor)))), { axes: { x: o, y: s, color: a, radius: i }, layers: r };
 }
-const ho = {
+const uo = {
   data: [],
   axis: {},
   layers: [{}],
@@ -872,26 +872,26 @@ const ho = {
   onZoomChange: null,
   onHover: null,
   onHighlightChange: null
-}, uo = 0.92;
-function be(n, t, e) {
-  return Ft(n.type).domain(t).range(n.range ?? e);
+}, po = 0.92;
+function ze(n, t, e) {
+  return qt(n.type).domain(t).range(n.range ?? e);
 }
-function po(n) {
+function fo(n) {
   if (!n.accessor)
-    return () => Array.isArray(n.range) ? n.range[0] : Mt(1)[0];
+    return () => Array.isArray(n.range) ? n.range[0] : Tt(1)[0];
   if (n.type === "sequential") {
     const t = typeof n.range == "function" ? n.range : M.interpolateRgbBasis(n.range);
     return M.scaleSequential(n.domain, t);
   }
   return M.scaleOrdinal(n.domain, n.range);
 }
-function fo(n) {
-  return !n.accessor || n.type === "constant" ? () => n.range[0] : Ft(n.type).domain(n.domain).range(n.range);
+function go(n) {
+  return !n.accessor || n.type === "constant" ? () => n.range[0] : qt(n.type).domain(n.domain).range(n.range);
 }
-class Yn {
+class ti {
   constructor(t, e = {}) {
     if (!t) throw new Error("ScatterPlot: a container element is required");
-    this.container = t, this.options = { ...ho }, this.axes = null, this.layers = [], this.highlight = new It(() => this._onHighlightChange()), this.zoomDomain = null, this.margin = null, this.scales = null, this.nodes = [], this.delaunay = null, this.brushing = !1, this.panning = !1, this.width = 0, this.hovered = null, this._build(), this.update(e), this._observeResize();
+    this.container = t, this.options = { ...uo }, this.axes = null, this.layers = [], this.highlight = new Vt(() => this._onHighlightChange()), this.zoomDomain = null, this.margin = null, this.scales = null, this.nodes = [], this.delaunay = null, this.brushing = !1, this.panning = !1, this.width = 0, this.hovered = null, this._build(), this.update(e), this._observeResize();
   }
   // ── Public API ──────────────────────────────────────────────────────────────
   /**
@@ -912,8 +912,8 @@ class Yn {
    * the old one whole. The current zoom is preserved.
    */
   update(t = {}) {
-    this.options = { ...this.options, ...t }, this.fontSize = Bt(this.options.fontSize), this.root.style("font-size", `${this.fontSize}px`), this.tooltip.fontSize(this.fontSize);
-    const { axes: e, layers: o } = co(this.options.data, this.options);
+    this.options = { ...this.options, ...t }, this.fontSize = Xt(this.options.fontSize), this.root.style("font-size", `${this.fontSize}px`), this.tooltip.fontSize(this.fontSize);
+    const { axes: e, layers: o } = ho(this.options.data, this.options);
     this.axes = e, this.layers = o, this.layerGroups = this.pointsG.selectAll("g").data(this.layers, (s) => s.id).join("g").attr("class", (s) => `scatter-plot__layer scatter-plot__layer--${s.id}`), this._hideTooltip(), this._render(!1);
   }
   /** Every record across all layers. */
@@ -943,8 +943,8 @@ class Yn {
   }
   /** Shift the current view by a pixel offset, e.g. from a drag. */
   panBy(t, e) {
-    const { x: o, y: s } = this.scales, [a, i] = o.domain(), [r, l] = s.domain(), c = o.invert(0) - o.invert(t), d = s.invert(0) - s.invert(e);
-    this._setZoomDomain({ x: [a + c, i + c], y: [r + d, l + d] }, !1);
+    const { x: o, y: s } = this.scales, [a, i] = o.domain(), [r, l] = s.domain(), c = o.invert(0) - o.invert(t), u = s.invert(0) - s.invert(e);
+    this._setZoomDomain({ x: [a + c, i + c], y: [r + u, l + u] }, !1);
   }
   _setZoomDomain(t, e) {
     var s, a;
@@ -969,7 +969,7 @@ class Yn {
       this.panning = !0, this.root.classed("scatter-plot--panning", !0), this._hideTooltip();
     }).on("drag", (t) => this.panBy(t.dx, t.dy)).on("end", () => {
       this.panning = !1, this.root.classed("scatter-plot--panning", !1);
-    }), this.svg.on("mousemove", (t) => this._onMouseMove(t)).on("mouseleave", () => this._hideTooltip()).on("dblclick", () => this.resetZoom()), this.footer = this.root.append("div").attr("class", "scatter-plot__footer"), this.legend = this.footer.append("div").attr("class", "scatter-plot__legend"), this.layerLegend = this.footer.append("div").attr("class", "scatter-plot__legend"), this.sizeLegend = this.footer.append("div").attr("class", "scatter-plot__legend"), this.footer.append("div").attr("class", "scatter-plot__hint").text("Drag to zoom · shift+drag to pan · double-click to reset"), this.tooltip = new Dt(this.container);
+    }), this.svg.on("mousemove", (t) => this._onMouseMove(t)).on("mouseleave", () => this._hideTooltip()).on("dblclick", () => this.resetZoom()), this.footer = this.root.append("div").attr("class", "scatter-plot__footer"), this.legend = this.footer.append("div").attr("class", "scatter-plot__legend"), this.layerLegend = this.footer.append("div").attr("class", "scatter-plot__legend"), this.sizeLegend = this.footer.append("div").attr("class", "scatter-plot__legend"), this.footer.append("div").attr("class", "scatter-plot__hint").text("Drag to zoom · shift+drag to pan · double-click to reset"), this.tooltip = new jt(this.container);
   }
   _observeResize() {
     typeof ResizeObserver > "u" || (this.resizeObserver = new ResizeObserver(() => {
@@ -988,10 +988,10 @@ class Yn {
    * runs on every render.
    */
   _resolveMargin() {
-    const t = this.fontSize, { x: e, y: o } = this.axes, s = ne(o), a = { ...this.options.margin };
-    if (a.top ?? (a.top = s ? Kt(t) : 16), a.right ?? (a.right = 16), a.bottom ?? (a.bottom = t + 8 + At(t, e.title)), a.left == null) {
-      const i = be(o, this._viewDomain.y, [0, 1]), r = oe(i, o).map(o.format), l = Lt(r, t * uo, this.container);
-      a.left = (s ? 0 : At(t, o.title)) + l + 8;
+    const t = this.fontSize, { x: e, y: o } = this.axes, s = ge(o), a = { ...this.options.margin };
+    if (a.top ?? (a.top = s ? oe(t) : 16), a.right ?? (a.right = 16), a.bottom ?? (a.bottom = t + 8 + Et(t, e.title)), a.left == null) {
+      const i = ze(o, this._viewDomain.y, [0, 1]), r = fe(i, o).map(o.format), l = St(r, t * po, this.container);
+      a.left = (s ? 0 : Et(t, o.title)) + l + 8;
     }
     return a;
   }
@@ -1007,10 +1007,10 @@ class Yn {
   _updateScales(t, e) {
     const { x: o, y: s, color: a, radius: i } = this.axes, r = this._viewDomain, l = this.options.rangePadding;
     this.scales = {
-      x: be(o, r.x, [l, t - l]),
-      y: be(s, r.y, [e - l, l]),
-      color: po(a),
-      radius: fo(i)
+      x: ze(o, r.x, [l, t - l]),
+      y: ze(s, r.y, [e - l, l]),
+      color: fo(a),
+      radius: go(i)
     };
   }
   _buildDelaunay() {
@@ -1045,15 +1045,15 @@ class Yn {
   _drawAxes(t, e, o) {
     const { x: s, y: a } = this.axes, { margin: i, fontSize: r } = this, l = (c) => o ? c.transition(o) : c;
     l(this.gridX).call(
-      Gt(M.axisBottom(this.scales.x), s).tickSize(e).tickFormat("")
+      Qt(M.axisBottom(this.scales.x), s).tickSize(e).tickFormat("")
     ), l(this.gridY).call(
-      Gt(M.axisLeft(this.scales.y), a).tickSize(-t).tickFormat("")
+      Qt(M.axisLeft(this.scales.y), a).tickSize(-t).tickFormat("")
     ), l(this.axisX.attr("transform", `translate(0,${e})`)).call(
-      Gt(M.axisBottom(this.scales.x), s).tickSizeOuter(0)
-    ), l(this.axisY).call(Gt(M.axisLeft(this.scales.y), a).tickSizeOuter(0)), this.axisX.select(".domain").remove(), this.axisY.select(".domain").remove(), this.frame.attr(
+      Qt(M.axisBottom(this.scales.x), s).tickSizeOuter(0)
+    ), l(this.axisY).call(Qt(M.axisLeft(this.scales.y), a).tickSizeOuter(0)), this.axisX.select(".domain").remove(), this.axisY.select(".domain").remove(), this.frame.attr(
       "d",
       this.options.border ? `M0,0H${t}V${e}H0Z` : `M0,0V${e}H${t}`
-    ), this.titleX.attr("x", t / 2).attr("y", e + i.bottom - 8).text(s.title ?? ""), this.titleY.selectAll("*").remove(), ne(a) ? _e(this.titleY, a.title, { fontSize: r }) : this.titleY.append("text").attr("text-anchor", "middle").attr("transform", "rotate(-90)").attr("x", -e / 2).attr("y", -i.left + r + 2).text(a.title ?? "");
+    ), this.titleX.attr("x", t / 2).attr("y", e + i.bottom - 8).text(s.title ?? ""), this.titleY.selectAll("*").remove(), ge(a) ? Se(this.titleY, a.title, { fontSize: r }) : this.titleY.append("text").attr("text-anchor", "middle").attr("transform", "rotate(-90)").attr("x", -e / 2).attr("y", -i.left + r + 2).text(a.title ?? "");
   }
   _drawPoints(t) {
     const e = this;
@@ -1062,8 +1062,8 @@ class Yn {
     });
   }
   _drawLayer(t, e, o) {
-    const s = e.key ?? this.options.key, a = e.mark === "outline" ? "stroke" : "fill", i = (u) => this._px(u), r = (u) => this._py(u), l = (u) => this._pr(u), { highlight: c } = this, d = (u) => c.color(this._pcolor(u, e), u, this._keys(u, e)), p = t.selectAll("circle").data(e.data, s);
-    p.exit().remove(), p.enter().append("circle").attr("class", `scatter-plot__point scatter-plot__point--${e.mark}`).attr("cx", i).attr("cy", r).attr("r", l).attr(a, d), (o ? p.transition(o) : p).attr("cx", i).attr("cy", r).attr("r", l).attr(a, d), c.active && t.selectAll("circle").filter((u) => c.includes(u, this._keys(u, e))).raise();
+    const s = e.key ?? this.options.key, a = e.mark === "outline" ? "stroke" : "fill", i = (d) => this._px(d), r = (d) => this._py(d), l = (d) => this._pr(d), { highlight: c } = this, u = (d) => c.color(this._pcolor(d, e), d, this._keys(d, e)), f = t.selectAll("circle").data(e.data, s);
+    f.exit().remove(), f.enter().append("circle").attr("class", `scatter-plot__point scatter-plot__point--${e.mark}`).attr("cx", i).attr("cy", r).attr("r", l).attr(a, u), (o ? f.transition(o) : f).attr("cx", i).attr("cy", r).attr("r", l).attr(a, u), c.active && t.selectAll("circle").filter((d) => c.includes(d, this._keys(d, e))).raise();
   }
   _drawLegends() {
     this._drawColorLegend(), this._drawLayerLegend(), this._drawSizeLegend();
@@ -1077,9 +1077,9 @@ class Yn {
       const [o, s] = e.domain(), a = 160, i = this.legend.append("svg").attr("class", "scatter-plot__ramp").attr("width", a).attr("height", 30), r = `${this.clipId}-ramp`;
       i.append("linearGradient").attr("id", r).selectAll("stop").data(M.ticks(0, 1, 10)).join("stop").attr("offset", (c) => c).attr("stop-color", (c) => e(o + c * (s - o))), i.append("rect").attr("width", a).attr("height", 8).attr("fill", `url(#${r})`);
       const l = M.scaleLinear([o, s], [0, a]);
-      return i.append("g").attr("class", "scatter-plot__axis").attr("transform", "translate(0,8)").call(Gt(M.axisBottom(l), t).tickSize(3).tickSizeOuter(0)), this.legend;
+      return i.append("g").attr("class", "scatter-plot__axis").attr("transform", "translate(0,8)").call(Qt(M.axisBottom(l), t).tickSize(3).tickSizeOuter(0)), this.legend;
     }
-    return Et(this.legend, e, {
+    return Rt(this.legend, e, {
       ...t,
       shape: "circle",
       fontSize: this.fontSize,
@@ -1093,7 +1093,7 @@ class Yn {
    */
   _drawLayerLegend() {
     const t = this.layers.filter((e) => e.label && e.data.length);
-    return Et(this.layerLegend, (e) => e.color ?? "currentColor", {
+    return Rt(this.layerLegend, (e) => e.color ?? "currentColor", {
       title: t.length ? "" : null,
       tickValues: t,
       key: (e) => e.id,
@@ -1109,7 +1109,7 @@ class Yn {
     if (this.sizeLegend.selectAll("*").remove(), !t.accessor || t.type === "constant" || !t.title)
       return this.sizeLegend.style("display", "none");
     this.sizeLegend.style("display", null), this.sizeLegend.append("span").attr("class", "scatter-plot__legend-title").text(t.title);
-    const o = oe(e, t), s = this.sizeLegend.selectAll(".scatter-plot__legend-item").data(o).join("span").attr("class", "scatter-plot__legend-item"), a = Math.max(...o.map(e));
+    const o = fe(e, t), s = this.sizeLegend.selectAll(".scatter-plot__legend-item").data(o).join("span").attr("class", "scatter-plot__legend-item"), a = Math.max(...o.map(e));
     return s.append("svg").attr("width", a * 2 + 2).attr("height", a * 2 + 2).append("circle").attr("class", "scatter-plot__swatch-circle").attr("cx", a + 1).attr("cy", a + 1).attr("r", (i) => e(i)), s.append("span").text((i) => t.format(i)), this.sizeLegend;
   }
   // ── Zoom (brush) ────────────────────────────────────────────────────────────
@@ -1142,7 +1142,7 @@ class Yn {
     const o = [];
     for (const a of ["x", "y", "color"]) {
       const i = this.axes[a];
-      a === "color" && e.color || i.accessor && o.push([Q(i, a), i.format(i.accessor(t))]);
+      a === "color" && e.color || i.accessor && o.push([st(i, a), i.format(i.accessor(t))]);
     }
     const s = e.tooltip ?? this.options.tooltip;
     return s ? s(t, o, e) : o;
@@ -1151,14 +1151,14 @@ class Yn {
     this.tooltip.hide(), this.hoverRing.style("display", "none"), this._setHovered(null);
   }
 }
-const go = { ...us, context: null }, mo = { ...ds, field: "value" };
-function xo(n) {
+const mo = { ...gs, context: null }, xo = { ...ms, field: "value" };
+function yo(n) {
   const t = [...n].sort(M.ascending);
   if (!t.length) return { q1: NaN, median: NaN, q3: NaN, min: NaN, max: NaN, mean: NaN };
   const e = M.quantile(t, 0.25), o = M.quantile(t, 0.5), s = M.quantile(t, 0.75), a = s - e, i = t.filter((c) => c >= e - 1.5 * a && c <= s + 1.5 * a), r = Math.min(i.length ? i[0] : t[0], e), l = Math.max(i.length ? i[i.length - 1] : t[t.length - 1], s);
   return { q1: e, median: o, q3: s, min: r, max: l, mean: M.mean(t) };
 }
-function yo(n, t) {
+function _o(n, t) {
   const e = [], o = [];
   for (const s of n) {
     const a = t(s);
@@ -1168,41 +1168,41 @@ function yo(n, t) {
   }
   return { records: e, values: o };
 }
-function _o(n = [], t = {}) {
-  const e = t.axis ?? {}, o = ms(e, t.orientation !== "vertical"), s = ot(go, o.category), a = ot(mo, o.value), i = ot(ps, e.group), r = ot(fs, e.color), l = xs(s.context), c = (p, u, w) => {
-    const { records: _, values: m } = yo(w, a.accessor), v = xo(m), L = w[0];
+function wo(n = [], t = {}) {
+  const e = t.axis ?? {}, o = ws(e, t.orientation !== "vertical"), s = it(mo, o.category), a = it(xo, o.value), i = it(xs, e.group), r = it(ys, e.color), l = vs(s.context), c = (f, d, v) => {
+    const { records: _, values: x } = _o(v, a.accessor), b = yo(x), L = v[0];
     return {
-      group: p,
-      label: u,
+      group: f,
+      label: d,
       context: l && L ? l(L) ?? null : null,
-      count: m.length,
+      count: x.length,
       records: _,
-      values: m,
-      stats: v,
-      outliers: m.map((S, f) => f).filter((S) => m[S] < v.min || m[S] > v.max),
+      values: x,
+      stats: b,
+      outliers: x.map((S, p) => p).filter((S) => x[S] < b.min || x[S] > b.max),
       color: r.accessor && L ? r.accessor(L) ?? null : null
     };
   };
-  let d;
+  let u;
   if (i.accessor) {
-    const p = M.group(n, i.accessor, s.accessor);
-    i.domain = _t(i.domain, p.keys()), d = i.domain.flatMap((u) => {
-      const w = p.get(u) ?? /* @__PURE__ */ new Map();
-      return _t(s.domain, w.keys()).filter((m) => w.has(m)).map((m) => c(u, m, w.get(m)));
+    const f = M.group(n, i.accessor, s.accessor);
+    i.domain = _t(i.domain, f.keys()), u = i.domain.flatMap((d) => {
+      const v = f.get(d) ?? /* @__PURE__ */ new Map();
+      return _t(s.domain, v.keys()).filter((x) => v.has(x)).map((x) => c(d, x, v.get(x)));
     });
   } else {
-    const p = M.group(n, s.accessor);
-    d = _t(s.domain, p.keys()).map(
-      (u) => c(null, u, p.get(u) ?? [])
+    const f = M.group(n, s.accessor);
+    u = _t(s.domain, f.keys()).map(
+      (d) => c(null, d, f.get(d) ?? [])
     );
   }
-  if (s.domain = [...new Set(d.map((p) => p.label))], s.tickValues = Pe(s), a.domain ?? (a.domain = xe(a.type, Ut(d.flatMap((p) => p.values)))), r.accessor) {
-    const p = d.map((u) => u.color).filter((u) => u != null);
-    r.domain = _t(r.domain, p), r.range ?? (r.range = Mt(r.domain.length));
+  if (s.domain = [...new Set(u.map((f) => f.label))], s.tickValues = je(s), a.domain ?? (a.domain = Me(a.type, te(u.flatMap((f) => f.values)))), r.accessor) {
+    const f = u.map((d) => d.color).filter((d) => d != null);
+    r.domain = _t(r.domain, f), r.range ?? (r.range = Tt(r.domain.length));
   }
-  return { axes: { category: s, value: a, group: i, color: r }, boxes: d };
+  return { axes: { category: s, value: a, group: i, color: r }, boxes: u };
 }
-const We = "rgba(0,0,0,0.45)", ke = "rgba(0,0,0,0.6)", wo = {
+const Ze = "rgba(0,0,0,0.45)", Ee = "rgba(0,0,0,0.6)", vo = {
   data: [],
   orientation: "horizontal",
   axis: {},
@@ -1220,17 +1220,17 @@ const We = "rgba(0,0,0,0.45)", ke = "rgba(0,0,0,0.6)", wo = {
   tooltip: null,
   onHover: null,
   onHighlightChange: null
-}, vo = 0.35, bo = 0.55, ko = "rgba(0,0,0,0.87)", Le = 2, ce = 2.5, qe = 0.45, Lo = 0.9;
-function Mo(n) {
+}, bo = 0.35, ko = 0.55, Lo = "rgba(0,0,0,0.87)", Ce = 2, xe = 2.5, Qe = 0.45, Mo = 0.9;
+function Ao(n) {
   const t = Math.sin((n + 1) * 12.9898) * 43758.5453;
   return 2 * (t - Math.floor(t)) - 1;
 }
-class Zn {
+class ei {
   constructor(t, e = {}) {
     if (!t) throw new Error("BoxPlotChart: a container element is required");
-    this.container = t, this.options = { ...wo, ...e }, this.highlight = new It(() => this._onHighlightChange()), this.hovered = { record: null, box: null }, this.hit = null, this.root = M.select(t).classed("box-plot-chart", !0), this.legend = this.root.append("div");
+    this.container = t, this.options = { ...vo, ...e }, this.highlight = new Vt(() => this._onHighlightChange()), this.hovered = { record: null, box: null }, this.hit = null, this.root = M.select(t).classed("box-plot-chart", !0), this.legend = this.root.append("div");
     const o = this.root.append("div").attr("class", "box-plot-chart__layer");
-    this.canvas = o.append("canvas").attr("class", "box-plot-chart__canvas"), this.svg = o.append("svg").attr("class", "box-plot-chart__svg").attr("role", "img").on("mousemove", (s) => this._onMouseMove(s)).on("mouseleave", () => this._leave()), this.tooltip = new Dt(t), this.draw();
+    this.canvas = o.append("canvas").attr("class", "box-plot-chart__canvas"), this.svg = o.append("svg").attr("class", "box-plot-chart__svg").attr("role", "img").on("mousemove", (s) => this._onMouseMove(s)).on("mouseleave", () => this._leave()), this.tooltip = new jt(t), this.draw();
   }
   /** Replace the records and redraw. */
   setData(t) {
@@ -1268,159 +1268,159 @@ class Zn {
    * coordinates: the one place the orientation turns the layout.
    */
   draw() {
-    const { width: t, rowHeight: e, groupPadding: o, points: s, showCounts: a, threshold: i, rangePadding: r, border: l } = this.options, c = this.options.orientation !== "vertical", d = this.svg.node(), p = Bt(this.options.fontSize);
-    this.tooltip.fontSize(p), this._leave();
-    const { axes: u, boxes: w } = _o(this.options.data, this.options), { category: _, value: m, group: v, color: L } = u, S = !!v.accessor, f = _.format ?? String, z = v.format ?? String, I = m.format ?? M.format(".3~f"), R = (y) => y.context != null ? `${y.context} / ` : "", P = (y) => a ? ` (n=${y.count})` : "", q = (y) => R(y) + f(y.label) + P(y), K = (y) => (S ? `${z(y.group)} / ` : "") + q(y), ct = new Set(_.tickValues ?? _.domain), at = Ft(m.type).domain(m.domain), nt = oe(at, m), U = m.format ?? at.tickFormat(m.ticks ?? void 0), et = (i == null ? void 0 : i.value) != null && i.value >= Math.min(...m.domain) && i.value <= Math.max(...m.domain), h = et && i.label ? i.label : null, A = _.showTicks !== !1, $ = m.showTicks !== !1, b = S && v.showTicks !== !1 ? v.position : null, x = b === "inline", T = b === "axis", B = bs(w, {
+    const { width: t, rowHeight: e, groupPadding: o, points: s, showCounts: a, threshold: i, rangePadding: r, border: l } = this.options, c = this.options.orientation !== "vertical", u = this.svg.node(), f = Xt(this.options.fontSize);
+    this.tooltip.fontSize(f), this._leave();
+    const { axes: d, boxes: v } = wo(this.options.data, this.options), { category: _, value: x, group: b, color: L } = d, S = !!b.accessor, p = _.format ?? String, z = b.format ?? String, N = x.format ?? M.format(".3~f"), R = (g) => g.context != null ? `${g.context} / ` : "", B = (g) => a ? ` (n=${g.count})` : "", K = (g) => R(g) + p(g.label) + B(g), Y = (g) => (S ? `${z(g.group)} / ` : "") + K(g), at = new Set(_.tickValues ?? _.domain), rt = qt(x.type).domain(x.domain), lt = fe(rt, x), G = x.format ?? rt.tickFormat(x.ticks ?? void 0), ct = (i == null ? void 0 : i.value) != null && i.value >= Math.min(...x.domain) && i.value <= Math.max(...x.domain), h = ct && i.label ? i.label : null, $ = _.showTicks !== !1, T = x.showTicks !== !1, w = S && b.showTicks !== !1 ? b.position : null, m = w === "inline", A = w === "axis", P = As(v, {
       grouped: S,
-      padding: c ? ws : _s,
+      padding: c ? Ls : ks,
       groupPadding: o,
-      headingLanes: x
-    }), { lanes: J, totalSteps: st } = B, lt = S ? v.domain.map(z) : [], [ht, rt] = [fe(_), fe(m)], [tt, ut] = c ? [rt, ht] : [ht, rt], dt = !!ut && ne(c ? _ : m), pt = dt ? 0 : At(p, ut), X = Lt(lt, p, d, 600), xt = Math.max(
-      A ? Lt(w.map(q), p, d) : 0,
-      x ? X : 0
-    ), bt = A || x, E = b === "outside" ? p + ys : 0;
-    let C, F, Y = !1, Z;
+      headingLanes: m
+    }), { lanes: nt, totalSteps: D } = P, Z = S ? b.domain.map(z) : [], [Q, et] = [be(_), be(x)], [ot, ht] = c ? [et, Q] : [Q, et], ft = !!ht && ge(c ? _ : x), xt = ft ? 0 : Et(f, ht), U = St(Z, f, u, 600), mt = Math.max(
+      $ ? St(v.map(K), f, u) : 0,
+      m ? U : 0
+    ), Lt = $ || m, C = w === "outside" ? f + bs : 0;
+    let E, F, J = !1, tt;
     if (c)
-      Z = bt ? xt + Wt : 0, C = {
+      tt = Lt ? mt + ee : 0, E = {
         // The threshold label above the plot, or the title above the top tick
-        top: Math.max(h ? 2 * p + 8 : p, dt ? Kt(p) : 0),
-        right: 16 + E,
-        bottom: ($ ? p + 16 : 8) + At(p, tt),
-        left: pt + Z + (T ? X + Wt : 0)
-      }, F = C.top + (S ? st : J.length) * e + C.bottom;
+        top: Math.max(h ? 2 * f + 8 : f, ft ? oe(f) : 0),
+        right: 16 + C,
+        bottom: (T ? f + 16 : 8) + Et(f, ot),
+        left: xt + tt + (A ? U + ee : 0)
+      }, F = E.top + (S ? D : nt.length) * e + E.bottom;
     else {
-      C = {
-        top: Math.max(p, dt ? Kt(p) : 0) + E,
+      E = {
+        top: Math.max(f, ft ? oe(f) : 0) + C,
         // The threshold label to the right of the plot
-        right: 16 + (h ? Lt([h], p, d) + 6 : 0),
+        right: 16 + (h ? St([h], f, u) + 6 : 0),
         bottom: 0,
         // below
-        left: pt + ($ ? Lt(nt.map(U), p, d) + Wt : 0)
+        left: xt + (T ? St(lt.map(G), f, u) + ee : 0)
       };
-      const y = bt ? ks({
-        fontSize: p,
-        labelWidth: xt,
-        totalSteps: st,
-        firstFraction: B.firstFraction,
+      const g = Lt ? Ss({
+        fontSize: f,
+        labelWidth: mt,
+        totalSteps: D,
+        firstFraction: P.firstFraction,
         width: t,
-        left: C.left,
-        right: C.right
-      }) : { tilt: !1, depth: 0, extra: 0, left: C.left };
-      Y = y.tilt, Z = y.depth, C.bottom = Z + (T ? Pt + 3 + p : 0) + 15 + At(p, tt), C.left = y.left, F = this.options.height + y.extra;
+        left: E.left,
+        right: E.right
+      }) : { tilt: !1, depth: 0, extra: 0, left: E.left };
+      J = g.tilt, tt = g.depth, E.bottom = tt + (A ? Nt + 3 + f : 0) + 15 + Et(f, ot), E.left = g.left, F = this.options.height + g.extra;
     }
-    const V = t - C.left - C.right, g = F - C.top - C.bottom, H = vs(c, V, g), { at: D, catExtent: N, outward: G } = H, { bandwidth: it, spans: yt } = B.place(_.range || [0, N]), W = at.range(
-      m.range || (c ? [r, V - r] : [g - r, r])
-    ), vt = ie(L), { highlight: kt } = this, Ct = (y, j) => kt.includes(y.records[j], { color: y.color }, y), St = new Map(
-      w.map((y) => [y, !kt.active || y.records.some((j, mt) => Ct(y, mt))])
-    ), O = (y) => vt(y.color), ft = (y) => St.get(y) ? O(y) : Tt, k = (y) => St.get(y) ? L.accessor ? ko : O(y) : Tt, gt = L.accessor ? bo : vo, wt = w.filter((y) => y.count), ae = (y, j, mt) => {
-      const [Ht, Ot] = D(mt, W(y.values[j]));
-      return { box: y, index: j, record: y.records[j], value: y.values[j], x: Ht, y: Ot, lit: Ct(y, j) };
-    }, Nt = wt.flatMap(
-      (y) => s ? y.values.map((j, mt) => ae(y, mt, y.pos + Mo(mt) * it / 2)) : y.outliers.map((j) => ae(y, j, y.pos))
-    ), Cs = M.group(Nt, (y) => y.box), De = (y) => y.lit ? O(y.box) : Tt;
+    const j = t - E.left - E.right, y = F - E.top - E.bottom, O = Ms(c, j, y), { at: V, catExtent: X, outward: q } = O, { bandwidth: ut, spans: yt } = P.place(_.range || [0, X]), W = rt.range(
+      x.range || (c ? [r, j - r] : [y - r, r])
+    ), Mt = me(L), { highlight: wt } = this, It = (g, I) => wt.includes(g.records[I], { color: g.color }, g), $t = new Map(
+      v.map((g) => [g, !wt.active || g.records.some((I, pt) => It(g, pt))])
+    ), H = (g) => Mt(g.color), dt = (g) => $t.get(g) ? H(g) : Ht, At = (g) => $t.get(g) ? L.accessor ? Lo : H(g) : Ht, Kt = L.accessor ? ko : bo, vt = v.filter((g) => g.count), ne = (g, I, pt) => {
+      const [Pt, Bt] = V(pt, W(g.values[I]));
+      return { box: g, index: I, record: g.records[I], value: g.values[I], x: Pt, y: Bt, lit: It(g, I) };
+    }, Ft = vt.flatMap(
+      (g) => s ? g.values.map((I, pt) => ne(g, pt, g.pos + Ao(pt) * ut / 2)) : g.outliers.map((I) => ne(g, I, g.pos))
+    ), Te = M.group(Ft, (g) => g.box), ie = (g) => g.lit ? H(g.box) : Ht;
     this.root.style("max-width", `${t}px`);
-    const Hs = wt.map((y) => `${K(y)}: median ${I(y.stats.median)}`).join("; "), we = this.svg.attr("viewBox", `0 0 ${t} ${F}`).attr(
+    const zt = vt.map((g) => `${Y(g)}: median ${N(g.stats.median)}`).join("; "), Yt = this.svg.attr("viewBox", `0 0 ${t} ${F}`).attr(
       "aria-label",
-      `Box plot of ${Q(m, "value")} by ${Q(_, "category")}` + (S ? ` within ${Q(v, "group")}` : "") + `. ${Hs}`
+      `Box plot of ${st(x, "value")} by ${st(_, "category")}` + (S ? ` within ${st(b, "group")}` : "") + `. ${zt}`
     );
-    we.selectAll("*").remove();
-    const $t = we.append("g").attr("transform", `translate(${C.left},${C.top})`);
-    Ls($t, H, W, nt), $ && As($t, H, W, { fontSize: p, tickValues: nt, format: U }), Ms($t, H, l);
-    const Os = b && !x ? {
+    Yt.selectAll("*").remove();
+    const bt = Yt.append("g").attr("transform", `translate(${E.left},${E.top})`);
+    Ts(bt, O, W, lt), T && zs(bt, O, W, { fontSize: f, tickValues: lt, format: G }), $s(bt, O, l);
+    const Gt = w && !m ? {
       spans: yt,
-      position: b,
-      across: b === "outside" ? c ? V + C.right - p : -C.top + p : H.axisAcross + G * (Z + Pt + 3)
+      position: w,
+      across: w === "outside" ? c ? j + E.right - f : -E.top + f : O.axisAcross + q * (tt + Nt + 3)
     } : null;
-    if (Ss($t, H, J, {
-      fontSize: p,
-      ticked: (y) => A && ct.has(y.label),
+    if (Es(bt, O, nt, {
+      fontSize: f,
+      ticked: (g) => $ && at.has(g.label),
       // A box's label in pieces, so the context and count are lighter
-      label: (y, j) => {
-        j.context != null && y.append("tspan").attr("fill", We).text(R(j)), y.append("tspan").text(f(j.label)), a && y.append("tspan").attr("fill", We).text(P(j));
+      label: (g, I) => {
+        I.context != null && g.append("tspan").attr("fill", Ze).text(R(I)), g.append("tspan").text(p(I.label)), a && g.append("tspan").attr("fill", Ze).text(B(I));
       },
       heading: z,
-      tilt: Y,
-      groups: Os
-    }), et) {
-      const y = W(i.value), [j, mt] = D(0, y), [Ht, Ot] = D(N, y);
-      if ($t.append("line").attr("x1", j).attr("y1", mt).attr("x2", Ht).attr("y2", Ot).attr("stroke", ye).attr("stroke-width", 1.5).attr("stroke-dasharray", "4,3"), h) {
-        const [Yt, Zt] = D(c ? -6 : N + 6, y);
-        $t.append("text").attr("x", Yt).attr("y", Zt).attr("text-anchor", c ? "middle" : "start").attr("dy", c ? null : "0.32em").attr("font-size", p).attr("fill", ke).text(h);
+      tilt: J,
+      groups: Gt
+    }), ct) {
+      const g = W(i.value), [I, pt] = V(0, g), [Pt, Bt] = V(X, g);
+      if (bt.append("line").attr("x1", I).attr("y1", pt).attr("x2", Pt).attr("y2", Bt).attr("stroke", Ae).attr("stroke-width", 1.5).attr("stroke-dasharray", "4,3"), h) {
+        const [ae, re] = V(c ? -6 : X + 6, g);
+        bt.append("text").attr("x", ae).attr("y", re).attr("text-anchor", c ? "middle" : "start").attr("dy", c ? null : "0.32em").attr("font-size", f).attr("fill", Ee).text(h);
       }
     }
-    const jt = $t.append("g").selectAll("g").data(wt).join("g").attr("stroke", ft).attr("fill", ft);
-    this.drawPoints(s ? Nt : [], {
+    const Ut = bt.append("g").selectAll("g").data(vt).join("g").attr("stroke", dt).attr("fill", dt);
+    this.drawPoints(s ? Ft : [], {
       width: t,
       height: F,
-      offset: [C.left, C.top],
-      color: De,
-      emphasis: kt.active
-    }), qt(
-      jt.append("line"),
-      (y) => D(y.pos, W(y.stats.min)),
-      (y) => D(y.pos, W(y.stats.max))
-    ), qt(
-      jt.selectAll(".cap").data((y) => [y.stats.min, y.stats.max].map((j) => ({ pos: y.pos, v: j }))).join("line").attr("class", "cap"),
-      (y) => D(y.pos - it / 4, W(y.v)),
-      (y) => D(y.pos + it / 4, W(y.v))
+      offset: [E.left, E.top],
+      color: ie,
+      emphasis: wt.active
+    }), se(
+      Ut.append("line"),
+      (g) => V(g.pos, W(g.stats.min)),
+      (g) => V(g.pos, W(g.stats.max))
+    ), se(
+      Ut.selectAll(".cap").data((g) => [g.stats.min, g.stats.max].map((I) => ({ pos: g.pos, v: I }))).join("line").attr("class", "cap"),
+      (g) => V(g.pos - ut / 4, W(g.v)),
+      (g) => V(g.pos + ut / 4, W(g.v))
     );
-    const re = (y) => {
-      const j = W(y.stats.q1), mt = W(y.stats.q3), [Ht, Ot] = D(y.pos - it / 2, Math.min(j, mt)), [Yt, Zt] = D(it, Math.max(1, Math.abs(mt - j)));
-      return { x: Ht, y: Ot, w: Yt, h: Zt };
+    const Zt = (g) => {
+      const I = W(g.stats.q1), pt = W(g.stats.q3), [Pt, Bt] = V(g.pos - ut / 2, Math.min(I, pt)), [ae, re] = V(ut, Math.max(1, Math.abs(pt - I)));
+      return { x: Pt, y: Bt, w: ae, h: re };
     };
-    jt.append("rect").attr("x", (y) => re(y).x).attr("y", (y) => re(y).y).attr("width", (y) => re(y).w).attr("height", (y) => re(y).h).attr("fill-opacity", gt), qt(
-      jt.append("line"),
-      (y) => D(y.pos - it / 2, W(y.stats.median)),
-      (y) => D(y.pos + it / 2, W(y.stats.median))
-    ).attr("stroke", k).attr("stroke-width", 2), jt.append("circle").attr("cx", (y) => D(y.pos, W(y.stats.mean))[0]).attr("cy", (y) => D(y.pos, W(y.stats.mean))[1]).attr("r", 3).attr("fill", k), s || jt.selectAll(".outlier").data((y) => Cs.get(y) ?? []).join("circle").attr("class", "outlier").attr("cx", (y) => y.x).attr("cy", (y) => y.y).attr("r", ce).attr("fill", "#fff").attr("stroke", De), this.hoverRing = $t.append("circle").attr("class", "box-plot-chart__hover-ring").attr("r", (s ? Le : ce) + 2.5).style("display", "none");
-    const Ne = (y) => we.append("text").attr("text-anchor", "middle").attr("font-size", p).attr("font-weight", 600).attr("fill", ke).text(y || "");
-    Ne(tt).attr("x", C.left + V / 2).attr("y", F - p), dt ? _e($t, ut, { fontSize: p, color: ke }) : Ne(ut).attr(
+    Ut.append("rect").attr("x", (g) => Zt(g).x).attr("y", (g) => Zt(g).y).attr("width", (g) => Zt(g).w).attr("height", (g) => Zt(g).h).attr("fill-opacity", Kt), se(
+      Ut.append("line"),
+      (g) => V(g.pos - ut / 2, W(g.stats.median)),
+      (g) => V(g.pos + ut / 2, W(g.stats.median))
+    ).attr("stroke", At).attr("stroke-width", 2), Ut.append("circle").attr("cx", (g) => V(g.pos, W(g.stats.mean))[0]).attr("cy", (g) => V(g.pos, W(g.stats.mean))[1]).attr("r", 3).attr("fill", At), s || Ut.selectAll(".outlier").data((g) => Te.get(g) ?? []).join("circle").attr("class", "outlier").attr("cx", (g) => g.x).attr("cy", (g) => g.y).attr("r", xe).attr("fill", "#fff").attr("stroke", ie), this.hoverRing = bt.append("circle").attr("class", "box-plot-chart__hover-ring").attr("r", (s ? Ce : xe) + 2.5).style("display", "none");
+    const k = (g) => Yt.append("text").attr("text-anchor", "middle").attr("font-size", f).attr("font-weight", 600).attr("fill", Ee).text(g || "");
+    k(ot).attr("x", E.left + j / 2).attr("y", F - f), ft ? Se(bt, ht, { fontSize: f, color: Ee }) : k(ht).attr(
       "transform",
-      `translate(${p + 2},${C.top + g / 2}) rotate(-90)`
-    ), Et(this.legend, vt, {
+      `translate(${f + 2},${E.top + y / 2}) rotate(-90)`
+    ), Rt(this.legend, Mt, {
       ...L,
-      title: L.accessor ? gs(L) : null,
-      fontSize: p,
+      title: L.accessor ? _s(L) : null,
+      fontSize: f,
       highlight: this.highlight
     });
-    const { tooltip: le } = this.options, Ve = Q(_, "category"), Rs = (y) => {
-      const [j, mt] = [W(y.stats.min), W(y.stats.max)];
-      return [Math.min(j, mt) - ce, Math.max(j, mt) + ce];
+    const { tooltip: gt } = this.options, kt = st(_, "category"), Ct = (g) => {
+      const [I, pt] = [W(g.stats.min), W(g.stats.max)];
+      return [Math.min(I, pt) - xe, Math.max(I, pt) + xe];
     };
     this.hit = {
-      margin: C,
-      marks: Nt,
-      delaunay: Nt.length ? M.Delaunay.from(
-        Nt,
-        (y) => y.x,
-        (y) => y.y
+      margin: E,
+      marks: Ft,
+      delaunay: Ft.length ? M.Delaunay.from(
+        Ft,
+        (g) => g.x,
+        (g) => g.y
       ) : null,
       radius: this.options.hoverRadius,
-      boxAt: (y, j) => {
-        const [mt, Ht] = D(y, j);
-        return wt.find((Ot) => {
-          const [Yt, Zt] = Rs(Ot);
-          return Math.abs(mt - Ot.pos) <= it / 2 && Ht >= Yt && Ht <= Zt;
+      boxAt: (g, I) => {
+        const [pt, Pt] = V(g, I);
+        return vt.find((Bt) => {
+          const [ae, re] = Ct(Bt);
+          return Math.abs(pt - Bt.pos) <= ut / 2 && Pt >= ae && Pt <= re;
         }) ?? null;
       },
-      markRows: (y) => {
-        const j = [
-          [Ve, K(y.box)],
-          [Q(m, "value"), I(y.value)]
+      markRows: (g) => {
+        const I = [
+          [kt, Y(g.box)],
+          [st(x, "value"), N(g.value)]
         ];
-        return le ? le(y.record, j, y.box) : j;
+        return gt ? gt(g.record, I, g.box) : I;
       },
-      boxRows: (y) => {
-        const j = y.stats, mt = [
-          [Ve, K(y)],
-          ["n", String(y.count)],
-          ["Median", I(j.median)],
-          ["Mean", I(j.mean)],
-          ["Q1", I(j.q1)],
-          ["Q3", I(j.q3)],
-          ["Whiskers", `${I(j.min)} to ${I(j.max)}`]
+      boxRows: (g) => {
+        const I = g.stats, pt = [
+          [kt, Y(g)],
+          ["n", String(g.count)],
+          ["Median", N(I.median)],
+          ["Mean", N(I.mean)],
+          ["Q1", N(I.q1)],
+          ["Q3", N(I.q3)],
+          ["Whiskers", `${N(I.min)} to ${N(I.max)}`]
         ];
-        return le ? le(null, mt, y) : mt;
+        return gt ? gt(null, pt, g) : pt;
       }
     };
   }
@@ -1433,23 +1433,23 @@ class Zn {
    * highlighted dots sit on top, drawn opaquer while `emphasis` is on.
    */
   drawPoints(t, { width: e, height: o, offset: [s, a], color: i, emphasis: r }) {
-    var w, _;
+    var v, _;
     this.canvas.style("display", t.length ? null : "none");
-    const l = (_ = (w = this.canvas.node()).getContext) == null ? void 0 : _.call(w, "2d");
+    const l = (_ = (v = this.canvas.node()).getContext) == null ? void 0 : _.call(v, "2d");
     if (!l) return;
     const c = window.devicePixelRatio || 1;
     this.canvas.attr("width", Math.round(e * c)).attr("height", Math.round(o * c)), l.setTransform(c, 0, 0, c, 0, 0), l.clearRect(0, 0, e, o);
-    const d = (m, v, L) => {
-      l.globalAlpha = L, l.fillStyle = m, l.beginPath();
-      for (const S of v) {
-        const f = S.x + s, z = S.y + a;
-        l.moveTo(f + Le, z), l.arc(f, z, Le, 0, 2 * Math.PI);
+    const u = (x, b, L) => {
+      l.globalAlpha = L, l.fillStyle = x, l.beginPath();
+      for (const S of b) {
+        const p = S.x + s, z = S.y + a;
+        l.moveTo(p + Ce, z), l.arc(p, z, Ce, 0, 2 * Math.PI);
       }
       l.fill();
-    }, p = M.group(t, i), u = p.get(Tt);
-    u && d(Tt, u, qe);
-    for (const [m, v] of p)
-      m !== Tt && d(m, v, r ? Lo : qe);
+    }, f = M.group(t, i), d = f.get(Ht);
+    d && u(Ht, d, Qe);
+    for (const [x, b] of f)
+      x !== Ht && u(x, b, r ? Mo : Qe);
   }
   // ── Hover / tooltip ─────────────────────────────────────────────────────────
   _onMouseMove(t) {
@@ -1477,7 +1477,7 @@ class Zn {
     t === this.hovered.record && e === this.hovered.box || (this.hovered = { record: t, box: e }, (s = (o = this.options).onHover) == null || s.call(o, t, e));
   }
 }
-const Ao = { field: null, title: null, format: null }, So = {
+const So = { field: null, title: null, format: null }, To = {
   field: null,
   title: null,
   type: "categorical",
@@ -1496,40 +1496,40 @@ const Ao = { field: null, title: null, format: null }, So = {
   tickValues: null,
   format: null
 };
-function zt(n) {
+function Ot(n) {
   return n != null && n !== "" && !(typeof n == "number" && Number.isNaN(n));
 }
-function To(n = [], t = {}) {
-  var p;
-  const e = t.axis ?? {}, o = (t.levels ?? []).map((u) => ot(Ao, u)), s = ot(So, e.color), a = ot($o, e.radius), i = s.accessor ?? a.accessor, r = { key: "", label: "", level: -1, record: null, children: [] }, l = /* @__PURE__ */ new Map([[r.key, r]]);
-  for (const u of n) {
-    const w = [];
+function zo(n = [], t = {}) {
+  var f;
+  const e = t.axis ?? {}, o = (t.levels ?? []).map((d) => it(So, d)), s = it(To, e.color), a = it($o, e.radius), i = s.accessor ?? a.accessor, r = { key: "", label: "", level: -1, record: null, children: [] }, l = /* @__PURE__ */ new Map([[r.key, r]]);
+  for (const d of n) {
+    const v = [];
     for (const L of o) {
-      const S = (p = L.accessor) == null ? void 0 : p.call(L, u);
-      if (!zt(S)) break;
-      w.push(S);
+      const S = (f = L.accessor) == null ? void 0 : f.call(L, d);
+      if (!Ot(S)) break;
+      v.push(S);
     }
-    if (!w.length) continue;
+    if (!v.length) continue;
     let _ = r;
-    w.forEach((L, S) => {
-      const f = JSON.stringify(w.slice(0, S + 1));
-      let z = l.get(f);
-      z || (z = { key: f, label: L, level: S, record: null, children: [] }, l.set(f, z), _.children.push(z)), _ = z;
+    v.forEach((L, S) => {
+      const p = JSON.stringify(v.slice(0, S + 1));
+      let z = l.get(p);
+      z || (z = { key: p, label: L, level: S, record: null, children: [] }, l.set(p, z), _.children.push(z)), _ = z;
     });
-    const m = _, v = i && !zt(i(m.record ?? {})) && zt(i(u));
-    (!m.record || v) && (m.record = u);
+    const x = _, b = i && !Ot(i(x.record ?? {})) && Ot(i(d));
+    (!x.record || b) && (x.record = d);
   }
-  const c = [...l.values()].filter((u) => u !== r);
-  for (const u of c)
-    u.value = u.record && i ? i(u.record) : null, u.empty = !u.record || i != null && !zt(u.value), u.colorValue = !u.empty && s.accessor ? s.accessor(u.record) : null, u.radiusValue = !u.empty && a.accessor ? a.accessor(u.record) : null;
-  const d = c.filter((u) => !u.empty);
+  const c = [...l.values()].filter((d) => d !== r);
+  for (const d of c)
+    d.value = d.record && i ? i(d.record) : null, d.empty = !d.record || i != null && !Ot(d.value), d.colorValue = !d.empty && s.accessor ? s.accessor(d.record) : null, d.radiusValue = !d.empty && a.accessor ? a.accessor(d.record) : null;
+  const u = c.filter((d) => !d.empty);
   if (s.accessor) {
-    const u = d.map((w) => w.colorValue).filter(zt);
-    s.type === "sequential" ? (s.domain ?? (s.domain = Ut(u)), s.range ?? (s.range = M.interpolateViridis)) : (s.domain = _t(s.domain, u), s.range ?? (s.range = Mt(s.domain.length)));
+    const d = u.map((v) => v.colorValue).filter(Ot);
+    s.type === "sequential" ? (s.domain ?? (s.domain = te(d)), s.range ?? (s.range = M.interpolateViridis)) : (s.domain = _t(s.domain, d), s.range ?? (s.range = Tt(s.domain.length)));
   }
-  return a.accessor && a.type !== "constant" && (a.domain ?? (a.domain = Ut(d.map((u) => u.radiusValue).filter(zt)))), { axes: { color: s, radius: a }, levels: o, root: r, nodes: c };
+  return a.accessor && a.type !== "constant" && (a.domain ?? (a.domain = te(u.map((d) => d.radiusValue).filter(Ot)))), { axes: { color: s, radius: a }, levels: o, root: r, nodes: c };
 }
-const Ke = 12, Ye = 2, zo = 1.5, Eo = 2.9, Co = 7, Me = 1.1, Ze = 4, Jt = 2, Ho = 3.3, Oo = 0.92, Ro = (n) => typeof n == "number" ? M.format(".2f")(n) : String(n), Po = { color: "#b4b2aa", radius: 6, label: null }, Io = {
+const Je = 12, ts = 2, Eo = 1.5, Co = 2.9, Ho = 7, He = 1.1, es = 4, ce = 2, Oo = 3.3, Ro = 0.92, Io = (n) => typeof n == "number" ? M.format(".2f")(n) : String(n), Po = { color: "#b4b2aa", radius: 6, label: null }, Bo = {
   data: [],
   levels: [],
   axis: {},
@@ -1544,23 +1544,23 @@ const Ke = 12, Ye = 2, zo = 1.5, Eo = 2.9, Co = 7, Me = 1.1, Ze = 4, Jt = 2, Ho 
   height: 300,
   onHighlightChange: null
 };
-function Bo(n, t, e, o) {
+function Do(n, t, e, o) {
   const s = String(n ?? "").split(/\s+/).filter(Boolean), a = [];
   let i = "";
   for (const r of s) {
     const l = i ? `${i} ${r}` : r;
-    i && Rt(l, e, o) > t ? (a.push(i), i = r) : i = l;
+    i && Dt(l, e, o) > t ? (a.push(i), i = r) : i = l;
   }
   return i && a.push(i), a;
 }
-function Do(n) {
+function No(n) {
   const { l: t } = M.lab(n);
   return Number.isFinite(t) && t > 60 ? "rgba(0,0,0,0.87)" : "#fff";
 }
-class Qn {
+class si {
   constructor(t, e = {}) {
     if (!t) throw new Error("TreeChart: a container element is required");
-    this.container = t, this.options = { ...Io, ...e }, this.highlight = new It(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("tree-chart", !0), this.svg = this.root.append("svg").attr("class", "tree-chart__svg").attr("role", "img"), this.footer = this.root.append("div").attr("class", "tree-chart__footer"), this.legend = this.footer.append("div"), this.emptyLegend = this.footer.append("div").attr("class", "chart-legend"), this.tooltip = new Dt(t), this.draw(), this._observeResize();
+    this.container = t, this.options = { ...Bo, ...e }, this.highlight = new Vt(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("tree-chart", !0), this.svg = this.root.append("svg").attr("class", "tree-chart__svg").attr("role", "img"), this.footer = this.root.append("div").attr("class", "tree-chart__footer"), this.legend = this.footer.append("div"), this.emptyLegend = this.footer.append("div").attr("class", "chart-legend"), this.tooltip = new jt(t), this.draw(), this._observeResize();
   }
   /** Replace the records and redraw. */
   setData(t) {
@@ -1601,77 +1601,77 @@ class Qn {
     }), this.resizeObserver.observe(this.container));
   }
   draw() {
-    var V;
-    const { columnWidth: t, hover: e, valueLabel: o } = this.options, s = { ...Po, ...this.options.empty }, a = Bt(this.options.fontSize), i = this.options.width ?? (this.container.clientWidth || 640);
+    var j;
+    const { columnWidth: t, hover: e, valueLabel: o } = this.options, s = { ...Po, ...this.options.empty }, a = Xt(this.options.fontSize), i = this.options.width ?? (this.container.clientWidth || 640);
     this.width = i;
     const r = this.svg.node();
     this.tooltip.fontSize(a), this._setHovered(null);
-    const { axes: l, levels: c, root: d } = To(this.options.data, this.options);
+    const { axes: l, levels: c, root: u } = zo(this.options.data, this.options);
     this.axes = l;
-    const p = ie(l.color), u = Is(l.radius), w = l.color.accessor ? l.color : l.radius, _ = w.format ?? Ro, m = (g) => {
-      const H = c[g.level];
-      return H != null && H.format ? H.format(g.label) : g.label;
+    const f = me(l.color), d = Bs(l.radius), v = l.color.accessor ? l.color : l.radius, _ = v.format ?? Io, x = (y) => {
+      const O = c[y.level];
+      return O != null && O.format ? O.format(y.label) : y.label;
     };
-    this._tooltipRows = (g) => {
-      const H = [[Q(c[g.level], `Level ${g.level + 1}`), m(g)]];
-      return zt(g.value) && H.push([Q(w, "value"), _(g.value)]), this.options.tooltip ? this.options.tooltip(g, H) : H;
+    this._tooltipRows = (y) => {
+      const O = [[st(c[y.level], `Level ${y.level + 1}`), x(y)]];
+      return Ot(y.value) && O.push([st(v, "value"), _(y.value)]), this.options.tooltip ? this.options.tooltip(y, O) : O;
     };
-    const v = (g) => g.empty ? s.color : l.color.accessor ? p(g.colorValue) : p(), L = (g) => g.empty || l.radius.accessor && l.radius.type !== "constant" && !zt(g.radiusValue) ? s.radius : u(g.radiusValue), S = (g) => this.highlight.color(v(g.data), g.data, { color: g.data.colorValue }), f = M.hierarchy(d), z = f.descendants().filter((g) => g.depth > 0);
+    const b = (y) => y.empty ? s.color : l.color.accessor ? f(y.colorValue) : f(), L = (y) => y.empty || l.radius.accessor && l.radius.type !== "constant" && !Ot(y.radiusValue) ? s.radius : d(y.radiusValue), S = (y) => this.highlight.color(b(y.data), y.data, { color: y.data.colorValue }), p = M.hierarchy(u), z = p.descendants().filter((y) => y.depth > 0);
     if (this.svg.selectAll("*").remove(), this._drawLegend(
-      p,
+      f,
       a,
       s,
-      z.some((g) => g.data.empty)
+      z.some((y) => y.data.empty)
     ), !z.length) {
       this.svg.attr("width", i).attr("height", 0).attr("aria-label", "Empty tree");
       return;
     }
-    const I = Me * a, R = /* @__PURE__ */ new Map();
-    for (const g of z) {
-      const H = c[g.depth - 1], D = H != null && H.format ? H.format(g.data.label) : g.data.label, N = Bo(D, Co * a, a, r), G = Math.max(0, ...N.map((it) => Rt(it, a, r)));
-      R.set(g, { lines: N, width: G, height: N.length * I });
+    const N = He * a, R = /* @__PURE__ */ new Map();
+    for (const y of z) {
+      const O = c[y.depth - 1], V = O != null && O.format ? O.format(y.data.label) : y.data.label, X = Do(V, Ho * a, a, r), q = Math.max(0, ...X.map((ut) => Dt(ut, a, r)));
+      R.set(y, { lines: X, width: q, height: X.length * N });
     }
-    const P = (g) => L(g.data), q = (g) => Math.max(P(g), R.get(g).height / 2), K = (g) => P(g) + Ze + R.get(g).width + Jt, ct = f.height || 1, at = z.filter((g) => !g.children && g.depth === ct), nt = Math.ceil(Math.max(0, ...at.map(K))), U = Math.max(0, ...z.filter((g) => g.depth === 1 && g.children).map(K));
-    let et = Ke, h = t;
-    for (let g = 0; g < 3; g += 1)
-      h = Math.max(1, Math.min(t, (i - et - nt) / ct)), et = Math.max(Ke, Math.ceil(U - h));
-    const A = Math.round(Eo * a);
-    M.tree().nodeSize([1, h]).separation((g, H) => {
-      const D = q(g) + q(H) + Ye;
-      return g.parent === H.parent ? D : D * zo;
-    })(f);
-    let $ = 1 / 0, b = -1 / 0, x = 0;
-    for (const g of z)
-      $ = Math.min($, g.x), b = Math.max(b, g.x), x = Math.max(x, q(g));
-    const T = b - $, B = x + Ye, J = A + T + B * 2, st = Math.max(this.options.height, Math.ceil(J)), lt = st - A, ht = T > 0 ? (lt - B * 2) / T : 1, rt = A + (lt - T * ht) / 2, tt = (g) => (g.x - $) * ht, ut = (g) => g.depth === 0 ? h - Ho * a : g.y, dt = this.svg.attr("width", i).attr("height", st).attr("font-size", a).attr(
+    const B = (y) => L(y.data), K = (y) => Math.max(B(y), R.get(y).height / 2), Y = (y) => B(y) + es + R.get(y).width + ce, at = p.height || 1, rt = z.filter((y) => !y.children && y.depth === at), lt = Math.ceil(Math.max(0, ...rt.map(Y))), G = Math.max(0, ...z.filter((y) => y.depth === 1 && y.children).map(Y));
+    let ct = Je, h = t;
+    for (let y = 0; y < 3; y += 1)
+      h = Math.max(1, Math.min(t, (i - ct - lt) / at)), ct = Math.max(Je, Math.ceil(G - h));
+    const $ = Math.round(Co * a);
+    M.tree().nodeSize([1, h]).separation((y, O) => {
+      const V = K(y) + K(O) + ts;
+      return y.parent === O.parent ? V : V * Eo;
+    })(p);
+    let T = 1 / 0, w = -1 / 0, m = 0;
+    for (const y of z)
+      T = Math.min(T, y.x), w = Math.max(w, y.x), m = Math.max(m, K(y));
+    const A = w - T, P = m + ts, nt = $ + A + P * 2, D = Math.max(this.options.height, Math.ceil(nt)), Z = D - $, Q = A > 0 ? (Z - P * 2) / A : 1, et = $ + (Z - A * Q) / 2, ot = (y) => (y.x - T) * Q, ht = (y) => y.depth === 0 ? h - Oo * a : y.y, ft = this.svg.attr("width", i).attr("height", D).attr("font-size", a).attr(
       "aria-label",
-      `Tree of ${c.map((g, H) => Q(g, `level ${H + 1}`)).join(", then ")}: ${z.length} nodes`
-    ), pt = dt.append("g").attr("transform", `translate(${et},${rt})`), X = /* @__PURE__ */ new Map();
-    for (const g of z)
-      X.has(g.depth) || X.set(g.depth, ((V = c[g.depth - 1]) == null ? void 0 : V.title) ?? "");
-    dt.append("g").selectAll("text").data([...X]).join("text").attr("class", "tree-chart__header").attr("x", ([g]) => et + g * h).attr("y", a * 1.2).attr("text-anchor", "middle").text(([, g]) => g);
-    const xt = f.children.length > 1, bt = pt.append("g").selectAll("path").data(f.links().filter((g) => xt || g.source.depth > 0)).join("path").attr("class", "tree-chart__link").attr("d", M.linkHorizontal().x(ut).y(tt)), E = pt.append("g").selectAll("g").data(z).join("g").attr("class", "tree-chart__node").attr("transform", (g) => `translate(${g.y},${tt(g)})`);
-    E.append("circle").attr("class", "tree-chart__circle").attr("r", P).attr("fill", S), o && E.filter((g) => zt(g.data.value)).append("text").attr("class", "tree-chart__value").attr("dy", "0.31em").attr("text-anchor", "middle").attr("font-size", a * Oo).attr("fill", (g) => Do(S(g))).text((g) => _(g.data.value));
-    const C = (g) => !!g.children, F = (g) => (C(g) ? -1 : 1) * (P(g) + Ze), Y = E.filter((g) => R.get(g).lines.length).append("g").attr("class", "tree-chart__label").classed("tree-chart__label--empty", (g) => g.data.empty);
-    Y.append("rect").attr("class", "tree-chart__label-bg").attr("x", (g) => {
-      const { width: H } = R.get(g);
-      return (C(g) ? F(g) - H : F(g)) - Jt;
-    }).attr("y", (g) => -R.get(g).height / 2 - Jt).attr("width", (g) => R.get(g).width + Jt * 2).attr("height", (g) => R.get(g).height + Jt * 2), Y.append("text").attr("text-anchor", (g) => C(g) ? "end" : "start").selectAll("tspan").data((g) => {
-      const { lines: H } = R.get(g);
-      return H.map((D, N) => ({ line: D, i: N, count: H.length, x: F(g) }));
-    }).join("tspan").attr("x", (g) => g.x).attr(
+      `Tree of ${c.map((y, O) => st(y, `level ${O + 1}`)).join(", then ")}: ${z.length} nodes`
+    ), xt = ft.append("g").attr("transform", `translate(${ct},${et})`), U = /* @__PURE__ */ new Map();
+    for (const y of z)
+      U.has(y.depth) || U.set(y.depth, ((j = c[y.depth - 1]) == null ? void 0 : j.title) ?? "");
+    ft.append("g").selectAll("text").data([...U]).join("text").attr("class", "tree-chart__header").attr("x", ([y]) => ct + y * h).attr("y", a * 1.2).attr("text-anchor", "middle").text(([, y]) => y);
+    const mt = p.children.length > 1, Lt = xt.append("g").selectAll("path").data(p.links().filter((y) => mt || y.source.depth > 0)).join("path").attr("class", "tree-chart__link").attr("d", M.linkHorizontal().x(ht).y(ot)), C = xt.append("g").selectAll("g").data(z).join("g").attr("class", "tree-chart__node").attr("transform", (y) => `translate(${y.y},${ot(y)})`);
+    C.append("circle").attr("class", "tree-chart__circle").attr("r", B).attr("fill", S), o && C.filter((y) => Ot(y.data.value)).append("text").attr("class", "tree-chart__value").attr("dy", "0.31em").attr("text-anchor", "middle").attr("font-size", a * Ro).attr("fill", (y) => No(S(y))).text((y) => _(y.data.value));
+    const E = (y) => !!y.children, F = (y) => (E(y) ? -1 : 1) * (B(y) + es), J = C.filter((y) => R.get(y).lines.length).append("g").attr("class", "tree-chart__label").classed("tree-chart__label--empty", (y) => y.data.empty);
+    J.append("rect").attr("class", "tree-chart__label-bg").attr("x", (y) => {
+      const { width: O } = R.get(y);
+      return (E(y) ? F(y) - O : F(y)) - ce;
+    }).attr("y", (y) => -R.get(y).height / 2 - ce).attr("width", (y) => R.get(y).width + ce * 2).attr("height", (y) => R.get(y).height + ce * 2), J.append("text").attr("text-anchor", (y) => E(y) ? "end" : "start").selectAll("tspan").data((y) => {
+      const { lines: O } = R.get(y);
+      return O.map((V, X) => ({ line: V, i: X, count: O.length, x: F(y) }));
+    }).join("tspan").attr("x", (y) => y.x).attr(
       "dy",
-      (g) => g.i === 0 ? `${0.31 - (g.count - 1) * Me / 2}em` : `${Me}em`
-    ).text((g) => g.line);
-    const Z = (g) => {
+      (y) => y.i === 0 ? `${0.31 - (y.count - 1) * He / 2}em` : `${He}em`
+    ).text((y) => y.line);
+    const tt = (y) => {
       if (!e) return;
-      const H = g && /* @__PURE__ */ new Set([...g.ancestors(), ...g.descendants()]), D = (G) => !!(H && H.has(G)), N = (G) => D(G.source) && D(G.target);
-      E.classed("tree-chart__node--off-path", (G) => !!H && !D(G)), bt.classed("tree-chart__link--on-path", N).classed("tree-chart__link--off-path", (G) => !!H && !N(G));
+      const O = y && /* @__PURE__ */ new Set([...y.ancestors(), ...y.descendants()]), V = (q) => !!(O && O.has(q)), X = (q) => V(q.source) && V(q.target);
+      C.classed("tree-chart__node--off-path", (q) => !!O && !V(q)), Lt.classed("tree-chart__link--on-path", X).classed("tree-chart__link--off-path", (q) => !!O && !X(q));
     };
-    E.on("mouseenter", (g, H) => {
-      Z(H), this._setHovered(H.data, g);
-    }).on("mousemove", (g) => this.tooltip.move(g)).on("mouseleave", () => {
-      Z(null), this._setHovered(null);
+    C.on("mouseenter", (y, O) => {
+      tt(O), this._setHovered(O.data, y);
+    }).on("mousemove", (y) => this.tooltip.move(y)).on("mouseleave", () => {
+      tt(null), this._setHovered(null);
     });
   }
   /**
@@ -1681,7 +1681,7 @@ class Qn {
    */
   _drawLegend(t, e, o, s) {
     const a = this.axes.color, i = { ...a, title: a.accessor ? a.title : null, fontSize: e };
-    if (a.type === "sequential" ? js(this.legend, t, i) : Et(this.legend, t, { ...i, shape: "circle", highlight: this.highlight }), this.emptyLegend.selectAll("*").remove(), !o.label || !s) {
+    if (a.type === "sequential" ? Fs(this.legend, t, i) : Rt(this.legend, t, { ...i, shape: "circle", highlight: this.highlight }), this.emptyLegend.selectAll("*").remove(), !o.label || !s) {
       this.emptyLegend.style("display", "none");
       return;
     }
@@ -1689,7 +1689,7 @@ class Qn {
     r.append("i").attr("class", "chart-legend__swatch chart-legend__swatch--circle").style("color", o.color), r.append("span").text(o.label);
   }
 }
-function Qe(n, t) {
+function ss(n, t) {
   let e;
   if (t === void 0)
     for (const o of n)
@@ -1701,7 +1701,7 @@ function Qe(n, t) {
   }
   return e;
 }
-function No(n, t) {
+function Vo(n, t) {
   let e;
   if (t === void 0)
     for (const o of n)
@@ -1713,7 +1713,7 @@ function No(n, t) {
   }
   return e;
 }
-function Ae(n, t) {
+function Oe(n, t) {
   let e = 0;
   if (t === void 0)
     for (let o of n)
@@ -1725,41 +1725,41 @@ function Ae(n, t) {
   }
   return e;
 }
-function Vo(n, t) {
+function Xo(n, t) {
   return n.sourceLinks.length ? n.depth : t - 1;
 }
-function he(n) {
+function ye(n) {
   return function() {
     return n;
   };
 }
-function Je(n, t) {
-  return me(n.source, t.source) || n.index - t.index;
+function os(n, t) {
+  return Le(n.source, t.source) || n.index - t.index;
 }
-function ts(n, t) {
-  return me(n.target, t.target) || n.index - t.index;
+function ns(n, t) {
+  return Le(n.target, t.target) || n.index - t.index;
 }
-function me(n, t) {
+function Le(n, t) {
   return n.y0 - t.y0;
 }
-function Se(n) {
+function Re(n) {
   return n.value;
 }
-function Fo(n) {
+function jo(n) {
   return n.index;
 }
-function jo(n) {
+function Fo(n) {
   return n.nodes;
 }
 function Go(n) {
   return n.links;
 }
-function es(n, t) {
+function is(n, t) {
   const e = n.get(t);
   if (!e) throw new Error("missing: " + t);
   return e;
 }
-function ss({ nodes: n }) {
+function as({ nodes: n }) {
   for (const t of n) {
     let e = t.y0, o = e;
     for (const s of t.sourceLinks)
@@ -1768,18 +1768,18 @@ function ss({ nodes: n }) {
       s.y1 = o + s.width / 2, o += s.width;
   }
 }
-function Xo() {
-  let n = 0, t = 0, e = 1, o = 1, s = 24, a = 8, i, r = Fo, l = Vo, c, d, p = jo, u = Go, w = 6;
+function Uo() {
+  let n = 0, t = 0, e = 1, o = 1, s = 24, a = 8, i, r = jo, l = Xo, c, u, f = Fo, d = Go, v = 6;
   function _() {
-    const h = { nodes: p.apply(null, arguments), links: u.apply(null, arguments) };
-    return m(h), v(h), L(h), S(h), I(h), ss(h), h;
+    const h = { nodes: f.apply(null, arguments), links: d.apply(null, arguments) };
+    return x(h), b(h), L(h), S(h), N(h), as(h), h;
   }
   _.update = function(h) {
-    return ss(h), h;
+    return as(h), h;
   }, _.nodeId = function(h) {
-    return arguments.length ? (r = typeof h == "function" ? h : he(h), _) : r;
+    return arguments.length ? (r = typeof h == "function" ? h : ye(h), _) : r;
   }, _.nodeAlign = function(h) {
-    return arguments.length ? (l = typeof h == "function" ? h : he(h), _) : l;
+    return arguments.length ? (l = typeof h == "function" ? h : ye(h), _) : l;
   }, _.nodeSort = function(h) {
     return arguments.length ? (c = h, _) : c;
   }, _.nodeWidth = function(h) {
@@ -1787,193 +1787,193 @@ function Xo() {
   }, _.nodePadding = function(h) {
     return arguments.length ? (a = i = +h, _) : a;
   }, _.nodes = function(h) {
-    return arguments.length ? (p = typeof h == "function" ? h : he(h), _) : p;
+    return arguments.length ? (f = typeof h == "function" ? h : ye(h), _) : f;
   }, _.links = function(h) {
-    return arguments.length ? (u = typeof h == "function" ? h : he(h), _) : u;
+    return arguments.length ? (d = typeof h == "function" ? h : ye(h), _) : d;
   }, _.linkSort = function(h) {
-    return arguments.length ? (d = h, _) : d;
+    return arguments.length ? (u = h, _) : u;
   }, _.size = function(h) {
     return arguments.length ? (n = t = 0, e = +h[0], o = +h[1], _) : [e - n, o - t];
   }, _.extent = function(h) {
     return arguments.length ? (n = +h[0][0], e = +h[1][0], t = +h[0][1], o = +h[1][1], _) : [[n, t], [e, o]];
   }, _.iterations = function(h) {
-    return arguments.length ? (w = +h, _) : w;
+    return arguments.length ? (v = +h, _) : v;
   };
-  function m({ nodes: h, links: A }) {
-    for (const [b, x] of h.entries())
-      x.index = b, x.sourceLinks = [], x.targetLinks = [];
-    const $ = new Map(h.map((b, x) => [r(b, x, h), b]));
-    for (const [b, x] of A.entries()) {
-      x.index = b;
-      let { source: T, target: B } = x;
-      typeof T != "object" && (T = x.source = es($, T)), typeof B != "object" && (B = x.target = es($, B)), T.sourceLinks.push(x), B.targetLinks.push(x);
+  function x({ nodes: h, links: $ }) {
+    for (const [w, m] of h.entries())
+      m.index = w, m.sourceLinks = [], m.targetLinks = [];
+    const T = new Map(h.map((w, m) => [r(w, m, h), w]));
+    for (const [w, m] of $.entries()) {
+      m.index = w;
+      let { source: A, target: P } = m;
+      typeof A != "object" && (A = m.source = is(T, A)), typeof P != "object" && (P = m.target = is(T, P)), A.sourceLinks.push(m), P.targetLinks.push(m);
     }
-    if (d != null)
-      for (const { sourceLinks: b, targetLinks: x } of h)
-        b.sort(d), x.sort(d);
+    if (u != null)
+      for (const { sourceLinks: w, targetLinks: m } of h)
+        w.sort(u), m.sort(u);
   }
-  function v({ nodes: h }) {
-    for (const A of h)
-      A.value = A.fixedValue === void 0 ? Math.max(Ae(A.sourceLinks, Se), Ae(A.targetLinks, Se)) : A.fixedValue;
+  function b({ nodes: h }) {
+    for (const $ of h)
+      $.value = $.fixedValue === void 0 ? Math.max(Oe($.sourceLinks, Re), Oe($.targetLinks, Re)) : $.fixedValue;
   }
   function L({ nodes: h }) {
-    const A = h.length;
-    let $ = new Set(h), b = /* @__PURE__ */ new Set(), x = 0;
-    for (; $.size; ) {
-      for (const T of $) {
-        T.depth = x;
-        for (const { target: B } of T.sourceLinks)
-          b.add(B);
+    const $ = h.length;
+    let T = new Set(h), w = /* @__PURE__ */ new Set(), m = 0;
+    for (; T.size; ) {
+      for (const A of T) {
+        A.depth = m;
+        for (const { target: P } of A.sourceLinks)
+          w.add(P);
       }
-      if (++x > A) throw new Error("circular link");
-      $ = b, b = /* @__PURE__ */ new Set();
+      if (++m > $) throw new Error("circular link");
+      T = w, w = /* @__PURE__ */ new Set();
     }
   }
   function S({ nodes: h }) {
-    const A = h.length;
-    let $ = new Set(h), b = /* @__PURE__ */ new Set(), x = 0;
-    for (; $.size; ) {
-      for (const T of $) {
-        T.height = x;
-        for (const { source: B } of T.targetLinks)
-          b.add(B);
+    const $ = h.length;
+    let T = new Set(h), w = /* @__PURE__ */ new Set(), m = 0;
+    for (; T.size; ) {
+      for (const A of T) {
+        A.height = m;
+        for (const { source: P } of A.targetLinks)
+          w.add(P);
       }
-      if (++x > A) throw new Error("circular link");
-      $ = b, b = /* @__PURE__ */ new Set();
+      if (++m > $) throw new Error("circular link");
+      T = w, w = /* @__PURE__ */ new Set();
     }
   }
-  function f({ nodes: h }) {
-    const A = Qe(h, (x) => x.depth) + 1, $ = (e - n - s) / (A - 1), b = new Array(A);
-    for (const x of h) {
-      const T = Math.max(0, Math.min(A - 1, Math.floor(l.call(null, x, A))));
-      x.layer = T, x.x0 = n + T * $, x.x1 = x.x0 + s, b[T] ? b[T].push(x) : b[T] = [x];
+  function p({ nodes: h }) {
+    const $ = ss(h, (m) => m.depth) + 1, T = (e - n - s) / ($ - 1), w = new Array($);
+    for (const m of h) {
+      const A = Math.max(0, Math.min($ - 1, Math.floor(l.call(null, m, $))));
+      m.layer = A, m.x0 = n + A * T, m.x1 = m.x0 + s, w[A] ? w[A].push(m) : w[A] = [m];
     }
-    if (c) for (const x of b)
-      x.sort(c);
-    return b;
+    if (c) for (const m of w)
+      m.sort(c);
+    return w;
   }
   function z(h) {
-    const A = No(h, ($) => (o - t - ($.length - 1) * i) / Ae($, Se));
-    for (const $ of h) {
-      let b = t;
-      for (const x of $) {
-        x.y0 = b, x.y1 = b + x.value * A, b = x.y1 + i;
-        for (const T of x.sourceLinks)
-          T.width = T.value * A;
+    const $ = Vo(h, (T) => (o - t - (T.length - 1) * i) / Oe(T, Re));
+    for (const T of h) {
+      let w = t;
+      for (const m of T) {
+        m.y0 = w, m.y1 = w + m.value * $, w = m.y1 + i;
+        for (const A of m.sourceLinks)
+          A.width = A.value * $;
       }
-      b = (o - b + i) / ($.length + 1);
-      for (let x = 0; x < $.length; ++x) {
-        const T = $[x];
-        T.y0 += b * (x + 1), T.y1 += b * (x + 1);
+      w = (o - w + i) / (T.length + 1);
+      for (let m = 0; m < T.length; ++m) {
+        const A = T[m];
+        A.y0 += w * (m + 1), A.y1 += w * (m + 1);
       }
-      nt($);
+      lt(T);
     }
   }
-  function I(h) {
-    const A = f(h);
-    i = Math.min(a, (o - t) / (Qe(A, ($) => $.length) - 1)), z(A);
-    for (let $ = 0; $ < w; ++$) {
-      const b = Math.pow(0.99, $), x = Math.max(1 - b, ($ + 1) / w);
-      P(A, b, x), R(A, b, x);
+  function N(h) {
+    const $ = p(h);
+    i = Math.min(a, (o - t) / (ss($, (T) => T.length) - 1)), z($);
+    for (let T = 0; T < v; ++T) {
+      const w = Math.pow(0.99, T), m = Math.max(1 - w, (T + 1) / v);
+      B($, w, m), R($, w, m);
     }
   }
-  function R(h, A, $) {
-    for (let b = 1, x = h.length; b < x; ++b) {
-      const T = h[b];
-      for (const B of T) {
-        let J = 0, st = 0;
-        for (const { source: ht, value: rt } of B.targetLinks) {
-          let tt = rt * (B.layer - ht.layer);
-          J += U(ht, B) * tt, st += tt;
+  function R(h, $, T) {
+    for (let w = 1, m = h.length; w < m; ++w) {
+      const A = h[w];
+      for (const P of A) {
+        let nt = 0, D = 0;
+        for (const { source: Q, value: et } of P.targetLinks) {
+          let ot = et * (P.layer - Q.layer);
+          nt += G(Q, P) * ot, D += ot;
         }
-        if (!(st > 0)) continue;
-        let lt = (J / st - B.y0) * A;
-        B.y0 += lt, B.y1 += lt, at(B);
+        if (!(D > 0)) continue;
+        let Z = (nt / D - P.y0) * $;
+        P.y0 += Z, P.y1 += Z, rt(P);
       }
-      c === void 0 && T.sort(me), q(T, $);
+      c === void 0 && A.sort(Le), K(A, T);
     }
   }
-  function P(h, A, $) {
-    for (let b = h.length, x = b - 2; x >= 0; --x) {
-      const T = h[x];
-      for (const B of T) {
-        let J = 0, st = 0;
-        for (const { target: ht, value: rt } of B.sourceLinks) {
-          let tt = rt * (ht.layer - B.layer);
-          J += et(B, ht) * tt, st += tt;
+  function B(h, $, T) {
+    for (let w = h.length, m = w - 2; m >= 0; --m) {
+      const A = h[m];
+      for (const P of A) {
+        let nt = 0, D = 0;
+        for (const { target: Q, value: et } of P.sourceLinks) {
+          let ot = et * (Q.layer - P.layer);
+          nt += ct(P, Q) * ot, D += ot;
         }
-        if (!(st > 0)) continue;
-        let lt = (J / st - B.y0) * A;
-        B.y0 += lt, B.y1 += lt, at(B);
+        if (!(D > 0)) continue;
+        let Z = (nt / D - P.y0) * $;
+        P.y0 += Z, P.y1 += Z, rt(P);
       }
-      c === void 0 && T.sort(me), q(T, $);
+      c === void 0 && A.sort(Le), K(A, T);
     }
   }
-  function q(h, A) {
-    const $ = h.length >> 1, b = h[$];
-    ct(h, b.y0 - i, $ - 1, A), K(h, b.y1 + i, $ + 1, A), ct(h, o, h.length - 1, A), K(h, t, 0, A);
+  function K(h, $) {
+    const T = h.length >> 1, w = h[T];
+    at(h, w.y0 - i, T - 1, $), Y(h, w.y1 + i, T + 1, $), at(h, o, h.length - 1, $), Y(h, t, 0, $);
   }
-  function K(h, A, $, b) {
-    for (; $ < h.length; ++$) {
-      const x = h[$], T = (A - x.y0) * b;
-      T > 1e-6 && (x.y0 += T, x.y1 += T), A = x.y1 + i;
-    }
-  }
-  function ct(h, A, $, b) {
-    for (; $ >= 0; --$) {
-      const x = h[$], T = (x.y1 - A) * b;
-      T > 1e-6 && (x.y0 -= T, x.y1 -= T), A = x.y0 - i;
+  function Y(h, $, T, w) {
+    for (; T < h.length; ++T) {
+      const m = h[T], A = ($ - m.y0) * w;
+      A > 1e-6 && (m.y0 += A, m.y1 += A), $ = m.y1 + i;
     }
   }
-  function at({ sourceLinks: h, targetLinks: A }) {
-    if (d === void 0) {
-      for (const { source: { sourceLinks: $ } } of A)
-        $.sort(ts);
-      for (const { target: { targetLinks: $ } } of h)
-        $.sort(Je);
+  function at(h, $, T, w) {
+    for (; T >= 0; --T) {
+      const m = h[T], A = (m.y1 - $) * w;
+      A > 1e-6 && (m.y0 -= A, m.y1 -= A), $ = m.y0 - i;
     }
   }
-  function nt(h) {
-    if (d === void 0)
-      for (const { sourceLinks: A, targetLinks: $ } of h)
-        A.sort(ts), $.sort(Je);
+  function rt({ sourceLinks: h, targetLinks: $ }) {
+    if (u === void 0) {
+      for (const { source: { sourceLinks: T } } of $)
+        T.sort(ns);
+      for (const { target: { targetLinks: T } } of h)
+        T.sort(os);
+    }
   }
-  function U(h, A) {
-    let $ = h.y0 - (h.sourceLinks.length - 1) * i / 2;
-    for (const { target: b, width: x } of h.sourceLinks) {
-      if (b === A) break;
-      $ += x + i;
-    }
-    for (const { source: b, width: x } of A.targetLinks) {
-      if (b === h) break;
-      $ -= x;
-    }
-    return $;
+  function lt(h) {
+    if (u === void 0)
+      for (const { sourceLinks: $, targetLinks: T } of h)
+        $.sort(ns), T.sort(os);
   }
-  function et(h, A) {
-    let $ = A.y0 - (A.targetLinks.length - 1) * i / 2;
-    for (const { source: b, width: x } of A.targetLinks) {
-      if (b === h) break;
-      $ += x + i;
+  function G(h, $) {
+    let T = h.y0 - (h.sourceLinks.length - 1) * i / 2;
+    for (const { target: w, width: m } of h.sourceLinks) {
+      if (w === $) break;
+      T += m + i;
     }
-    for (const { target: b, width: x } of h.sourceLinks) {
-      if (b === A) break;
-      $ -= x;
+    for (const { source: w, width: m } of $.targetLinks) {
+      if (w === h) break;
+      T -= m;
     }
-    return $;
+    return T;
+  }
+  function ct(h, $) {
+    let T = $.y0 - ($.targetLinks.length - 1) * i / 2;
+    for (const { source: w, width: m } of $.targetLinks) {
+      if (w === h) break;
+      T += m + i;
+    }
+    for (const { target: w, width: m } of h.sourceLinks) {
+      if (w === $) break;
+      T -= m;
+    }
+    return T;
   }
   return _;
 }
-var Ee = Math.PI, Ce = 2 * Ee, Vt = 1e-6, Uo = Ce - Vt;
-function He() {
+var Be = Math.PI, De = 2 * Be, Wt = 1e-6, Wo = De - Wt;
+function Ne() {
   this._x0 = this._y0 = // start of current subpath
   this._x1 = this._y1 = null, this._ = "";
 }
-function Es() {
-  return new He();
+function Rs() {
+  return new Ne();
 }
-He.prototype = Es.prototype = {
-  constructor: He,
+Ne.prototype = Rs.prototype = {
+  constructor: Ne,
   moveTo: function(n, t) {
     this._ += "M" + (this._x0 = this._x1 = +n) + "," + (this._y0 = this._y1 = +t);
   },
@@ -1991,22 +1991,22 @@ He.prototype = Es.prototype = {
   },
   arcTo: function(n, t, e, o, s) {
     n = +n, t = +t, e = +e, o = +o, s = +s;
-    var a = this._x1, i = this._y1, r = e - n, l = o - t, c = a - n, d = i - t, p = c * c + d * d;
+    var a = this._x1, i = this._y1, r = e - n, l = o - t, c = a - n, u = i - t, f = c * c + u * u;
     if (s < 0) throw new Error("negative radius: " + s);
     if (this._x1 === null)
       this._ += "M" + (this._x1 = n) + "," + (this._y1 = t);
-    else if (p > Vt) if (!(Math.abs(d * r - l * c) > Vt) || !s)
+    else if (f > Wt) if (!(Math.abs(u * r - l * c) > Wt) || !s)
       this._ += "L" + (this._x1 = n) + "," + (this._y1 = t);
     else {
-      var u = e - a, w = o - i, _ = r * r + l * l, m = u * u + w * w, v = Math.sqrt(_), L = Math.sqrt(p), S = s * Math.tan((Ee - Math.acos((_ + p - m) / (2 * v * L))) / 2), f = S / L, z = S / v;
-      Math.abs(f - 1) > Vt && (this._ += "L" + (n + f * c) + "," + (t + f * d)), this._ += "A" + s + "," + s + ",0,0," + +(d * u > c * w) + "," + (this._x1 = n + z * r) + "," + (this._y1 = t + z * l);
+      var d = e - a, v = o - i, _ = r * r + l * l, x = d * d + v * v, b = Math.sqrt(_), L = Math.sqrt(f), S = s * Math.tan((Be - Math.acos((_ + f - x) / (2 * b * L))) / 2), p = S / L, z = S / b;
+      Math.abs(p - 1) > Wt && (this._ += "L" + (n + p * c) + "," + (t + p * u)), this._ += "A" + s + "," + s + ",0,0," + +(u * d > c * v) + "," + (this._x1 = n + z * r) + "," + (this._y1 = t + z * l);
     }
   },
   arc: function(n, t, e, o, s, a) {
     n = +n, t = +t, e = +e, a = !!a;
-    var i = e * Math.cos(o), r = e * Math.sin(o), l = n + i, c = t + r, d = 1 ^ a, p = a ? o - s : s - o;
+    var i = e * Math.cos(o), r = e * Math.sin(o), l = n + i, c = t + r, u = 1 ^ a, f = a ? o - s : s - o;
     if (e < 0) throw new Error("negative radius: " + e);
-    this._x1 === null ? this._ += "M" + l + "," + c : (Math.abs(this._x1 - l) > Vt || Math.abs(this._y1 - c) > Vt) && (this._ += "L" + l + "," + c), e && (p < 0 && (p = p % Ce + Ce), p > Uo ? this._ += "A" + e + "," + e + ",0,1," + d + "," + (n - i) + "," + (t - r) + "A" + e + "," + e + ",0,1," + d + "," + (this._x1 = l) + "," + (this._y1 = c) : p > Vt && (this._ += "A" + e + "," + e + ",0," + +(p >= Ee) + "," + d + "," + (this._x1 = n + e * Math.cos(s)) + "," + (this._y1 = t + e * Math.sin(s))));
+    this._x1 === null ? this._ += "M" + l + "," + c : (Math.abs(this._x1 - l) > Wt || Math.abs(this._y1 - c) > Wt) && (this._ += "L" + l + "," + c), e && (f < 0 && (f = f % De + De), f > Wo ? this._ += "A" + e + "," + e + ",0,1," + u + "," + (n - i) + "," + (t - r) + "A" + e + "," + e + ",0,1," + u + "," + (this._x1 = l) + "," + (this._y1 = c) : f > Wt && (this._ += "A" + e + "," + e + ",0," + +(f >= Be) + "," + u + "," + (this._x1 = n + e * Math.cos(s)) + "," + (this._y1 = t + e * Math.sin(s))));
   },
   rect: function(n, t, e, o) {
     this._ += "M" + (this._x0 = this._x1 = +n) + "," + (this._y0 = this._y1 = +t) + "h" + +e + "v" + +o + "h" + -e + "Z";
@@ -2015,58 +2015,58 @@ He.prototype = Es.prototype = {
     return this._;
   }
 };
-function os(n) {
+function rs(n) {
   return function() {
     return n;
   };
 }
-function Wo(n) {
+function qo(n) {
   return n[0];
 }
-function qo(n) {
+function Ko(n) {
   return n[1];
 }
-var Ko = Array.prototype.slice;
-function Yo(n) {
+var Yo = Array.prototype.slice;
+function Zo(n) {
   return n.source;
 }
-function Zo(n) {
+function Qo(n) {
   return n.target;
 }
-function Qo(n) {
-  var t = Yo, e = Zo, o = Wo, s = qo, a = null;
+function Jo(n) {
+  var t = Zo, e = Qo, o = qo, s = Ko, a = null;
   function i() {
-    var r, l = Ko.call(arguments), c = t.apply(this, l), d = e.apply(this, l);
-    if (a || (a = r = Es()), n(a, +o.apply(this, (l[0] = c, l)), +s.apply(this, l), +o.apply(this, (l[0] = d, l)), +s.apply(this, l)), r) return a = null, r + "" || null;
+    var r, l = Yo.call(arguments), c = t.apply(this, l), u = e.apply(this, l);
+    if (a || (a = r = Rs()), n(a, +o.apply(this, (l[0] = c, l)), +s.apply(this, l), +o.apply(this, (l[0] = u, l)), +s.apply(this, l)), r) return a = null, r + "" || null;
   }
   return i.source = function(r) {
     return arguments.length ? (t = r, i) : t;
   }, i.target = function(r) {
     return arguments.length ? (e = r, i) : e;
   }, i.x = function(r) {
-    return arguments.length ? (o = typeof r == "function" ? r : os(+r), i) : o;
+    return arguments.length ? (o = typeof r == "function" ? r : rs(+r), i) : o;
   }, i.y = function(r) {
-    return arguments.length ? (s = typeof r == "function" ? r : os(+r), i) : s;
+    return arguments.length ? (s = typeof r == "function" ? r : rs(+r), i) : s;
   }, i.context = function(r) {
     return arguments.length ? (a = r ?? null, i) : a;
   }, i;
 }
-function Jo(n, t, e, o, s) {
+function tn(n, t, e, o, s) {
   n.moveTo(t, e), n.bezierCurveTo(t = (t + o) / 2, e, t, s, o, s);
 }
-function tn() {
-  return Qo(Jo);
-}
-function en(n) {
-  return [n.source.x1, n.y0];
+function en() {
+  return Jo(tn);
 }
 function sn(n) {
+  return [n.source.x1, n.y0];
+}
+function on(n) {
   return [n.target.x0, n.y1];
 }
-function on() {
-  return tn().source(en).target(sn);
+function nn() {
+  return en().source(sn).target(on);
 }
-const nn = "(blank)", an = { field: null, title: null, domain: null, format: null, sort: "descending" }, rn = {
+const an = "(blank)", rn = { field: null, title: null, domain: null, format: null, sort: "descending" }, ln = {
   field: null,
   title: null,
   type: "categorical",
@@ -2074,91 +2074,91 @@ const nn = "(blank)", an = { field: null, title: null, domain: null, format: nul
   range: null,
   tickValues: null,
   format: null
-}, ue = (n, t) => {
+}, _e = (n, t) => {
   const e = n == null ? void 0 : n(t);
-  return e == null || e === "" ? nn : String(e);
+  return e == null || e === "" ? an : String(e);
 };
-function ln(n, t) {
+function cn(n, t) {
   const e = [...n.keys()];
   t.sort === "descending" ? e.sort((s, a) => n.get(a) - n.get(s)) : t.sort === "ascending" && e.sort((s, a) => n.get(s) - n.get(a));
   const o = (t.domain ?? []).filter((s) => n.has(s));
   return [...o, ...e.filter((s) => !o.includes(s))];
 }
-function cn(n = [], t = {}) {
+function hn(n = [], t = {}) {
   var _;
-  const e = (t.dimensions ?? []).map((m) => ot(an, m)), o = ot(rn, (_ = t.axis) == null ? void 0 : _.color), s = e.findIndex((m) => m.field != null && m.field === o.field), a = Math.max(0, s), i = e.map((m, v) => {
+  const e = (t.dimensions ?? []).map((x) => it(rn, x)), o = it(ln, (_ = t.axis) == null ? void 0 : _.color), s = e.findIndex((x) => x.field != null && x.field === o.field), a = Math.max(0, s), i = e.map((x, b) => {
     const L = M.rollup(
       n,
-      (f) => f.length,
-      (f) => ue(m.accessor, f)
-    ), S = ln(L, m).map((f, z) => ({
+      (p) => p.length,
+      (p) => _e(x.accessor, p)
+    ), S = cn(L, x).map((p, z) => ({
       id: -1,
-      dim: v,
+      dim: b,
       index: z,
-      key: f,
-      label: m.format ? m.format(f) : f,
-      count: L.get(f)
+      key: p,
+      label: x.format ? x.format(p) : p,
+      count: L.get(p)
     }));
     return {
-      title: m.title ?? (typeof m.field == "string" ? m.field : ""),
-      index: v,
+      title: x.title ?? (typeof x.field == "string" ? x.field : ""),
+      index: b,
       nodes: S,
-      byKey: new Map(S.map((f) => [f.key, f]))
+      byKey: new Map(S.map((p) => [p.key, p]))
     };
-  }), r = i.flatMap((m) => m.nodes);
-  r.forEach((m, v) => {
-    m.id = v;
+  }), r = i.flatMap((x) => x.nodes);
+  r.forEach((x, b) => {
+    x.id = b;
   });
-  const l = (m) => e.map((v) => ue(v.accessor, m)).join("\0"), c = M.rollups(n, (m) => m, l).map(([, m]) => {
-    const v = e.map((S) => ue(S.accessor, m[0])), L = v.map((S, f) => i[f].byKey.get(S));
+  const l = (x) => e.map((b) => _e(b.accessor, x)).join("\0"), c = M.rollups(n, (x) => x, l).map(([, x]) => {
+    const b = e.map((S) => _e(S.accessor, x[0])), L = b.map((S, p) => i[p].byKey.get(S));
     return {
-      keys: v,
+      keys: b,
       labels: L.map((S) => S.label),
       nodes: L,
-      records: m,
-      value: m.length
+      records: x,
+      value: x.length
     };
-  }), d = [a, ...e.map((m, v) => v).filter((m) => m !== a)];
-  c.sort((m, v) => {
-    for (const L of d) {
-      const S = m.nodes[L].index - v.nodes[L].index;
+  }), u = [a, ...e.map((x, b) => b).filter((x) => x !== a)];
+  c.sort((x, b) => {
+    for (const L of u) {
+      const S = x.nodes[L].index - b.nodes[L].index;
       if (S) return S;
     }
     return 0;
   });
-  const p = [];
-  for (const m of c)
-    for (let v = 1; v < e.length; v++)
-      p.push({
-        source: m.nodes[v - 1].id,
-        target: m.nodes[v].id,
-        pair: v - 1,
-        keys: m.keys,
-        labels: m.labels,
-        records: m.records,
-        value: m.value,
-        colorKey: m.keys[a]
+  const f = [];
+  for (const x of c)
+    for (let b = 1; b < e.length; b++)
+      f.push({
+        source: x.nodes[b - 1].id,
+        target: x.nodes[b].id,
+        pair: b - 1,
+        keys: x.keys,
+        labels: x.labels,
+        records: x.records,
+        value: x.value,
+        colorKey: x.keys[a]
       });
-  const u = i[a], w = e[a];
-  return w && (o.field ?? (o.field = w.field), o.accessor = (m) => ue(w.accessor, m), o.format ?? (o.format = w.format)), o.domain = _t(
+  const d = i[a], v = e[a];
+  return v && (o.field ?? (o.field = v.field), o.accessor = (x) => _e(v.accessor, x), o.format ?? (o.format = v.format)), o.domain = _t(
     o.domain,
-    u ? u.nodes.map((m) => m.key) : []
-  ), o.range ?? (o.range = Mt(o.domain.length)), {
+    d ? d.nodes.map((x) => x.key) : []
+  ), o.range ?? (o.range = Tt(o.domain.length)), {
     axes: { color: o },
     dimensions: e,
     colorIndex: a,
-    columns: i.map(({ title: m, index: v, nodes: L }) => ({
-      title: m,
-      index: v,
+    columns: i.map(({ title: x, index: b, nodes: L }) => ({
+      title: x,
+      index: b,
       nodes: L
     })),
     nodes: r,
     paths: c,
-    links: p,
+    links: f,
     total: n.length
   };
 }
-const hn = 2.3, ns = 5, is = 6, un = 2, de = 6, pe = 0.92, dn = "#333", pn = {
+const un = 2.3, ls = 5, cs = 6, dn = 2, we = 6, ve = 0.92, pn = "#333", fn = {
   data: [],
   dimensions: [],
   axis: {},
@@ -2174,10 +2174,10 @@ const hn = 2.3, ns = 5, is = 6, un = 2, de = 6, pe = 0.92, dn = "#333", pn = {
   height: 480,
   onHighlightChange: null
 };
-class Jn {
+class oi {
   constructor(t, e = {}) {
     if (!t) throw new Error("ParallelSetsChart: a container element is required");
-    this.container = t, this.options = { ...pn, ...e }, this.highlight = new It(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("parallel-sets", !0), this.svg = this.root.append("svg").attr("class", "parallel-sets__svg").attr("role", "img").on("mouseleave", () => this._setHovered(null)), this.legend = this.root.append("div").attr("class", "parallel-sets__legend"), this.tooltip = new Dt(t), this.draw(), this._observeResize();
+    this.container = t, this.options = { ...fn, ...e }, this.highlight = new Vt(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("parallel-sets", !0), this.svg = this.root.append("svg").attr("class", "parallel-sets__svg").attr("role", "img").on("mouseleave", () => this._setHovered(null)), this.legend = this.root.append("div").attr("class", "parallel-sets__legend"), this.tooltip = new jt(t), this.draw(), this._observeResize();
   }
   /** Replace the records and redraw. */
   setData(t) {
@@ -2213,35 +2213,35 @@ class Jn {
     }), this.resizeObserver.observe(this.container));
   }
   draw() {
-    const { nodeWidth: t, nodePadding: e, fillColumns: o, hover: s, unit: a } = this.options, i = Bt(this.options.fontSize), r = this.options.width ?? (this.container.clientWidth || 640);
+    const { nodeWidth: t, nodePadding: e, fillColumns: o, hover: s, unit: a } = this.options, i = Xt(this.options.fontSize), r = this.options.width ?? (this.container.clientWidth || 640);
     this.width = r, this.tooltip.fontSize(i);
-    const l = cn(this.options.data, this.options);
+    const l = hn(this.options.data, this.options);
     this.prepared = l;
-    const { axes: c, columns: d, colorIndex: p, total: u } = l, w = ie(c.color), _ = (h) => this.highlight.includes(h, { color: h.colorKey });
-    if (this.svg.selectAll("*").remove(), this._setHovered(null), this._drawLegend(w, i), !l.nodes.length || d.length < 2) {
+    const { axes: c, columns: u, colorIndex: f, total: d } = l, v = me(c.color), _ = (h) => this.highlight.includes(h, { color: h.colorKey });
+    if (this.svg.selectAll("*").remove(), this._setHovered(null), this._drawLegend(v, i), !l.nodes.length || u.length < 2) {
       this.svg.attr("width", r).attr("height", 0).attr("aria-label", "Empty parallel sets");
       return;
     }
-    const m = this.svg.node(), v = d[d.length - 1], L = (h) => Rt(`${h.label} `, i, m) + Rt(h.count, i * pe, m), S = Math.ceil(
+    const x = this.svg.node(), b = u[u.length - 1], L = (h) => Dt(`${h.label} `, i, x) + Dt(h.count, i * ve, x), S = Math.ceil(
       Math.max(
-        Rt(v.title, i * pe, m, 600),
-        ...v.nodes.map(L)
+        Dt(b.title, i * ve, x, 600),
+        ...b.nodes.map(L)
       )
-    ) + is + un, f = Math.round(hn * i), z = Math.max(r - S, t * d.length), I = [
-      [0, f + ns],
-      [z, f + this.options.height - ns]
-    ], R = Xo().nodeSort(null).linkSort(null).nodeWidth(t).nodePadding(e).extent(I)({
+    ) + cs + dn, p = Math.round(un * i), z = Math.max(r - S, t * u.length), N = [
+      [0, p + ls],
+      [z, p + this.options.height - ls]
+    ], R = Uo().nodeSort(null).linkSort(null).nodeWidth(t).nodePadding(e).extent(N)({
       nodes: l.nodes.map((h) => ({ ...h })),
       links: l.links.map((h) => ({ ...h }))
     });
-    o && fn(R.nodes, d.length, I[0][1], I[1][1]);
-    const P = on(), q = (h) => h.x1 + is, K = (h) => h.dim === p ? this.highlight.color(w(h.key), h, { color: h.key }) : !this.highlight.active || h.sourceLinks.some(_) || h.targetLinks.some(_) ? dn : Tt, ct = this.svg.attr("width", r).attr("height", f + this.options.height).attr("font-size", i).attr(
+    o && gn(R.nodes, u.length, N[0][1], N[1][1]);
+    const B = nn(), K = (h) => h.x1 + cs, Y = (h) => h.dim === f ? this.highlight.color(v(h.key), h, { color: h.key }) : !this.highlight.active || h.sourceLinks.some(_) || h.targetLinks.some(_) ? pn : Ht, at = this.svg.attr("width", r).attr("height", p + this.options.height).attr("font-size", i).attr(
       "aria-label",
-      `Parallel sets of ${u} ${a} across ${d.map((h) => h.title).join(", ")}`
-    ), at = (h) => R.nodes.find((A) => A.dim === h.index);
-    ct.append("g").selectAll("text").data(d.filter(at)).join("text").attr("class", "parallel-sets__header").attr("x", (h) => q(at(h))).attr("y", f - i * 0.9).attr("text-anchor", "start").attr("font-size", i * pe).text((h) => h.title);
-    const nt = ct.append("g").attr("fill", "none").selectAll("path").data(R.links).join("path").attr("class", "parallel-sets__link").attr("d", P).attr("stroke", (h) => this.highlight.color(w(h.colorKey), h, { color: h.colorKey })).attr("stroke-width", (h) => Math.max(h.width, 1)), U = ct.append("g").selectAll("g").data(R.nodes).join("g").attr("class", "parallel-sets__node");
-    U.append("rect").attr("class", "parallel-sets__node-rect").attr("x", (h) => h.x0).attr("y", (h) => h.y0).attr("width", (h) => h.x1 - h.x0).attr("height", (h) => Math.max(h.y1 - h.y0, 1)).attr("fill", K), U.append("rect").attr("class", "parallel-sets__node-hit").attr("x", (h) => h.x0 - de).attr("y", (h) => h.y0 - de / 2).attr("width", (h) => h.x1 - h.x0 + de * 2).attr("height", (h) => Math.max(h.y1 - h.y0, 1) + de), U.append("text").attr("class", "parallel-sets__label").attr("x", q).attr("y", (h) => (h.y0 + h.y1) / 2).attr("dy", "0.35em").attr("text-anchor", "start").text((h) => `${h.label} `).append("tspan").attr("class", "parallel-sets__label-count").attr("font-size", i * pe).text((h) => h.count), s && this._bindHover(U, nt, R);
+      `Parallel sets of ${d} ${a} across ${u.map((h) => h.title).join(", ")}`
+    ), rt = (h) => R.nodes.find(($) => $.dim === h.index);
+    at.append("g").selectAll("text").data(u.filter(rt)).join("text").attr("class", "parallel-sets__header").attr("x", (h) => K(rt(h))).attr("y", p - i * 0.9).attr("text-anchor", "start").attr("font-size", i * ve).text((h) => h.title);
+    const lt = at.append("g").attr("fill", "none").selectAll("path").data(R.links).join("path").attr("class", "parallel-sets__link").attr("d", B).attr("stroke", (h) => this.highlight.color(v(h.colorKey), h, { color: h.colorKey })).attr("stroke-width", (h) => Math.max(h.width, 1)), G = at.append("g").selectAll("g").data(R.nodes).join("g").attr("class", "parallel-sets__node");
+    G.append("rect").attr("class", "parallel-sets__node-rect").attr("x", (h) => h.x0).attr("y", (h) => h.y0).attr("width", (h) => h.x1 - h.x0).attr("height", (h) => Math.max(h.y1 - h.y0, 1)).attr("fill", Y), G.append("rect").attr("class", "parallel-sets__node-hit").attr("x", (h) => h.x0 - we).attr("y", (h) => h.y0 - we / 2).attr("width", (h) => h.x1 - h.x0 + we * 2).attr("height", (h) => Math.max(h.y1 - h.y0, 1) + we), G.append("text").attr("class", "parallel-sets__label").attr("x", K).attr("y", (h) => (h.y0 + h.y1) / 2).attr("dy", "0.35em").attr("text-anchor", "start").text((h) => `${h.label} `).append("tspan").attr("class", "parallel-sets__label-count").attr("font-size", i * ve).text((h) => h.count), s && this._bindHover(G, lt, R);
   }
   // ── Hover / tooltip ─────────────────────────────────────────────────────────
   /**
@@ -2264,8 +2264,8 @@ class Jn {
       const l = { type: "node", node: r };
       this._setHovered(l), this.tooltip.show(this._nodeTooltip(l), i, r);
     }).on("mousemove", (i) => this.tooltip.move(i)), e.on("mouseenter", (i, r) => {
-      const l = r.keys.slice(0, r.pair + 2), c = o.links.filter((u) => u.pair === r.pair && l.every((w, _) => u.keys[_] === w)).reduce((u, w) => u + w.value, 0), d = r.labels.slice(0, l.length), p = { type: "link", keys: l, labels: d, pair: r.pair, value: c };
-      this._setHovered(p), this.tooltip.show(this._linkTooltip(p), i, r);
+      const l = r.keys.slice(0, r.pair + 2), c = o.links.filter((d) => d.pair === r.pair && l.every((v, _) => d.keys[_] === v)).reduce((d, v) => d + v.value, 0), u = r.labels.slice(0, l.length), f = { type: "link", keys: l, labels: u, pair: r.pair, value: c };
+      this._setHovered(f), this.tooltip.show(this._linkTooltip(f), i, r);
     }).on("mousemove", (i) => this.tooltip.move(i));
   }
   // The hovered target: applies the emphasis, hides the tooltip when nothing is
@@ -2294,18 +2294,18 @@ class Jn {
   /** The color axis legend below the plot, when the axis has a title. */
   _drawLegend(t, e) {
     const o = this.prepared.axes.color;
-    Et(this.legend, t, { ...o, fontSize: e, highlight: this.highlight });
+    Rt(this.legend, t, { ...o, fontSize: e, highlight: this.highlight });
   }
 }
-function fn(n, t, e, o) {
+function gn(n, t, e, o) {
   for (let s = 0; s < t; s++) {
-    const a = n.filter((c) => c.dim === s).sort((c, d) => c.y0 - d.y0);
+    const a = n.filter((c) => c.dim === s).sort((c, u) => c.y0 - u.y0);
     if (a.length < 2) continue;
-    const i = a.reduce((c, d) => c + (d.y1 - d.y0), 0), r = (o - e - i) / (a.length - 1);
+    const i = a.reduce((c, u) => c + (u.y1 - u.y0), 0), r = (o - e - i) / (a.length - 1);
     let l = e;
     for (const c of a) {
-      const d = c.y1 - c.y0;
-      c.y0 = l, c.y1 = l + d, l += d + r;
+      const u = c.y1 - c.y0;
+      c.y0 = l, c.y1 = l + u, l += u + r;
     }
   }
   for (const s of n) {
@@ -2317,13 +2317,13 @@ function fn(n, t, e, o) {
       r.y1 = i + r.width / 2, i += r.width;
   }
 }
-const gn = "(blank)", Oe = {
+const mn = "(blank)", Ve = {
   field: null,
   title: null,
   domain: null,
   format: null,
   sort: "descending"
-}, mn = {
+}, xn = {
   field: null,
   title: null,
   type: "categorical",
@@ -2332,62 +2332,62 @@ const gn = "(blank)", Oe = {
   tickValues: null,
   format: null,
   sort: "descending"
-}, ee = (n, t) => {
+}, de = (n, t) => {
   const e = n == null ? void 0 : n(t);
-  return e == null || e === "" ? gn : String(e);
+  return e == null || e === "" ? mn : String(e);
 };
-function Be(n, t) {
+function Ge(n, t) {
   const e = [...n.keys()];
   t.sort === "descending" ? e.sort((s, a) => n.get(a) - n.get(s)) : t.sort === "ascending" && e.sort((s, a) => n.get(s) - n.get(a));
   const o = (t.domain ?? []).filter((s) => n.has(s));
   return [...o, ...e.filter((s) => !o.includes(s))];
 }
-function Xt(n, t) {
+function Jt(n, t) {
   if (!t.accessor)
     return n.length ? [{ key: null, label: "", index: 0, count: n.length }] : [];
   const e = M.rollup(
     n,
     (o) => o.length,
-    (o) => ee(t.accessor, o)
+    (o) => de(t.accessor, o)
   );
-  return Be(e, t).map((o, s) => ({
+  return Ge(e, t).map((o, s) => ({
     key: o,
     label: t.format ? t.format(o) : o,
     index: s,
     count: e.get(o)
   }));
 }
-function se(n = [], t = {}, e = !1) {
+function pe(n = [], t = {}, e = !1) {
   const o = n.find((i) => i.field != null && i.field === (t == null ? void 0 : t.field));
   if (!o) return t;
   const { color: s, ...a } = o;
   return e ? { ...a, ...s, ...t } : { ...a, ...t };
 }
-function xn(n = [], t = {}) {
-  var _, m, v;
-  const e = t.dimensions ?? [], o = ot(Oe, se(e, (_ = t.axis) == null ? void 0 : _.x)), s = ot(Oe, se(e, (m = t.axis) == null ? void 0 : m.y)), a = ot(mn, se(e, (v = t.axis) == null ? void 0 : v.color, !0)), i = Xt(n, o), r = Xt(n, s).map((L) => ({
+function yn(n = [], t = {}) {
+  var _, x, b;
+  const e = t.dimensions ?? [], o = it(Ve, pe(e, (_ = t.axis) == null ? void 0 : _.x)), s = it(Ve, pe(e, (x = t.axis) == null ? void 0 : x.y)), a = it(xn, pe(e, (b = t.axis) == null ? void 0 : b.color, !0)), i = Jt(n, o), r = Jt(n, s).map((L) => ({
     ...L,
     cells: i.map((S) => ({ row: L.index, column: S.index, count: 0, units: [] }))
   }));
   o.domain = i.map((L) => L.key), s.domain = r.map((L) => L.key);
-  const l = a.accessor ? (L) => ee(a.accessor, L) : () => null;
+  const l = a.accessor ? (L) => de(a.accessor, L) : () => null;
   if (a.accessor) {
     const L = M.rollup(n, (S) => S.length, l);
-    a.domain = _t(a.domain, Be(L, a)), a.range ?? (a.range = Mt(a.domain.length));
+    a.domain = _t(a.domain, Ge(L, a)), a.range ?? (a.range = Tt(a.domain.length));
   } else
     a.domain = [];
-  const c = new Map(a.domain.map((L, S) => [L, S])), d = new Map(r.map((L) => [L.key, L.index])), p = new Map(i.map((L) => [L.key, L.index]));
+  const c = new Map(a.domain.map((L, S) => [L, S])), u = new Map(r.map((L) => [L.key, L.index])), f = new Map(i.map((L) => [L.key, L.index]));
   n.forEach((L, S) => {
-    const f = s.accessor ? ee(s.accessor, L) : null, z = o.accessor ? ee(o.accessor, L) : null, I = d.get(f), R = p.get(z), P = r[I].cells[R];
-    P.units.push({ record: L, index: S, row: I, column: R, rowKey: f, columnKey: z, colorKey: l(L) }), P.count += 1;
+    const p = s.accessor ? de(s.accessor, L) : null, z = o.accessor ? de(o.accessor, L) : null, N = u.get(p), R = f.get(z), B = r[N].cells[R];
+    B.units.push({ record: L, index: S, row: N, column: R, rowKey: p, columnKey: z, colorKey: l(L) }), B.count += 1;
   });
-  const u = (L) => c.get(L.colorKey) ?? c.size, w = [];
+  const d = (L) => c.get(L.colorKey) ?? c.size, v = [];
   for (const L of r)
     for (const S of L.cells)
-      S.units.sort((f, z) => u(f) - u(z) || f.index - z.index), w.push(...S.units);
-  return { axes: { x: o, y: s, color: a }, columns: i, rows: r, units: w, total: n.length };
+      S.units.sort((p, z) => d(p) - d(z) || p.index - z.index), v.push(...S.units);
+  return { axes: { x: o, y: s, color: a }, columns: i, rows: r, units: v, total: n.length };
 }
-const te = 0.92, as = 1.7, yn = 1.9, _n = 1.9, wn = 0.67, vn = 0.5, bn = 1, kn = 1.08, rs = 3, Ln = 0.4, Re = 1.25, Mn = 2, An = 0.6, Sn = 3, $n = {
+const ue = 0.92, hs = 1.7, _n = 1.9, wn = 1.9, vn = 0.67, bn = 0.5, kn = 1, Ln = 1.08, us = 3, Mn = 0.4, Xe = 1.25, An = 2, Sn = 0.6, Tn = 3, $n = {
   data: [],
   axis: {},
   dimensions: [],
@@ -2402,10 +2402,10 @@ const te = 0.92, as = 1.7, yn = 1.9, _n = 1.9, wn = 0.67, vn = 0.5, bn = 1, kn =
   width: null,
   onHighlightChange: null
 };
-class ti {
+class ni {
   constructor(t, e = {}) {
     if (!t) throw new Error("UnitMatrixChart: a container element is required");
-    this.container = t, this.options = { ...$n, ...e }, this.highlight = new It(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("unit-matrix", !0), this.legend = this.root.append("div"), this.svg = this.root.append("div").attr("class", "unit-matrix__scroll").append("svg").attr("class", "unit-matrix__svg").attr("role", "img").on("mouseleave", () => this._setHovered(null)), this.tooltip = new Dt(t), this.draw(), this._observeResize();
+    this.container = t, this.options = { ...$n, ...e }, this.highlight = new Vt(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("unit-matrix", !0), this.legend = this.root.append("div"), this.svg = this.root.append("div").attr("class", "unit-matrix__scroll").append("svg").attr("class", "unit-matrix__svg").attr("role", "img").on("mouseleave", () => this._setHovered(null)), this.tooltip = new jt(t), this.draw(), this._observeResize();
   }
   /** Replace the records and redraw. */
   setData(t) {
@@ -2451,38 +2451,38 @@ class ti {
     }), this.resizeObserver.observe(this.container));
   }
   draw() {
-    const { unitSize: t, unitPadding: e, showCounts: o, unit: s } = this.options, a = Bt(this.options.fontSize), i = this.options.width ?? (this.container.clientWidth || 640);
+    const { unitSize: t, unitPadding: e, showCounts: o, unit: s } = this.options, a = Xt(this.options.fontSize), i = this.options.width ?? (this.container.clientWidth || 640);
     this.width = i, this.tooltip.fontSize(a);
-    const r = xn(this.options.data, this.options);
+    const r = yn(this.options.data, this.options);
     this.prepared = r;
-    const { axes: l, columns: c, rows: d, total: p } = r;
+    const { axes: l, columns: c, rows: u, total: f } = r;
     this._dropStaleSelection(l.color);
-    const u = ie(l.color);
-    if (this.svg.selectAll("*").remove(), this._setHovered(null), this._drawLegend(u, a), !d.length || !c.length) {
+    const d = me(l.color);
+    if (this.svg.selectAll("*").remove(), this._setHovered(null), this._drawLegend(d, a), !u.length || !c.length) {
       this.svg.attr("width", i).attr("height", 0).attr("aria-label", "Empty unit matrix");
       return;
     }
-    const w = this.svg.node(), _ = Tn(r, {
+    const v = this.svg.node(), _ = zn(r, {
       width: i,
       fontSize: a,
       unitSize: t,
       unitPadding: e,
       showCounts: o,
-      measure: (f, z, I) => Rt(f, z, w, I)
+      measure: (p, z, N) => Dt(p, z, v, N)
     });
     this.layout = _;
-    const m = [l.y, l.x].filter((f) => f.accessor).map((f, z) => Q(f, z ? "column" : "row")), v = this.svg.attr("width", _.width).attr("height", _.height).attr("font-size", a).attr(
+    const x = [l.y, l.x].filter((p) => p.accessor).map((p, z) => st(p, z ? "column" : "row")), b = this.svg.attr("width", _.width).attr("height", _.height).attr("font-size", a).attr(
       "aria-label",
-      `Unit matrix of ${p} ${s}${m.length ? ` by ${m.join(" and ")}` : ""}`
+      `Unit matrix of ${f} ${s}${x.length ? ` by ${x.join(" and ")}` : ""}`
     );
-    v.append("g").selectAll("line").data(_.columns).join("line").attr("class", "unit-matrix__rule unit-matrix__rule--column").attr("x1", (f) => f.x + 0.5).attr("x2", (f) => f.x + 0.5).attr("y1", _.headerHeight).attr("y2", _.height), v.append("g").selectAll("line").data(_.rows).join("line").attr("class", "unit-matrix__rule").classed("unit-matrix__rule--first", (f, z) => z === 0).attr("x1", 0).attr("x2", _.plotRight).attr("y1", (f) => f.y + 0.5).attr("y2", (f) => f.y + 0.5), v.append("g").selectAll("text").data(_.titles).join("text").attr("class", "unit-matrix__title").attr("x", (f) => f.x).attr("y", (f) => f.y).attr("text-anchor", "start").attr("font-size", a * te).text((f) => f.text);
-    const L = v.append("g").selectAll("text").data([..._.columns, ..._.rows].filter((f) => f.label)).join("text").attr("class", "unit-matrix__label").attr("x", (f) => f.label.x).attr("y", (f) => f.label.y).attr("dy", (f) => f.label.middle ? "0.35em" : null).attr("text-anchor", "start");
-    L.selectAll("tspan").data((f) => f.label.lines.map((z, I) => ({ text: z, i: I, x: f.label.x }))).join("tspan").attr("x", (f) => f.x).attr("dy", (f) => f.i ? `${Re}em` : null).text((f) => f.text), o && L.append("tspan").attr("class", "unit-matrix__label-count").attr("font-size", a * te).attr("x", (f) => f.label.countBelow ? f.label.x : null).attr("dy", (f) => f.label.countBelow ? `${Re / te}em` : null).text((f) => f.label.countBelow ? f.band.count : ` ${f.band.count}`), L.filter((f) => f.label.cut).append("title").text((f) => f.band.label);
-    const S = v.append("g").selectAll("rect").data(_.units).join("rect").attr("class", "unit-matrix__unit").attr("x", (f) => f.x + 0.5).attr("y", (f) => f.y + 0.5).attr("width", t - 1).attr("height", t - 1).attr("rx", Mn).attr(
+    b.append("g").selectAll("line").data(_.columns).join("line").attr("class", "unit-matrix__rule unit-matrix__rule--column").attr("x1", (p) => p.x + 0.5).attr("x2", (p) => p.x + 0.5).attr("y1", _.headerHeight).attr("y2", _.height), b.append("g").selectAll("line").data(_.rows).join("line").attr("class", "unit-matrix__rule").classed("unit-matrix__rule--first", (p, z) => z === 0).attr("x1", 0).attr("x2", _.plotRight).attr("y1", (p) => p.y + 0.5).attr("y2", (p) => p.y + 0.5), b.append("g").selectAll("text").data(_.titles).join("text").attr("class", "unit-matrix__title").attr("x", (p) => p.x).attr("y", (p) => p.y).attr("text-anchor", "start").attr("font-size", a * ue).text((p) => p.text);
+    const L = b.append("g").selectAll("text").data([..._.columns, ..._.rows].filter((p) => p.label)).join("text").attr("class", "unit-matrix__label").attr("x", (p) => p.label.x).attr("y", (p) => p.label.y).attr("dy", (p) => p.label.middle ? "0.35em" : null).attr("text-anchor", "start");
+    L.selectAll("tspan").data((p) => p.label.lines.map((z, N) => ({ text: z, i: N, x: p.label.x }))).join("tspan").attr("x", (p) => p.x).attr("dy", (p) => p.i ? `${Xe}em` : null).text((p) => p.text), o && L.append("tspan").attr("class", "unit-matrix__label-count").attr("font-size", a * ue).attr("x", (p) => p.label.countBelow ? p.label.x : null).attr("dy", (p) => p.label.countBelow ? `${Xe / ue}em` : null).text((p) => p.label.countBelow ? p.band.count : ` ${p.band.count}`), L.filter((p) => p.label.cut).append("title").text((p) => p.band.label);
+    const S = b.append("g").selectAll("rect").data(_.units).join("rect").attr("class", "unit-matrix__unit").attr("x", (p) => p.x + 0.5).attr("y", (p) => p.y + 0.5).attr("width", t - 1).attr("height", t - 1).attr("rx", An).attr(
       "fill",
-      (f) => this.highlight.color(u(f.unit.colorKey), f.unit.record, { color: f.unit.colorKey })
+      (p) => this.highlight.color(d(p.unit.colorKey), p.unit.record, { color: p.unit.colorKey })
     );
-    v.append("g").selectAll("text").data(_.counts).join("text").attr("class", "unit-matrix__count").attr("x", (f) => f.x).attr("y", (f) => f.y).attr("dy", "0.35em").attr("text-anchor", "start").attr("font-size", a * te).text((f) => f.count), this._bindHover(S);
+    b.append("g").selectAll("text").data(_.counts).join("text").attr("class", "unit-matrix__count").attr("x", (p) => p.x).attr("y", (p) => p.y).attr("dy", "0.35em").attr("text-anchor", "start").attr("font-size", a * ue).text((p) => p.count), this._bindHover(S);
   }
   // ── Highlight ───────────────────────────────────────────────────────────────
   // A legend selection only names categories of the color axis it was made on.
@@ -2510,140 +2510,140 @@ class ti {
   // left out when it repeats the row or column field
   _unitTooltip(t) {
     const { axes: e, columns: o, rows: s } = this.prepared, a = [];
-    e.y.accessor && a.push([Q(e.y, "Row"), s[t.row].label]), e.x.accessor && a.push([Q(e.x, "Column"), o[t.column].label]);
+    e.y.accessor && a.push([st(e.y, "Row"), s[t.row].label]), e.x.accessor && a.push([st(e.x, "Column"), o[t.column].label]);
     const i = [e.x, e.y].some(
       (r) => typeof r.field == "string" && r.field === e.color.field
     );
     if (e.color.accessor && !i) {
       const r = e.color.format ?? ((l) => l);
-      a.push([Q(e.color, "Color"), r(t.colorKey)]);
+      a.push([st(e.color, "Color"), r(t.colorKey)]);
     }
     return this.options.tooltip ? this.options.tooltip(t, a) : a;
   }
   /** The color axis legend above the plot, when the axis has a title. */
   _drawLegend(t, e) {
     const o = this.prepared.axes.color, s = o.accessor ? o.title : null;
-    Et(this.legend, t, { ...o, title: s, fontSize: e, highlight: this.highlight }), this.legend.classed("unit-matrix__legend", !0);
+    Rt(this.legend, t, { ...o, title: s, fontSize: e, highlight: this.highlight }), this.legend.classed("unit-matrix__legend", !0);
   }
 }
-function ls(n, t, e) {
+function ds(n, t, e) {
   if (!n) return 0;
   const o = Math.ceil(n / t), s = o * t - n;
   return e > s ? o + 1 : o;
 }
-function Tn(n, t) {
-  const { axes: e, columns: o, rows: s } = n, { width: a, fontSize: i, unitSize: r, unitPadding: l, showCounts: c, measure: d } = t, p = r + l, u = i * te, w = Math.round(i * wn), _ = Math.round(i * vn), m = e.x.accessor != null, v = e.y.accessor != null, L = m && e.x.title || null, S = v && e.y.title || null, f = (E) => c ? d(E, u) : 0, z = (E) => d(`${E.label} `, i) + f(E.count), I = (E) => E ? d(E.toUpperCase(), u, 600) * kn : 0, R = (E) => c ? Math.ceil((f(E) + rs) / p) : 0, P = v ? Math.max(0, ...s.map(z)) : 0, q = Math.ceil(
-    Math.max(Math.min(P, a * Ln), I(S))
-  ), K = q ? q + Math.round(i * bn) : 0, ct = o.map((E, C) => s.map((F) => F.cells[C])), at = (E, C) => Math.max(1, ...ct[E].map((F) => ls(F.count, C, R(F.count)))), nt = ct.map(
-    (E) => Math.max(1, ...E.map((C) => C.count + R(C.count)))
-  ), U = (E) => 2 * w + E * r + (E - 1) * l, et = (E, C) => {
-    const F = An * E / o.length, Y = C.map((N) => Math.max(N, F)), Z = (N, G) => Math.max(U(G), Y[N]), V = o.map(
-      (N, G) => Math.max(1, Math.floor((Y[G] - 2 * w + l) / p))
+function zn(n, t) {
+  const { axes: e, columns: o, rows: s } = n, { width: a, fontSize: i, unitSize: r, unitPadding: l, showCounts: c, measure: u } = t, f = r + l, d = i * ue, v = Math.round(i * vn), _ = Math.round(i * bn), x = e.x.accessor != null, b = e.y.accessor != null, L = x && e.x.title || null, S = b && e.y.title || null, p = (C) => c ? u(C, d) : 0, z = (C) => u(`${C.label} `, i) + p(C.count), N = (C) => C ? u(C.toUpperCase(), d, 600) * Ln : 0, R = (C) => c ? Math.ceil((p(C) + us) / f) : 0, B = b ? Math.max(0, ...s.map(z)) : 0, K = Math.ceil(
+    Math.max(Math.min(B, a * Mn), N(S))
+  ), Y = K ? K + Math.round(i * kn) : 0, at = o.map((C, E) => s.map((F) => F.cells[E])), rt = (C, E) => Math.max(1, ...at[C].map((F) => ds(F.count, E, R(F.count)))), lt = at.map(
+    (C) => Math.max(1, ...C.map((E) => E.count + R(E.count)))
+  ), G = (C) => 2 * v + C * r + (C - 1) * l, ct = (C, E) => {
+    const F = Sn * C / o.length, J = E.map((X) => Math.max(X, F)), tt = (X, q) => Math.max(G(q), J[X]), j = o.map(
+      (X, q) => Math.max(1, Math.floor((J[q] - 2 * v + l) / f))
     );
-    let g = V.reduce((N, G, it) => N + Z(it, G), 0);
+    let y = j.reduce((X, q, ut) => X + tt(ut, q), 0);
     for (; ; ) {
-      let N = -1, G = 1;
-      if (V.forEach((it, yt) => {
-        if (it >= nt[yt] || g + Z(yt, it + 1) - Z(yt, it) > E) return;
-        const W = at(yt, it);
-        W > G && (N = yt, G = W);
-      }), N < 0) break;
-      g += Z(N, V[N] + 1) - Z(N, V[N]), V[N] += 1;
+      let X = -1, q = 1;
+      if (j.forEach((ut, yt) => {
+        if (ut >= lt[yt] || y + tt(yt, ut + 1) - tt(yt, ut) > C) return;
+        const W = rt(yt, ut);
+        W > q && (X = yt, q = W);
+      }), X < 0) break;
+      y += tt(X, j[X] + 1) - tt(X, j[X]), j[X] += 1;
     }
-    const H = Math.max(0, E - g) / o.length, D = V.map((N, G) => Z(G, N) + H);
-    return { perLine: V, widths: D, total: D.reduce((N, G) => N + G, 0) };
-  }, h = o.length * U(Sn), A = () => Math.max(a - K, h), b = o.map((E) => m ? z(E) : 0).map((E) => m ? Math.ceil(E) + w : 0);
-  let x = et(A(), b);
-  if (m && x.total > A() + 0.5) {
-    const E = o.map(
-      (C) => Math.max(f(C.count), ...qs(C.label).map((F) => d(F, i)))
+    const O = Math.max(0, C - y) / o.length, V = j.map((X, q) => tt(q, X) + O);
+    return { perLine: j, widths: V, total: V.reduce((X, q) => X + q, 0) };
+  }, h = o.length * G(Tn), $ = () => Math.max(a - Y, h), w = o.map((C) => x ? z(C) : 0).map((C) => x ? Math.ceil(C) + v : 0);
+  let m = ct($(), w);
+  if (x && m.total > $() + 0.5) {
+    const C = o.map(
+      (E) => Math.max(p(E.count), ...Ks(E.label).map((F) => u(F, i)))
     );
-    x = et(
-      A(),
-      E.map((C) => Math.ceil(C) + w)
+    m = ct(
+      $(),
+      C.map((E) => Math.ceil(E) + v)
     );
   }
-  const T = K + x.total, B = o.map((E, C) => {
-    if (!m) return null;
-    const F = x.widths[C] - w, Y = Ts(E.label, F, (V) => d(V, i)), Z = d(`${Y[Y.length - 1]} `, i) + f(E.count);
-    return { lines: Y, countBelow: c && Z > F + 0.5 };
-  }), J = i * Re, st = Math.max(
+  const A = Y + m.total, P = o.map((C, E) => {
+    if (!x) return null;
+    const F = m.widths[E] - v, J = Hs(C.label, F, (j) => u(j, i)), tt = u(`${J[J.length - 1]} `, i) + p(C.count);
+    return { lines: J, countBelow: c && tt > F + 0.5 };
+  }), nt = i * Xe, D = Math.max(
     1,
-    ...B.map((E) => E ? E.lines.length + (E.countBelow ? 1 : 0) : 1)
-  ), lt = L ? Math.round(i * as) : 0, ht = m ? Math.round(i * yn + (st - 1) * J) : 0, rt = Math.max(
-    lt + ht,
-    S ? Math.round(i * as) : 0,
+    ...P.map((C) => C ? C.lines.length + (C.countBelow ? 1 : 0) : 1)
+  ), Z = L ? Math.round(i * hs) : 0, Q = x ? Math.round(i * _n + (D - 1) * nt) : 0, et = Math.max(
+    Z + Q,
+    S ? Math.round(i * hs) : 0,
     Math.round(i * 0.5)
-  ), tt = [];
-  L && tt.push({ text: L, x: K + w, y: Math.round(i * 1.05) }), S && tt.push({ text: S, x: 0, y: rt - Math.round(i * 0.6) });
-  let ut = K;
-  const dt = o.map((E, C) => {
-    const F = { band: E, x: ut, width: x.widths[C], perLine: x.perLine[C], label: null };
-    if (m) {
-      const { lines: Y, countBelow: Z } = B[C], V = Y.length - 1 + (Z ? 1 : 0);
+  ), ot = [];
+  L && ot.push({ text: L, x: Y + v, y: Math.round(i * 1.05) }), S && ot.push({ text: S, x: 0, y: et - Math.round(i * 0.6) });
+  let ht = Y;
+  const ft = o.map((C, E) => {
+    const F = { band: C, x: ht, width: m.widths[E], perLine: m.perLine[E], label: null };
+    if (x) {
+      const { lines: J, countBelow: tt } = P[E], j = J.length - 1 + (tt ? 1 : 0);
       F.label = {
-        lines: Y,
-        countBelow: Z,
-        x: ut + w,
-        y: rt - Math.round(i * 0.6) - V * J,
+        lines: J,
+        countBelow: tt,
+        x: ht + v,
+        y: et - Math.round(i * 0.6) - j * nt,
         middle: !1,
         cut: !1
       };
     }
-    return ut += x.widths[C], F;
-  }), pt = [], X = [];
-  let xt = rt;
-  const bt = s.map((E) => {
-    const C = Math.max(
+    return ht += m.widths[E], F;
+  }), xt = [], U = [];
+  let mt = et;
+  const Lt = s.map((C) => {
+    const E = Math.max(
       1,
-      ...E.cells.map((V, g) => ls(V.count, x.perLine[g], R(V.count)))
+      ...C.cells.map((j, y) => ds(j.count, m.perLine[y], R(j.count)))
     ), F = Math.max(
-      2 * _ + C * r + (C - 1) * l,
-      Math.ceil(i * _n)
-    ), Y = xt + _ + r / 2, Z = { band: E, y: xt, height: F, label: null };
-    if (v) {
-      const V = q - f(E.count) - d(" ", i), g = z(E) <= q ? E.label : ze(E.label, V, (H) => d(H, i));
-      Z.label = {
-        lines: [g],
+      2 * _ + E * r + (E - 1) * l,
+      Math.ceil(i * wn)
+    ), J = mt + _ + r / 2, tt = { band: C, y: mt, height: F, label: null };
+    if (b) {
+      const j = K - p(C.count) - u(" ", i), y = z(C) <= K ? C.label : he(C.label, j, (O) => u(O, i));
+      tt.label = {
+        lines: [y],
         countBelow: !1,
         x: 0,
-        y: Y,
+        y: J,
         middle: !0,
-        cut: g !== E.label
+        cut: y !== C.label
       };
     }
-    return E.cells.forEach((V, g) => {
-      const H = dt[g], D = H.x + w;
-      if (V.units.forEach((yt, W) => {
-        pt.push({
+    return C.cells.forEach((j, y) => {
+      const O = ft[y], V = O.x + v;
+      if (j.units.forEach((yt, W) => {
+        xt.push({
           unit: yt,
-          x: D + W % H.perLine * p,
-          y: xt + _ + Math.floor(W / H.perLine) * p
+          x: V + W % O.perLine * f,
+          y: mt + _ + Math.floor(W / O.perLine) * f
         });
-      }), !c || !V.count) return;
-      const N = Math.ceil(V.count / H.perLine) - 1, G = V.count - N * H.perLine, it = H.perLine - G >= R(V.count);
-      X.push({
-        count: V.count,
-        x: it ? D + G * p - l + rs : D,
-        y: Y + (it ? N : N + 1) * p
+      }), !c || !j.count) return;
+      const X = Math.ceil(j.count / O.perLine) - 1, q = j.count - X * O.perLine, ut = O.perLine - q >= R(j.count);
+      U.push({
+        count: j.count,
+        x: ut ? V + q * f - l + us : V,
+        y: J + (ut ? X : X + 1) * f
       });
-    }), xt += F, Z;
+    }), mt += F, tt;
   });
   return {
     // The small allowance keeps a float sum from rounding a fitting chart up a pixel
-    width: Math.max(a, Math.ceil(T - 0.01)),
-    height: xt + 1,
-    headerHeight: rt,
-    plotLeft: K,
-    plotRight: T,
-    titles: tt,
-    columns: dt,
-    rows: bt,
-    units: pt,
-    counts: X
+    width: Math.max(a, Math.ceil(A - 0.01)),
+    height: mt + 1,
+    headerHeight: et,
+    plotLeft: Y,
+    plotRight: A,
+    titles: ot,
+    columns: ft,
+    rows: Lt,
+    units: xt,
+    counts: U
   };
 }
-const zn = {
+const En = {
   field: null,
   title: null,
   type: "categorical",
@@ -2652,71 +2652,108 @@ const zn = {
   tickValues: null,
   format: null,
   sort: "descending"
-}, En = { field: null, title: null, domain: null, ticks: null, format: null };
-function Cn(n = [], t = {}) {
-  var b;
-  const e = t.dimensions ?? [], o = t.axis ?? {}, s = (x) => ot(Oe, se(e, o[x])), a = s("x"), i = s("y"), r = s("group"), l = s("series"), c = ot(En, o.value), d = ((b = o.color) == null ? void 0 : b.field) != null, p = l.field != null ? l : r, u = {};
-  !d && p.title != null && (u.title = p.title), !d && p.format != null && (u.format = p.format);
-  const w = ot(
-    zn,
-    se(
+}, Cn = {
+  field: null,
+  title: null,
+  domain: null,
+  ticks: null,
+  format: null,
+  showTicks: !0,
+  showTitle: !0
+}, Is = {
+  ...Ve,
+  shared: !1,
+  showTicks: !0,
+  showTitle: !0,
+  position: "column"
+}, Hn = { ...Is, showTicks: !1 };
+function On(n = [], t = {}) {
+  var w;
+  const e = t.dimensions ?? [], o = t.axis ?? {}, s = (m) => it(
+    m === "series" ? Hn : Is,
+    pe(e, o[m])
+  ), a = s("x"), i = s("y"), r = s("group"), l = s("series"), c = it(Cn, o.value), u = ((w = o.color) == null ? void 0 : w.field) != null, f = l.field != null ? l : r, d = {};
+  !u && f.title != null && (d.title = f.title), !u && f.format != null && (d.format = f.format);
+  const v = it(
+    En,
+    pe(
       e,
-      { ...u, ...o.color, field: d ? o.color.field : p.field },
+      { ...d, ...o.color, field: u ? o.color.field : f.field },
       !0
     )
-  ), _ = Xt(n, a), m = Xt(n, r), v = Xt(n, l), L = Xt(n, i).map((x) => ({
-    ...x,
-    cells: _.map((T) => ({ row: x.index, column: T.index, bars: [] }))
+  ), _ = Jt(n, a), x = Jt(n, r), b = Jt(n, l), L = Jt(n, i).map((m) => ({
+    ...m,
+    cells: _.map((A) => ({ row: m.index, column: A.index, bars: [] }))
   }));
-  a.domain = _.map((x) => x.key), i.domain = L.map((x) => x.key), r.domain = m.map((x) => x.key), l.domain = v.map((x) => x.key);
-  const S = (x) => x.accessor ? (T) => ee(x.accessor, T) : () => null, f = S(w);
-  if (w.accessor) {
-    const x = M.rollup(n, (T) => T.length, f);
-    w.domain = _t(w.domain, Be(x, w)), w.range ?? (w.range = Mt(w.domain.length));
+  a.domain = _.map((m) => m.key), i.domain = L.map((m) => m.key), r.domain = x.map((m) => m.key), l.domain = b.map((m) => m.key);
+  const S = (m) => m.accessor ? (A) => de(m.accessor, A) : () => null, p = S(v);
+  if (v.accessor) {
+    const m = M.rollup(n, (A) => A.length, p);
+    v.domain = _t(v.domain, Ge(m, v)), v.range ?? (v.range = Tt(v.domain.length));
   } else
-    w.domain = [];
-  const z = new Map(w.domain.map((x, T) => [x, T])), I = c.accessor ? (x) => +c.accessor(x) || 0 : () => 1, R = (x) => new Map(x.map((T) => [T.key, T.index])), [P, q, K, ct] = [L, _, m, v].map(
+    v.domain = [];
+  const z = new Map(v.domain.map((m, A) => [m, A])), N = c.accessor ? (m) => +c.accessor(m) || 0 : () => 1, R = (m) => new Map(m.map((A) => [A.key, A.index])), [B, K, Y, at] = [L, _, x, b].map(
     R
-  ), [at, nt, U, et] = [i, a, r, l].map(S), h = [], A = M.group(n, at, nt, U, et);
-  for (const [x, T] of A)
-    for (const [B, J] of T)
-      for (const [st, lt] of J)
-        for (const [ht, rt] of lt) {
-          const tt = {
-            row: P.get(x),
-            column: q.get(B),
-            group: K.get(st),
-            series: ct.get(ht),
-            rowKey: x,
-            columnKey: B,
-            groupKey: st,
-            seriesKey: ht,
-            value: M.sum(rt, I),
-            records: rt,
+  ), [rt, lt, G, ct] = [i, a, r, l].map(S), h = [], $ = M.group(n, rt, lt, G, ct);
+  for (const [m, A] of $)
+    for (const [P, nt] of A)
+      for (const [D, Z] of nt)
+        for (const [Q, et] of Z) {
+          const ot = {
+            row: B.get(m),
+            column: K.get(P),
+            group: Y.get(D),
+            series: at.get(Q),
+            rowKey: m,
+            columnKey: P,
+            groupKey: D,
+            seriesKey: Q,
+            value: M.sum(et, N),
+            records: et,
             segments: []
           };
-          let ut = 0;
-          tt.segments = M.groups(rt, f).sort((dt, pt) => (z.get(dt[0]) ?? 0) - (z.get(pt[0]) ?? 0)).map(([dt, pt]) => {
-            const X = ut;
-            return ut += M.sum(pt, I), { bar: tt, colorKey: dt, value: ut - X, start: X, end: ut, records: pt };
-          }), h.push(tt);
+          let ht = 0;
+          ot.segments = M.groups(et, p).sort((ft, xt) => (z.get(ft[0]) ?? 0) - (z.get(xt[0]) ?? 0)).map(([ft, xt]) => {
+            const U = ht;
+            return ht += M.sum(xt, N), { bar: ot, colorKey: ft, value: ht - U, start: U, end: ht, records: xt };
+          }), h.push(ot);
         }
   h.sort(
-    (x, T) => x.row - T.row || x.column - T.column || x.group - T.group || x.series - T.series
+    (m, A) => m.row - A.row || m.column - A.column || m.group - A.group || m.series - A.series
   );
-  for (const x of h) L[x.row].cells[x.column].bars.push(x);
-  const $ = M.max(h, (x) => x.value) || 1;
-  return c.domain ?? (c.domain = M.scaleLinear().domain([0, $]).nice(c.ticks ?? 4).domain()), {
-    axes: { x: a, y: i, group: r, series: l, color: w, value: c },
+  for (const m of h) L[m.row].cells[m.column].bars.push(m);
+  for (const m of L) {
+    const A = m.cells.flatMap((D) => D.bars), P = M.rollup(
+      A,
+      (D) => new Set(D.map((Z) => Z.series)),
+      (D) => D.group
+    );
+    m.groups = x.filter((D) => r.shared || P.has(D.index)).map((D, Z) => ({
+      ...D,
+      slot: Z,
+      series: b.filter((Q) => {
+        var et;
+        return l.shared || ((et = P.get(D.index)) == null ? void 0 : et.has(Q.index));
+      }).map((Q, et) => ({ ...Q, slot: et }))
+    }));
+    const nt = new Map(m.groups.map((D) => [D.index, D]));
+    for (const D of A) {
+      const Z = nt.get(D.group);
+      D.groupSlot = Z.slot, D.seriesSlot = Z.series.find((Q) => Q.index === D.series).slot;
+    }
+  }
+  const T = M.max(h, (m) => m.value) || 1;
+  return c.domain ?? (c.domain = M.scaleLinear().domain([0, T]).nice(c.ticks ?? 4).domain()), {
+    axes: { x: a, y: i, group: r, series: l, color: v, value: c },
     columns: _,
     rows: L,
-    groups: m,
-    series: v,
+    groups: x,
+    series: b,
     bars: h,
     total: n.length
   };
 }
-const Hn = 0.92, $e = 1.7, On = 1.9, cs = 1.25, Rn = 1.9, Pn = 0.67, In = 0.67, Bn = 1, Dn = 1.08, Nn = 0.22, Vn = 9, Fn = 5, hs = 4, jn = 1, Gn = {
+const Rn = 0.92, Ie = 1.7, In = 1.9, ps = 1.25, Pn = 1.9, Bn = 1.9, Dn = 1.6, Nn = 0.67, Vn = 0.67, Xn = 1, jn = 1.08, Fn = 0.22, Gn = 9, Un = 5, fs = 4, Wn = 1, qn = {
   data: [],
   axis: {},
   dimensions: [],
@@ -2732,10 +2769,10 @@ const Hn = 0.92, $e = 1.7, On = 1.9, cs = 1.25, Rn = 1.9, Pn = 0.67, In = 0.67, 
   width: null,
   onHighlightChange: null
 };
-class ei {
+class ii {
   constructor(t, e = {}) {
     if (!t) throw new Error("BarMatrixChart: a container element is required");
-    this.container = t, this.options = { ...Gn, ...e }, this.highlight = new It(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("bar-matrix", !0), this.legend = this.root.append("div"), this.svg = this.root.append("div").attr("class", "bar-matrix__scroll").append("svg").attr("class", "bar-matrix__svg").attr("role", "img").on("mouseleave", () => this._setHovered(null)), this.tooltip = new Dt(t), this.draw(), this._observeResize();
+    this.container = t, this.options = { ...qn, ...e }, this.highlight = new Vt(() => this._onHighlightChange()), this.hovered = null, this.root = M.select(t).classed("bar-matrix", !0), this.legend = this.root.append("div"), this.svg = this.root.append("div").attr("class", "bar-matrix__scroll").append("svg").attr("class", "bar-matrix__svg").attr("role", "img").on("mouseleave", () => this._setHovered(null)), this.tooltip = new jt(t), this.draw(), this._observeResize();
   }
   /** Replace the records and redraw. */
   setData(t) {
@@ -2777,66 +2814,98 @@ class ei {
     }), this.resizeObserver.observe(this.container));
   }
   draw() {
-    const { barSize: t, barPadding: e, groupPadding: o, showValues: s, unit: a } = this.options, i = Bt(this.options.fontSize), r = this.options.width ?? (this.container.clientWidth || 640);
+    const { barSize: t, barPadding: e, groupPadding: o, showValues: s, unit: a } = this.options, i = Xt(this.options.fontSize), r = this.options.width ?? (this.container.clientWidth || 640);
     this.width = r, this.tooltip.fontSize(i);
-    const l = Cn(this.options.data, this.options);
+    const l = On(this.options.data, this.options);
     this.prepared = l;
-    const { axes: c, columns: d, rows: p, groups: u, series: w, bars: _, total: m } = l;
+    const { axes: c, columns: u, rows: f, groups: d, series: v, bars: _, total: x } = l;
     this._dropStaleSelection(c.color);
-    const v = ie(c.color);
-    if (this.svg.selectAll("*").remove(), this._setHovered(null), this._drawLegend(v, i), !p.length || !d.length) {
+    const b = me(c.color);
+    if (this.svg.selectAll("*").remove(), this._setHovered(null), this._drawLegend(b, i), !f.length || !u.length) {
       this.svg.attr("width", r).attr("height", 0).attr("aria-label", "Empty bar matrix");
       return;
     }
-    const L = this.svg.node(), S = (k, gt = i, wt) => Rt(k, gt, L, wt), f = i * Hn, z = Math.round(i * Pn), I = Math.round(i * In), R = Math.round(i * Bn), P = c.x.accessor != null, q = c.y.accessor != null, K = c.group.accessor != null, ct = (k) => k ? S(k.toUpperCase(), f, 600) * Dn : 0, at = (k, gt, wt, ae) => k ? Math.ceil(
+    const L = this.svg.node(), S = (k, gt = i, kt) => Dt(k, gt, L, kt), p = i * Rn, z = Math.round(i * Nn), N = Math.round(i * Vn), R = Math.round(i * Xn), B = (k) => k.accessor != null && k.showTicks !== !1, K = B(c.y), Y = B(c.x), at = B(c.group), rt = B(c.series), lt = c.value.showTicks !== !1, G = (k, gt) => gt && k.showTitle !== !1 && k.title || null, ct = (k) => k ? S(k.toUpperCase(), p, 600) * jn : 0, h = Math.min(p, t + e), $ = (k, gt, kt, Ct, g) => k ? Math.ceil(
       Math.max(
         Math.min(
-          Math.max(0, ...gt.map((Nt) => S(Nt.label, i, ae))),
-          r * Nn
+          Math.max(0, ...gt.map((I) => S(I.label, Ct, g))),
+          r * Fn
         ),
-        ct(wt)
+        ct(kt)
       )
-    ) : 0, nt = at(q, p, c.y.title, 600), U = at(K, u, c.group.title), et = nt ? nt + R : 0, h = et + (U ? U + R : 0), A = Math.max((r - h) / d.length, i * Vn), $ = h + A * d.length, [, b] = c.value.domain, x = (k) => c.value.format ?? M.scaleLinear().domain(c.value.domain).tickFormat(k), T = s ? Math.ceil(S(x(4)(b), f)) + hs + 2 : 0, B = Math.max(A - 2 * z - T, i * 2), J = M.scaleLinear().domain(c.value.domain).range([0, B]), st = c.value.ticks ?? Math.max(2, Math.floor(B / (i * Fn))), lt = x(st), ht = Q(c.value, a.charAt(0).toUpperCase() + a.slice(1)), rt = P && c.x.title || null, tt = q && c.y.title || null, ut = K && c.group.title || null, dt = i * cs, pt = d.map(
-      (k) => P ? Ts(k.label, A - z, (gt) => S(gt)) : []
-    ), X = Math.max(1, ...pt.map((k) => k.length)), xt = rt ? Math.round(i * $e) : 0, bt = P ? Math.round(i * On + (X - 1) * dt) : 0, E = Math.max(
-      xt + bt,
-      tt || ut ? Math.round(i * $e) : 0,
+    ) : 0, T = G(c.y, K), w = G(c.group, at), m = G(c.series, rt), A = at && c.group.position === "heading", P = A ? Math.round(i * Dn) : 0, nt = A ? [w, m].filter(Boolean).join(" / ") : m, D = $(K, f, T, i, 600), Z = $(at && !A, d, w, i), Q = Math.max(
+      $(rt, v, nt, h),
+      $(A, d, nt, i, 600)
+    ), et = D ? D + R : 0, ot = et + (Z ? Z + R : 0), ht = ot + (Q ? Q + R : 0), ft = Math.max((r - ht) / u.length, i * Gn), xt = ht + ft * u.length, [, U] = c.value.domain, mt = (k) => c.value.format ?? M.scaleLinear().domain(c.value.domain).tickFormat(k), Lt = s ? Math.ceil(S(mt(4)(U), p)) + fs + 2 : 0, C = Math.max(ft - 2 * z - Lt, i * 2), E = M.scaleLinear().domain(c.value.domain).range([0, C]), F = c.value.ticks ?? Math.max(2, Math.floor(C / (i * Un))), J = mt(F), tt = st(c.value, a.charAt(0).toUpperCase() + a.slice(1)), j = c.value.showTitle !== !1 ? tt : null, y = G(c.x, c.x.accessor != null), O = i * ps, V = u.map(
+      (k) => Y ? Hs(k.label, ft - z, (gt) => S(gt)) : []
+    ), X = Math.max(1, ...V.map((k) => k.length)), q = y ? Math.round(i * Ie) : 0, ut = Y ? Math.round(i * In + (X - 1) * O) : 0, yt = Math.max(
+      q + ut,
+      T || w || m ? Math.round(i * Ie) : 0,
       Math.round(i * 0.5)
-    ), C = E - Math.round(i * 0.6), F = [];
-    rt && F.push({ text: rt, x: h + z, y: Math.round(i * 1.05) }), tt && F.push({ text: tt, x: 0, y: C }), ut && F.push({ text: ut, x: et, y: C });
-    const Y = w.length * t + (w.length - 1) * e, Z = 2 * I + u.length * Y + (u.length - 1) * o, V = (k) => h + k * A, g = (k) => E + k * Z, H = (k, gt) => g(k) + I + gt * (Y + o), D = (k) => H(k.row, k.group) + k.series * (t + e), N = (k) => V(k.column) + z, G = g(p.length), it = Math.round(i * Rn), yt = G + it + Math.round(i * $e) + 1, W = [c.y, c.x, c.group, c.series].filter((k) => k.accessor).map((k) => Q(k, "category")), vt = this.svg.attr("width", Math.max(r, Math.ceil($ - 0.01))).attr("height", yt).attr("font-size", i).attr(
+    ), W = yt - Math.round(i * 0.6), Mt = [];
+    y && Mt.push({ text: y, x: ht + z, y: Math.round(i * 1.05) }), T && Mt.push({ text: T, x: 0, y: W }), w && !A && Mt.push({ text: w, x: et, y: W }), nt && Mt.push({ text: nt, x: ot, y: W });
+    const wt = t + e, It = (k) => Math.max(1, k.series.length) * wt - e;
+    let $t = yt;
+    const H = f.map((k) => {
+      let gt = N;
+      const kt = k.groups.map((I) => {
+        const pt = $t + gt + P;
+        return gt += P + It(I) + o, pt;
+      }), Ct = gt - (k.groups.length ? o : 0) + N, g = { y: $t, height: Math.max(Ct, Math.ceil(i * Bn)), groupY: kt };
+      return $t += g.height, g;
+    }), dt = (k) => ht + k * ft, At = (k) => H[k.row].groupY[k.groupSlot] + k.seriesSlot * wt, Kt = (k) => dt(k.column) + z, vt = $t, ne = lt ? Math.round(i * Pn) : 0, Ft = j ? Math.round(i * Ie) : 0, Te = vt + ne + Ft + 1, ie = [c.y, c.x, c.group, c.series].filter((k) => k.accessor).map((k) => st(k, "category")), zt = this.svg.attr("width", Math.max(r, Math.ceil(xt - 0.01))).attr("height", Te).attr("font-size", i).attr(
       "aria-label",
-      `Bar matrix of ${m} ${a}${W.length ? ` by ${W.join(", ")}` : ""}`
+      `Bar matrix of ${x} ${a}${ie.length ? ` by ${ie.join(", ")}` : ""}`
     );
-    vt.append("g").selectAll("line").data(d).join("line").attr("class", "bar-matrix__rule bar-matrix__rule--column").attr("x1", (k) => V(k.index) + 0.5).attr("x2", (k) => V(k.index) + 0.5).attr("y1", E).attr("y2", G), vt.append("g").selectAll("line").data(p).join("line").attr("class", "bar-matrix__rule").classed("bar-matrix__rule--first", (k) => k.index === 0).attr("x1", 0).attr("x2", $).attr("y1", (k) => g(k.index) + 0.5).attr("y2", (k) => g(k.index) + 0.5);
-    const kt = J.ticks(st), Ct = vt.append("g").selectAll("g").data(d).join("g").attr("transform", (k) => `translate(${V(k.index) + z},0)`);
-    Ct.selectAll("line").data(kt).join("line").attr("class", (k) => k === 0 ? "bar-matrix__baseline" : "bar-matrix__grid").attr("x1", (k) => Math.round(J(k)) + 0.5).attr("x2", (k) => Math.round(J(k)) + 0.5).attr("y1", E).attr("y2", G), Ct.append("g").attr("class", "bar-matrix__axis").attr("transform", `translate(0.5,${G})`).call(M.axisBottom(J).tickValues(kt).tickFormat(lt).tickSizeOuter(0)).attr("font-family", null).attr("font-size", f), F.push({
-      text: ht,
-      x: h + z,
-      y: G + it + Math.round(i * 1.05)
-    }), vt.append("g").selectAll("text").data(F).join("text").attr("class", "bar-matrix__title").attr("x", (k) => k.x).attr("y", (k) => k.y).attr("text-anchor", "start").attr("font-size", f).text((k) => k.text), P && vt.append("g").selectAll("text").data(d).join("text").attr("class", "bar-matrix__label").attr("text-anchor", "start").attr("y", (k) => C - (pt[k.index].length - 1) * dt).selectAll("tspan").data(
-      (k) => pt[k.index].map((gt, wt) => ({ text: gt, i: wt, x: V(k.index) + z }))
-    ).join("tspan").attr("x", (k) => k.x).attr("dy", (k) => k.i ? `${cs}em` : null).text((k) => k.text);
-    const St = [];
-    for (const k of p)
-      if (q && St.push({
+    zt.append("g").selectAll("line").data(u).join("line").attr("class", "bar-matrix__rule bar-matrix__rule--column").attr("x1", (k) => dt(k.index) + 0.5).attr("x2", (k) => dt(k.index) + 0.5).attr("y1", yt).attr("y2", vt), zt.append("g").selectAll("line").data(f).join("line").attr("class", "bar-matrix__rule").classed("bar-matrix__rule--first", (k) => k.index === 0).attr("x1", 0).attr("x2", xt).attr("y1", (k) => H[k.index].y + 0.5).attr("y2", (k) => H[k.index].y + 0.5);
+    const Yt = E.ticks(F), bt = zt.append("g").selectAll("g").data(u).join("g").attr("transform", (k) => `translate(${dt(k.index) + z},0)`);
+    bt.selectAll("line").data(lt ? Yt : [0]).join("line").attr("class", (k) => k === 0 ? "bar-matrix__baseline" : "bar-matrix__grid").attr("x1", (k) => Math.round(E(k)) + 0.5).attr("x2", (k) => Math.round(E(k)) + 0.5).attr("y1", yt).attr("y2", vt), lt && bt.append("g").attr("class", "bar-matrix__axis").attr("transform", `translate(0.5,${vt})`).call(M.axisBottom(E).tickValues(Yt).tickFormat(J).tickSizeOuter(0)).attr("font-family", null).attr("font-size", p), j && Mt.push({
+      text: j,
+      x: ht + z,
+      y: vt + ne + Math.round(i * 1.05)
+    }), zt.append("g").selectAll("text").data(Mt).join("text").attr("class", "bar-matrix__title").attr("x", (k) => k.x).attr("y", (k) => k.y).attr("text-anchor", "start").attr("font-size", p).text((k) => k.text), Y && zt.append("g").selectAll("text").data(u).join("text").attr("class", "bar-matrix__label").attr("text-anchor", "start").attr("y", (k) => W - (V[k.index].length - 1) * O).selectAll("tspan").data(
+      (k) => V[k.index].map((gt, kt) => ({ text: gt, i: kt, x: dt(k.index) + z }))
+    ).join("tspan").attr("x", (k) => k.x).attr("dy", (k) => k.i ? `${ps}em` : null).text((k) => k.text);
+    const Gt = [];
+    for (const k of f) {
+      const { y: gt, height: kt, groupY: Ct } = H[k.index];
+      K && Gt.push({
         band: k,
-        isRow: !0,
+        kind: "row",
+        size: i,
         x: 0,
-        y: g(k.index) + Z / 2,
-        text: ze(k.label, nt, (gt) => S(gt, i, 600))
-      }), K)
-        for (const gt of u)
-          St.push({
-            band: gt,
-            isRow: !1,
-            x: et,
-            y: H(k.index, gt.index) + Y / 2,
-            text: ze(gt.label, U, (wt) => S(wt))
-          });
-    vt.append("g").selectAll("text").data(St).join("text").attr("class", "bar-matrix__label").classed("bar-matrix__label--row", (k) => k.isRow).attr("x", (k) => k.x).attr("y", (k) => k.y).attr("dy", "0.35em").attr("text-anchor", "start").text((k) => k.text).filter((k) => k.text !== k.band.label).append("title").text((k) => k.band.label);
-    const ft = vt.append("g").selectAll("rect").data(_.flatMap((k) => k.segments)).join("rect").attr("class", "bar-matrix__segment").attr("x", (k) => N(k.bar) + J(k.start)).attr("y", (k) => D(k.bar)).attr("width", (k) => Math.max(J(k.end) - J(k.start), 0)).attr("height", t).attr("rx", jn).attr("fill", (k) => this.highlight.color(v(k.colorKey), k, { color: k.colorKey }));
-    s && vt.append("g").selectAll("text").data(_).join("text").attr("class", "bar-matrix__value").attr("x", (k) => N(k) + J(k.value) + hs).attr("y", (k) => D(k) + t / 2).attr("dy", "0.35em").attr("text-anchor", "start").attr("font-size", Math.min(f, t + 2)).text((k) => lt(k.value)), this.format = lt, this.valueTitle = ht, this._bindHover(ft);
+        y: gt + kt / 2,
+        text: he(k.label, D, (g) => S(g, i, 600))
+      });
+      for (const g of k.groups)
+        if (A ? Gt.push({
+          band: g,
+          kind: "heading",
+          size: i,
+          x: ot,
+          y: Ct[g.slot] - P / 2,
+          text: he(g.label, Q, (I) => S(I, i, 600))
+        }) : at && Gt.push({
+          band: g,
+          kind: "group",
+          size: i,
+          x: et,
+          y: Ct[g.slot] + It(g) / 2,
+          text: he(g.label, Z, (I) => S(I))
+        }), !!rt)
+          for (const I of g.series)
+            Gt.push({
+              band: I,
+              kind: "series",
+              size: h,
+              x: ot,
+              y: Ct[g.slot] + I.slot * wt + t / 2,
+              text: he(I.label, Q, (pt) => S(pt, h))
+            });
+    }
+    zt.append("g").selectAll("text").data(Gt).join("text").attr("class", (k) => `bar-matrix__label bar-matrix__label--${k.kind}`).attr("x", (k) => k.x).attr("y", (k) => k.y).attr("dy", "0.35em").attr("text-anchor", "start").attr("font-size", (k) => k.size).text((k) => k.text).filter((k) => k.text !== k.band.label).append("title").text((k) => k.band.label);
+    const Zt = zt.append("g").selectAll("rect").data(_.flatMap((k) => k.segments)).join("rect").attr("class", "bar-matrix__segment").attr("x", (k) => Kt(k.bar) + E(k.start)).attr("y", (k) => At(k.bar)).attr("width", (k) => Math.max(E(k.end) - E(k.start), 0)).attr("height", t).attr("rx", Wn).attr("fill", (k) => this.highlight.color(b(k.colorKey), k, { color: k.colorKey }));
+    s && zt.append("g").selectAll("text").data(_).join("text").attr("class", "bar-matrix__value").attr("x", (k) => Kt(k) + E(k.value) + fs).attr("y", (k) => At(k) + t / 2).attr("dy", "0.35em").attr("text-anchor", "start").attr("font-size", Math.min(p, t + 2)).text((k) => J(k.value)), this.format = J, this.valueTitle = tt, this._bindHover(Zt);
   }
   // ── Highlight ───────────────────────────────────────────────────────────────
   // A legend selection only names categories of the color axis it was made on.
@@ -2870,70 +2939,70 @@ class ei {
       [e.group, a[r.group], "Group"],
       [e.series, i[r.series], "Series"]
     ];
-    for (const [u, w, _] of c)
-      u.accessor && l.push([Q(u, _), w.label]);
-    const d = c.some(
-      ([u]) => typeof u.field == "string" && u.field === e.color.field
+    for (const [d, v, _] of c)
+      d.accessor && l.push([st(d, _), v.label]);
+    const u = c.some(
+      ([d]) => typeof d.field == "string" && d.field === e.color.field
     );
-    if (e.color.accessor && !d) {
-      const u = e.color.format ?? ((w) => w);
-      l.push([Q(e.color, "Color"), u(t.colorKey)]);
+    if (e.color.accessor && !u) {
+      const d = e.color.format ?? ((v) => v);
+      l.push([st(e.color, "Color"), d(t.colorKey)]);
     }
-    const p = e.value.format ?? M.format(",");
-    return l.push([this.valueTitle, p(t.value)]), r.segments.length > 1 && l.push(["Bar total", p(r.value)]), this.options.tooltip ? this.options.tooltip(t, l) : l;
+    const f = e.value.format ?? M.format(",");
+    return l.push([this.valueTitle, f(t.value)]), r.segments.length > 1 && l.push(["Bar total", f(r.value)]), this.options.tooltip ? this.options.tooltip(t, l) : l;
   }
   /** The color axis legend above the plot, when the axis has a title. */
   _drawLegend(t, e) {
     const o = this.prepared.axes.color, s = o.accessor ? o.title : null;
-    Et(this.legend, t, { ...o, title: s, fontSize: e, highlight: this.highlight }), this.legend.classed("bar-matrix__legend", !0);
+    Rt(this.legend, t, { ...o, title: s, fontSize: e, highlight: this.highlight }), this.legend.classed("bar-matrix__legend", !0);
   }
 }
 export {
-  Wn as BarChart,
-  ei as BarMatrixChart,
-  Zn as BoxPlotChart,
-  Fe as FONT_SIZES,
-  It as Highlight,
-  Tt as MUTED_COLOR,
-  Jn as ParallelSetsChart,
-  Yn as ScatterPlot,
-  Kn as StackedBarChart,
-  Dt as Tooltip,
-  Qn as TreeChart,
-  ti as UnitMatrixChart,
-  ge as barLabel,
-  ks as bottomLabels,
-  xo as boxStats,
-  Xn as categoryColors,
-  vs as chartFrame,
-  Un as countBy,
-  qn as countByStacked,
-  Mt as defaultColors,
-  se as describeAxis,
-  Ss as drawCategoryAxis,
-  Ls as drawGridlines,
-  Et as drawLegend,
-  Ms as drawPlotEdges,
-  js as drawSequentialLegend,
-  _e as drawTopTitle,
-  As as drawValueAxis,
-  ze as fitText,
-  zt as hasValue,
-  bs as laneLayout,
-  Tn as layoutUnitMatrix,
-  Lt as maxTextWidth,
-  Rt as measureText,
-  Ds as prepareBarChart,
-  Cn as prepareBarMatrix,
-  _o as prepareBoxPlotChart,
-  cn as prepareParallelSets,
-  co as prepareScatterPlot,
-  to as prepareStackedBarChart,
-  To as prepareTreeChart,
-  xn as prepareUnitMatrix,
-  Bt as resolveFontSize,
-  At as titleLane,
-  ne as titleOnTop,
-  Kt as topTitleLane,
-  Ts as wrapText
+  Zn as BarChart,
+  ii as BarMatrixChart,
+  ei as BoxPlotChart,
+  Ue as FONT_SIZES,
+  Vt as Highlight,
+  Ht as MUTED_COLOR,
+  oi as ParallelSetsChart,
+  ti as ScatterPlot,
+  Jn as StackedBarChart,
+  jt as Tooltip,
+  si as TreeChart,
+  ni as UnitMatrixChart,
+  ke as barLabel,
+  Ss as bottomLabels,
+  yo as boxStats,
+  Kn as categoryColors,
+  Ms as chartFrame,
+  Yn as countBy,
+  Qn as countByStacked,
+  Tt as defaultColors,
+  pe as describeAxis,
+  Es as drawCategoryAxis,
+  Ts as drawGridlines,
+  Rt as drawLegend,
+  $s as drawPlotEdges,
+  Fs as drawSequentialLegend,
+  Se as drawTopTitle,
+  zs as drawValueAxis,
+  he as fitText,
+  Ot as hasValue,
+  As as laneLayout,
+  zn as layoutUnitMatrix,
+  St as maxTextWidth,
+  Dt as measureText,
+  Ns as prepareBarChart,
+  On as prepareBarMatrix,
+  wo as prepareBoxPlotChart,
+  hn as prepareParallelSets,
+  ho as prepareScatterPlot,
+  eo as prepareStackedBarChart,
+  zo as prepareTreeChart,
+  yn as prepareUnitMatrix,
+  Xt as resolveFontSize,
+  Et as titleLane,
+  ge as titleOnTop,
+  oe as topTitleLane,
+  Hs as wrapText
 };

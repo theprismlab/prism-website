@@ -18,8 +18,7 @@
     grid: {
       rows: 24,
       columns: 24,
-      cellSize: 1, // world units, centre to centre
-      cellGap: 0.12, // world units left empty between neighbouring cells
+      cellSize: 1, // world units; cells sit edge to edge
     },
 
     // Vertical distance between planes, in world units
@@ -33,6 +32,7 @@
       { name: 'magenta', low: '#fde7f2', high: '#be185d' },
       { name: 'orange', low: '#ffeede', high: '#c2410c' },
       { name: 'amber', low: '#fff6d6', high: '#b45309' },
+      { name: 'red', low: '#fff600', high: '#b45300' },
     ],
 
     // What the heat maps look like: soft hot spots over row and column stripes
@@ -114,10 +114,9 @@
   function createStack(config) {
     const { grid, layers, layerSpacing } = config;
     const random = d3.randomLcg(config.seed);
-    const cellWidth = grid.cellSize - grid.cellGap;
 
     // Shared by every plane; colour lives on the instances
-    const geometry = new THREE.PlaneGeometry(cellWidth, cellWidth).rotateX(-Math.PI / 2);
+    const geometry = new THREE.PlaneGeometry(grid.cellSize, grid.cellSize).rotateX(-Math.PI / 2);
     const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
 
     const group = new THREE.Group();

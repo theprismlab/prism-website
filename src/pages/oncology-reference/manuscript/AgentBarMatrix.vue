@@ -131,16 +131,26 @@
           color: (colors?.[dimension.field] ?? defaultColors)(this.rows, dimension.field),
         }));
       },
-      // The chart's axes, each naming a dimension by its field
+      // The chart's axes, each naming a dimension by its field, with the
+      // config's choices of which show their ticks and which share their categories
       axis() {
-        const named = (field) => (field ? { field } : {});
         const { y, x, group, series, color } = this.fields;
+        const { shared = {}, ticks = {} } = this.config;
+        const named = (field, extra = {}) => (field ? { field, ...extra } : extra);
         return {
-          y: named(y),
-          x: named(x),
-          group: named(group),
-          series: named(series),
+          y: named(y, { showTicks: ticks.rows ?? true }),
+          x: named(x, { showTicks: ticks.columns ?? true }),
+          group: named(group, {
+            showTicks: ticks.groups ?? true,
+            shared: shared.groups ?? false,
+            position: this.config.groupLabels ?? 'column',
+          }),
+          series: named(series, {
+            showTicks: ticks.series ?? false,
+            shared: shared.series ?? false,
+          }),
           color: named(color),
+          value: { showTicks: ticks.value ?? true },
         };
       },
     },
