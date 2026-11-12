@@ -19,17 +19,24 @@
         />
 
         <!-- X ticks and title -->
+        <!-- Ticks hang diagonally from each cell's center -->
         <text
           v-for="(x, i) in xDomain"
           :key="`x-${x}`"
           :x="(i + 0.5) * size"
-          :y="plotHeight + 14"
+          :y="plotHeight + 10"
+          :transform="`rotate(-45, ${(i + 0.5) * size}, ${plotHeight + 10})`"
           class="heatmap__tick"
-          text-anchor="middle"
+          text-anchor="end"
         >
           {{ tick(x) }}
         </text>
-        <text :x="plotWidth / 2" :y="plotHeight + 32" class="heatmap__label" text-anchor="middle">
+        <text
+          :x="plotWidth / 2"
+          :y="plotHeight + xTickHeight + 14"
+          class="heatmap__label"
+          text-anchor="middle"
+        >
           {{ xTitle }}
         </text>
 
@@ -68,7 +75,7 @@
         </template>
 
         <!-- Legend: gradient bar with ticks, under the x title -->
-        <g v-if="legend" :transform="`translate(0, ${plotHeight + 48})`">
+        <g v-if="legend" :transform="`translate(0, ${plotHeight + xTickHeight + 30})`">
           <defs>
             <linearGradient :id="gradientId">
               <stop
@@ -188,9 +195,16 @@
       singleRow() {
         return this.yDomain.length === 1;
       },
-      // Approximate tick text width (11px font) to size the left margin
+      // Approximate tick text widths (10px font) to size the margins
       tickWidth() {
-        return Math.max(...this.yDomain.map((y) => this.tick(y).length)) * 6.5;
+        return Math.max(...this.yDomain.map((y) => this.tick(y).length)) * 6;
+      },
+      xTickWidth() {
+        return Math.max(...this.xDomain.map((x) => this.tick(x).length)) * 6;
+      },
+      // Vertical room taken by the 45° x ticks, plus the gap to the x title
+      xTickHeight() {
+        return this.xTickWidth * 0.71 + 10;
       },
       margin() {
         let left = 8;
@@ -198,11 +212,13 @@
           // Multi-row: room for the rotated title. Single row: the title sits above.
           left = this.tickWidth + (this.singleRow ? 14 : 30);
         }
+        // The first x tick hangs down-left past the plot's left edge
+        const overhang = this.xTickWidth * 0.71 - this.size / 2;
         return {
           top: this.yTitle && this.singleRow ? 22 : 4,
           right: 8,
-          bottom: 40 + (this.legend ? 52 : 0),
-          left,
+          bottom: this.xTickHeight + 22 + (this.legend ? 52 : 0),
+          left: Math.max(left, overhang + 4),
         };
       },
       plotWidth() {
@@ -290,8 +306,10 @@
   }
   .heatmap__tick,
   .heatmap__label {
-    font-size: 11px;
     fill: currentColor;
+  }
+  .heatmap__tick {
+    font-size: 10px;
   }
   .heatmap__label {
     font-size: 12px;
