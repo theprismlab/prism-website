@@ -16,8 +16,8 @@ export const AGENT_BAR_MATRIX = {
 
   // The fields on each axis when the card first renders, by CSV column name as
   // listed in `dimensions` (so 'Modality_summarized', not its label 'Modality').
-  // Any of `y`, `x`, `group` and `series` may be null: a single row, a single
-  // column, one group per cell, or one bar per group.
+  // Any of `y`, `x` and `group` may be null: a single row, a single column, or
+  // one group per cell. `series` always names a field.
   defaults: {
     // Matrix rows and columns
     y: null,

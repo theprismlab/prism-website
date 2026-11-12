@@ -76,7 +76,8 @@
     rows: { role: 'y', label: 'Rows', optional: true },
     columns: { role: 'x', label: 'Columns', optional: true },
     groups: { role: 'group', label: 'Bar groups', optional: true },
-    series: { role: 'series', label: 'Bar series', optional: true },
+    // The bars always have a series: its input offers no "None"
+    series: { role: 'series', label: 'Bar series', optional: false },
     color: { role: 'color', label: 'Color by', optional: false },
   };
   // The axes that lay bars out; each field goes on at most one of them
@@ -113,7 +114,8 @@
           y: defaults.y ?? null,
           x: defaults.x ?? null,
           group: defaults.group ?? null,
-          series: defaults.series ?? null,
+          // Never empty: without a default, the first dimension
+          series: defaults.series ?? this.config.dimensions[0].field,
           color: defaults.color,
         },
         inputs: INPUTS,
@@ -193,6 +195,12 @@
           if (other) this.fields[other] = this.fields[role];
         }
         this.fields[role] = field;
+        // The series is never left empty: when a trade hands it nothing, it
+        // takes the first field no other axis lays bars out by
+        if (!this.fields.series) {
+          const used = POSITIONS.map((p) => this.fields[p]);
+          this.fields.series = this.config.dimensions.find((d) => !used.includes(d.field))?.field;
+        }
       },
       // The chart trades its row and column fields and reports the result
       swapAxes() {
