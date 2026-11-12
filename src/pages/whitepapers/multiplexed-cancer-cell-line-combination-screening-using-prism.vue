@@ -196,9 +196,18 @@
                 </div>
 
                 <div class="combo-figure__card">
-                  <h5 class="prism-text-title-medium combo-figure__card-title">
-                    Sensitivity across doses
-                  </h5>
+                  <div class="combo-figure__card-header">
+                    <h5 class="prism-text-title-medium combo-figure__card-title">
+                      Sensitivity across doses
+                    </h5>
+                    <!-- One color scale for all three heatmaps of the combination -->
+                    <heatmap-legend
+                      v-if="combo.cells"
+                      :domain="combo.cells.domain"
+                      :title="killedLabel"
+                      log
+                    />
+                  </div>
                   <div v-if="combo.cells" class="combo-figure__panels">
                     <div class="combo-figure__panel">
                       <p class="prism-text-title-small combo-figure__label">Single agent</p>
@@ -231,7 +240,6 @@
                         :domain="combo.cells.domain"
                         :size="heatmapCellSize"
                         log
-                        legend
                       />
                     </div>
                   </div>
@@ -940,17 +948,26 @@
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   }
   /* The card: a header strip, tinted like the page's shaded term list, over
-     two panels divided by a rule */
+     two panels divided by a rule. The strip holds the card's title and the
+     color scale the panels share; the scale wraps under the title when the
+     strip is too narrow for both. */
   .combo-figure__card {
     border: var(--combo-rule);
     border-radius: var(--prism-radius-lg);
   }
-  .combo-figure__card-title {
-    margin: 0;
+  .combo-figure__card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 24px;
     padding: 10px 20px;
     background: rgba(var(--v-theme-on-surface), 0.025);
     /* Inside the card's 1px border */
     border-radius: calc(var(--prism-radius-lg) - 1px) calc(var(--prism-radius-lg) - 1px) 0 0;
+  }
+  .combo-figure__card-title {
+    margin: 0;
   }
   .combo-figure__panels {
     display: grid;
@@ -986,7 +1003,7 @@
     .combo-figure__dosing dd + dt {
       margin-top: 8px;
     }
-    .combo-figure__card-title {
+    .combo-figure__card-header {
       padding-inline: 16px;
     }
     .combo-figure__panels {

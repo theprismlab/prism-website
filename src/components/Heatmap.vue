@@ -73,41 +73,6 @@
             {{ yTitle }}
           </text>
         </template>
-
-        <!-- Legend: gradient bar with ticks, under the x title -->
-        <g v-if="legend" :transform="`translate(0, ${plotHeight + xTickHeight + 44})`">
-          <defs>
-            <linearGradient :id="gradientId">
-              <stop
-                v-for="t in gradientStops"
-                :key="t"
-                :offset="`${t * 100}%`"
-                :stop-color="legendColor(t)"
-              />
-            </linearGradient>
-          </defs>
-          <rect :width="plotWidth" height="10" :fill="`url(#${gradientId})`" />
-          <text
-            v-for="v in legendTicks"
-            :key="`legend-${v}`"
-            :x="legendX(v)"
-            y="22"
-            class="heatmap__tick"
-            text-anchor="middle"
-          >
-            {{ v }}
-          </text>
-          <text
-            v-for="(line, i) in legendTitleLines"
-            :key="`legend-title-${i}`"
-            :x="plotWidth / 2"
-            :y="40 + i * 14"
-            class="heatmap__label"
-            text-anchor="middle"
-          >
-            {{ line }}
-          </text>
-        </g>
       </g>
     </svg>
 
@@ -130,21 +95,14 @@
 </template>
 
 <script>
-  import {
-    interpolateYlOrRd,
-    scaleLinear,
-    scaleSequential,
-    scaleSequentialSymlog,
-    scaleSymlog,
-  } from 'd3';
-
-  let instances = 0;
+  import { heatmapColor } from '@/utils/heatmap-color';
 
   /**
    * Heatmap
    *
-   * A grid of colored squares with x/y tick labels, axis titles, an optional
-   * legend and an optional hover tooltip (`tooltip`, off by default). Nothing else.
+   * A grid of colored squares with x/y tick labels, axis titles and an
+   * optional hover tooltip (`tooltip`, off by default). Nothing else: the
+   * color scale is drawn by <heatmap-legend>, given the same `domain` and `log`.
    *
    * `data` is a flat list of cells: [{ x, y, value }]. x and y may be numbers
    * or numeric strings; they are sorted numerically to form the axes and
@@ -157,13 +115,12 @@
       data: { type: Array, required: true },
       xTitle: { type: String, required: true },
       yTitle: { type: String, default: '' },
-      // Label for the color scale, used in the legend and the tooltip
+      // Label for the cell value in the tooltip
       valueTitle: { type: String, default: 'Value' },
       // Color domain [min, max]; pass the same one to several heatmaps to
       // share a scale. Defaults to [0, max of the data].
       domain: { type: Array, default: null },
       title: { type: String, default: '' },
-      legend: { type: Boolean, default: false },
       // Symlog color scale: like log, but zero is allowed. Use when most values
       // are small and a linear scale would wash them out.
       log: { type: Boolean, default: false },
@@ -173,7 +130,7 @@
       tooltip: { type: Boolean, default: false },
     },
     data() {
-      return { hover: null, gradientId: `heatmap-gradient-${++instances}` };
+      return { hover: null };
     },
     computed: {
       xDomain() {
@@ -195,15 +152,7 @@
         return this.domain || [0, Math.max(...this.data.map((d) => d.value))];
       },
       color() {
-        const scale = this.log
-          ? scaleSequentialSymlog(interpolateYlOrRd)
-          : scaleSequential(interpolateYlOrRd);
-        return scale.domain(this.colorDomain);
-      },
-      // Value to position along the legend bar, on the same curve as `color`
-      legendScale() {
-        const scale = this.log ? scaleSymlog() : scaleLinear();
-        return scale.domain(this.colorDomain).range([0, this.plotWidth]);
+        return heatmapColor(this.colorDomain, this.log);
       },
       singleRow() {
         return this.yDomain.length === 1;
@@ -230,8 +179,7 @@
         return {
           top: this.yTitle && this.singleRow ? 22 : 4,
           right: 8,
-          bottom:
-            this.xTickHeight + 22 + (this.legend ? 52 + this.legendTitleLines.length * 14 : 0),
+          bottom: this.xTickHeight + 22,
           left: Math.max(left, overhang + 4),
         };
       },
@@ -265,45 +213,10 @@
       height() {
         return this.margin.top + this.plotHeight + this.margin.bottom;
       },
-      gradientStops() {
-        return Array.from({ length: 11 }, (_, i) => i / 10);
-      },
-      // The legend title, wrapped at spaces into lines no wider than the legend
-      // bar (12px font), so a small plot does not clip it
-      legendTitleLines() {
-        const maxChars = Math.floor(this.plotWidth / 7);
-        const lines = [];
-        this.valueTitle.split(' ').forEach((word) => {
-          const line = lines.length ? `${lines[lines.length - 1]} ${word}` : word;
-          if (lines.length && line.length <= maxChars) lines[lines.length - 1] = line;
-          else lines.push(word);
-        });
-        return lines;
-      },
-      legendTicks() {
-        if (!this.log) return this.legendScale.ticks(4);
-        // Powers of ten between the domain ends, plus the ends themselves.
-        // A power of ten that would collide with the end label is dropped.
-        const [d0, d1] = this.colorDomain;
-        const minGap = 28;
-        const ticks = [d0];
-        for (let p = 1; p < d1; p *= 10) {
-          if (this.legendScale(d1) - this.legendScale(p) >= minGap) ticks.push(p);
-        }
-        ticks.push(d1);
-        return [...new Set(ticks)];
-      },
     },
     methods: {
       tick(v) {
         return Number.isFinite(+v) ? String(parseFloat((+v).toPrecision(3))) : v;
-      },
-      legendX(v) {
-        return this.legendScale(v);
-      },
-      // Color at a fraction t along the legend bar
-      legendColor(t) {
-        return this.color(this.legendScale.invert(t * this.plotWidth));
       },
       onHover(cell, event) {
         if (!this.tooltip) return;
