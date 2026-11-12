@@ -310,7 +310,13 @@
               id-title="Cell line"
               :column="{ field: 'dose1', title: 'Temozolomide (µM)' }"
               :row="{ field: 'dose2', title: 'O6-benzylguanine (µM)' }"
-              :x="{ field: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
+              :x="{
+                field: 'S',
+                title: 'Synergy score',
+                domain: [-1, 1],
+                threshold: 0,
+                tickValues: [-0.5, 0, 0.5],
+              }"
               :y="{ field: 'EXP_MGMT', title: 'MGMT expression', threshold: 1.5 }"
               :color="{
                 field: 'synergy_count_across_doses',
@@ -350,7 +356,13 @@
               id-title="Cell line"
               :column="{ field: 'dose1', title: 'ML210 (µM)' }"
               :row="{ field: 'dose2', title: 'Ferrostatin-1 (µM)' }"
-              :x="{ field: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
+              :x="{
+                field: 'S',
+                title: 'Synergy score',
+                domain: [-1, 1],
+                threshold: 0,
+                tickValues: [-0.5, 0, 0.5],
+              }"
               :y="{ field: 'XPR_GPX4', title: 'GPX4 dependency' }"
               :color="{
                 field: 'antagonism_count_across_doses',
@@ -386,9 +398,21 @@
               id-title="Cell line"
               :column="{ field: 'dose1', title: 'AZD5991 (µM)' }"
               :row="{ field: 'dose2', title: 'A-1331852 (µM)' }"
-              :x="{ field: 'S', title: 'Synergy score', domain: [-1, 1], threshold: 0 }"
+              :x="{
+                field: 'S',
+                title: 'Synergy score',
+                domain: [-1, 1],
+                threshold: 0,
+                tickValues: [-0.5, 0, 0.5],
+              }"
               :y="{ field: 'neg_log10_qval', title: '-log10(q value)', threshold: 1 }"
-              :color="{ field: 'S', title: 'Synergy score', type: 'sequential', range: 'rdbu' }"
+              :color="{
+                field: 'S',
+                title: 'Synergy score',
+                type: 'sequential',
+                range: 'rdbu',
+                reverse: true,
+              }"
             />
             <figure-caption>
               <template #title

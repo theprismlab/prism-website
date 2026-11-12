@@ -574,10 +574,12 @@
    * shape used by the charts in src/lib/charts. Values are coerced to numbers
    * and records with a non-numeric x or y are left out.
    *
-   *   x, y:   { field, title, domain?: [min, max], threshold?: number }
-   *   color:  { field, title, type?: 'sequential' | 'categorical', domain?, range? }
+   *   x, y:   { field, title, domain?: [min, max], threshold?: number, tickValues?: number[] }
+   *           tickValues replaces the automatic ticks (and their gridlines)
+   *   color:  { field, title, type?: 'sequential' | 'categorical', domain?, range?, reverse? }
    *           sequential range: 'blues' (default) | 'reds' | 'rdbu' or a d3
-   *           interpolator; categorical range: a list of colors
+   *           interpolator, flipped end to end by `reverse: true`;
+   *           categorical range: a list of colors
    *           or omitted for one color and no legend
    *   column: { field, title?, domain? }
    *   row:    { field, title, domain? } or null for a single row
@@ -686,7 +688,8 @@
           return scaleOrdinal().domain(values).range(palette);
         }
         const range = this.color.range;
-        const interpolator = typeof range === 'function' ? range : SCHEMES[range] || SCHEMES.blues;
+        const scheme = typeof range === 'function' ? range : SCHEMES[range] || SCHEMES.blues;
+        const interpolator = this.color.reverse ? (t) => scheme(1 - t) : scheme;
         let domain = this.color.domain;
         if (!domain) {
           const [lo, hi] = extent(this.points, (p) => p.c);
@@ -817,10 +820,10 @@
       // Ticks depend on the domain only, so they can size the margins before
       // the panel size is known.
       xTicks() {
-        return scaleLinear().domain(this.xDomain).ticks(3);
+        return this.x.tickValues || scaleLinear().domain(this.xDomain).ticks(3);
       },
       yTicks() {
-        return scaleLinear().domain(this.yDomain).ticks(3);
+        return this.y.tickValues || scaleLinear().domain(this.yDomain).ticks(3);
       },
       countTicksX() {
         return this.xHistograms.length ? this.xHistograms[0].yScale.ticks(2) : [];
