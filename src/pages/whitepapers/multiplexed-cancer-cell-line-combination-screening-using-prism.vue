@@ -92,6 +92,8 @@
           <figure-cards
             align="start"
             :items="doseSelection"
+            :max-image-width="320"
+            border
             caption="Fig.3. Dosing schemes of combinations based on single agent viability results"
           />
         </section>
@@ -193,13 +195,13 @@
                   </dl>
                 </div>
 
-                <div class="combo-figure__plots">
-                  <h5 class="prism-text-body-large font-weight-bold combo-figure__plots-title">
+                <div class="combo-figure__card">
+                  <h5 class="prism-text-title-medium combo-figure__card-title">
                     Sensitivity across doses
                   </h5>
-                  <template v-if="combo.cells">
-                    <div class="combo-figure__single">
-                      <p class="combo-figure__label prism-text-body-medium">Single agent</p>
+                  <div v-if="combo.cells" class="combo-figure__panels">
+                    <div class="combo-figure__panel">
+                      <p class="prism-text-title-small combo-figure__label">Single agent</p>
                       <div class="combo-figure__strips">
                         <heatmap
                           :data="combo.cells.x"
@@ -219,8 +221,8 @@
                         />
                       </div>
                     </div>
-                    <div class="combo-figure__single">
-                      <p class="combo-figure__label prism-text-body-medium">Combination</p>
+                    <div class="combo-figure__panel">
+                      <p class="prism-text-title-small combo-figure__label">Combination</p>
                       <heatmap
                         :data="combo.cells.xy"
                         :x-title="`${combo.x.name} (µM)`"
@@ -232,7 +234,7 @@
                         legend
                       />
                     </div>
-                  </template>
+                  </div>
                 </div>
               </div>
             </div>
@@ -762,8 +764,8 @@
           },
         ],
         killedLabel: 'Cell lines killed (viability < 0.3)',
-        // Fig. 4 cell size in px. The figure's two columns are about 330px
-        // each in the narrow text column, so anything up to 40 fits
+        // Fig. 4 cell size in px. The figure's two panels have about 330px
+        // of room each in the narrow text column, so anything up to 40 fits
         heatmapCellSize: 26,
         // Fig. 4: one CSV per combination. x is the library compound (dose1),
         // y the anchor (dose2). `cells` is filled in once the CSV loads.
@@ -904,10 +906,11 @@
   }
 
   /* Fig. 4: one block per combination: its title and dosing text, then a
-     bordered container with the single-agent strips and the combination
-     heatmap side by side. The containers are all the same width and split into
-     equal halves, so the panels line up down the page. */
+     card with the single-agent strips and the combination heatmap side by
+     side. The cards are all the same width and split into equal halves, so the
+     panels line up down the page. */
   .combo-grid {
+    --combo-rule: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     display: flex;
     flex-direction: column;
     gap: 48px;
@@ -916,20 +919,7 @@
   .combo-figure {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-  }
-  .combo-figure__plots {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 32px;
-    align-items: start;
-    padding: 20px 24px 24px;
-    border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-    border-radius: var(--prism-radius-lg);
-  }
-  .combo-figure__plots-title {
-    grid-column: 1 / -1;
-    margin: 0;
+    gap: 16px;
   }
   /* A combination's dosing: compound names in one column, each one's dose
      series beside it */
@@ -949,10 +939,32 @@
     margin: 0;
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   }
-  /* The label has the same spacing as the title inside Heatmap */
+  /* The card: a header strip, tinted like the page's shaded term list, over
+     two panels divided by a rule */
+  .combo-figure__card {
+    border: var(--combo-rule);
+    border-radius: var(--prism-radius-lg);
+  }
+  .combo-figure__card-title {
+    margin: 0;
+    padding: 10px 20px;
+    background: rgba(var(--v-theme-on-surface), 0.025);
+    /* Inside the card's 1px border */
+    border-radius: calc(var(--prism-radius-lg) - 1px) calc(var(--prism-radius-lg) - 1px) 0 0;
+  }
+  .combo-figure__panels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: var(--combo-rule);
+  }
+  .combo-figure__panel {
+    padding: 16px 20px 20px;
+  }
+  .combo-figure__panel + .combo-figure__panel {
+    border-left: var(--combo-rule);
+  }
   .combo-figure__label {
-    margin: 0 0 4px;
-    font-weight: 700;
+    margin: 0 0 8px;
   }
   .combo-figure__strips {
     display: flex;
@@ -964,8 +976,8 @@
   .combo-figure :deep(.heatmap__svg) {
     max-width: none;
   }
-  /* Phones: the two panels stack under the heading, and each dose series
-     sits under its compound's name */
+  /* Phones: the two panels stack, and each dose series sits under its
+     compound's name */
   @media (max-width: 599.98px) {
     .combo-figure__dosing {
       grid-template-columns: minmax(0, 1fr);
@@ -974,9 +986,18 @@
     .combo-figure__dosing dd + dt {
       margin-top: 8px;
     }
-    .combo-figure__plots {
+    .combo-figure__card-title {
+      padding-inline: 16px;
+    }
+    .combo-figure__panels {
       grid-template-columns: minmax(0, 1fr);
+    }
+    .combo-figure__panel {
       padding: 16px;
+    }
+    .combo-figure__panel + .combo-figure__panel {
+      border-top: var(--combo-rule);
+      border-left: 0;
     }
   }
 
