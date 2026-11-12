@@ -103,13 +103,6 @@ const routes = [
       breadcrumbs: () => [{ title: 'Oncology Reference' }, { title: 'Manuscript' }],
     },
   },
-  {
-    path: '/oncology-reference/cover-art',
-    component: () => import('@/pages/oncology-reference/cover-art/CoverArt.vue'),
-    meta: {
-      breadcrumbs: () => [{ title: 'Oncology Reference' }, { title: 'Cover Art' }],
-    },
-  },
 
   // ─── Submissions layout ───────────────────────────────────────────────────
   {
