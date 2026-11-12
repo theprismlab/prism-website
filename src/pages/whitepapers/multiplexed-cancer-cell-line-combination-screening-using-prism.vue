@@ -184,13 +184,13 @@
             <div class="combo-grid">
               <div v-for="combo in combinations" :key="combo.title" class="combo-figure">
                 <div class="combo-figure__text">
-                  <h4 class="prism-text-title-medium mb-2 combo-figure__title">
-                    {{ combo.title }}
-                  </h4>
-                  <p
-                    class="prism-text-body-medium text-medium-emphasis mt-4"
-                    v-html="combo.body"
-                  ></p>
+                  <h4 class="prism-text-headline-xs combo-figure__title">{{ combo.title }}</h4>
+                  <dl class="prism-text-body-medium combo-figure__dosing">
+                    <template v-for="agent in [combo.x, combo.y]" :key="agent.name">
+                      <dt>{{ agent.name }}</dt>
+                      <dd>{{ agent.dosing }}</dd>
+                    </template>
+                  </dl>
                 </div>
 
                 <div class="combo-figure__plots">
@@ -767,35 +767,46 @@
         heatmapCellSize: 26,
         // Fig. 4: one CSV per combination. x is the library compound (dose1),
         // y the anchor (dose2). `cells` is filled in once the CSV loads.
+        // `dosing` is the text listed beside each compound's name.
         // An anchor screened alone over its own dose range names that file in
         // `singleAgent`; its single-agent strip is then drawn from it.
         combinations: [
           {
             title: 'Temozolomide + O6-Benzylguanine',
             file: 'temoO6_updated.csv',
-            x: { name: 'Temozolomide' },
+            x: {
+              name: 'Temozolomide',
+              dosing: '7 concentrations; top concentration: 100 µM; threefold dilution',
+            },
             y: {
               name: 'O6-Benzylguanine',
+              dosing: '1 concentration: 5 µM',
               singleAgent: { file: 'O6-benzyl_data.csv', dose: 'Dose', viability: 'Viability' },
             },
             cells: null,
-            body: '<b>Temozolomide</b>. 7 concentrations; top concentration: 100µM; threefold dilution<br><br><b>O6-Benzylguanine</b>. 1 concentration: 5 µM',
           },
           {
             title: 'ML210 + Ferrostatin-1',
             file: 'MLferro_updated.csv',
-            x: { name: 'ML210' },
-            y: { name: 'Ferrostatin-1' },
+            x: {
+              name: 'ML210',
+              dosing: '7 concentrations; top concentration: 10 µM; threefold dilution',
+            },
+            y: { name: 'Ferrostatin-1', dosing: '1 concentration: 10 µM' },
             cells: null,
-            body: '<b>ML210</b>. 7 concentrations; top concentration: 10µM; threefold dilution<br><br><b>Ferrostatin-1</b>. 1 concentration:  10 µM',
           },
           {
             title: 'AZD5991 + A-1331852',
             file: 'A133AZD_updated.csv',
-            x: { name: 'AZD5991' },
-            y: { name: 'A-1331852' },
+            x: {
+              name: 'AZD5991',
+              dosing: '5 concentrations; top concentration: 0.37 µM; threefold dilution',
+            },
+            y: {
+              name: 'A-1331852',
+              dosing: '5 concentrations; top concentration: 0.041 µM; threefold dilution',
+            },
             cells: null,
-            body: '<b>AZD5991</b>. 5 concentrations; top concentration: 0.037µM; threefold dilution<br><br><b>A-1331852</b>. 5 concentrations; top concentration: 0.041µM; threefold dilution',
           },
         ],
         // Figs. 5-7: raw CSV rows per combination, filled in once loaded
@@ -920,8 +931,25 @@
     grid-column: 1 / -1;
     margin: 0;
   }
+  /* A combination's dosing: compound names in one column, each one's dose
+     series beside it */
+  .combo-figure__title {
+    margin: 0 0 8px;
+  }
+  .combo-figure__dosing {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 4px 16px;
+    margin: 0;
+  }
+  .combo-figure__dosing dt {
+    font-weight: var(--prism-font-weight-medium);
+  }
+  .combo-figure__dosing dd {
+    margin: 0;
+    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  }
   /* The label has the same spacing as the title inside Heatmap */
-  .combo-figure__title,
   .combo-figure__label {
     margin: 0 0 4px;
     font-weight: 700;
@@ -936,8 +964,16 @@
   .combo-figure :deep(.heatmap__svg) {
     max-width: none;
   }
-  /* Phones: the two panels stack under the heading */
+  /* Phones: the two panels stack under the heading, and each dose series
+     sits under its compound's name */
   @media (max-width: 599.98px) {
+    .combo-figure__dosing {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 0;
+    }
+    .combo-figure__dosing dd + dt {
+      margin-top: 8px;
+    }
     .combo-figure__plots {
       grid-template-columns: minmax(0, 1fr);
       padding: 16px;
