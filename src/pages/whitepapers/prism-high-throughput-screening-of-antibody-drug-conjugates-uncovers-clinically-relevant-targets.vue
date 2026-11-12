@@ -9,7 +9,7 @@
         <span>{{ paper.author }}</span>
         <span>Published {{ paper.date }}</span>
       </p>
-      <div class="whitepaper-actions">
+      <div class="whitepaper-actions mt-2">
         <v-btn
           :href="paper.portalLink"
           target="_blank"
@@ -24,7 +24,7 @@
       </div>
     </page-header>
 
-    <page-section width="narrow">
+    <page-section width="narrow" class="pt-4">
       <article class="whitepaper-body">
         <section id="introduction">
           <h2 class="prism-text-headline-medium">Introduction</h2>

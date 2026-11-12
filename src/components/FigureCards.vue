@@ -8,7 +8,10 @@
         :color="color"
         :border="border"
         class="figure-card"
-        :class="`figure-card--${align}`"
+        :class="[
+          `figure-card--${align}`,
+          { 'figure-card--shaded-title': shadedTitle, 'figure-card--center-title': centerTitle },
+        ]"
       >
         <div class="figure-card__header">
           <h3 class="figure-card__title prism-text-title-medium">
@@ -71,6 +74,7 @@
    * Usage:
    *   <figure-cards :items="panels" caption="Fig.1. Schematic of the PRISM assay" />
    *   <figure-cards :items="panels" color="grey-lighten-5" border :max-image-width="240" />
+   *   <figure-cards :items="panels" border shaded-title center-title />
    *   items: [{ title, subtitle?, image?, alt?, placeholder? }]
    * An item with `subtitle` shows it in smaller, muted text under the title.
    * An item without `image` shows a placeholder box, with `placeholder` as its
@@ -99,6 +103,11 @@
       // Card border: `border` for the default thin border, or a Vuetify
       // border value such as 'sm' or 'md'. None by default.
       border: { type: [Boolean, String], default: false },
+      // Title (and subtitle) in a grey strip across the top of the card, with
+      // a rule under it. Pairs with `border`. Off by default.
+      shadedTitle: { type: Boolean, default: false },
+      // Center the title (and subtitle) text. Left-aligned by default.
+      centerTitle: { type: Boolean, default: false },
       // Cap on the image width, in px (number) or any CSS length (string).
       // Images narrower than the card are centered. Unlimited by default.
       maxImageWidth: { type: [Number, String], default: null },
@@ -148,6 +157,29 @@
   .figure-card__subtitle {
     margin: 0;
     line-height: 1.33em !important;
+  }
+  .figure-card--center-title .figure-card__header {
+    text-align: center;
+  }
+
+  /* Shaded title: the header becomes a tinted strip that runs to the card's
+     edges, and the card's padding moves onto the strip and the image. Each
+     card is a subgrid of two rows (strip, image), so the strips in a row of
+     cards are equally tall even when their titles wrap differently. */
+  .figure-card--shaded-title {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    gap: 0;
+    padding: 0;
+  }
+  .figure-card--shaded-title .figure-card__header {
+    padding: 10px 12px;
+    background: rgba(var(--v-theme-on-surface), 0.025);
+    border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  }
+  .figure-card--shaded-title .figure-card__media {
+    padding: 12px 12px 8px;
   }
 
   /* Images sit on the bottom edge by default, so a row of cards with

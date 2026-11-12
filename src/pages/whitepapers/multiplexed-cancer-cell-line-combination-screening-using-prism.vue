@@ -40,7 +40,13 @@
             that may help identify candidate combinations for clinical trials.
           </p>
 
-          <figure-cards :items="introCards" caption="Fig.1. Schematic of the PRISM assay" />
+          <figure-cards
+            :items="introCards"
+            caption="Fig.1. Schematic of the PRISM assay"
+            border
+            shaded-title
+            center-title
+          />
         </section>
 
         <section>
@@ -61,6 +67,9 @@
             (and most curative combinations) described to date<sup>9, 10</sup>.
           </p>
           <figure-cards
+            border
+            shaded-title
+            center-title
             :items="combinationEffects"
             caption="Fig.2. Classifications of combination effects"
           />
@@ -94,6 +103,8 @@
             :items="doseSelection"
             :max-image-width="320"
             border
+            shaded-title
+            center-title
             caption="Fig.3. Dosing schemes of combinations based on single agent viability results"
           />
         </section>
@@ -279,7 +290,8 @@
               align="start"
               :items="equationCards.filter((d, i) => i < 2)"
               caption=""
-              color="grey-lighten-5"
+              shaded-title
+              center-title
               border
               :max-image-width="220"
             />
@@ -287,7 +299,8 @@
               align="start"
               :items="equationCards.filter((d, i) => i == 2)"
               caption=""
-              color="grey-lighten-5"
+              shaded-title
+              center-title
               border
               class="mt-2"
               :max-image-width="400"
