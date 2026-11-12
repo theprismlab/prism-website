@@ -3,7 +3,8 @@
     <p v-if="title" class="heatmap__title prism-text-title-small">{{ title }}</p>
 
     <svg :viewBox="`0 0 ${width} ${height}`" :width="width" :height="height" class="heatmap__svg">
-      <g :transform="`translate(${margin.left}, ${margin.top})`">
+      <!-- A plot narrower than its x title (a one-cell strip) is centered under it -->
+      <g :transform="`translate(${margin.left + plotOffset}, ${margin.top})`">
         <!-- Cells -->
         <rect
           v-for="cell in cells"
@@ -54,7 +55,7 @@
             class="heatmap__label"
             text-anchor="start"
           >
-            {{ yTitle }}
+            ↓ {{ yTitle }}
           </text>
           <text
             v-else
@@ -210,8 +211,24 @@
       plotHeight() {
         return this.yDomain.length * this.size;
       },
+      // Approximate label widths (12px font), so the SVG grows to fit a title
+      // wider than the plot instead of clipping it
+      xTitleWidth() {
+        return this.xTitle.length * 7;
+      },
+      yTitleAboveWidth() {
+        // "↓ " plus the title, starting left of the tick
+        return this.singleRow && this.yTitle ? (this.yTitle.length + 2) * 7 - this.tickWidth - 6 : 0;
+      },
+      contentWidth() {
+        return Math.max(this.plotWidth, this.xTitleWidth, this.yTitleAboveWidth);
+      },
+      // Shift that centers the plot within the content width
+      plotOffset() {
+        return (this.contentWidth - this.plotWidth) / 2;
+      },
       width() {
-        return this.margin.left + this.plotWidth + this.margin.right;
+        return this.margin.left + this.contentWidth + this.margin.right;
       },
       height() {
         return this.margin.top + this.plotHeight + this.margin.bottom;
