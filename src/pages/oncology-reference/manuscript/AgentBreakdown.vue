@@ -102,10 +102,10 @@
    * one square per agent, grouped into rows and columns by two metadata fields
    * and colored by a third. The three selects choose the fields.
    *
-   * Clicking a row label, column label or legend entry selects a subset: its
-   * agents stay colored and the rest turn hollow. The selection is listed as
-   * chips above the matrix and survives a change of fields. The squares are
-   * not clickable; hovering one shows its agent.
+   * Clicking an entry in the color legend selects a subset: its agents stay
+   * colored and the rest turn hollow. The selection is listed as chips above
+   * the matrix and survives a change of fields. Rows, columns and squares are
+   * not clickable; hovering a square shows its agent.
    *
    * Self-contained: loads the test agent rows itself through the shared, cached
    * getOncRefData() and owns the selection and the field choices. Which columns

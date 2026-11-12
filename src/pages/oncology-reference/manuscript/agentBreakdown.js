@@ -80,7 +80,7 @@ const TOOLTIP_FIELDS = [
 export const AGENT_BREAKDOWN = {
   title: 'Test agent composition',
   // Shown above the matrix until something is selected
-  hint: 'Each square is one test agent. Click a label or a color to focus on that group.',
+  hint: 'Each square is one test agent. Click a color in the legend to focus on that group.',
 
   // The columns offered for rows, columns and color, in the order the selects
   // list them. Pass an object ({ field, title, domain, format }) in place of a

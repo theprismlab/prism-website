@@ -68,17 +68,9 @@
             class="breakdown-matrix__col-head"
             :style="{ gridRow: '2', gridColumn: String(j + 2) }"
           >
-            <button
-              v-if="axis.x"
-              type="button"
-              class="breakdown-matrix__head-button"
-              :aria-pressed="isSelected(axis.x.field, column.value)"
-              @click="$emit('toggle', { field: axis.x.field, value: column.value })"
-              v-on="hoverOn(axis.x.field, column.value)"
-            >
-              {{ breakable(column.label) }}
-            </button>
-            <span v-else class="breakdown-matrix__head-text">All {{ unit }}</span>
+            <span class="breakdown-matrix__head-text">
+              {{ axis.x ? breakable(column.label) : `All ${unit}` }}
+            </span>
             <span class="breakdown-matrix__count">{{ countText(column) }}</span>
           </div>
         </div>
@@ -94,15 +86,7 @@
             class="breakdown-matrix__row-head"
             :style="{ gridRow: String(i + 3), gridColumn: '1' }"
           >
-            <button
-              type="button"
-              class="breakdown-matrix__head-button"
-              :aria-pressed="isSelected(axis.y.field, row.value)"
-              @click="$emit('toggle', { field: axis.y.field, value: row.value })"
-              v-on="hoverOn(axis.y.field, row.value)"
-            >
-              {{ breakable(row.label) }}
-            </button>
+            <span class="breakdown-matrix__head-text">{{ breakable(row.label) }}</span>
             <span class="breakdown-matrix__count">{{ countText(row) }}</span>
           </div>
 
@@ -173,11 +157,12 @@
 
   /**
    * A unit matrix: every record is one square, placed in the cell for its row
-   * and column values and colored by a third field. Row labels, column labels
-   * and legend entries toggle their value in the selection; hovering or
-   * focusing one dims every square outside it. The squares themselves are not
-   * clickable: hovering one shows its record in a tooltip. Self-contained (no
-   * chart library); the option names follow the prism-charts axis vocabulary.
+   * and column values and colored by a third field. The color legend is the
+   * only control: clicking an entry toggles its value in the selection, and
+   * hovering or focusing one dims every square outside it. Rows, columns and
+   * squares are not clickable; hovering a square shows its record in a
+   * tooltip. Self-contained (no chart library); the option names follow the
+   * prism-charts axis vocabulary.
    *
    *   data         Records to draw, one square each.
    *   axis         `{ x, y, color }`, each `{ field, title, domain, format }`:
@@ -186,14 +171,14 @@
    *                color per `domain` entry.
    *   highlight    `(record) => boolean` or null: records failing it are drawn
    *                as hollow squares and left out of the counts.
-   *   selection   `{ [field]: string[] }`: the values currently selected, so
-   *                headers and legend entries can show as pressed.
+   *   selection    `{ [field]: string[] }`: the values currently selected, so
+   *                legend entries can show as pressed.
    *   unitKey      `(record) => id`, unique per record.
    *   unitLabel    `(record) => string`, the tooltip heading.
    *   tooltip      `(record) => [[label, value], …]`, the tooltip rows.
    *   unit         Noun for the counts.
    *
-   *   @toggle      `{ field, value }` on a click on a header or legend entry.
+   *   @toggle      `{ field, value }` on a click on a legend entry.
    */
   export default {
     name: 'AgentBreakdownMatrix',
@@ -212,7 +197,7 @@
       return {
         // The unit under the cursor, or null; drives the tooltip
         hovered: null,
-        // `{ field, value }` of the label or legend entry that is hovered or
+        // `{ field, value }` of the legend entry that is hovered or
         // focused, or null; every square outside it is dimmed
         hoverValue: null,
       };
@@ -282,11 +267,8 @@
       window.removeEventListener('scroll', this.hideTooltip, { capture: true });
     },
     methods: {
-      isSelected(field, value) {
-        return (this.selection[field] ?? []).includes(value);
-      },
-      // Listeners for a label or legend entry: while it is hovered or focused,
-      // the squares outside its value are dimmed
+      // Listeners for a legend entry: while it is hovered or focused, the
+      // squares outside its value are dimmed
       hoverOn(field, value) {
         const enter = () => {
           this.hoverValue = { field, value };
@@ -496,30 +478,12 @@
     border-top: 1px solid rgba(0, 0, 0, 0.08);
   }
 
-  .breakdown-matrix__head-button {
+  /* Row and column labels wrap inside their header, mid-word if they must */
+  .breakdown-matrix__head-text {
     min-width: 0;
-    padding: 0;
-    border: 0;
-    border-radius: 3px;
-    background: none;
-    font: inherit;
-    color: inherit;
-    text-align: left;
-    white-space: normal;
     overflow-wrap: anywhere;
-    cursor: pointer;
   }
 
-  .breakdown-matrix__head-button:hover {
-    color: rgb(var(--v-theme-primary));
-  }
-
-  .breakdown-matrix__head-button[aria-pressed='true'] {
-    font-weight: 700;
-    color: rgb(var(--v-theme-primary));
-  }
-
-  .breakdown-matrix__head-button:focus-visible,
   .breakdown-matrix__legend-item:focus-visible {
     outline: 2px solid rgba(var(--v-theme-primary), 0.6);
     outline-offset: 1px;
