@@ -33,7 +33,7 @@
         </text>
         <text
           :x="plotWidth / 2"
-          :y="plotHeight + xTickHeight + 14"
+          :y="plotHeight + xTickHeight + 16"
           class="heatmap__label"
           text-anchor="middle"
         >
@@ -66,7 +66,7 @@
           </text>
           <text
             v-else
-            :transform="`translate(${-margin.left + 12}, ${plotHeight / 2}) rotate(-90)`"
+            :transform="`translate(${-margin.left + 14}, ${plotHeight / 2}) rotate(-90)`"
             class="heatmap__label"
             text-anchor="middle"
           >
@@ -172,14 +172,14 @@
         let left = 8;
         if (this.yTitle) {
           // Multi-row: room for the rotated title. Single row: the title sits above.
-          left = this.tickWidth + (this.singleRow ? 14 : 30);
+          left = this.tickWidth + (this.singleRow ? 14 : 32);
         }
         // The first x tick hangs down-left past the plot's left edge
         const overhang = this.xTickWidth * 0.71 - this.size / 2;
         return {
-          top: this.yTitle && this.singleRow ? 22 : 4,
+          top: this.yTitle && this.singleRow ? 24 : 4,
           right: 8,
-          bottom: this.xTickHeight + 22,
+          bottom: this.xTickHeight + 25,
           left: Math.max(left, overhang + 4),
         };
       },
@@ -189,15 +189,15 @@
       plotHeight() {
         return this.yDomain.length * this.size;
       },
-      // Approximate label widths (12px font), so the SVG grows to fit a title
+      // Approximate label widths (14px font), so the SVG grows to fit a title
       // wider than the plot instead of clipping it
       xTitleWidth() {
-        return this.xTitle.length * 7;
+        return this.xTitle.length * 8.2;
       },
       yTitleAboveWidth() {
         // "↓ " plus the title, starting left of the tick
         return this.singleRow && this.yTitle
-          ? (this.yTitle.length + 2) * 7 - this.tickWidth - 6
+          ? (this.yTitle.length + 2) * 8.2 - this.tickWidth - 6
           : 0;
       },
       contentWidth() {
@@ -254,7 +254,7 @@
     font-size: 10px;
   }
   .heatmap__label {
-    font-size: 12px;
+    font-size: 14px;
   }
   .heatmap__tooltip {
     position: absolute;

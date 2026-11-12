@@ -102,7 +102,7 @@
   }
   /* Same sizes as the axis titles and ticks inside Heatmap */
   .heatmap-legend__title {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.3;
   }
   .heatmap-legend__svg {

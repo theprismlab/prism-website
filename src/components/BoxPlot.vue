@@ -109,11 +109,11 @@
         </text>
 
         <!-- Axis titles -->
-        <text :x="plotWidth / 2" :y="plotHeight + 34" class="label" text-anchor="middle">
+        <text :x="plotWidth / 2" :y="plotHeight + 36" class="label" text-anchor="middle">
           {{ x.title }}
         </text>
         <text
-          :transform="`translate(${-margin.left + 12}, ${plotHeight / 2}) rotate(-90)`"
+          :transform="`translate(${-margin.left + 14}, ${plotHeight / 2}) rotate(-90)`"
           class="label"
           text-anchor="middle"
         >
@@ -386,7 +386,7 @@
     },
     computed: {
       margin() {
-        return { top: 12, right: 12, bottom: 48, left: 52 };
+        return { top: 12, right: 12, bottom: 51, left: 54 };
       },
       plotWidth() {
         return this.width - this.margin.left - this.margin.right;
@@ -595,7 +595,7 @@
     pointer-events: none;
   }
   .label {
-    font-size: 14px;
+    font-size: 16px;
   }
   .box-plot__tooltip {
     position: absolute;

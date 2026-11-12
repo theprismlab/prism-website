@@ -11,7 +11,7 @@
       <text
         v-if="title"
         :x="width / 2"
-        y="16"
+        y="17"
         class="label label--title"
         text-anchor="middle"
       >
@@ -92,14 +92,14 @@
         <!-- Axis titles -->
         <text
           :x="plotWidth / 2"
-          :y="plotHeight + 56"
+          :y="plotHeight + 58"
           class="label"
           text-anchor="middle"
         >
           {{ x.title }}
         </text>
         <text
-          :transform="`translate(${-margin.left + 12}, ${plotHeight / 2}) rotate(-90)`"
+          :transform="`translate(${-margin.left + 14}, ${plotHeight / 2}) rotate(-90)`"
           class="label"
           text-anchor="middle"
         >
@@ -107,7 +107,7 @@
         </text>
 
         <!-- Legend: a line swatch per series, centered under the x title -->
-        <g :transform="`translate(${plotWidth / 2 - legendWidth / 2}, ${plotHeight + 74})`">
+        <g :transform="`translate(${plotWidth / 2 - legendWidth / 2}, ${plotHeight + 78})`">
           <g
             v-for="item in legendItems"
             :key="item.name"
@@ -136,7 +136,7 @@
           </g>
           <text
             :x="legendWidth / 2"
-            y="26"
+            y="28"
             class="label"
             text-anchor="middle"
           >
@@ -217,7 +217,7 @@
     },
     computed: {
       margin() {
-        return { top: this.title ? 30 : 12, right: 14, bottom: 112, left: 52 };
+        return { top: this.title ? 32 : 12, right: 14, bottom: 118, left: 54 };
       },
       plotWidth() {
         return this.width - this.margin.left - this.margin.right;
@@ -361,11 +361,13 @@
     fill: currentColor;
     pointer-events: none;
   }
+  /* 15 here matches 16 in ScatterGrid and BoxPlot on screen: this chart is 460
+     units wide and drawn two to a row, so it is scaled up slightly more */
   .label {
-    font-size: 13px;
+    font-size: 15px;
   }
   .label--title {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
   }
   .line-chart__tooltip {

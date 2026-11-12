@@ -242,7 +242,7 @@
           Cell lines
         </text>
         <text
-          :transform="`translate(14, ${histY + side / 2}) rotate(-90)`"
+          :transform="`translate(14, ${leftTitleY.count}) rotate(-90)`"
           class="label"
           text-anchor="middle"
         >
@@ -260,7 +260,7 @@
         {{ x.title }}
       </text>
       <text
-        :transform="`translate(14, ${margin.top + gridHeight / 2}) rotate(-90)`"
+        :transform="`translate(14, ${leftTitleY.y}) rotate(-90)`"
         class="label"
         text-anchor="middle"
       >
@@ -389,6 +389,13 @@
   const ABOVE = '#67a9cf';
   const BELOW = '#ef8a62';
   const SINGLE = '#4c78a8'; // point color when no color scale is given
+  // Rough width of a 16px title in SVG units: narrow glyphs, then capitals and
+  // digits, then everything else
+  const titleWidth = (text) =>
+    [...String(text)].reduce(
+      (w, ch) => w + (/[iljtfrI .,:;'|()[\]-]/.test(ch) ? 4.5 : /[A-Z0-9mw]/.test(ch) ? 11 : 9),
+      0,
+    );
   const PAD = 8; // inset between a panel's edge and its axis range; covers a selected marker
   const HOVER_RADIUS = 8; // SVG units within which a point counts as hovered
 
@@ -745,6 +752,23 @@
         const right = this.row ? longest(this.rows.map(this.sig)) + 34 : 8;
         // The bottom holds x ticks and title, plus the legend when there is a color scale
         return { top: 40, right, bottom: this.color ? 114 : 51, left };
+      },
+      // Centers of the rotated titles on the left edge: the y title beside the
+      // rows and, with marginals, "Cell lines" beside the x histograms. Each is
+      // centered on its panels unless the two would meet; then they are pushed
+      // apart around the gap between the rows and the histograms.
+      leftTitleY() {
+        const rows = this.margin.top + this.gridHeight / 2;
+        if (!this.marginals) return { y: rows };
+        const boundary = this.histY - this.gap / 2;
+        const clearance = 6;
+        return {
+          y: Math.min(rows, boundary - clearance - titleWidth(this.y.title) / 2),
+          count: Math.max(
+            this.histY + this.side / 2,
+            boundary + clearance + titleWidth('Cell lines') / 2,
+          ),
+        };
       },
       gridWidth() {
         return this.columns.length * this.size + (this.columns.length - 1) * this.gap;
