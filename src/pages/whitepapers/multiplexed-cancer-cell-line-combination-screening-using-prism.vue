@@ -766,12 +766,17 @@
         heatmapCellSize: 26,
         // Fig. 4: one CSV per combination. x is the library compound (dose1),
         // y the anchor (dose2). `cells` is filled in once the CSV loads.
+        // An anchor screened alone over its own dose range names that file in
+        // `singleAgent`; its single-agent strip is then drawn from it.
         combinations: [
           {
             title: 'Temozolomide + O6-Benzylguanine',
             file: 'temoO6_updated.csv',
             x: { name: 'Temozolomide' },
-            y: { name: 'O6-Benzylguanine' },
+            y: {
+              name: 'O6-Benzylguanine',
+              singleAgent: { file: 'O6-benzyl_data.csv', dose: 'Dose', viability: 'Viability' },
+            },
             cells: null,
             body: '<b>Temozolomide</b>. 7 concentrations; top concentration: 100µM; threefold dilution<br><br><b>O6-Benzylguanine</b>. 1 concentration: 5 µM<br><br>',
           },
@@ -819,10 +824,18 @@
       });
 
       this.combinations.forEach(async (combo) => {
-        const rows = await csv(dataPath + combo.file);
+        const { singleAgent } = combo.y;
+        const [rows, anchorRows] = await Promise.all([
+          csv(dataPath + combo.file),
+          singleAgent ? csv(dataPath + singleAgent.file) : null,
+        ]);
         const cells = {
           x: heatmapCells(singleAgentRows(rows, 'dose1'), 'capped_library', 'dose1'),
-          y: heatmapCells(singleAgentRows(rows, 'dose2'), 'capped_anchor', 'dose2'),
+          // The anchor's own dose series (one row per dose and cell line) when it
+          // has one, otherwise the dose it was given in the combination
+          y: anchorRows
+            ? heatmapCells(anchorRows, singleAgent.viability, singleAgent.dose)
+            : heatmapCells(singleAgentRows(rows, 'dose2'), 'capped_anchor', 'dose2'),
           xy: heatmapCells(rows, 'capped_combination', 'dose1', 'dose2'),
         };
         // One color scale across the three panels of this combination, so its
