@@ -22,9 +22,11 @@
       </div>
     </page-header>
 
-    <page-section width="narrow" class="pt-4">
-      <article class="whitepaper-body">
-        <section id="introduction">
+    <!-- One <section> per topic. Inside it, each <app-container> sets the width
+         of its content: narrow for text, default for figures that need room. -->
+    <article class="whitepaper-body">
+      <section id="introduction">
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Introduction</h2>
           <p class="prism-text-body-large">
             Combination therapies are routinely used in cancer care, and patient cure is almost
@@ -39,7 +41,8 @@
             increase the potential scale of combinations research, generating preclinical evidence
             that may help identify candidate combinations for clinical trials.
           </p>
-
+        </app-container>
+        <app-container>
           <figure-cards
             :items="introCards"
             caption="Fig.1. Schematic of the PRISM assay"
@@ -47,9 +50,11 @@
             shaded-title
             center-title
           />
-        </section>
+        </app-container>
+      </section>
 
-        <section>
+      <section>
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Analysis of combination data</h2>
           <p class="prism-text-body-large">
             Experimental combinations are generally benchmarked by comparing the effects of two (or
@@ -73,9 +78,12 @@
             :items="combinationEffects"
             caption="Fig.2. Classifications of combination effects"
           />
-        </section>
+        </app-container>
+        <app-container> </app-container>
+      </section>
 
-        <section>
+      <section>
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Considerations for dose selection</h2>
           <p class="prism-text-body-large">
             The ideal dose range for the single-agent components in combination screening would span
@@ -86,7 +94,8 @@
             agents over a range of concentrations in up to 900 cell lines using PRISM. An
             alternative approach would test single-agent concentration ranges in a number of
             individual cell lines, and/or, if available, leverage published cell biology or
-            screening data (e.g., at depmap.org). <br /><br />
+            screening data (e.g., at depmap.org).
+            <br /><br />
             For combination components with minimal differential viability effects, testing a single
             dose may represent the most efficient combinatorial design. By contrast, strong
             differential viability effects of one combination partner across cell lines supports the
@@ -107,9 +116,11 @@
             center-title
             caption="Fig.3. Dosing schemes of combinations based on single agent viability results"
           />
-        </section>
+        </app-container>
+      </section>
 
-        <section>
+      <section>
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Results</h2>
           <h3 class="prism-text-headline-small">Selection of test combinations</h3>
           <p class="prism-text-body-large">
@@ -177,76 +188,60 @@
             </term-item>
           </term-list>
 
-          <section>
-            <h3 class="prism-text-headline-small">Pooled combination screening results</h3>
-            <p class="prism-text-body-large">
-              Because O6-benzylguanine and ferrostatin-1 demonstrated minimal effects on viability
-              as single agents across a large panel of cell lines, we screened a single dose (5 µM
-              and 10 µM, respectively) in combination with 7 concentrations of temozolomide (top
-              concentration: 100µM; threefold dilution) and ML210 (top concentration: 10µM;
-              threefold dilution), respectively. As both A-1331852 and AZD5991 had dose-dependent
-              effects on cell viability, we screened a 5x5 matrix (threefold dilution) of these
-              compounds (top concentrations: 0.041 and 0.37µM, respectively). Combinations and all
-              component single agents at matching concentrations were plated using an HP D300e drug
-              printer and screened in nearly 900 cancer cell lines using standard PRISM conditions
-              and data processing [<a href="https://github.com/cmap/dockerized_mts" target="_blank"
-                >link</a
-              >].
-            </p>
+          <h3 class="prism-text-headline-small">Pooled combination screening results</h3>
+          <p class="prism-text-body-large">
+            Because O6-benzylguanine and ferrostatin-1 demonstrated minimal effects on viability as
+            single agents across a large panel of cell lines, we screened a single dose (5 µM and 10
+            µM, respectively) in combination with 7 concentrations of temozolomide (top
+            concentration: 100µM; threefold dilution) and ML210 (top concentration: 10µM; threefold
+            dilution), respectively. As both A-1331852 and AZD5991 had dose-dependent effects on
+            cell viability, we screened a 5x5 matrix (threefold dilution) of these compounds (top
+            concentrations: 0.041 and 0.37µM, respectively). Combinations and all component single
+            agents at matching concentrations were plated using an HP D300e drug printer and
+            screened in nearly 900 cancer cell lines using standard PRISM conditions and data
+            processing [<a href="https://github.com/cmap/dockerized_mts" target="_blank">link</a>].
+          </p>
 
-            <div class="combo-grid">
-              <div v-for="combo in combinations" :key="combo.title" class="combo-figure">
-                <div class="combo-figure__text">
-                  <h4 class="prism-text-headline-xs combo-figure__title">{{ combo.title }}</h4>
-                  <dl class="prism-text-body-medium combo-figure__dosing">
-                    <template v-for="agent in [combo.x, combo.y]" :key="agent.name">
-                      <dt>{{ agent.name }}</dt>
-                      <dd>{{ agent.dosing }}</dd>
-                    </template>
-                  </dl>
+          <div class="combo-grid">
+            <div v-for="combo in combinations" :key="combo.title" class="combo-figure">
+              <div class="combo-figure__text">
+                <h4 class="prism-text-headline-xs combo-figure__title">{{ combo.title }}</h4>
+                <dl class="prism-text-body-medium combo-figure__dosing">
+                  <template v-for="agent in [combo.x, combo.y]" :key="agent.name">
+                    <dt>{{ agent.name }}</dt>
+                    <dd>{{ agent.dosing }}</dd>
+                  </template>
+                </dl>
+              </div>
+
+              <div class="combo-figure__card">
+                <div class="combo-figure__card-header">
+                  <h5 class="prism-text-title-medium combo-figure__card-title">
+                    Sensitivity across doses
+                  </h5>
+                  <!-- One color scale for all three heatmaps of the combination -->
+                  <heatmap-legend
+                    v-if="combo.cells"
+                    :domain="combo.cells.domain"
+                    :title="killedLabel"
+                    log
+                  />
                 </div>
-
-                <div class="combo-figure__card">
-                  <div class="combo-figure__card-header">
-                    <h5 class="prism-text-title-medium combo-figure__card-title">
-                      Sensitivity across doses
-                    </h5>
-                    <!-- One color scale for all three heatmaps of the combination -->
-                    <heatmap-legend
-                      v-if="combo.cells"
-                      :domain="combo.cells.domain"
-                      :title="killedLabel"
-                      log
-                    />
-                  </div>
-                  <div v-if="combo.cells" class="combo-figure__panels">
-                    <div class="combo-figure__panel">
-                      <p class="prism-text-title-small combo-figure__label">Single agent</p>
-                      <div class="combo-figure__strips">
-                        <heatmap
-                          :data="combo.cells.x"
-                          :x-title="`${combo.x.name} (µM)`"
-                          :value-title="killedLabel"
-                          :domain="combo.cells.domain"
-                          :size="heatmapCellSize"
-                          log
-                        />
-                        <heatmap
-                          :data="combo.cells.y"
-                          :x-title="`${combo.y.name} (µM)`"
-                          :value-title="killedLabel"
-                          :domain="combo.cells.domain"
-                          :size="heatmapCellSize"
-                          log
-                        />
-                      </div>
-                    </div>
-                    <div class="combo-figure__panel">
-                      <p class="prism-text-title-small combo-figure__label">Combination</p>
+                <div v-if="combo.cells" class="combo-figure__panels">
+                  <div class="combo-figure__panel">
+                    <p class="prism-text-title-small combo-figure__label">Single agent</p>
+                    <div class="combo-figure__strips">
                       <heatmap
-                        :data="combo.cells.xy"
+                        :data="combo.cells.x"
                         :x-title="`${combo.x.name} (µM)`"
-                        :y-title="`${combo.y.name} (µM)`"
+                        :value-title="killedLabel"
+                        :domain="combo.cells.domain"
+                        :size="heatmapCellSize"
+                        log
+                      />
+                      <heatmap
+                        :data="combo.cells.y"
+                        :x-title="`${combo.y.name} (µM)`"
                         :value-title="killedLabel"
                         :domain="combo.cells.domain"
                         :size="heatmapCellSize"
@@ -254,216 +249,233 @@
                       />
                     </div>
                   </div>
+                  <div class="combo-figure__panel">
+                    <p class="prism-text-title-small combo-figure__label">Combination</p>
+                    <heatmap
+                      :data="combo.cells.xy"
+                      :x-title="`${combo.x.name} (µM)`"
+                      :y-title="`${combo.y.name} (µM)`"
+                      :value-title="killedLabel"
+                      :domain="combo.cells.domain"
+                      :size="heatmapCellSize"
+                      log
+                    />
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <figure-caption>
-              <template #title>Fig.4. Combinations tested and their dosing schemes.</template>
-              The dosing schemes of the three combinations tested were determined based on the
-              described procedure. Thus, temozolomide + O6 Benzylguanine and ML210 + Ferrostatin
-              were screened in the 7x1 format since one of the single agents was largely inert.
-              Since both AZD5991 and A-1331852 demonstrated significant viability effects, we
-              employed the 5x5 format for the AZD5991 + A-1331852 combination. A cell line was
-              classified as “killed” if its viability (relative to vehicle control) was &lt; 0.3.
-            </figure-caption>
-            <p class="prism-text-body-large mt-6">
-              We calculated a synergy score for combination effects at each dose combination using
-              both the Highest Single Agent (HSA) and Bliss models to generate a null expectation
-              for the viability at the combination dose (see figure 2 Eqs. 1,2). In the HSA model,
-              the expected viability of the combination is the minimum of the two single agent
-              viabilities. In the Bliss model, viability effects are multiplicative (i.e.,
-              log-viability effects are additive)一based on the assumption of independent action of
-              the two single agents. The synergy score is computed as the difference between the
-              model expectation and the observed viability <sup>1</sup> — a positive value indicates
-              synergy while a negative value indicates antagonism. For robustness, we combine both
-              model expectations into a single synergy score (Eq. 3), which effectively considers
-              the lower viability of the two model expectations when looking for synergy and the
-              higher viability of the two model expectations when looking for
-              antagonism<sup>2</sup>. Significance (q values) for synergy scores were calculated
-              using an empirical null model of synergy scores generated using negative control data
-              from the experiment that accounts for cell-line specific variability (see Appendix).
-            </p>
-          </section>
-          <section>
-            <figure-cards
-              align="start"
-              :items="equationCards.filter((d, i) => i < 2)"
-              caption=""
-              shaded-title
-              center-title
-              border
-              :max-image-width="220"
-            />
-            <figure-cards
-              align="start"
-              :items="equationCards.filter((d, i) => i == 2)"
-              caption=""
-              shaded-title
-              center-title
-              border
-              class="mt-2"
-              :max-image-width="400"
-            />
-            <figure-caption>
-              <sup>1</sup> Note that the synergy score is measured in terms of viability rather than
-              in terms of log2fold-change (LFC) as used on the PRISM portal (<a
-                href="https://theprismlab.org/portal/CPS009/CPS_WHITEPAPER/PCPS019/BRD-K32107296_BRD-K92041145/synergy-by-dose"
-                target="_blank"
-                >PRISM Portal</a
-              >). This is done to better align with literature.<br /><br />
-              <sup>2</sup> We cap viabilities at 1 before calculating null model expectations for
-              synergy computation. For viabilities capped at 1, the Bliss expectation is always
-              &lt;= HSA.
-            </figure-caption>
-          </section>
-        </section>
+          <figure-caption>
+            <template #title>Fig.4. Combinations tested and their dosing schemes.</template>
+            The dosing schemes of the three combinations tested were determined based on the
+            described procedure. Thus, temozolomide + O6 Benzylguanine and ML210 + Ferrostatin were
+            screened in the 7x1 format since one of the single agents was largely inert. Since both
+            AZD5991 and A-1331852 demonstrated significant viability effects, we employed the 5x5
+            format for the AZD5991 + A-1331852 combination. A cell line was classified as “killed”
+            if its viability (relative to vehicle control) was &lt; 0.3.
+          </figure-caption>
+          <p class="prism-text-body-large mt-6">
+            We calculated a synergy score for combination effects at each dose combination using
+            both the Highest Single Agent (HSA) and Bliss models to generate a null expectation for
+            the viability at the combination dose (see figure 2 Eqs. 1,2). In the HSA model, the
+            expected viability of the combination is the minimum of the two single agent
+            viabilities. In the Bliss model, viability effects are multiplicative (i.e.,
+            log-viability effects are additive)一based on the assumption of independent action of
+            the two single agents. The synergy score is computed as the difference between the model
+            expectation and the observed viability <sup>1</sup> — a positive value indicates synergy
+            while a negative value indicates antagonism. For robustness, we combine both model
+            expectations into a single synergy score (Eq. 3), which effectively considers the lower
+            viability of the two model expectations when looking for synergy and the higher
+            viability of the two model expectations when looking for antagonism<sup>2</sup>.
+            Significance (q values) for synergy scores were calculated using an empirical null model
+            of synergy scores generated using negative control data from the experiment that
+            accounts for cell-line specific variability (see Appendix).
+          </p>
+          <figure-cards
+            align="start"
+            :items="equationCards.filter((d, i) => i < 2)"
+            caption=""
+            shaded-title
+            center-title
+            border
+            :max-image-width="220"
+          />
+          <figure-cards
+            align="start"
+            :items="equationCards.filter((d, i) => i == 2)"
+            caption=""
+            shaded-title
+            center-title
+            border
+            class="mt-2"
+            :max-image-width="400"
+          />
+          <figure-caption>
+            <sup>1</sup> Note that the synergy score is measured in terms of viability rather than
+            in terms of log2fold-change (LFC) as used on the PRISM portal (<a
+              href="https://theprismlab.org/portal/CPS009/CPS_WHITEPAPER/PCPS019/BRD-K32107296_BRD-K92041145/synergy-by-dose"
+              target="_blank"
+              >PRISM Portal</a
+            >). This is done to better align with literature.<br /><br />
+            <sup>2</sup> We cap viabilities at 1 before calculating null model expectations for
+            synergy computation. For viabilities capped at 1, the Bliss expectation is always &lt;=
+            HSA.
+          </figure-caption>
+        </app-container>
+      </section>
 
-        <section>
+      <section>
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Synergy by dose</h2>
-          <section>
-            <h3 class="prism-text-headline-small">Temozolomide + O6-benzylguanine</h3>
-            <p class="prism-text-body-large">
-              In the presence of O6-benzylguanine, cell lines that expressed MGMT were sensitized to
-              temozolomide (i.e., synergy was observed) (figure 5). Intriguingly, while MGMT
-              expression appeared necessary for sensitization to temozolomide, a subset of cell
-              lines remained resistant to temozolomide even in the presence of O6-benzylguanine.
-              Accordingly, we asked whether any baseline genomic features were associated with the
-              calculated temozolomide+O6-benzylguanine synergy score in MGMT-expressing cell lines
-              (MGMT expression &gt; 1.5, see figure 8). We found that low expression of the MSH6
-              gene (and low protein levels of MSH6, or its heterodimeric partner protein MSH2) were
-              associated with lack of synergy in MGMT-proficient cell lines. MSH2 and MSH6 are genes
-              involved in DNA mismatch repair, and their loss has been previously suggested to be
-              associated with resistance to temozolomide<sup>17, 18</sup>.
-            </p>
-            <scatter-grid
-              v-if="synergy.temo"
-              :data="synergy.temo"
-              id-field="ccle_name"
-              id-title="Cell line"
-              :column="{ field: 'dose1', title: 'Temozolomide (µM)' }"
-              :row="{ field: 'dose2', title: 'O6-benzylguanine (µM)' }"
-              :x="{
-                field: 'S',
-                title: 'Synergy score',
-                domain: [-1, 1],
-                threshold: 0,
-                tickValues: [-0.5, 0, 0.5],
-              }"
-              :y="{ field: 'EXP_MGMT', title: 'MGMT expression', threshold: 1.5 }"
-              :color="{
-                field: 'synergy_count_across_doses',
-                title: 'Synergy count',
-                type: 'sequential',
-                range: 'blues',
-              }"
-              marginals
-            />
-            <figure-caption>
-              <template #title
-                >Fig.5. Synergy in temozolomide + O6-Benzylguanine combination.</template
-              >
-              Many cell lines with high MGMT expression levels were sensitized to temozolomide by
-              the addition of O6-Benzylguanine, and thus exhibited strong synergy. Each point,
-              representing a cell line, is colored by the number of times the synergy score of the
-              cell line was &gt; 0 (with a q-value &lt; 0.1). Histograms of the synergy score at
-              each dose and MGMT expression are also shown. Due to the bimodal nature of MGMT
-              expression in the set of cell lines, we set a threshold of 1.5 (dashed line) to
-              differentiate high MGMT expressing lines from low MGMT expressing lines. Statistical
-              significance was evaluated by computing empirical p-values of the corresponding
-              one-sided test followed by multiple hypothesis correction (see Appendix).
-            </figure-caption>
-          </section>
-          <section>
-            <h3 class="prism-text-headline-small mt-8">ML210 + ferrostatin-1</h3>
-            <p class="prism-text-body-large">
-              As the dose of ML210 increased, we observed that ferrostatin-1 consistently
-              antagonized the effects of ML210 across cell lines (figure 6). For example, the median
-              viability across cell lines at 10µM ML210 was 58.0%, compared with 92.9% at 10µM ML210
-              + ferrostatin-1, resulting in a median synergy score of S = -0.30.
-            </p>
-            <scatter-grid
-              v-if="synergy.ml210"
-              :data="synergy.ml210"
-              id-field="ccle_name"
-              id-title="Cell line"
-              :column="{ field: 'dose1', title: 'ML210 (µM)' }"
-              :row="{ field: 'dose2', title: 'Ferrostatin-1 (µM)' }"
-              :x="{
-                field: 'S',
-                title: 'Synergy score',
-                domain: [-1, 1],
-                threshold: 0,
-                tickValues: [-0.5, 0, 0.5],
-              }"
-              :y="{ field: 'XPR_GPX4', title: 'GPX4 dependency' }"
-              :color="{
-                field: 'antagonism_count_across_doses',
-                title: 'Antagonism count',
-                type: 'sequential',
-                range: 'reds',
-              }"
-              marginals
-            />
-            <figure-caption>
-              <template #title>Fig.6. Antagonism in ML210 + Ferrostatin combination.</template>
-              Many cell lines exhibited strong antagonism at higher dose values of ML210. Each
-              point, representing a cell line, is colored by the number of times the synergy score
-              of the cell line was &lt; 0 (with a q-value &lt; 0.1). Histograms of the synergy score
-              at each dose and the CRISPR Chronos dependency score of GPX4 are also shown. Note
-              that, unlike MGMT expression, there is no apparent bimodality in the CRISPR score.
-              Statistical significance was evaluated by computing empirical p-values of the
-              corresponding one-sided test followed by multiple hypothesis correction (see
-              Appendix).
-            </figure-caption>
-          </section>
-          <section>
-            <h3 class="prism-text-headline-small mt-8">AZD5991 + A-1331852</h3>
-            <p class="prism-text-body-large">
-              Across doses and across cell lines, we observed that BCL-xL and MCL1 inhibition were
-              synergistic: for example, the median synergy score at the highest tested doses (0.37µM
-              AZD5991 + 0.041µM A-1331852) was S = 0.28 (figure 7).
-            </p>
-            <scatter-grid
-              v-if="synergy.azd"
-              :data="synergy.azd"
-              id-field="ccle_name"
-              id-title="Cell line"
-              :column="{ field: 'dose1', title: 'AZD5991 (µM)' }"
-              :row="{ field: 'dose2', title: 'A-1331852 (µM)' }"
-              :x="{
-                field: 'S',
-                title: 'Synergy score',
-                domain: [-1, 1],
-                threshold: 0,
-                tickValues: [-0.5, 0, 0.5],
-              }"
-              :y="{ field: 'neg_log10_qval', title: '-log10(q value)', threshold: 1 }"
-              :color="{
-                field: 'S',
-                title: 'Synergy score',
-                type: 'sequential',
-                range: 'rdbu',
-                reverse: true,
-              }"
-            />
-            <figure-caption>
-              <template #title
-                >Fig.7. Observed synergy in AZD5991 + A-1331852 combination.</template
-              >
-              Many cell lines exhibited strong synergy at higher doses of the combination. Each
-              point, representing a cell line, is colored by the number of times the synergy score
-              of the cell line was significantly different from 0 (q-value &lt; 0.1). Statistical
-              significance was evaluated by computing empirical p-values from a two-sided test
-              followed by multiple hypothesis correction (see Appendix). The p-values were computed
-              from an empirical null model of synergy values that accounted for cell-line specific
-              variability—reflected in the range of q-values at a given synergy value. The gap at
-              synergy=0 reflects the large number of cases where synergy is zero by our definition.
-            </figure-caption>
-          </section>
-        </section>
+          <h3 class="prism-text-headline-small">Temozolomide + O6-benzylguanine</h3>
+          <p class="prism-text-body-large">
+            In the presence of O6-benzylguanine, cell lines that expressed MGMT were sensitized to
+            temozolomide (i.e., synergy was observed) (figure 5). Intriguingly, while MGMT
+            expression appeared necessary for sensitization to temozolomide, a subset of cell lines
+            remained resistant to temozolomide even in the presence of O6-benzylguanine.
+            Accordingly, we asked whether any baseline genomic features were associated with the
+            calculated temozolomide+O6-benzylguanine synergy score in MGMT-expressing cell lines
+            (MGMT expression &gt; 1.5, see figure 8). We found that low expression of the MSH6 gene
+            (and low protein levels of MSH6, or its heterodimeric partner protein MSH2) were
+            associated with lack of synergy in MGMT-proficient cell lines. MSH2 and MSH6 are genes
+            involved in DNA mismatch repair, and their loss has been previously suggested to be
+            associated with resistance to temozolomide<sup>17, 18</sup>.
+          </p>
+        </app-container>
 
-        <section>
+        <app-container>
+          <scatter-grid
+            v-if="synergy.temo"
+            :data="synergy.temo"
+            id-field="ccle_name"
+            id-title="Cell line"
+            :column="{ field: 'dose1', title: 'Temozolomide (µM)' }"
+            :row="{ field: 'dose2', title: 'O6-benzylguanine (µM)' }"
+            :x="{
+              field: 'S',
+              title: 'Synergy score',
+              domain: [-1, 1],
+              threshold: 0,
+              tickValues: [-0.5, 0, 0.5],
+            }"
+            :y="{ field: 'EXP_MGMT', title: 'MGMT expression', threshold: 1.5 }"
+            :color="{
+              field: 'synergy_count_across_doses',
+              title: 'Synergy count',
+              type: 'sequential',
+              range: 'blues',
+            }"
+            marginals
+          />
+          <figure-caption>
+            <template #title
+              >Fig.5. Synergy in temozolomide + O6-Benzylguanine combination.</template
+            >
+            Many cell lines with high MGMT expression levels were sensitized to temozolomide by the
+            addition of O6-Benzylguanine, and thus exhibited strong synergy. Each point,
+            representing a cell line, is colored by the number of times the synergy score of the
+            cell line was &gt; 0 (with a q-value &lt; 0.1). Histograms of the synergy score at each
+            dose and MGMT expression are also shown. Due to the bimodal nature of MGMT expression in
+            the set of cell lines, we set a threshold of 1.5 (dashed line) to differentiate high
+            MGMT expressing lines from low MGMT expressing lines. Statistical significance was
+            evaluated by computing empirical p-values of the corresponding one-sided test followed
+            by multiple hypothesis correction (see Appendix).
+          </figure-caption>
+        </app-container>
+
+        <app-container narrow>
+          <h3 class="prism-text-headline-small">ML210 + ferrostatin-1</h3>
+          <p class="prism-text-body-large">
+            As the dose of ML210 increased, we observed that ferrostatin-1 consistently antagonized
+            the effects of ML210 across cell lines (figure 6). For example, the median viability
+            across cell lines at 10µM ML210 was 58.0%, compared with 92.9% at 10µM ML210 +
+            ferrostatin-1, resulting in a median synergy score of S = -0.30.
+          </p>
+        </app-container>
+
+        <app-container>
+          <scatter-grid
+            v-if="synergy.ml210"
+            :data="synergy.ml210"
+            id-field="ccle_name"
+            id-title="Cell line"
+            :column="{ field: 'dose1', title: 'ML210 (µM)' }"
+            :row="{ field: 'dose2', title: 'Ferrostatin-1 (µM)' }"
+            :x="{
+              field: 'S',
+              title: 'Synergy score',
+              domain: [-1, 1],
+              threshold: 0,
+              tickValues: [-0.5, 0, 0.5],
+            }"
+            :y="{ field: 'XPR_GPX4', title: 'GPX4 dependency' }"
+            :color="{
+              field: 'antagonism_count_across_doses',
+              title: 'Antagonism count',
+              type: 'sequential',
+              range: 'reds',
+            }"
+            marginals
+          />
+          <figure-caption>
+            <template #title>Fig.6. Antagonism in ML210 + Ferrostatin combination.</template>
+            Many cell lines exhibited strong antagonism at higher dose values of ML210. Each point,
+            representing a cell line, is colored by the number of times the synergy score of the
+            cell line was &lt; 0 (with a q-value &lt; 0.1). Histograms of the synergy score at each
+            dose and the CRISPR Chronos dependency score of GPX4 are also shown. Note that, unlike
+            MGMT expression, there is no apparent bimodality in the CRISPR score. Statistical
+            significance was evaluated by computing empirical p-values of the corresponding
+            one-sided test followed by multiple hypothesis correction (see Appendix).
+          </figure-caption>
+        </app-container>
+
+        <app-container narrow>
+          <h3 class="prism-text-headline-small">AZD5991 + A-1331852</h3>
+          <p class="prism-text-body-large">
+            Across doses and across cell lines, we observed that BCL-xL and MCL1 inhibition were
+            synergistic: for example, the median synergy score at the highest tested doses (0.37µM
+            AZD5991 + 0.041µM A-1331852) was S = 0.28 (figure 7).
+          </p>
+          <scatter-grid
+            v-if="synergy.azd"
+            :data="synergy.azd"
+            id-field="ccle_name"
+            id-title="Cell line"
+            :column="{ field: 'dose1', title: 'AZD5991 (µM)' }"
+            :row="{ field: 'dose2', title: 'A-1331852 (µM)' }"
+            :x="{
+              field: 'S',
+              title: 'Synergy score',
+              domain: [-1, 1],
+              threshold: 0,
+              tickValues: [-0.5, 0, 0.5],
+            }"
+            :y="{ field: 'neg_log10_qval', title: '-log10(q value)', threshold: 1 }"
+            :color="{
+              field: 'S',
+              title: 'Synergy score',
+              type: 'sequential',
+              range: 'rdbu',
+              reverse: true,
+            }"
+          />
+          <figure-caption>
+            <template #title>Fig.7. Observed synergy in AZD5991 + A-1331852 combination.</template>
+            Many cell lines exhibited strong synergy at higher doses of the combination. Each point,
+            representing a cell line, is colored by the number of times the synergy score of the
+            cell line was significantly different from 0 (q-value &lt; 0.1). Statistical
+            significance was evaluated by computing empirical p-values from a two-sided test
+            followed by multiple hypothesis correction (see Appendix). The p-values were computed
+            from an empirical null model of synergy values that accounted for cell-line specific
+            variability—reflected in the range of q-values at a given synergy value. The gap at
+            synergy=0 reflects the large number of cases where synergy is zero by our definition.
+          </figure-caption>
+        </app-container>
+      </section>
+
+      <section>
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Conclusion</h2>
           <p class="prism-text-body-large">
             Combination screening is a challenging scientific, analytical, and logistical endeavor.
@@ -484,6 +496,9 @@
             that uniquely underlie sensitivity or resistance to the combination (e.g., MSH6 for
             MGMT-expressing cell lines).
           </p>
+        </app-container>
+
+        <app-container>
           <scatter-grid
             v-if="biomarkers"
             :data="biomarkers"
@@ -514,7 +529,10 @@
             Such analyses can be used to generate hypotheses regarding the mechanisms underlying
             sensitivity to drug combinations.
           </figure-caption>
-          <p class="prism-text-body-large mt-6">
+        </app-container>
+
+        <app-container narrow>
+          <p class="prism-text-body-large">
             Dose selection is one of the most important considerations for combination screening,
             ensuring combination effects can be reliably and efficiently measured across the largest
             number of cell lines. Differential single-agent activity across cell lines can be
@@ -530,9 +548,11 @@
             as 5x5. Visit our
             <a href="/consortium-screens/assays" target="_blank">Assays</a> page to learn more.
           </p>
-        </section>
+        </app-container>
+      </section>
 
-        <section id="citations">
+      <section id="citations">
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Citations</h2>
           <ol>
             <li>
@@ -619,8 +639,10 @@
               Encyclopedia. Nature 569, 503–508 (2019).
             </li>
           </ol>
-        </section>
-        <section id="appendix">
+        </app-container>
+      </section>
+      <section id="appendix">
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Appendix</h2>
           <p>
             For each cell line, we generate median viability values (replicates) for a mock
@@ -649,9 +671,9 @@
             *Note: Figure 7 was updated on September 3, 2024 due to a minor error in the computed
             q-values. This did not affect any of our conclusions.
           </p>
-        </section>
-      </article>
-    </page-section>
+        </app-container>
+      </section>
+    </article>
   </page>
 </template>
 
@@ -920,10 +942,30 @@
     gap: 0.66rem;
   }
 
+  /* The article is a column of topic sections, 40px apart; each topic is a
+     column of containers, 32px apart. A container only sets the width of its
+     content, so these gaps are the article's whole vertical rhythm. The
+     article's padding is the space under the page header and above the footer. */
   .whitepaper-body {
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
+    padding: 16px 0 32px;
+  }
+  .whitepaper-body > section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  /* Whatever opens a container sits on the gap, without a top margin of its own */
+  .whitepaper-body .app-container > :first-child {
+    margin-top: 0;
+  }
+  /* Under a wider plot the caption keeps the text measure: the narrow
+     container's 780px less its 16px gutters */
+  .whitepaper-body .figure-caption {
+    max-width: 748px;
+    margin-inline: auto;
   }
 
   /* Fig. 4: one block per combination: its title and dosing text, then a
@@ -1029,12 +1071,6 @@
       border-top: var(--combo-rule);
       border-left: 0;
     }
-  }
-
-  .whitepaper-body {
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
   }
 
   .whitepaper-body h2,

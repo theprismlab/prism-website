@@ -121,10 +121,8 @@
           <div class="whitepaper-split">
             <img
               :src="adcComponentsImage"
-              class="whitepaper-image"
+              class="whitepaper-image whitepaper-image__adc-composition"
               alt="Diagram of an antibody-drug conjugate showing its antibody, linker, and payload components"
-              width="542"
-              height="542"
               loading="lazy"
             />
 
@@ -845,6 +843,9 @@
     height: auto;
     margin: 1rem 0;
     border-radius: var(--prism-radius-lg);
+  }
+  .whitepaper-image__adc-composition {
+    max-width: 300px;
   }
   .whitepaper-image--centered {
     max-width: 640px;

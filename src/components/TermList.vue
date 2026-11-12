@@ -1,5 +1,5 @@
 <template>
-  <dl class="term-list" :class="{ 'term-list--shaded': shaded }">
+  <dl class="term-list my-6" :class="{ 'term-list--shaded': shaded }">
     <slot />
   </dl>
 </template>
