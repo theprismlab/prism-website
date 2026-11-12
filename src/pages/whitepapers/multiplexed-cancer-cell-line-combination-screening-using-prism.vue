@@ -23,7 +23,6 @@
 
     <page-section width="narrow">
       <article class="whitepaper-body">
-        <!-- TODO: replace placeholder sections with the white paper content -->
         <section id="introduction">
           <h2 class="prism-text-headline-medium">Introduction</h2>
           <p class="prism-text-body-large">
@@ -90,6 +89,7 @@
             combinations (e.g., drug rescue screens).
           </p>
           <figure-cards
+            align="start"
             :items="doseSelection"
             caption="Fig.3. Dosing schemes of combinations based on single agent viability results"
           />
@@ -105,7 +105,7 @@
             4, and we choose the combination screening format based on this data.
           </p>
 
-          <term-list shaded>
+          <term-list shaded class="my-6">
             <term-item>
               <template #name>Temozolomide + O6-benzylguanine</template>
               <template #definition>
@@ -178,42 +178,43 @@
                 >link</a
               >].
             </p>
-            <div />
 
-            <div v-for="combo in combinations" :key="combo.title" class="combo-figure">
-              <h4 class="prism-text-title-medium combo-figure__title">
-                {{ combo.title }}
-              </h4>
-              <div v-if="combo.cells" class="combo-figure__panels">
-                <div>
-                  <p class="combo-figure__label prism-text-title-small">Single agent</p>
-                  <div class="combo-figure__panels">
-                    <heatmap
-                      :data="combo.cells.x"
-                      :x-title="`${combo.x.name} (µM)`"
-                      :value-title="killedLabel"
-                      :domain="combo.cells.domain"
-                      log
-                    />
-                    <heatmap
-                      :data="combo.cells.y"
-                      :x-title="`${combo.y.name} (µM)`"
-                      :value-title="killedLabel"
-                      :domain="combo.cells.domain"
-                      log
-                    />
+            <div class="combo-grid">
+              <div v-for="combo in combinations" :key="combo.title" class="combo-figure">
+                <h4 class="prism-text-title-medium combo-figure__title">
+                  {{ combo.title }}
+                </h4>
+                <template v-if="combo.cells">
+                  <div class="combo-figure__single">
+                    <p class="combo-figure__label prism-text-title-small">Single agent</p>
+                    <div class="combo-figure__strips">
+                      <heatmap
+                        :data="combo.cells.x"
+                        :x-title="`${combo.x.name} (µM)`"
+                        :value-title="killedLabel"
+                        :domain="combo.cells.domain"
+                        log
+                      />
+                      <heatmap
+                        :data="combo.cells.y"
+                        :x-title="`${combo.y.name} (µM)`"
+                        :value-title="killedLabel"
+                        :domain="combo.cells.domain"
+                        log
+                      />
+                    </div>
                   </div>
-                </div>
-                <heatmap
-                  :data="combo.cells.xy"
-                  :x-title="`${combo.x.name} (µM)`"
-                  :y-title="`${combo.y.name} (µM)`"
-                  :value-title="killedLabel"
-                  :domain="combo.cells.domain"
-                  log
-                  title="Combination"
-                  legend
-                />
+                  <heatmap
+                    :data="combo.cells.xy"
+                    :x-title="`${combo.x.name} (µM)`"
+                    :y-title="`${combo.y.name} (µM)`"
+                    :value-title="killedLabel"
+                    :domain="combo.cells.domain"
+                    log
+                    title="Combination"
+                    legend
+                  />
+                </template>
               </div>
             </div>
 
@@ -753,18 +754,58 @@
     gap: 2.5rem;
   }
 
-  /* Fig. 4: three heatmap panels per combination */
+  /* Fig. 4: one column per combination on large screens, broken out of the
+     narrow text column so every heatmap renders at its natural size with
+     matching label sizes. Each column is a subgrid, so the titles, the
+     single-agent strips and the combination heatmaps line up across columns.
+     Below lg the combinations stack, each laying its panels out in a row. */
+  .combo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px 32px;
+    width: min(1200px, 92vw);
+    margin: 1.5rem 0 0 calc(50% - min(1200px, 92vw) / 2);
+  }
   .combo-figure {
-    margin-top: 1.5rem;
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    min-width: 0;
+    overflow-x: auto;
   }
-  .combo-figure__title {
-    margin: 0 0 0.5rem;
+  .combo-figure__title,
+  .combo-figure__label {
+    margin: 0 0 4px;
   }
-  .combo-figure__panels {
+  .combo-figure__strips {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 24px;
+    gap: 12px;
+  }
+  /* Never scale the SVGs down: label sizes must match across columns */
+  .combo-figure :deep(.heatmap__svg) {
+    max-width: none;
+  }
+  @media (max-width: 1279.98px) {
+    .combo-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .combo-figure {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 24px;
+    }
+    .combo-figure__title {
+      flex-basis: 100%;
+    }
+    .combo-figure__strips {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
   }
   /* Same spacing as the title inside Heatmap, so the panels line up */
   .combo-figure__label {

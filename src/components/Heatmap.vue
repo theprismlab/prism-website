@@ -45,14 +45,14 @@
           >
             {{ tick(y) }}
           </text>
-          <!-- One row: the title reads as a row label, left of the tick -->
+          <!-- One row: the title sits above the row, flush with the tick, so a
+               long name does not push the plot to the right -->
           <text
             v-if="singleRow"
-            :x="-tickWidth - 14"
-            :y="plotHeight / 2"
+            :x="-tickWidth - 6"
+            y="-8"
             class="heatmap__label"
-            text-anchor="end"
-            dominant-baseline="middle"
+            text-anchor="start"
           >
             {{ yTitle }}
           </text>
@@ -187,20 +187,18 @@
       singleRow() {
         return this.yDomain.length === 1;
       },
-      // Approximate text widths (11px and 12px fonts) to size the left margin
+      // Approximate tick text width (11px font) to size the left margin
       tickWidth() {
         return Math.max(...this.yDomain.map((y) => this.tick(y).length)) * 6.5;
-      },
-      titleWidth() {
-        return this.yTitle.length * 7;
       },
       margin() {
         let left = 8;
         if (this.yTitle) {
-          left = this.singleRow ? this.tickWidth + this.titleWidth + 22 : this.tickWidth + 30;
+          // Multi-row: room for the rotated title. Single row: the title sits above.
+          left = this.tickWidth + (this.singleRow ? 14 : 30);
         }
         return {
-          top: 4,
+          top: this.yTitle && this.singleRow ? 22 : 4,
           right: 8,
           bottom: 40 + (this.legend ? 52 : 0),
           left,
