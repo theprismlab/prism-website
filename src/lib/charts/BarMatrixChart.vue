@@ -11,7 +11,7 @@
    * each means.
    *
    * `swapAxes()` (for a parent, via a ref) trades the row and column fields in the
-   * chart, and `@axis-change` reports the new `axis` so the parent can keep its own
+   * chart, or those of any two axes named, e.g. `swapAxes('series', 'color')`, and `@axis-change` reports the new `axis` so the parent can keep its own
    * state in step.
    *
    * Leave `width` unset to size the chart to its container: the chart measures
@@ -93,8 +93,9 @@
       this.chart.destroy();
     },
     methods: {
-      swapAxes() {
-        this.chart.swapAxes();
+      // Trade two axes' fields: rows and columns by default, or e.g. ('series', 'color')
+      swapAxes(first, second) {
+        this.chart.swapAxes(first, second);
       },
     },
   };

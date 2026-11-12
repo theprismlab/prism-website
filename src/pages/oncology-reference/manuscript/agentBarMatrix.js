@@ -14,24 +14,26 @@ export const AGENT_BAR_MATRIX = {
   // The columns the reader can put on the axes, in the order the inputs list them
   dimensions: AGENT_BREAKDOWN.dimensions,
 
-  // The fields on each axis when the card first renders. Any of `y`, `x`,
-  // `group` and `series` may be null: a single row, a single column, one group
-  // per cell, or one bar per group.
+  // The fields on each axis when the card first renders, by CSV column name as
+  // listed in `dimensions` (so 'Modality_summarized', not its label 'Modality').
+  // Any of `y`, `x`, `group` and `series` may be null: a single row, a single
+  // column, one group per cell, or one bar per group.
   defaults: {
     // Matrix rows and columns
     y: null,
-    x: 'HighestClinicalStage_summarized',
+    x: null,
     // Bar groups inside every cell, and the bars side by side within a group
-    group: 'Class',
-    series: 'PreviouslyScreened',
-    color: 'PreviouslyScreened',
+    group: null,
+    series: 'TargetPathway',
+    color: 'Modality_summarized',
   },
 
   // Which inputs the card's toolbar gives the reader, in this order: any of
-  // 'rows', 'columns', 'groups', 'series', 'color' and 'swap' (a button trading
-  // rows and columns). Leave one out to fix that axis to its default; an empty
-  // list shows no inputs.
-  controls: ['rows', 'swap', 'columns', 'groups', 'series', 'color'],
+  // 'rows', 'columns', 'groups', 'series', 'color', and the buttons 'swap'
+  // (trading rows and columns) and 'swapColor' (trading bar series and color).
+  // Leave one out to fix that axis to its default; an empty list shows no inputs.
+  // controls: ['rows', 'swap', 'columns', 'groups', 'series', 'swapColor', 'color'],
+  controls: ['groups', 'series', 'swapColor', 'color'],
 
   // Whether every row lists every bar group, and every group every series, even
   // the empty ones (true), or each lists only its own (false), so rows and

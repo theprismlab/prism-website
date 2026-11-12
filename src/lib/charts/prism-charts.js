@@ -2794,11 +2794,21 @@ class ii {
   clearHighlight() {
     this.highlight.clear();
   }
-  /** Trade the row and column fields and redraw. Nothing happens without a column field. */
-  swapAxes() {
-    var o, s;
-    const { x: t, y: e } = this.options.axis;
-    (t == null ? void 0 : t.field) != null && (this.options.axis = { ...this.options.axis, x: e ?? {}, y: t }, this.draw(), (s = (o = this.options).onAxisChange) == null || s.call(o, this.options.axis));
+  /**
+   * Trade the fields of two axes and redraw: the rows and columns by default, or
+   * any two named, e.g. `swapAxes('series', 'color')`. Nothing happens unless the
+   * second axis names a field the first doesn't show. Rows and columns trade
+   * their whole configs; any other pair trades `field` alone, so describe the
+   * fields in `dimensions` for their titles and colors to follow.
+   * @param {'y'|'x'|'group'|'series'|'color'} [first='y']
+   * @param {'y'|'x'|'group'|'series'|'color'} [second='x']
+   */
+  swapAxes(t = "y", e = "x") {
+    var r, l;
+    const { axis: o } = this.options, [s, a] = [o[t] ?? {}, o[e] ?? {}];
+    if (a.field == null || a.field === s.field) return;
+    const i = [t, e].every((c) => c === "x" || c === "y");
+    this.options.axis = i ? { ...o, [t]: a, [e]: s } : { ...o, [t]: { ...s, field: a.field }, [e]: { ...a, field: s.field } }, this.draw(), (l = (r = this.options).onAxisChange) == null || l.call(r, this.options.axis);
   }
   _onHighlightChange() {
     var t, e;

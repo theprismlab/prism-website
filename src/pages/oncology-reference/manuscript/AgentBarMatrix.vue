@@ -15,6 +15,16 @@
             title="Swap rows and columns"
             @click="swapAxes"
           />
+          <v-btn
+            v-else-if="control === 'swapColor'"
+            icon="mdi-swap-horizontal"
+            variant="text"
+            size="small"
+            :disabled="!fields.series || fields.series === fields.color"
+            aria-label="Swap bar series and color"
+            title="Swap bar series and color"
+            @click="swapSeriesAndColor"
+          />
           <v-select
             v-else
             :model-value="fields[inputs[control].role] ?? none"
@@ -75,15 +85,15 @@
   /**
    * The test agent bar matrix card: card copy, the inputs the config's
    * `controls` lists ("Rows", "Columns", "Bar groups", "Bar series", "Color by"
-   * and a swap button), and the bar matrix (prism-charts' BarMatrixChart via its
+   * and the two swap buttons), and the bar matrix (prism-charts' BarMatrixChart via its
    * Vue wrapper): a grouped bar chart of agent counts in every cell.
    * Self-contained: loads the test agent rows itself through the shared, cached
    * getOncRefData(). Owns the field selections and maps the config (see
    * agentBarMatrix.js) onto chart props explicitly, so the chart stays generic
    * and the config stays free of prop names.
    *
-   * The swap is the chart's own (`swapAxes`); the card follows it through
-   * `axis-change`. Highlighting and the tooltip belong to the chart too.
+   * Both swaps (rows with columns, bar series with color) are the chart's own
+   * (`swapAxes`); the card follows them through `axis-change`. Highlighting and the tooltip belong to the chart too.
    */
   export default {
     name: 'AgentBarMatrix',
@@ -113,7 +123,8 @@
     computed: {
       // The config's controls this card knows, in the config's order
       controls() {
-        return (this.config.controls ?? []).filter((c) => c === 'swap' || c in INPUTS);
+        const buttons = ['swap', 'swapColor'];
+        return (this.config.controls ?? []).filter((c) => buttons.includes(c) || c in INPUTS);
       },
       fieldOptions() {
         return this.config.dimensions.map((d) => ({ title: d.title ?? d.field, value: d.field }));
@@ -155,6 +166,15 @@
       },
     },
     async mounted() {
+      // A default that names no dimension would draw without that field's
+      // title, order and colors, and leave its input blank
+      for (const [role, field] of Object.entries(this.fields)) {
+        if (field && !this.config.dimensions.some((d) => d.field === field)) {
+          console.warn(
+            `AgentBarMatrix: default ${role} field "${field}" is not in config.dimensions`,
+          );
+        }
+      }
       try {
         const { agents } = await getOncRefData();
         this.rows = agents;
@@ -178,9 +198,22 @@
       swapAxes() {
         this.$refs.chart?.swapAxes();
       },
+      // The chart trades its series and color fields. If the field that becomes
+      // the series already lays bars out on another axis, that axis takes the
+      // old series field, as when a select picks a field in use.
+      swapSeriesAndColor() {
+        const before = this.fields.series;
+        this.$refs.chart?.swapAxes('series', 'color');
+        for (const role of POSITIONS) {
+          if (role !== 'series' && this.fields[role] === this.fields.series) {
+            this.fields[role] = before;
+          }
+        }
+      },
       onAxisChange(axis) {
-        this.fields.y = axis.y?.field ?? null;
-        this.fields.x = axis.x?.field ?? null;
+        for (const role of Object.keys(this.fields)) {
+          this.fields[role] = axis[role]?.field ?? (role === 'color' ? this.fields.color : null);
+        }
       },
     },
   };
