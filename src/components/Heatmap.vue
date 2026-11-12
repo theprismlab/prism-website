@@ -75,7 +75,7 @@
         </template>
 
         <!-- Legend: gradient bar with ticks, under the x title -->
-        <g v-if="legend" :transform="`translate(0, ${plotHeight + xTickHeight + 30})`">
+        <g v-if="legend" :transform="`translate(0, ${plotHeight + xTickHeight + 44})`">
           <defs>
             <linearGradient :id="gradientId">
               <stop
@@ -97,8 +97,15 @@
           >
             {{ v }}
           </text>
-          <text :x="plotWidth / 2" y="40" class="heatmap__label" text-anchor="middle">
-            {{ valueTitle }}
+          <text
+            v-for="(line, i) in legendTitleLines"
+            :key="`legend-title-${i}`"
+            :x="plotWidth / 2"
+            :y="40 + i * 14"
+            class="heatmap__label"
+            text-anchor="middle"
+          >
+            {{ line }}
           </text>
         </g>
       </g>
@@ -223,7 +230,8 @@
         return {
           top: this.yTitle && this.singleRow ? 22 : 4,
           right: 8,
-          bottom: this.xTickHeight + 22 + (this.legend ? 52 : 0),
+          bottom:
+            this.xTickHeight + 22 + (this.legend ? 52 + this.legendTitleLines.length * 14 : 0),
           left: Math.max(left, overhang + 4),
         };
       },
@@ -240,7 +248,9 @@
       },
       yTitleAboveWidth() {
         // "↓ " plus the title, starting left of the tick
-        return this.singleRow && this.yTitle ? (this.yTitle.length + 2) * 7 - this.tickWidth - 6 : 0;
+        return this.singleRow && this.yTitle
+          ? (this.yTitle.length + 2) * 7 - this.tickWidth - 6
+          : 0;
       },
       contentWidth() {
         return Math.max(this.plotWidth, this.xTitleWidth, this.yTitleAboveWidth);
@@ -257,6 +267,18 @@
       },
       gradientStops() {
         return Array.from({ length: 11 }, (_, i) => i / 10);
+      },
+      // The legend title, wrapped at spaces into lines no wider than the legend
+      // bar (12px font), so a small plot does not clip it
+      legendTitleLines() {
+        const maxChars = Math.floor(this.plotWidth / 7);
+        const lines = [];
+        this.valueTitle.split(' ').forEach((word) => {
+          const line = lines.length ? `${lines[lines.length - 1]} ${word}` : word;
+          if (lines.length && line.length <= maxChars) lines[lines.length - 1] = line;
+          else lines.push(word);
+        });
+        return lines;
       },
       legendTicks() {
         if (!this.log) return this.legendScale.ticks(4);

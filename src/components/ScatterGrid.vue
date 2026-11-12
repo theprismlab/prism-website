@@ -1,6 +1,6 @@
 <template>
   <div class="scatter-grid" @mouseleave="hover = null">
-    <v-row>
+    <v-row class="mb-6 mt-2">
       <v-col cols="8" sm="12" md="8" lg="8" xl="8">
         <v-autocomplete
           v-model="selected"

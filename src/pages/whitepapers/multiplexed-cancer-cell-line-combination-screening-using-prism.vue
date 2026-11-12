@@ -6,7 +6,7 @@
         <span>{{ paper.author }}</span>
         <span>Published {{ paper.date }}</span>
       </p>
-      <div class="whitepaper-actions">
+      <div class="whitepaper-actions mt-2">
         <v-btn
           :href="paper.portalLink"
           target="_blank"
@@ -15,13 +15,14 @@
           variant="outlined"
           prepend-icon="mdi-chart-box-outline"
           append-icon="mdi-arrow-top-right"
+          size="small"
         >
           Explore Data
         </v-btn>
       </div>
     </page-header>
 
-    <page-section width="narrow">
+    <page-section width="narrow" class="mt-0 pt-4">
       <article class="whitepaper-body">
         <section id="introduction">
           <h2 class="prism-text-headline-medium">Introduction</h2>
@@ -162,6 +163,7 @@
               </template>
             </term-item>
           </term-list>
+
           <section>
             <h3 class="prism-text-headline-small">Pooled combination screening results</h3>
             <p class="prism-text-body-large">
@@ -193,13 +195,16 @@
 
                 <template v-if="combo.cells">
                   <div class="combo-figure__single">
-                    <p class="combo-figure__label prism-text-label-large">Single agent</p>
+                    <p class="combo-figure__label prism-text-body-medium">
+                      Single Agent Sensitivity<br />Across Doses
+                    </p>
                     <div class="combo-figure__strips">
                       <heatmap
                         :data="combo.cells.x"
                         :x-title="`${combo.x.name} (µM)`"
                         :value-title="killedLabel"
                         :domain="combo.cells.domain"
+                        :size="heatmapCellSize"
                         log
                       />
                       <heatmap
@@ -207,18 +212,22 @@
                         :x-title="`${combo.y.name} (µM)`"
                         :value-title="killedLabel"
                         :domain="combo.cells.domain"
+                        :size="heatmapCellSize"
                         log
                       />
                     </div>
                   </div>
                   <div class="combo-figure__single">
-                    <p class="combo-figure__label prism-text-label-large">Combination</p>
+                    <p class="combo-figure__label prism-text-body-medium">
+                      Combination Sensitivity <br />Across Doses
+                    </p>
                     <heatmap
                       :data="combo.cells.xy"
                       :x-title="`${combo.x.name} (µM)`"
                       :y-title="`${combo.y.name} (µM)`"
                       :value-title="killedLabel"
                       :domain="combo.cells.domain"
+                      :size="heatmapCellSize"
                       log
                       legend
                     />
@@ -752,6 +761,9 @@
           },
         ],
         killedLabel: 'Cell lines killed (viability < 0.3)',
+        // Fig. 4 cell size in px: the largest at which a 7-dose heatmap fits one
+        // of the three columns of the narrow text column (228px each)
+        heatmapCellSize: 26,
         // Fig. 4: one CSV per combination. x is the library compound (dose1),
         // y the anchor (dose2). `cells` is filled in once the CSV loads.
         combinations: [
@@ -875,8 +887,8 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px 32px;
-    width: min(1200px, 92vw);
-    margin: 1.5rem 0 0 calc(50% - min(1200px, 92vw) / 2);
+    /* width: min(1200px, 92vw);
+    margin: 1.5rem 0 0 calc(50% - min(1200px, 92vw) / 2); */
   }
   .combo-figure {
     display: grid;
