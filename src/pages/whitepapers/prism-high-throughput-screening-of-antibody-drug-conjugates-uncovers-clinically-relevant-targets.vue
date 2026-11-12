@@ -24,9 +24,11 @@
       </div>
     </page-header>
 
-    <page-section width="narrow" class="pt-4">
-      <article class="whitepaper-body">
-        <section id="introduction">
+    <!-- One <section> per topic. Inside it, each <app-container> sets the width
+         of its content: narrow for text, default for the plots that need room. -->
+    <article class="whitepaper-body">
+      <section id="introduction">
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Introduction</h2>
           <p class="prism-text-body-large">
             Antibody-drug conjugates (ADCs) are a rapidly growing class of cancer therapeutics, with
@@ -236,9 +238,11 @@
             were normalized to vehicle control, dose response curves were fit, and area under curve
             (AUC) values were computed for each curve.
           </p>
-        </section>
+        </app-container>
+      </section>
 
-        <section id="results">
+      <section id="results">
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Results</h2>
           <h3 class="prism-text-headline-small">
             ADCs exhibit target specific cytotoxicity in PRISM
@@ -256,22 +260,23 @@
             indicate that PRISM pooled cell line screening is capable of maintaining selectivity of
             the primary target for ADCs with different payload characteristics.
           </p>
-
-          <div class="my-6">
-            <scatter-grid
-              v-if="adc.auc"
-              :data="adc.auc"
-              id-field="cellLine"
-              id-title="Cell line"
-              :column="{ field: 'compound', domain: compounds }"
-              :x="{ field: 'auc', title: 'AUC' }"
-              :y="{ field: 'expression', title: 'ERBB2 expression, log2(TPM+1)' }"
-              :initial-selected="her2Lines"
-              initial-selected-label="Highlight HER2-overexpressing cell lines"
-              label-selected
-              :point-radius="4"
-            />
-          </div>
+        </app-container>
+        <app-container>
+          <scatter-grid
+            v-if="adc.auc"
+            :data="adc.auc"
+            id-field="cellLine"
+            id-title="Cell line"
+            :column="{ field: 'compound', domain: compounds }"
+            :x="{ field: 'auc', title: 'AUC' }"
+            :y="{ field: 'expression', title: 'ERBB2 expression, log2(TPM+1)' }"
+            :initial-selected="her2Lines"
+            initial-selected-label="Highlight HER2-overexpressing cell lines"
+            label-selected
+            :point-radius="4"
+          />
+        </app-container>
+        <app-container narrow>
           <h3 class="prism-text-headline-small">
             PRISM screening identifies relevant ADC biomarkers
           </h3>
@@ -283,25 +288,27 @@
             We explored T-DM1 and T-MMAE biomarker results to evaluate whether PRISM screening
             recovers expected markers of sensitivity to ADCs.
           </p>
-          <div class="my-6">
-            <scatter-grid
-              v-if="adc.ge"
-              :data="adc.ge"
-              id-field="feature"
-              id-title="Gene"
-              :column="{
-                field: 'compound',
-                title: 'Gene expression',
-                domain: compounds.slice(0, 2),
-              }"
-              :x="{ field: 'coef', title: 'Correlation', domain: [-0.6, 0.6], threshold: 0 }"
-              :y="{ field: 'qval', title: '-log10(q value)' }"
-              :initial-selected="['ERBB2']"
-              initial-selected-label="Highlight ERBB2"
-              label-selected
-              :point-radius="4"
-            />
-          </div>
+        </app-container>
+        <app-container>
+          <scatter-grid
+            v-if="adc.ge"
+            :data="adc.ge"
+            id-field="feature"
+            id-title="Gene"
+            :column="{
+              field: 'compound',
+              title: 'Gene expression',
+              domain: compounds.slice(0, 2),
+            }"
+            :x="{ field: 'coef', title: 'Correlation', domain: [-0.6, 0.6], threshold: 0 }"
+            :y="{ field: 'qval', title: '-log10(q value)' }"
+            :initial-selected="['ERBB2']"
+            initial-selected-label="Highlight ERBB2"
+            label-selected
+            :point-radius="4"
+          />
+        </app-container>
+        <app-container narrow>
           <p class="prism-text-body-large">
             Univariate biomarker analysis identified ERBB2 gene expression and copy number as
             significantly correlated with sensitivity to both T-DM1 and T-MMAE. Additionally, when
@@ -310,25 +317,27 @@
             screening is capable of identifying relevant targets of ADCs with permeable and
             non-permeable payloads in an unbiased fashion.
           </p>
-          <div class="my-6">
-            <scatter-grid
-              v-if="adc.shrna"
-              :data="adc.shrna"
-              id-field="feature"
-              id-title="Gene"
-              :column="{
-                field: 'compound',
-                title: 'shRNA knockdown',
-                domain: compounds.slice(0, 2),
-              }"
-              :x="{ field: 'coef', title: 'Correlation', domain: [-1, 1], threshold: 0 }"
-              :y="{ field: 'qval', title: '-log10(q value)' }"
-              :initial-selected="['ERBB2']"
-              initial-selected-label="Highlight ERBB2"
-              label-selected
-              :point-radius="4"
-            />
-          </div>
+        </app-container>
+        <app-container>
+          <scatter-grid
+            v-if="adc.shrna"
+            :data="adc.shrna"
+            id-field="feature"
+            id-title="Gene"
+            :column="{
+              field: 'compound',
+              title: 'shRNA knockdown',
+              domain: compounds.slice(0, 2),
+            }"
+            :x="{ field: 'coef', title: 'Correlation', domain: [-1, 1], threshold: 0 }"
+            :y="{ field: 'qval', title: '-log10(q value)' }"
+            :initial-selected="['ERBB2']"
+            initial-selected-label="Highlight ERBB2"
+            label-selected
+            :point-radius="4"
+          />
+        </app-container>
+        <app-container narrow>
           <h3 class="prism-text-headline-small">Validation of ADC bystander activity</h3>
           <p class="prism-text-body-large">
             Next, we further explored bystander activities of T-DM1 and T-MMAE. Overall, we did not
@@ -342,20 +351,22 @@
             pools, the number of HER2-positive cell lines ranges from 1-3 cell lines per pool, each
             of which consist of 20-25 total cell lines.
           </p>
-          <div class="my-6">
-            <box-plot
-              v-if="adc.pools"
-              :data="adc.pools"
-              id-field="cellLine"
-              id-title="Cell line"
-              :x="{ field: 'pool', title: 'PRISM pool' }"
-              :y="{ field: 'expression', title: 'ERBB2 expression' }"
-              :initial-selected="her2Lines"
-              initial-selected-label="Highlight HER2-overexpressing cell lines"
-              label-selected
-              :point-radius="3"
-            />
-          </div>
+        </app-container>
+        <app-container>
+          <box-plot
+            v-if="adc.pools"
+            :data="adc.pools"
+            id-field="cellLine"
+            id-title="Cell line"
+            :x="{ field: 'pool', title: 'PRISM pool' }"
+            :y="{ field: 'expression', title: 'ERBB2 expression' }"
+            :initial-selected="her2Lines"
+            initial-selected-label="Highlight HER2-overexpressing cell lines"
+            label-selected
+            :point-radius="3"
+          />
+        </app-container>
+        <app-container narrow>
           <p class="prism-text-body-large">
             Next, we developed a co-culture assay system consisting of fluorescently labeled
             HER2-positive NCIN87 cells and HER2-negative HCC1806 cells to confirm bystander killing
@@ -376,15 +387,17 @@
             across different ratios of NCIN87 cells, validating a lack of bystander killing activity
             by T-DM1.
           </p>
-
-          <div v-if="adc.coCulture" class="line-chart-pair my-8">
+        </app-container>
+        <app-container>
+          <div v-if="adc.coCulture" class="line-chart-pair">
             <line-chart
               v-for="panel in coCulturePanels('T-DM1')"
               :key="panel.title"
               v-bind="panel"
             />
           </div>
-
+        </app-container>
+        <app-container narrow>
           <p class="prism-text-body-large">
             In contrast, we observed pronounced cytotoxicity by T-MMAE in HCC1806 that was both
             dependent on T-MMAE dose and the amount of NCIN87 cells present. Notably, at a ratio of
@@ -392,14 +405,17 @@
             HER2-negative cells in PRISM pools, T-MMAE did not induce bystander killing of HCC1806
             cells.
           </p>
-          <div v-if="adc.coCulture" class="line-chart-pair my-8">
+        </app-container>
+        <app-container>
+          <div v-if="adc.coCulture" class="line-chart-pair">
             <line-chart
               v-for="panel in coCulturePanels('T-MMAE')"
               :key="panel.title"
               v-bind="panel"
             />
           </div>
-
+        </app-container>
+        <app-container narrow>
           <p class="prism-text-body-large">
             Collectively, these results confirm that T-MMAE has bystander killing activity, the
             extent of which in vitro is dependent on the presence of a sufficient number of
@@ -407,9 +423,11 @@
             HER2-positive cell lines in the PRISM set, the minimal off-target cell killing by T-MMAE
             is not unexpected.
           </p>
-        </section>
+        </app-container>
+      </section>
 
-        <section id="considerations">
+      <section id="considerations">
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Key considerations for ADC screening in PRISM</h2>
           <p class="prism-text-body-large">
             Due to their inherent complexity, multiple aspects of ADCs will affect their activity in
@@ -467,9 +485,11 @@
             parallel with the ADC. These data will help distinguish between activity attributable to
             the ADC and the unconjugated components.
           </p>
-        </section>
+        </app-container>
+      </section>
 
-        <section id="conclusions">
+      <section id="conclusions">
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Conclusions</h2>
           <p class="prism-text-body-large">
             With the rapidly evolving landscape of ADCs, there is a growing need for better in vitro
@@ -494,27 +514,33 @@
             Such studies provide valuable insights into ADC behavior, mechanism of action, potency,
             and selectivity, and help guide subsequent in vivo investigations.
           </p>
-        </section>
-        <section id="collaborate-banner" class="collaborate-banner">
-          <div class="collaborate-banner__text">
-            <h2 class="prism-text-headline-small">Interested in collaborating with us?</h2>
-            <p class="prism-text-body-medium text-medium-emphasis">
-              Screen your ADCs and other agents across more than 900 barcoded cancer cell lines.
-            </p>
+        </app-container>
+      </section>
+      <section id="collaborate-banner">
+        <app-container narrow>
+          <div class="collaborate-banner">
+            <div class="collaborate-banner__text">
+              <h2 class="prism-text-headline-small">Interested in collaborating with us?</h2>
+              <p class="prism-text-body-medium text-medium-emphasis">
+                Screen your ADCs and other agents across more than 900 barcoded cancer cell lines.
+              </p>
+            </div>
+            <v-btn
+              color="primary"
+              variant="flat"
+              rounded
+              size="large"
+              to="/contact-us"
+              append-icon="mdi-arrow-right"
+              class="collaborate-banner__button"
+            >
+              Contact us
+            </v-btn>
           </div>
-          <v-btn
-            color="primary"
-            variant="flat"
-            rounded
-            size="large"
-            to="/contact-us"
-            append-icon="mdi-arrow-right"
-            class="collaborate-banner__button"
-          >
-            Contact us
-          </v-btn>
-        </section>
-        <section id="citations">
+        </app-container>
+      </section>
+      <section id="citations">
+        <app-container narrow>
           <h2 class="prism-text-headline-medium">Citations</h2>
           <ol>
             <li>
@@ -598,9 +624,9 @@
               development in metastatic breast cancer. Breast 66, 217–226 (2022).
             </li>
           </ol>
-        </section>
-      </article>
-    </page-section>
+        </app-container>
+      </section>
+    </article>
   </page>
 </template>
 
@@ -814,10 +840,24 @@
     gap: 0.66rem;
   }
 
+  /* The article is a column of topic sections, 40px apart; each topic is a
+     column of containers, 32px apart. A container only sets the width of its
+     content, so these gaps are the article's whole vertical rhythm. The
+     article's padding is the space under the page header and above the footer. */
   .whitepaper-body {
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
+    padding: 16px 0 32px;
+  }
+  .whitepaper-body > section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  /* Whatever opens a container sits on the gap, without a top margin of its own */
+  .whitepaper-body .app-container > :first-child {
+    margin-top: 0;
   }
   .image-wrapper {
     border-radius: var(--prism-radius-md);
