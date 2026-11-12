@@ -1,30 +1,32 @@
 <template>
   <div class="scatter-grid" @mouseleave="hover = null">
-    <v-row class="mb-6 mt-2">
-      <v-col cols="8" sm="12" md="8" lg="8" xl="8">
-        <v-autocomplete
-          v-model="selected"
-          :items="ids"
-          :label="`Search ${idTitle.toLowerCase()}s`"
-          class="scatter-grid__search"
-          variant="underlined"
-          multiple
-          chips
-          closable-chips
-          clearable
-          hide-details
-      /></v-col>
-      <v-col cols="auto">
-        <v-checkbox
-          v-if="initialSelected.length"
-          :model-value="defaultsOn"
-          :label="initialSelectedLabel"
-          class="scatter-grid__checkbox"
-          hide-details
-          @update:model-value="toggleDefaults"
-        />
-      </v-col>
-    </v-row>
+    <!-- Toolbar strip across the top of the card -->
+    <div class="scatter-grid__toolbar">
+      <v-autocomplete
+        v-model="selected"
+        :items="ids"
+        :label="`Search ${idTitle.toLowerCase()}s`"
+        prepend-inner-icon="mdi-magnify"
+        class="scatter-grid__search"
+        variant="outlined"
+        density="compact"
+        bg-color="white"
+        multiple
+        chips
+        closable-chips
+        clearable
+        hide-details
+      />
+      <v-checkbox
+        v-if="initialSelected.length"
+        :model-value="defaultsOn"
+        :label="initialSelectedLabel"
+        class="scatter-grid__toggle"
+        density="compact"
+        hide-details
+        @update:model-value="toggleDefaults"
+      />
+    </div>
 
     <svg ref="svg" :viewBox="`0 0 ${width} ${height}`" class="scatter-grid__svg">
       <!-- Column facet: title and one label per column. With no title, the
@@ -960,31 +962,51 @@
 </script>
 
 <style scoped>
+  /* A card like the oncology reference's agent explorer: hairline border,
+     soft shadow, and a tinted toolbar strip over the plot. Nothing is clipped
+     (no overflow: hidden), so the tooltip can cross the card's edge. */
   .scatter-grid {
     position: relative;
+    margin-top: 1.5rem;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
+  .scatter-grid__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    /* Inside the card's 1px border */
+    border-radius: 7px 7px 0 0;
+  }
+  .scatter-grid__search {
+    flex: 1 1 280px;
+    max-width: 480px;
+  }
+  .scatter-grid__toggle {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+  .scatter-grid__toggle :deep(.v-label) {
+    font-size: 0.8125rem;
+  }
+  /* The plot is inset from the card's edges by its margin */
   .scatter-grid__svg {
     display: block;
-    width: 100%;
+    width: calc(100% - 32px);
     height: auto;
+    margin: 12px 16px;
     overflow: visible;
   }
   .panel {
     fill: #fafafa;
     stroke: #ddd;
   }
-  .scatter-grid__toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 16px;
-    margin-bottom: 12px;
-  }
-  .grid__checkbox {
-    height: 1rem;
-    margin-top: 0px;
-  }
-
   .point {
     fill-opacity: 0.75;
     pointer-events: none;
