@@ -481,9 +481,24 @@
             Such analyses can be used to generate hypotheses regarding the mechanisms underlying
             sensitivity to drug combinations.
           </figure-caption>
+          <p class="prism-text-body-large mt-6">
+            Dose selection is one of the most important considerations for combination screening,
+            ensuring combination effects can be reliably and efficiently measured across the largest
+            number of cell lines. Differential single-agent activity across cell lines can be
+            measured or estimated in a number of ways: by first running compounds as single agents
+            at dose in PRISM, by leveraging existing public data (e.g., at depmap.org), or by
+            measuring response in a panel of individual cell lines.
+            <br /><br />
+            Currently, combination screening is offered through PRISM using a standardized 7x1
+            design. 7x1 combinations are useful where one component (the “anchor” agent) has limited
+            differential viability effects, facilitating identification of a single concentration
+            informative for screening. Where both agents have strong differential viability effects,
+            contact us to discuss alternative screening designs; we recommend a matrixed format such
+            as 5x5. Visit our
+            <a href="/consortium-screens/assays" target="_blank">Assays</a> page to learn more.
+          </p>
         </section>
 
-        <section></section>
         <section id="citations">
           <h2 class="prism-text-headline-medium">Citations</h2>
           <ol>
