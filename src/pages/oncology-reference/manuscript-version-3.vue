@@ -33,7 +33,7 @@
       <manuscript-figures />
     </page-section>
 
-    <page-section v-if="showParallelSets || showAgentBreakdown">
+    <page-section v-if="showParallelSets || showAgentBreakdown || showAgentBarMatrix">
       <app-container narrow class="mb-6">
         <section-overline gradient>About the dataset</section-overline>
         <prism-section-title gradient>A Benchmark for Oncology Therapeutics</prism-section-title>
@@ -50,6 +50,14 @@
       <!-- One square per agent, grouped and colored by the fields the reader picks -->
       <app-container v-if="showAgentBreakdown" wide :class="{ 'mt-8': showParallelSets }">
         <agent-breakdown />
+      </app-container>
+      <!-- A grouped bar chart of agent counts in every cell of the same kind of matrix -->
+      <app-container
+        v-if="showAgentBarMatrix"
+        wide
+        :class="{ 'mt-8': showParallelSets || showAgentBreakdown }"
+      >
+        <agent-bar-matrix />
       </app-container>
     </page-section>
     <!-- -------------------------------------------------------
@@ -139,6 +147,7 @@
 </template>
 
 <script>
+  import AgentBarMatrix from './manuscript/AgentBarMatrix.vue';
   import AgentBreakdown from './manuscript/AgentBreakdown.vue';
   import AgentExplorer from './manuscript/AgentExplorer.vue';
   import AssayWorkflow from './manuscript/AssayWorkflow.vue';
@@ -155,6 +164,7 @@
   export default {
     name: 'OncologyReferenceManuscript',
     components: {
+      AgentBarMatrix,
       AgentBreakdown,
       AgentExplorer,
       ManuscriptFigures,
@@ -174,6 +184,7 @@
         showAssayWorkflow: true,
         showParallelSets: true,
         showAgentBreakdown: true,
+        showAgentBarMatrix: true,
         showManuscriptFigures: false,
       };
     },
