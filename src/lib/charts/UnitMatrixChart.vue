@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import UnitMatrixChart from '@/lib/charts/UnitMatrixChart.js';
+  import { UnitMatrixChart } from '@/lib/charts/prism-charts.js';
 
   /**
-   * Vue wrapper for UnitMatrixChart.js: every prop is a chart option, and changing
-   * one redraws the chart. See UnitMatrixChart.js for what each means.
+   * Vue wrapper for prism-charts' UnitMatrixChart: every prop is a chart option, and changing
+   * one redraws the chart. See UnitMatrixChart.js in prism-charts for what each means.
    *
    * Leave `width` unset to size the chart to its container: the chart measures
    * the container itself and follows its resizes. There is no `height`: the chart
