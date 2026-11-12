@@ -181,12 +181,19 @@
 
             <div class="combo-grid">
               <div v-for="combo in combinations" :key="combo.title" class="combo-figure">
-                <h4 class="prism-text-title-medium combo-figure__title">
-                  {{ combo.title }}
-                </h4>
+                <div>
+                  <h4 class="prism-text-title-medium mb-2 combo-figure__title">
+                    {{ combo.title }}
+                  </h4>
+                  <p
+                    class="prism-text-body-medium text-medium-emphasis mt-4"
+                    v-html="combo.body"
+                  ></p>
+                </div>
+
                 <template v-if="combo.cells">
                   <div class="combo-figure__single">
-                    <p class="combo-figure__label prism-text-title-small">Single agent</p>
+                    <p class="combo-figure__label prism-text-label-large">Single agent</p>
                     <div class="combo-figure__strips">
                       <heatmap
                         :data="combo.cells.x"
@@ -204,16 +211,18 @@
                       />
                     </div>
                   </div>
-                  <heatmap
-                    :data="combo.cells.xy"
-                    :x-title="`${combo.x.name} (µM)`"
-                    :y-title="`${combo.y.name} (µM)`"
-                    :value-title="killedLabel"
-                    :domain="combo.cells.domain"
-                    log
-                    title="Combination"
-                    legend
-                  />
+                  <div class="combo-figure__single">
+                    <p class="combo-figure__label prism-text-label-large">Combination</p>
+                    <heatmap
+                      :data="combo.cells.xy"
+                      :x-title="`${combo.x.name} (µM)`"
+                      :y-title="`${combo.y.name} (µM)`"
+                      :value-title="killedLabel"
+                      :domain="combo.cells.domain"
+                      log
+                      legend
+                    />
+                  </div>
                 </template>
               </div>
             </div>
@@ -675,20 +684,20 @@
             image: imagePath + 'PRISM-Combination-Dose-Selection-5x5.svg',
           },
         ],
-        viabilityCards: [
-          {
-            title: 'Temozolomide + O6-Benzylguanine',
-            body: '<b>Temozolomide</b><br>7 concentrations <br>top concentration: 100µM; threefold dilution<br><br><b>O6-Benzylguanine</b><br>1 concentration: 5 µM<br><br>',
-          },
-          {
-            title: 'ML210 + Ferrostatin-1',
-            body: '<b>ML210</b><br>7 concentrations <br>top concentration: 10µM; threefold dilution<br><br><b>Ferrostatin-1</b><br>1 concentration:  10 µM <br><br>',
-          },
-          {
-            title: 'AZD5991 + A-1331852',
-            body: '<b>AZD5991</b><br>5 concentrations <br>top concentration: 0.037µM; threefold dilution<br><br><b>A-1331852</b><br>5 concentrations <br>top concentration: 0.041µM; threefold dilution',
-          },
-        ],
+        // viabilityCards: [
+        //   {
+        //     title: 'Temozolomide + O6-Benzylguanine',
+        //     body: '<b>Temozolomide</b><br>7 concentrations <br>top concentration: 100µM; threefold dilution<br><br><b>O6-Benzylguanine</b><br>1 concentration: 5 µM<br><br>',
+        //   },
+        //   {
+        //     title: 'ML210 + Ferrostatin-1',
+        //     body: '<b>ML210</b><br>7 concentrations <br>top concentration: 10µM; threefold dilution<br><br><b>Ferrostatin-1</b><br>1 concentration:  10 µM <br><br>',
+        //   },
+        //   {
+        //     title: 'AZD5991 + A-1331852',
+        //     body: '<b>AZD5991</b><br>5 concentrations <br>top concentration: 0.037µM; threefold dilution<br><br><b>A-1331852</b><br>5 concentrations <br>top concentration: 0.041µM; threefold dilution',
+        //   },
+        // ],
         equationCards: [
           {
             title: 'Eqn.1',
@@ -713,6 +722,7 @@
             x: { name: 'Temozolomide' },
             y: { name: 'O6-Benzylguanine' },
             cells: null,
+            body: '<b>Temozolomide</b>. 7 concentrations; top concentration: 100µM; threefold dilution<br><br><b>O6-Benzylguanine</b>. 1 concentration: 5 µM<br><br>',
           },
           {
             title: 'ML210 + Ferrostatin-1',
@@ -720,6 +730,7 @@
             x: { name: 'ML210' },
             y: { name: 'Ferrostatin-1' },
             cells: null,
+            body: '<b>ML210</b>. 7 concentrations; top concentration: 10µM; threefold dilution<br><br><b>Ferrostatin-1</b>. 1 concentration:  10 µM <br><br>',
           },
           {
             title: 'AZD5991 + A-1331852',
@@ -727,6 +738,7 @@
             x: { name: 'AZD5991' },
             y: { name: 'A-1331852' },
             cells: null,
+            body: '<b>AZD5991</b>. 5 concentrations; top concentration: 0.037µM; threefold dilution<br><br><b>A-1331852</b>. 5 concentrations; top concentration: 0.041µM; threefold dilution',
           },
         ],
         // Figs. 5-7: raw CSV rows per combination, filled in once loaded
@@ -837,7 +849,9 @@
   .combo-figure__title,
   .combo-figure__label {
     margin: 0 0 4px;
+    font-weight: 700;
   }
+
   .combo-figure__strips {
     display: flex;
     flex-direction: column;
