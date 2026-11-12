@@ -193,46 +193,47 @@
                   ></p>
                 </div>
 
-                <template v-if="combo.cells">
-                  <div class="combo-figure__single">
-                    <p class="combo-figure__label prism-text-body-medium">
-                      Single Agent Sensitivity<br />Across Doses
-                    </p>
-                    <div class="combo-figure__strips">
+                <div class="combo-figure__plots">
+                  <h5 class="prism-text-body-large font-weight-bold combo-figure__plots-title">
+                    Sensitivity across doses
+                  </h5>
+                  <template v-if="combo.cells">
+                    <div class="combo-figure__single">
+                      <p class="combo-figure__label prism-text-body-medium">Single agent</p>
+                      <div class="combo-figure__strips">
+                        <heatmap
+                          :data="combo.cells.x"
+                          :x-title="`${combo.x.name} (µM)`"
+                          :value-title="killedLabel"
+                          :domain="combo.cells.domain"
+                          :size="heatmapCellSize"
+                          log
+                        />
+                        <heatmap
+                          :data="combo.cells.y"
+                          :x-title="`${combo.y.name} (µM)`"
+                          :value-title="killedLabel"
+                          :domain="combo.cells.domain"
+                          :size="heatmapCellSize"
+                          log
+                        />
+                      </div>
+                    </div>
+                    <div class="combo-figure__single">
+                      <p class="combo-figure__label prism-text-body-medium">Combination</p>
                       <heatmap
-                        :data="combo.cells.x"
+                        :data="combo.cells.xy"
                         :x-title="`${combo.x.name} (µM)`"
+                        :y-title="`${combo.y.name} (µM)`"
                         :value-title="killedLabel"
                         :domain="combo.cells.domain"
                         :size="heatmapCellSize"
                         log
-                      />
-                      <heatmap
-                        :data="combo.cells.y"
-                        :x-title="`${combo.y.name} (µM)`"
-                        :value-title="killedLabel"
-                        :domain="combo.cells.domain"
-                        :size="heatmapCellSize"
-                        log
+                        legend
                       />
                     </div>
-                  </div>
-                  <div class="combo-figure__single">
-                    <p class="combo-figure__label prism-text-body-medium">
-                      Combination Sensitivity <br />Across Doses
-                    </p>
-                    <heatmap
-                      :data="combo.cells.xy"
-                      :x-title="`${combo.x.name} (µM)`"
-                      :y-title="`${combo.y.name} (µM)`"
-                      :value-title="killedLabel"
-                      :domain="combo.cells.domain"
-                      :size="heatmapCellSize"
-                      log
-                      legend
-                    />
-                  </div>
-                </template>
+                  </template>
+                </div>
               </div>
             </div>
 
@@ -761,8 +762,8 @@
           },
         ],
         killedLabel: 'Cell lines killed (viability < 0.3)',
-        // Fig. 4 cell size in px: small enough that the dosing text and both
-        // heatmap columns sit side by side in the narrow text column
+        // Fig. 4 cell size in px. The figure's two columns are about 330px
+        // each in the narrow text column, so anything up to 40 fits
         heatmapCellSize: 26,
         // Fig. 4: one CSV per combination. x is the library compound (dose1),
         // y the anchor (dose2). `cells` is filled in once the CSV loads.
@@ -778,7 +779,7 @@
               singleAgent: { file: 'O6-benzyl_data.csv', dose: 'Dose', viability: 'Viability' },
             },
             cells: null,
-            body: '<b>Temozolomide</b>. 7 concentrations; top concentration: 100µM; threefold dilution<br><br><b>O6-Benzylguanine</b>. 1 concentration: 5 µM<br><br>',
+            body: '<b>Temozolomide</b>. 7 concentrations; top concentration: 100µM; threefold dilution<br><br><b>O6-Benzylguanine</b>. 1 concentration: 5 µM',
           },
           {
             title: 'ML210 + Ferrostatin-1',
@@ -786,7 +787,7 @@
             x: { name: 'ML210' },
             y: { name: 'Ferrostatin-1' },
             cells: null,
-            body: '<b>ML210</b>. 7 concentrations; top concentration: 10µM; threefold dilution<br><br><b>Ferrostatin-1</b>. 1 concentration:  10 µM <br><br>',
+            body: '<b>ML210</b>. 7 concentrations; top concentration: 10µM; threefold dilution<br><br><b>Ferrostatin-1</b>. 1 concentration:  10 µM',
           },
           {
             title: 'AZD5991 + A-1331852',
@@ -891,21 +892,33 @@
     gap: 2.5rem;
   }
 
-  /* Fig. 4: one row per combination. Every row is a subgrid of the same three
-     columns (dosing text, single-agent strips, combination heatmap), so the
-     panels line up from row to row. The two heatmap columns take their natural
-     width and the text gets what is left. */
+  /* Fig. 4: one block per combination: its title and dosing text, then a
+     bordered container with the single-agent strips and the combination
+     heatmap side by side. The containers are all the same width and split into
+     equal halves, so the panels line up down the page. */
   .combo-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    gap: 40px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
     margin-top: 1.5rem;
   }
   .combo-figure {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .combo-figure__plots {
     display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 32px;
     align-items: start;
+    padding: 20px 24px 24px;
+    border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+    border-radius: var(--prism-radius-lg);
+  }
+  .combo-figure__plots-title {
+    grid-column: 1 / -1;
+    margin: 0;
   }
   /* The label has the same spacing as the title inside Heatmap */
   .combo-figure__title,
@@ -919,23 +932,15 @@
     align-items: flex-start;
     gap: 12px;
   }
-  /* Never scale the SVGs down: label sizes must match from row to row */
+  /* Never scale the SVGs down: label sizes must match from block to block */
   .combo-figure :deep(.heatmap__svg) {
     max-width: none;
   }
-  /* Too narrow for three columns: the text sits above the two panels, which
-     stay side by side while there is room and stack when there is not */
-  @media (max-width: 959.98px) {
-    .combo-grid {
+  /* Phones: the two panels stack under the heading */
+  @media (max-width: 599.98px) {
+    .combo-figure__plots {
       grid-template-columns: minmax(0, 1fr);
-    }
-    .combo-figure {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px 32px;
-    }
-    .combo-figure__text {
-      flex-basis: 100%;
+      padding: 16px;
     }
   }
 
