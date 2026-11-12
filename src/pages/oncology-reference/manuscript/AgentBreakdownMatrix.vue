@@ -1,10 +1,10 @@
 <template>
   <div class="breakdown-matrix">
-    <!-- Color legend: every entry is a filter toggle for its value -->
+    <!-- Color legend: every entry toggles its value in the selection -->
     <div
       class="breakdown-matrix__legend"
       role="group"
-      :aria-label="`Colored by ${axis.color.title}. Select a value to filter.`"
+      :aria-label="`Colored by ${axis.color.title}. Select a value to focus on it.`"
     >
       <span class="breakdown-matrix__legend-title">{{ axis.color.title }}</span>
       <button
@@ -17,10 +17,7 @@
         ]"
         :aria-pressed="item.selected"
         @click="$emit('toggle', { field: axis.color.field, value: item.value })"
-        @mouseenter="$emit('hover', { field: axis.color.field, value: item.value })"
-        @mouseleave="$emit('hover', null)"
-        @focus="$emit('hover', { field: axis.color.field, value: item.value })"
-        @blur="$emit('hover', null)"
+        v-on="hoverOn(axis.color.field, item.value)"
       >
         <span class="breakdown-matrix__swatch" :style="{ background: item.color }"></span>
         {{ item.label }}
@@ -31,11 +28,7 @@
       </span>
     </div>
 
-    <p v-if="!matrix.rows.length" class="breakdown-matrix__empty">
-      No {{ unit }} match the current filters.
-    </p>
-
-    <div v-else class="breakdown-matrix__scroll">
+    <div class="breakdown-matrix__scroll">
       <!-- A table of unit cells laid out as a grid. Every cell is placed
            explicitly, so the layout never depends on source order. -->
       <div
@@ -81,10 +74,7 @@
               class="breakdown-matrix__head-button"
               :aria-pressed="isSelected(axis.x.field, column.value)"
               @click="$emit('toggle', { field: axis.x.field, value: column.value })"
-              @mouseenter="$emit('hover', { field: axis.x.field, value: column.value })"
-              @mouseleave="$emit('hover', null)"
-              @focus="$emit('hover', { field: axis.x.field, value: column.value })"
-              @blur="$emit('hover', null)"
+              v-on="hoverOn(axis.x.field, column.value)"
             >
               {{ breakable(column.label) }}
             </button>
@@ -109,10 +99,7 @@
               class="breakdown-matrix__head-button"
               :aria-pressed="isSelected(axis.y.field, row.value)"
               @click="$emit('toggle', { field: axis.y.field, value: row.value })"
-              @mouseenter="$emit('hover', { field: axis.y.field, value: row.value })"
-              @mouseleave="$emit('hover', null)"
-              @focus="$emit('hover', { field: axis.y.field, value: row.value })"
-              @blur="$emit('hover', null)"
+              v-on="hoverOn(axis.y.field, row.value)"
             >
               {{ breakable(row.label) }}
             </button>
@@ -124,18 +111,11 @@
             :key="j"
             role="cell"
             class="breakdown-matrix__cell"
+            :aria-label="cellLabel(row, matrix.columns[j], cell)"
             :style="{ gridRow: String(i + 3), gridColumn: String(j + 2) }"
           >
-            <!-- Out of the tab order: the same two filters are reachable from
-                 the row and column headers and the filter charts -->
-            <button
-              v-if="cell.total"
-              type="button"
-              tabindex="-1"
-              class="breakdown-matrix__cell-button"
-              :aria-label="cellLabel(row, matrix.columns[j], cell)"
-              @click="$emit('cell-click', { x: cell.x, y: cell.y })"
-            >
+            <!-- Squares are not clickable; hovering one shows its agent -->
+            <template v-if="cell.total">
               <span
                 v-for="mark in cell.units"
                 :key="mark.key"
@@ -143,7 +123,7 @@
                   'breakdown-matrix__unit',
                   {
                     'breakdown-matrix__unit--ghost': !mark.matched,
-                    'breakdown-matrix__unit--dim': hoverTarget && !hoverTarget(mark.row),
+                    'breakdown-matrix__unit--dim': isDimmed(mark.row),
                   },
                 ]"
                 :style="{ '--unit-color': mark.color }"
@@ -153,7 +133,7 @@
               <span class="breakdown-matrix__cell-count" aria-hidden="true">
                 {{ countText(cell) }}
               </span>
-            </button>
+            </template>
           </div>
         </div>
       </div>
@@ -182,7 +162,7 @@
 </template>
 
 <script>
-  import { buildMatrix, colorOf } from './breakdown.js';
+  import { buildMatrix, colorOf, valueOf } from './breakdown.js';
 
   // Narrowest a data column gets before the matrix scrolls sideways, in pixels
   const MIN_COLUMN_WIDTH = 64;
@@ -193,10 +173,11 @@
 
   /**
    * A unit matrix: every record is one square, placed in the cell for its row
-   * and column values and colored by a third field. Rows, columns and the color
-   * legend are also filter toggles, and a cell narrows the selection to its
-   * row and column values. Self-contained (no chart library); the option names
-   * follow the prism-charts axis vocabulary.
+   * and column values and colored by a third field. Row labels, column labels
+   * and legend entries toggle their value in the selection; hovering or
+   * focusing one dims every square outside it. The squares themselves are not
+   * clickable: hovering one shows its record in a tooltip. Self-contained (no
+   * chart library); the option names follow the prism-charts axis vocabulary.
    *
    *   data         Records to draw, one square each.
    *   axis         `{ x, y, color }`, each `{ field, title, domain, format }`:
@@ -205,9 +186,7 @@
    *                color per `domain` entry.
    *   highlight    `(record) => boolean` or null: records failing it are drawn
    *                as hollow squares and left out of the counts.
-   *   hoverTarget  `(record) => boolean` or null: every other square is dimmed,
-   *                e.g. while a linked control is hovered.
-   *   selection    `{ [field]: string[] }`: the values currently selected, so
+   *   selection   `{ [field]: string[] }`: the values currently selected, so
    *                headers and legend entries can show as pressed.
    *   unitKey      `(record) => id`, unique per record.
    *   unitLabel    `(record) => string`, the tooltip heading.
@@ -215,10 +194,6 @@
    *   unit         Noun for the counts.
    *
    *   @toggle      `{ field, value }` on a click on a header or legend entry.
-   *   @cell-click  `{ x, y }` (raw values; x is null without columns) on a
-   *                click on a cell.
-   *   @hover       `{ field, value }` while a header or legend entry is hovered
-   *                or focused, else null.
    */
   export default {
     name: 'AgentBreakdownMatrix',
@@ -226,18 +201,20 @@
       data: { type: Array, required: true },
       axis: { type: Object, required: true },
       highlight: { type: Function, default: null },
-      hoverTarget: { type: Function, default: null },
       selection: { type: Object, default: () => ({}) },
       unitKey: { type: Function, required: true },
       unitLabel: { type: Function, required: true },
       tooltip: { type: Function, default: null },
       unit: { type: String, default: 'records' },
     },
-    emits: ['toggle', 'cell-click', 'hover'],
+    emits: ['toggle'],
     data() {
       return {
         // The unit under the cursor, or null; drives the tooltip
         hovered: null,
+        // `{ field, value }` of the label or legend entry that is hovered or
+        // focused, or null; every square outside it is dimmed
+        hoverValue: null,
       };
     },
     computed: {
@@ -308,6 +285,21 @@
       isSelected(field, value) {
         return (this.selection[field] ?? []).includes(value);
       },
+      // Listeners for a label or legend entry: while it is hovered or focused,
+      // the squares outside its value are dimmed
+      hoverOn(field, value) {
+        const enter = () => {
+          this.hoverValue = { field, value };
+        };
+        const leave = () => {
+          this.hoverValue = null;
+        };
+        return { mouseenter: enter, mouseleave: leave, focus: enter, blur: leave };
+      },
+      isDimmed(record) {
+        const target = this.hoverValue;
+        return !!target && valueOf(record, target.field) !== target.value;
+      },
       // "8/21" while a selection leaves some out, else the plain count
       countText({ matched, total }) {
         return matched === total ? String(total) : `${matched}/${total}`;
@@ -315,7 +307,7 @@
       cellLabel(row, column, cell) {
         const where = column.label ? `${row.label}, ${column.label}` : row.label;
         const count = cell.matched === cell.total ? cell.total : `${cell.matched} of ${cell.total}`;
-        return `${where}: ${count} ${this.unit}. Filter to this group.`;
+        return `${where}: ${count} ${this.unit}`;
       },
       // Let slash-joined names such as "inhibitor/antagonist" wrap after the slash
       breakable(label) {
@@ -448,13 +440,6 @@
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28);
   }
 
-  .breakdown-matrix__empty {
-    margin: 0;
-    padding: 24px 0;
-    font-size: 0.875rem;
-    color: rgba(0, 0, 0, 0.6);
-  }
-
   /* ── Grid ─────────────────────────────────────────────────────────── */
   /* Scrolls sideways when the columns cannot all keep their minimum width */
   .breakdown-matrix__scroll {
@@ -548,9 +533,15 @@
     white-space: nowrap;
   }
 
+  /* Squares wrap inside their cell, followed by the cell's count */
   .breakdown-matrix__cell {
     display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: center;
+    gap: var(--breakdown-gap);
     min-width: 0;
+    padding: 6px 8px;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     border-left: 1px solid rgba(0, 0, 0, 0.06);
   }
@@ -559,27 +550,6 @@
   .breakdown-matrix__tr--first .breakdown-matrix__row-head,
   .breakdown-matrix__tr--first .breakdown-matrix__cell {
     border-top-color: rgba(0, 0, 0, 0.24);
-  }
-
-  /* Fills its cell, so the whole cell is the click target */
-  .breakdown-matrix__cell-button {
-    display: flex;
-    flex: 1 1 auto;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    align-items: center;
-    gap: var(--breakdown-gap);
-    min-width: 0;
-    padding: 6px 8px;
-    border: 0;
-    background: none;
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-  }
-
-  .breakdown-matrix__cell-button:hover {
-    background: rgba(var(--v-theme-primary), 0.06);
   }
 
   /* ── Units ────────────────────────────────────────────────────────── */

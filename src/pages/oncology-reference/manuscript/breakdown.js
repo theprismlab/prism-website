@@ -1,5 +1,5 @@
-// Counting logic for the test agent breakdown explorer (AgentBreakdown.vue and
-// its facets and matrix). Plain rows in, plain data out: no Vue, no DOM and no
+// Counting logic for the test agent breakdown card (AgentBreakdown.vue and its
+// matrix). Plain rows in, plain data out: no Vue, no DOM and no
 // page config, so every function here can be run on its own.
 //
 // Vocabulary, shared with the prism-charts axis configs:
@@ -24,20 +24,14 @@ export const valueOf = (row, field) => row[field] || BLANK;
  *
  * @param {Object} row
  * @param {Object<string, string[]>} filters
- * @param {string} [except] - a field whose selection is ignored, for counting
- *   what each of that field's values would give
  */
-export function matchesFilters(row, filters, except = null) {
+export function matchesFilters(row, filters) {
   for (const field in filters) {
-    if (field === except) continue;
     const selected = filters[field];
     if (selected?.length && !selected.includes(valueOf(row, field))) return false;
   }
   return true;
 }
-
-/** Whether any field has a selection. */
-export const hasFilters = (filters) => Object.values(filters).some((v) => v?.length);
 
 /**
  * The values of a dimension found in `rows`, in display order: the dimension's
@@ -65,46 +59,6 @@ export function orderedValues(rows, dimension) {
   })).sort(
     (a, b) => rank(a.value) - rank(b.value) || b.total - a.total || a.label.localeCompare(b.label),
   );
-}
-
-/**
- * Per dimension, every value with two counts: `total` over all rows, and
- * `count` over the rows that pass every *other* field's selection, so a value's
- * count is what selecting it would leave.
- *
- * @param {Object[]} rows
- * @param {Object[]} dimensions
- * @param {Object<string, string[]>} filters
- * @returns {{
- *   field: string, title: string, max: number, selectedCount: number,
- *   values: { value: string, label: string, total: number, count: number,
- *             selected: boolean, disabled: boolean }[]
- * }[]} `max` is the largest total, for a shared bar scale. A value is
- *   `disabled` when selecting it would leave nothing.
- */
-export function facetCounts(rows, dimensions, filters) {
-  return dimensions.map((dimension) => {
-    const { field } = dimension;
-    const selected = new Set(filters[field] ?? []);
-    const counts = new Map();
-    for (const row of rows) {
-      if (!matchesFilters(row, filters, field)) continue;
-      const value = valueOf(row, field);
-      counts.set(value, (counts.get(value) ?? 0) + 1);
-    }
-    const values = orderedValues(rows, dimension).map((item) => {
-      const count = counts.get(item.value) ?? 0;
-      const isSelected = selected.has(item.value);
-      return { ...item, count, selected: isSelected, disabled: count === 0 && !isSelected };
-    });
-    return {
-      field,
-      title: dimension.title ?? field,
-      max: Math.max(1, ...values.map((v) => v.total)),
-      selectedCount: selected.size,
-      values,
-    };
-  });
 }
 
 /**

@@ -1,7 +1,7 @@
-// Config for the test agent breakdown explorer (AgentBreakdown.vue): the card
-// copy, which CSV columns can be filtered and laid out, and the color scale of
-// each. Column labels, value names and value order come from fields.js via
-// toDimension, as for the parallel sets.
+// Config for the test agent breakdown card (AgentBreakdown.vue): the card copy,
+// which CSV columns the matrix can use as rows, columns or color, and the color
+// scale of each. Column labels, value names and value order come from fields.js
+// via toDimension, as for the parallel sets.
 import { categoryColors } from '@/lib/charts/prism-charts.js';
 import { NEUTRAL_COLOR as NEUTRAL } from './breakdown.js';
 import { fieldLabel, toDimension, valueLabel, valueOrder } from './fields.js';
@@ -78,29 +78,27 @@ const TOOLTIP_FIELDS = [
 ];
 
 export const AGENT_BREAKDOWN = {
-  title: 'Test agent metadata explorer',
-  description:
-    'Each square is one test agent. Click bars to narrow the library to a subset, then ' +
-    'choose how the matrix groups and colors it. Hover a square for the agent behind it.',
+  title: 'Test agent composition',
+  // Shown above the matrix until something is selected
+  hint: 'Each square is one test agent. Click a label or a color to focus on that group.',
 
-  // The columns that can be filtered, and used as matrix rows, columns or
-  // color. Listed in the order the filter charts appear. Pass an object
-  // ({ field, title, domain, format }) in place of a name to override the
-  // lookup for this card only.
+  // The columns offered for rows, columns and color, in the order the selects
+  // list them. Pass an object ({ field, title, domain, format }) in place of a
+  // name to override the lookup for this card only.
   dimensions: [
     'Class',
-    'HighestClinicalStage_summarized',
-    'PreviouslyScreened',
     'Modality_summarized',
     'TargetPathway',
+    'HighestClinicalStage_summarized',
+    'PreviouslyScreened',
   ].map(toDimension),
 
-  // What the matrix shows when the card first renders. `x` may be null for a
-  // single column.
+  // What the matrix shows when the card first renders: a small grid to start
+  // from. `x` may be null for a single column.
   defaults: {
-    y: 'TargetPathway',
+    y: 'Class',
     x: 'HighestClinicalStage_summarized',
-    color: 'Class',
+    color: 'PreviouslyScreened',
   },
 
   colors: COLORS,

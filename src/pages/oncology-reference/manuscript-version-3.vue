@@ -47,7 +47,7 @@
       <app-container v-if="showParallelSets" default>
           <agent-parallel-sets />
       </app-container>
-      <!-- Filter the library to a subset, then break it down in a unit matrix -->
+      <!-- One square per agent, grouped and colored by the fields the reader picks -->
       <app-container v-if="showAgentBreakdown" wide :class="{ 'mt-8': showParallelSets }">
         <agent-breakdown />
       </app-container>
