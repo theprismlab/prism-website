@@ -66,6 +66,22 @@ const routes = [
     component: () => import('@/pages/publications.vue'),
   },
   {
+    path: '/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism',
+    component: () =>
+      import('@/pages/whitepapers/multiplexed-cancer-cell-line-combination-screening-using-prism.vue'),
+    meta: {
+      breadcrumbs: () => [{ title: 'Publications', to: '/publications' }, { title: 'White Paper' }],
+    },
+  },
+  {
+    path: '/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets',
+    component: () =>
+      import('@/pages/whitepapers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets.vue'),
+    meta: {
+      breadcrumbs: () => [{ title: 'Publications', to: '/publications' }, { title: 'White Paper' }],
+    },
+  },
+  {
     path: '/oncology-reference/nominations',
     component: () => import('@/pages/oncology-reference/nominations.vue'),
     meta: {

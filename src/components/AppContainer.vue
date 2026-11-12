@@ -16,8 +16,17 @@
    *   - wide:    10/12 on lg+, 92% on md and sm, 96% on xs
    *   - narrow:  the default tier capped at 780px
    *
-   * Prefer `<page-section width="...">`, which renders this for you, over
-   * placing an AppContainer by hand inside a section.
+   * For a section of a page, prefer `<page-section width="...">`, which renders
+   * this for you along with the section's padding and background.
+   *
+   * Use it directly where a block needs only a width, e.g. inside an article
+   * that mixes a narrow text column with wider figures:
+   *   <article>
+   *     <section>
+   *       <app-container narrow>...heading and text...</app-container>
+   *       <app-container>...figure...</app-container>
+   *     </section>
+   *   </article>
    */
   export default {
     name: 'AppContainer',
