@@ -2,7 +2,13 @@
   <div class="heatmap" @mouseleave="hover = null">
     <p v-if="title" class="heatmap__title prism-text-title-small">{{ title }}</p>
 
-    <svg :viewBox="`0 0 ${width} ${height}`" :width="width" :height="height" class="heatmap__svg">
+    <svg
+      :viewBox="`0 0 ${width} ${height}`"
+      :width="width"
+      :height="height"
+      class="heatmap__svg"
+      :style="{ fontSize: `${tickSize}px` }"
+    >
       <!-- A plot narrower than its x title (a one-cell strip) is centered under it -->
       <g :transform="`translate(${margin.left + plotOffset}, ${margin.top})`">
         <!-- Cells -->
@@ -24,8 +30,8 @@
           v-for="(x, i) in xDomain"
           :key="`x-${x}`"
           :x="(i + 0.5) * size"
-          :y="plotHeight + 10"
-          :transform="`rotate(-45, ${(i + 0.5) * size}, ${plotHeight + 10})`"
+          :y="plotHeight + offsets.tick"
+          :transform="`rotate(-45, ${(i + 0.5) * size}, ${plotHeight + offsets.tick})`"
           class="heatmap__tick"
           text-anchor="end"
         >
@@ -33,8 +39,8 @@
         </text>
         <text
           :x="plotWidth / 2"
-          :y="plotHeight + xTickHeight + 16"
-          class="heatmap__label"
+          :y="plotHeight + xTickHeight + offsets.axisTitle"
+          class="heatmap__axis-title"
           text-anchor="middle"
         >
           {{ xTitle }}
@@ -53,21 +59,11 @@
           >
             {{ tick(y) }}
           </text>
-          <!-- One row: the title sits above the row, flush with the tick, so a
-               long name does not push the plot to the right -->
+          <!-- Rotated and centered on the rows; the margins grow to hold a
+               title longer than the plot is tall (a one-row strip) -->
           <text
-            v-if="singleRow"
-            :x="-tickWidth - 6"
-            y="-8"
-            class="heatmap__label"
-            text-anchor="start"
-          >
-            ↓ {{ yTitle }}
-          </text>
-          <text
-            v-else
-            :transform="`translate(${-margin.left + 14}, ${plotHeight / 2}) rotate(-90)`"
-            class="heatmap__label"
+            :transform="`translate(${-margin.left + offsets.lane}, ${plotHeight / 2}) rotate(-90)`"
+            class="heatmap__axis-title"
             text-anchor="middle"
           >
             {{ yTitle }}
@@ -97,6 +93,22 @@
 <script>
   import { heatmapColor } from '@/utils/heatmap-color';
 
+  // Font sizing, as in ScatterGrid and BoxPlot (see `fontSize` in the
+  // component doc). The tick size is the one size everything else follows:
+  // titles are TITLE_EM of it, and every text offset below is written for a
+  // 12px tick and multiplied by the font scale `k = tick size / 12`.
+  const FONT_SIZES = { small: 10, medium: 12, large: 14 };
+  const TITLE_EM = 7 / 6; // matches .heatmap__axis-title in the styles
+  // Rough width of text at a font size, in the units of the size: narrow
+  // glyphs, then capitals, digits and wide letters, then everything else
+  const textWidth = (text, size) =>
+    size *
+    [...String(text)].reduce(
+      (w, ch) =>
+        w + (/[iljtfrI .,:;'|()[\]-]/.test(ch) ? 0.28 : /[A-Z0-9mw]/.test(ch) ? 0.69 : 0.56),
+      0,
+    );
+
   /**
    * Heatmap
    *
@@ -108,6 +120,12 @@
    * or numeric strings; they are sorted numerically to form the axes and
    * printed with three significant digits. A plot with a single y value and
    * no `yTitle` renders as a one-row strip without a y axis.
+   *
+   * `fontSize` is 'small' | 'medium' (default) | 'large' (ticks of 10, 12 or
+   * 14px, as in prism-charts) or a tick size in px. Axis titles are 7/6 of
+   * the tick size, and the margins and text positions grow with it. The SVG
+   * is drawn at its own size, so these are real pixels unless the container
+   * is narrower than the plot. Give <heatmap-legend> the same `fontSize`.
    */
   export default {
     name: 'Heatmap',
@@ -128,6 +146,11 @@
       size: { type: Number, default: 40 },
       // Show the cell's doses and value in a tooltip on hover
       tooltip: { type: Boolean, default: false },
+      fontSize: {
+        type: [String, Number],
+        default: 'medium',
+        validator: (v) => typeof v === 'number' || v in FONT_SIZES,
+      },
     },
     data() {
       return { hover: null };
@@ -154,33 +177,58 @@
       color() {
         return heatmapColor(this.colorDomain, this.log);
       },
-      singleRow() {
-        return this.yDomain.length === 1;
+      tickSize() {
+        return typeof this.fontSize === 'number' ? this.fontSize : FONT_SIZES[this.fontSize];
       },
-      // Approximate tick text widths (10px font) to size the margins
+      // Font scale: text offsets are written for a 12px tick
+      fontScale() {
+        return this.tickSize / 12;
+      },
+      // Where text sits, in SVG units
+      offsets() {
+        const k = this.fontScale;
+        return {
+          lane: 14 * k, // the rotated y title's baseline in from the left edge
+          tick: 10 * k, // x tick anchor below the plot
+          axisTitle: 16 * k, // x title baseline below the x ticks
+        };
+      },
+      // Approximate widths of the widest tick labels, to size the margins
       tickWidth() {
-        return Math.max(...this.yDomain.map((y) => this.tick(y).length)) * 6;
+        return Math.max(...this.yDomain.map((y) => textWidth(this.tick(y), this.tickSize)));
       },
       xTickWidth() {
-        return Math.max(...this.xDomain.map((x) => this.tick(x).length)) * 6;
+        return Math.max(...this.xDomain.map((x) => textWidth(this.tick(x), this.tickSize)));
       },
       // Vertical room taken by the 45° x ticks, plus the gap to the x title
       xTickHeight() {
-        return this.xTickWidth * 0.71 + 10;
+        return this.xTickWidth * 0.71 + this.offsets.tick;
+      },
+      // How far the rotated y title reaches above and below the plot when it
+      // is longer than the plot is tall
+      yTitleOverflow() {
+        if (!this.yTitle) return 0;
+        const length = textWidth(this.yTitle, this.tickSize * TITLE_EM);
+        return Math.max(0, (length - this.plotHeight) / 2);
       },
       margin() {
-        let left = 8;
-        if (this.yTitle) {
-          // Multi-row: room for the rotated title. Single row: the title sits above.
-          left = this.tickWidth + (this.singleRow ? 14 : 32);
-        }
+        const k = this.fontScale;
         // The first x tick hangs down-left past the plot's left edge
         const overhang = this.xTickWidth * 0.71 - this.size / 2;
+        let left = Math.max(8, overhang + 4);
+        if (this.yTitle) {
+          // The tick labels and the 6 units between them and the plot, plus a
+          // lane for the rotated title. A title that reaches below the plot
+          // also stays left of the hanging x tick.
+          const lane = 26 * k;
+          left = Math.max(left, this.tickWidth + 6 + lane);
+          if (this.yTitleOverflow) left = Math.max(left, overhang + 4 + lane);
+        }
         return {
-          top: this.yTitle && this.singleRow ? 24 : 4,
+          top: Math.max(4, this.yTitleOverflow + 4),
           right: 8,
-          bottom: this.xTickHeight + 25,
-          left: Math.max(left, overhang + 4),
+          bottom: Math.max(this.xTickHeight + 25 * k, this.yTitleOverflow + 4),
+          left,
         };
       },
       plotWidth() {
@@ -189,19 +237,13 @@
       plotHeight() {
         return this.yDomain.length * this.size;
       },
-      // Approximate label widths (14px font), so the SVG grows to fit a title
-      // wider than the plot instead of clipping it
+      // Approximate title widths, so the SVG grows to fit a title wider than
+      // the plot instead of clipping it
       xTitleWidth() {
-        return this.xTitle.length * 8.2;
-      },
-      yTitleAboveWidth() {
-        // "↓ " plus the title, starting left of the tick
-        return this.singleRow && this.yTitle
-          ? (this.yTitle.length + 2) * 8.2 - this.tickWidth - 6
-          : 0;
+        return textWidth(this.xTitle, this.tickSize * TITLE_EM);
       },
       contentWidth() {
-        return Math.max(this.plotWidth, this.xTitleWidth, this.yTitleAboveWidth);
+        return Math.max(this.plotWidth, this.xTitleWidth);
       },
       // Shift that centers the plot within the content width
       plotOffset() {
@@ -246,15 +288,15 @@
     height: auto;
     overflow: visible;
   }
+  /* Text sizes are relative to the svg's font size, which is the tick size
+     set from the fontSize prop. Ticks inherit it as is. */
   .heatmap__tick,
-  .heatmap__label {
+  .heatmap__axis-title {
     fill: currentColor;
   }
-  .heatmap__tick {
-    font-size: 10px;
-  }
-  .heatmap__label {
-    font-size: 14px;
+  /* TITLE_EM in the script */
+  .heatmap__axis-title {
+    font-size: calc(7em / 6);
   }
   .heatmap__tooltip {
     position: absolute;
