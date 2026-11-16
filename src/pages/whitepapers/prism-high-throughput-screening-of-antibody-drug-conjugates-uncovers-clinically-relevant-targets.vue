@@ -104,7 +104,9 @@
           <p class="prism-text-body-large">
             Within each cell set, cell lines are pooled in groups of 20-25 based on their growth
             rates. Visit our
-            <a href="/consortium-screens/assays" target="_blank">Cell Line Collection page</a>
+            <a href="/consortium-screens/cell-line-collection" target="_blank"
+              >Cell Line Collection page</a
+            >
             to learn more.
           </p>
 
