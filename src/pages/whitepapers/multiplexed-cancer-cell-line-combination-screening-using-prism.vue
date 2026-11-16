@@ -227,7 +227,7 @@
                 </div>
                 <div v-if="combo.cells" class="combo-figure__panels">
                   <div class="combo-figure__panel">
-                    <p class="prism-text-title-small combo-figure__label">Single agent</p>
+                    <h6 class="prism-text-title-small combo-figure__label mb-4">Single agent</h6>
                     <div class="combo-figure__strips">
                       <heatmap
                         :data="combo.cells.x"
@@ -248,7 +248,8 @@
                     </div>
                   </div>
                   <div class="combo-figure__panel">
-                    <p class="prism-text-title-small combo-figure__label">Combination</p>
+                    <h6 class="prism-text-title-small combo-figure__label mb-4">Combination</h6>
+
                     <heatmap
                       :data="combo.cells.xy"
                       :x-title="`${combo.x.name} (µM)`"
@@ -1034,12 +1035,15 @@
     border-left: var(--combo-rule);
   }
   .combo-figure__label {
-    margin: 0 0 8px;
+    font-weight: 700;
   }
+  /* The two strips are centered on each other; the pair stays at the panel's
+     left edge, under its label */
   .combo-figure__strips {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    width: fit-content;
     gap: 12px;
   }
   /* Never scale the SVGs down: label sizes must match from block to block */
