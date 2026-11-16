@@ -38,45 +38,21 @@
 </script>
 
 <style scoped>
+  /* Tier widths and their breakpoints are the --prism-container-* variables in
+     src/styles/main.scss. */
   .app-container {
     box-sizing: border-box;
-    width: 66.667%;
+    width: var(--prism-container-default);
     margin-inline: auto;
     /* Horizontal gutter only. Vertical rhythm belongs to PageSection. */
-    padding: 0 16px;
+    padding: 0 var(--prism-container-gutter);
   }
 
   .app-container--wide {
-    width: 83.333%;
+    width: var(--prism-container-wide);
   }
 
   .app-container--narrow {
-    max-width: 780px;
-  }
-
-  /* md */
-  @media (max-width: 1279.98px) {
-    .app-container {
-      width: 76.667%;
-    }
-    .app-container--wide {
-      width: 92%;
-    }
-  }
-
-  /* sm */
-  @media (max-width: 959.98px) {
-    .app-container,
-    .app-container--wide {
-      width: 92%;
-    }
-  }
-
-  /* xs */
-  @media (max-width: 599.98px) {
-    .app-container,
-    .app-container--wide {
-      width: 96%;
-    }
+    max-width: var(--prism-container-narrow-max);
   }
 </style>

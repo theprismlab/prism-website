@@ -26,6 +26,8 @@
         hide-details
         @update:model-value="toggleDefaults"
       />
+      <!-- Full width, so it wraps onto its own line under the controls -->
+      <span class="scatter-grid__hint">{{ SCATTER_PLOT_HINT }}</span>
     </div>
 
     <svg ref="svg" :viewBox="`0 0 ${width} ${height}`" class="scatter-grid__svg">
@@ -638,6 +640,7 @@
         hover: null,
         selected: [...this.initialSelected],
         gradientId: `scatter-grid-gradient-${++instances}`,
+        SCATTER_PLOT_HINT: 'Hover plot points for details. Click to highlight.',
       };
     },
     computed: {
@@ -1010,11 +1013,15 @@
   }
   .scatter-grid__search {
     flex: 1 1 280px;
-    max-width: 480px;
+    max-width: 580px;
+  }
+  .scatter-grid__hint {
+    flex: 1 0 100%;
+    font-size: 0.8125rem;
+    color: rgba(0, 0, 0, 0.6);
   }
   .scatter-grid__toggle {
     flex: 0 0 auto;
-    margin-left: auto;
   }
   .scatter-grid__toggle :deep(.v-label) {
     font-size: 0.8125rem;
@@ -1092,5 +1099,12 @@
     border-radius: 4px;
     pointer-events: none;
     white-space: nowrap;
+  }
+  /* mobile phone size */
+  @media (max-width: 600px) {
+    .box-plot__search {
+      flex: 1 1 280px;
+      max-width: 450px;
+    }
   }
 </style>

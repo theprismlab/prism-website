@@ -27,7 +27,7 @@
     <article class="whitepaper-body">
       <section id="introduction">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Introduction</h2>
+          <h2 class="prism-text-headline-large">Introduction</h2>
           <p class="prism-text-body-large">
             Combination therapies are routinely used in cancer care, and patient cure is almost
             never achieved by monotherapy<sup>1</sup>. However, which combinations will benefit
@@ -53,9 +53,9 @@
         </app-container>
       </section>
 
-      <section>
+      <section id="analysis-of-combination-data">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Analysis of combination data</h2>
+          <h2 class="prism-text-headline-large">Analysis of combination data</h2>
           <p class="prism-text-body-large">
             Experimental combinations are generally benchmarked by comparing the effects of two (or
             more) agents to the corresponding single-agent activities, using established metrics to
@@ -79,12 +79,11 @@
             caption="Fig.2. Classifications of combination effects"
           />
         </app-container>
-        <app-container> </app-container>
       </section>
 
-      <section>
+      <section id="considerations-for-dose-selection">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Considerations for dose selection</h2>
+          <h2 class="prism-text-headline-large">Considerations for dose selection</h2>
           <p class="prism-text-body-large">
             The ideal dose range for the single-agent components in combination screening would span
             at least one concentration with no effect on cell line viability but evidence for
@@ -121,7 +120,7 @@
 
       <section>
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Results</h2>
+          <h2 class="prism-text-headline-large">Results</h2>
           <h3 class="prism-text-headline-small">Selection of test combinations</h3>
           <p class="prism-text-body-large">
             To test the suitability of PRISM for pooled cell line combination screening, we selected
@@ -201,7 +200,6 @@
             screened in nearly 900 cancer cell lines using standard PRISM conditions and data
             processing [<a href="https://github.com/cmap/dockerized_mts" target="_blank">link</a>].
           </p>
-
           <div class="combo-grid">
             <div v-for="combo in combinations" :key="combo.title" class="combo-figure">
               <div class="combo-figure__text">
@@ -266,7 +264,7 @@
             </div>
           </div>
 
-          <figure-caption>
+          <figure-caption class="mb-6">
             <template #title>Fig.4. Combinations tested and their dosing schemes.</template>
             The dosing schemes of the three combinations tested were determined based on the
             described procedure. Thus, temozolomide + O6 Benzylguanine and ML210 + Ferrostatin were
@@ -275,7 +273,7 @@
             format for the AZD5991 + A-1331852 combination. A cell line was classified as “killed”
             if its viability (relative to vehicle control) was &lt; 0.3.
           </figure-caption>
-          <p class="prism-text-body-large mt-6">
+          <p class="prism-text-body-large">
             We calculated a synergy score for combination effects at each dose combination using
             both the Highest Single Agent (HSA) and Bliss models to generate a null expectation for
             the viability at the combination dose (see figure 2 Eqs. 1,2). In the HSA model, the
@@ -327,7 +325,7 @@
 
       <section>
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Synergy by dose</h2>
+          <h2 class="prism-text-headline-large">Synergy by dose</h2>
           <h3 class="prism-text-headline-small">Temozolomide + O6-benzylguanine</h3>
           <p class="prism-text-body-large">
             In the presence of O6-benzylguanine, cell lines that expressed MGMT were sensitized to
@@ -476,7 +474,7 @@
 
       <section>
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Conclusion</h2>
+          <h2 class="prism-text-headline-large">Conclusion</h2>
           <p class="prism-text-body-large">
             Combination screening is a challenging scientific, analytical, and logistical endeavor.
             As studies to date have suggested combination partner interactions are difficult to
@@ -553,7 +551,7 @@
 
       <section id="citations">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Citations</h2>
+          <h2 class="prism-text-headline-large">Citations</h2>
           <ol>
             <li>
               Eder, J. P. & Hafez, N. Principles of dose, schedule, and combination therapy.
@@ -643,7 +641,7 @@
       </section>
       <section id="appendix">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Appendix</h2>
+          <h2 class="prism-text-headline-large">Appendix</h2>
           <p>
             For each cell line, we generate median viability values (replicates) for a mock
             treatment condition using the median viability from 3 randomly selected vehicle-control

@@ -23,6 +23,36 @@
   margin-inline: auto;
 }
 
+// ── Container widths ───────────────────────────────────────────────
+// The width tiers used by <app-container>, as a share of the page width.
+// AppContainer.vue reads these; tune the tiers and breakpoints here.
+:root {
+  --prism-container-default: 66.667%; // 8/12
+  --prism-container-wide: 83.333%; // 10/12
+  --prism-container-narrow-max: 780px;
+  --prism-container-gutter: 16px;
+}
+// md
+@media (max-width: 1279.98px) {
+  :root {
+    --prism-container-default: 76.667%;
+    --prism-container-wide: 92%;
+  }
+}
+// sm
+@media (max-width: 959.98px) {
+  :root {
+    --prism-container-default: 92%;
+  }
+}
+// xs
+@media (max-width: 599.98px) {
+  :root {
+    --prism-container-default: 96%;
+    --prism-container-wide: 96%;
+  }
+}
+
 .v-container {
   width: 100% !important;
   max-width: var(--container-md-max-width) !important;

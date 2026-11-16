@@ -1,11 +1,16 @@
 <template>
   <div class="box-plot" @mouseleave="hover = null">
+    <!-- Toolbar strip across the top of the card -->
     <div class="box-plot__toolbar">
       <v-autocomplete
         v-model="selected"
         :items="ids"
         :label="`Search ${idTitle.toLowerCase()}s`"
-        variant="underlined"
+        prepend-inner-icon="mdi-magnify"
+        class="box-plot__search"
+        variant="outlined"
+        density="compact"
+        bg-color="white"
         multiple
         chips
         closable-chips
@@ -16,10 +21,13 @@
         v-if="initialSelected.length"
         :model-value="defaultsOn"
         :label="initialSelectedLabel"
+        class="box-plot__toggle"
         density="compact"
         hide-details
         @update:model-value="toggleDefaults"
       />
+      <!-- Full width, so it wraps onto its own line under the controls -->
+      <span class="box-plot__hint">{{ BOX_PLOT_HINT }}</span>
     </div>
 
     <svg ref="svg" :viewBox="`0 0 ${width} ${height}`" class="box-plot__svg">
@@ -382,7 +390,11 @@
       height: { type: Number, default: 420 },
     },
     data() {
-      return { hover: null, selected: [...this.initialSelected] };
+      return {
+        hover: null,
+        selected: [...this.initialSelected],
+        BOX_PLOT_HINT: 'Hover plot points for details. Click to highlight.',
+      };
     },
     computed: {
       margin() {
@@ -514,24 +526,49 @@
 </script>
 
 <style scoped>
+  /* A card like ScatterGrid's: hairline border, soft shadow, and a tinted
+     toolbar strip over the plot. Nothing is clipped (no overflow: hidden), so
+     the tooltip can cross the card's edge. */
   .box-plot {
     position: relative;
+    margin-top: 1.5rem;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
   .box-plot__toolbar {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 16px;
-    margin-bottom: 12px;
+    align-items: center;
+    gap: 8px 16px;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    /* Inside the card's 1px border */
+    border-radius: 7px 7px 0 0;
   }
   .box-plot__search {
-    flex: 1 1 260px;
-    max-width: 360px;
+    flex: 1 1 280px;
+    max-width: 580px;
   }
+  .box-plot__hint {
+    flex: 1 0 100%;
+    font-size: 0.8125rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+  .box-plot__toggle {
+    flex: 0 0 auto;
+  }
+  .box-plot__toggle :deep(.v-label) {
+    font-size: 0.8125rem;
+  }
+  /* The plot is inset from the card's edges by its margin */
   .box-plot__svg {
     display: block;
-    width: 100%;
+    width: calc(100% - 32px);
     height: auto;
+    margin: 12px 16px;
     overflow: visible;
   }
   .panel {
@@ -608,5 +645,12 @@
     border-radius: 4px;
     pointer-events: none;
     white-space: nowrap;
+  }
+  /* mobile phone size */
+  @media (max-width: 600px) {
+    .box-plot__search {
+      flex: 1 1 280px;
+      max-width: 450px;
+    }
   }
 </style>

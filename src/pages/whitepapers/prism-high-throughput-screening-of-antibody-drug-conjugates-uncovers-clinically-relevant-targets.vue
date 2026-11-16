@@ -18,6 +18,7 @@
           variant="outlined"
           prepend-icon="mdi-chart-box-outline"
           append-icon="mdi-arrow-top-right"
+          size="small"
         >
           Explore Data
         </v-btn>
@@ -60,8 +61,14 @@
             enables high throughput profiling of the viability effects of ADCs in hundreds of cell
             lines simultaneously.
           </p>
+        </app-container>
+        <app-container narrow>
           <h3 class="prism-text-headline-small">The PRISM assay</h3>
-          <figure-cards :items="assayCards" class="mb-8 mt-4" border shaded-title center-title />
+        </app-container>
+        <app-container>
+          <figure-cards :items="assayCards" class="mb-8" border shaded-title center-title />
+        </app-container>
+        <app-container narrow>
           <p class="prism-text-body-large">
             Our multiplexed cell viability platform, PRISM (profiling relative inhibition
             simultaneously in mixtures), enables screening of potential cancer therapeutics at an
@@ -691,7 +698,7 @@
         assayCards: [
           {
             title: '900+ cancer cell lines',
-            subtitle: 'pooled+barcoded',
+            subtitle: 'pooled and barcoded',
             image: imagePath + '01_PRISM_assay.png',
           },
           {
@@ -701,7 +708,7 @@
           },
           {
             title: '5-day viability assay',
-            subtitle: 'plated+treated',
+            subtitle: 'plated and treated',
             image: imagePath + '03_PRISM_assay.png',
           },
           {
