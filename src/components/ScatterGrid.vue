@@ -408,7 +408,7 @@
   // text offset below is written for a 12-unit tick and multiplied by
   // the font scale `k = tick / 12`.
   const FONT_SIZES = { small: 10, medium: 12, large: 14 };
-  const MIN_SCREEN_PX = 10; // smallest a tick may render on screen
+  const MIN_SCREEN_PX = 7; // smallest a tick may render on screen
   const TITLE_EM = 7 / 6; // matches .title in the styles
   // Rough width of text at a font size, in the units of the size: narrow
   // glyphs, then capitals, digits and wide letters, then everything else
