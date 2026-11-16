@@ -30,7 +30,12 @@
       <span class="box-plot__hint">{{ BOX_PLOT_HINT }}</span>
     </div>
 
-    <svg ref="svg" :viewBox="`0 0 ${width} ${height}`" class="box-plot__svg">
+    <svg
+      ref="svg"
+      :viewBox="`0 0 ${width} ${height}`"
+      class="box-plot__svg"
+      :style="{ fontSize: `${tick}px` }"
+    >
       <g :transform="`translate(${margin.left}, ${margin.top})`">
         <rect :width="plotWidth" :height="plotHeight" class="panel" @mousemove="onMove($event)" />
         <line
@@ -98,7 +103,7 @@
           v-for="box in boxes"
           :key="`xt-${box.name}`"
           :x="box.x + band / 2"
-          :y="plotHeight + 14"
+          :y="plotHeight + offsets.tick"
           class="tick"
           text-anchor="middle"
         >
@@ -117,12 +122,17 @@
         </text>
 
         <!-- Axis titles -->
-        <text :x="plotWidth / 2" :y="plotHeight + 36" class="label" text-anchor="middle">
+        <text
+          :x="plotWidth / 2"
+          :y="plotHeight + offsets.axisTitle"
+          class="title axis-title"
+          text-anchor="middle"
+        >
           {{ x.title }}
         </text>
         <text
-          :transform="`translate(${-margin.left + 14}, ${plotHeight / 2}) rotate(-90)`"
-          class="label"
+          :transform="`translate(${-margin.left + offsets.lane}, ${plotHeight / 2}) rotate(-90)`"
+          class="title axis-title"
           text-anchor="middle"
         >
           {{ y.title }}
@@ -186,9 +196,26 @@
   const PAD = 8; // inset between the panel edge and the y range
   const HOVER_RADIUS = 8; // SVG units within which a point counts as hovered
 
+  // Font sizing, as in ScatterGrid (see `fontSize` in the component doc). The
+  // tick size is the one size everything else follows: titles are 7/6 of it
+  // (.title in the styles), and every text offset below is written for a
+  // 12-unit tick and multiplied by the font scale `k = tick / 12`.
+  const FONT_SIZES = { small: 10, medium: 12, large: 14 };
+  const MIN_SCREEN_PX = 10; // smallest a tick may render on screen
+  // Rough width of text at a font size, in the units of the size: narrow
+  // glyphs, then capitals, digits and wide letters, then everything else
+  const textWidth = (text, size) =>
+    size *
+    [...String(text)].reduce(
+      (w, ch) =>
+        w + (/[iljtfrI .,:;'|()[\]-]/.test(ch) ? 0.28 : /[A-Z0-9mw]/.test(ch) ? 0.69 : 0.56),
+      0,
+    );
+
   // Label layout: each label sits beside its point and is nudged up or down
   // until clear of the labels placed before it; one with no clear slot is
   // dropped, so labels never overlap. Coordinates are local to `bounds`.
+  // Sizes are for a 12-unit tick and are multiplied by `k`.
   const LABEL_HEIGHT = 11;
   const LABEL_CHAR = 6.2;
   const LABEL_STEPS = [0, 12, 24, 36, 48, 60, 72];
@@ -218,15 +245,15 @@
   // Candidate spots for one label, cheapest first: directly above or below the
   // point, beside it on either side, then nudged up or down in growing steps.
   // `side` penalises the busier side so labels spread away from a cluster.
-  function labelCandidates(item, gap, side) {
+  function labelCandidates(item, gap, side, k) {
     const right = item.cx + gap + 3;
     const left = item.cx - gap - 3;
     const list = [
-      { x: item.cx, y: item.cy - gap - 7, anchor: 'middle', cost: 2 },
-      { x: item.cx, y: item.cy + gap + 7, anchor: 'middle', cost: 2 },
+      { x: item.cx, y: item.cy - gap - 7 * k, anchor: 'middle', cost: 2 },
+      { x: item.cx, y: item.cy + gap + 7 * k, anchor: 'middle', cost: 2 },
     ];
     for (const step of LABEL_STEPS) {
-      for (const dy of step ? [-step, step] : [0]) {
+      for (const dy of step ? [-step * k, step * k] : [0]) {
         list.push({ x: right, y: item.cy + dy, anchor: 'start', cost: step + side.start });
         list.push({ x: left, y: item.cy + dy, anchor: 'end', cost: step + side.end });
       }
@@ -238,8 +265,10 @@
   // their cheapest clear candidate, then refined for a few passes in which
   // each label may move to a cheaper spot given all the others, which untangles
   // connectors. A label with no clear candidate is dropped, so labels never
-  // overlap points or each other. Coordinates are local to `bounds`.
-  function placeLabels(items, bounds, gap) {
+  // overlap points or each other. Coordinates are local to `bounds`; `k` is
+  // the font scale.
+  function placeLabels(items, bounds, gap, k) {
+    const height = LABEL_HEIGHT * k;
     const obstacles = items.map((p) => ({
       key: p.key,
       x0: p.cx - gap,
@@ -265,8 +294,9 @@
     };
     const placement = (item, c, w) => {
       const x0 = c.anchor === 'start' ? c.x : c.anchor === 'end' ? c.x - w : c.x - w / 2;
-      const box = { x0, x1: x0 + w, y0: c.y - LABEL_HEIGHT / 2, y1: c.y + LABEL_HEIGHT / 2 };
-      const nudged = Math.abs(c.y - item.cy) >= LABEL_STEPS[1];
+      const box = { x0, x1: x0 + w, y0: c.y - height / 2, y1: c.y + height / 2 };
+      // Half a unit of slack, as the step was added to cy and subtracted again
+      const nudged = Math.abs(c.y - item.cy) >= LABEL_STEPS[1] * k - 0.5;
       const lx = c.anchor === 'start' ? c.x - 2 : c.x + 2;
       const connector = nudged ? { p: { x: item.cx, y: item.cy }, q: { x: lx, y: c.y } } : null;
       return { key: item.key, box, connector, c };
@@ -295,9 +325,9 @@
       return cost;
     };
     const best = (item, others) => {
-      const w = String(item.text).length * LABEL_CHAR;
+      const w = String(item.text).length * LABEL_CHAR * k;
       let found = null;
-      for (const c of labelCandidates(item, gap, sideFor(item))) {
+      for (const c of labelCandidates(item, gap, sideFor(item), k)) {
         const pl = placement(item, c, w);
         const cost = score(item, pl, others);
         if (cost < (found ? found.cost : Infinity)) found = { ...pl, cost };
@@ -368,6 +398,12 @@
    *
    * Ids picked in the search box, or by clicking a point, stay highlighted
    * while the other points are dimmed. Hovering a point shows a tooltip.
+   *
+   * `fontSize` is 'small' | 'medium' (default) | 'large' (ticks of 10, 12 or
+   * 14 SVG units, as in prism-charts) or a tick size in SVG units. Titles are
+   * 7/6 of the tick size, point labels 11/12 of it, and the margins and text
+   * positions grow with it. Since the SVG scales to its container, all text
+   * is enlarged together when ticks would render below 10px on screen.
    */
   export default {
     name: 'BoxPlot',
@@ -388,17 +424,50 @@
       // Size in SVG units; the SVG scales to its container
       width: { type: Number, default: 960 },
       height: { type: Number, default: 420 },
+      fontSize: {
+        type: [String, Number],
+        default: 'medium',
+        validator: (v) => typeof v === 'number' || v in FONT_SIZES,
+      },
     },
     data() {
       return {
+        // Width the SVG is drawn at in CSS px, measured once mounted
+        renderedWidth: null,
         hover: null,
         selected: [...this.initialSelected],
         BOX_PLOT_HINT: 'Hover plot points for details. Click to highlight.',
       };
     },
     computed: {
+      // Tick font size in SVG units: the `fontSize` asked for, raised when it
+      // would render below MIN_SCREEN_PX. Rounded up to half units so resizing
+      // doesn't relayout on every pixel.
+      tick() {
+        const base = typeof this.fontSize === 'number' ? this.fontSize : FONT_SIZES[this.fontSize];
+        const min = this.renderedWidth ? (MIN_SCREEN_PX * this.width) / this.renderedWidth : 0;
+        return Math.ceil(Math.max(base, min) * 2) / 2;
+      },
+      // Font scale: text offsets are written for a 12-unit tick
+      fontScale() {
+        return this.tick / 12;
+      },
+      // Where text sits, in SVG units
+      offsets() {
+        const k = this.fontScale;
+        return {
+          lane: 14 * k, // the y title's baseline in from the left edge
+          tick: 14 * k, // category label baseline below the panel
+          axisTitle: 36 * k, // x title baseline below the panel
+        };
+      },
+      // The left margin holds the y title, the widest tick label and the 6
+      // units between the ticks and the panel; the bottom holds the category
+      // labels and the x title
       margin() {
-        return { top: 12, right: 12, bottom: 51, left: 54 };
+        const k = this.fontScale;
+        const widest = Math.max(0, ...this.yTicks.map((v) => textWidth(v, this.tick)));
+        return { top: 12, right: 12, bottom: 51 * k, left: widest + 6 + 26 * k };
       },
       plotWidth() {
         return this.width - this.margin.left - this.margin.right;
@@ -427,13 +496,22 @@
       boxWidth() {
         return this.band * 0.6;
       },
+      // Ticks depend on the domain only, so they can size the left margin
+      // before the plot height is known
+      yDomain() {
+        if (this.y.domain) return this.y.domain;
+        return scaleLinear()
+          .domain([0, Math.max(...this.records.map((d) => d.y))])
+          .nice()
+          .domain();
+      },
       yScale() {
-        const scale = scaleLinear().range([this.plotHeight - PAD, PAD]);
-        if (this.y.domain) return scale.domain(this.y.domain);
-        return scale.domain([0, Math.max(...this.records.map((d) => d.y))]).nice();
+        return scaleLinear()
+          .domain(this.yDomain)
+          .range([this.plotHeight - PAD, PAD]);
       },
       yTicks() {
-        return this.yScale.ticks(5);
+        return scaleLinear().domain(this.yDomain).ticks(5);
       },
       boxes() {
         return this.categories.map((name, i) => {
@@ -479,8 +557,19 @@
             .map((p) => ({ key: `${box.name}/${p.id}`, cx: box.x + p.px, cy: p.py, text: p.id })),
         );
         const bounds = { width: this.plotWidth, height: this.plotHeight };
-        return placeLabels(items, bounds, this.pointRadius + 2.2);
+        return placeLabels(items, bounds, this.pointRadius + 2.2, this.fontScale);
       },
+    },
+    mounted() {
+      // The viewBox scales text with the container, so track the drawn width
+      // to keep text from rendering below MIN_SCREEN_PX
+      this.resizeObserver = new ResizeObserver(([entry]) => {
+        this.renderedWidth = entry.contentRect.width || null;
+      });
+      this.resizeObserver.observe(this.$refs.svg);
+    },
+    beforeUnmount() {
+      this.resizeObserver?.disconnect();
     },
     methods: {
       // Checking adds the default ids to the selection; unchecking removes them
@@ -616,7 +705,7 @@
     pointer-events: none;
   }
   .point-label {
-    font-size: 11px;
+    font-size: calc(11em / 12);
     font-weight: 600;
     fill: #222;
     paint-order: stroke;
@@ -625,14 +714,15 @@
     stroke-linejoin: round;
     pointer-events: none;
   }
+  /* Text sizes are relative to the svg's font size, which is the tick size
+     (in SVG units) set from the fontSize prop. Ticks inherit it as is. */
   .tick,
-  .label {
-    font-size: 12px;
+  .title {
     fill: currentColor;
     pointer-events: none;
   }
-  .label {
-    font-size: 16px;
+  .title {
+    font-size: calc(7em / 6);
   }
   .box-plot__tooltip {
     position: absolute;
