@@ -455,9 +455,7 @@
               >PRISM cell line inventory and pooling information</a
             >
             and cross reference the
-            <a href="https://depmap.org/portal/interactive/" target="_blank"
-              >DepMap Data Explorer</a
-            >
+            <a :href="depmapExplorerLink" target="_blank">DepMap Data Explorer</a>
             for relevant genetic features to estimate the number of target and non-target cell lines
             across PRISM pools. In addition, we strongly suggest using this information to carry out
             preliminary experiments to gain an understanding of potential ADC bystander activity. A
@@ -653,7 +651,9 @@
     'SKOV3',
     'TE4',
   ];
-
+  const depmapExplorerLink = 'https://depmap.org/portal/interactive/';
+  const cellLineInventoryLink =
+    'https://docs.google.com/spreadsheets/d/1PcxxZ0O6U20megXtVs6BL10Jr-qnIZPbKk_MXKwz_BI/edit?gid=1926592753#gid=1926592753';
   const dataPath = import.meta.env.BASE_URL + 'data/2023_07_adc/';
   const imagePath = import.meta.env.BASE_URL + 'images/white-paper-adc/';
 
