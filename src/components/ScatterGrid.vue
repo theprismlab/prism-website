@@ -26,16 +26,25 @@
         hide-details
         @update:model-value="toggleDefaults"
       />
+      <!-- Full width, so it wraps onto its own line under the controls -->
+      <span class="scatter-grid__hint">{{ SCATTER_PLOT_HINT }}</span>
     </div>
 
-    <svg ref="svg" :viewBox="`0 0 ${width} ${height}`" class="scatter-grid__svg">
-      <!-- Column facet: title and one label per column. With no title, the
-           labels are the panels' titles and are set at title size. -->
+    <svg
+      ref="svg"
+      :viewBox="`0 0 ${width} ${height}`"
+      class="scatter-grid__svg"
+      :style="{ fontSize: `${tick}px` }"
+    >
+      <!-- Column facet: title and one label per column. With no facet title,
+           the labels name the panels and are set at title size. Facet titles
+           (top and right) and axis titles (bottom and left) are separate
+           classes, styled alike for now. -->
       <text
         v-if="column.title"
         :x="margin.left + gridWidth / 2"
-        y="14"
-        class="label"
+        :y="offsets.lane"
+        class="title facet-title"
         text-anchor="middle"
       >
         {{ column.title }}
@@ -44,8 +53,8 @@
         v-for="(c, i) in columns"
         :key="`col-${c}`"
         :x="colX(i) + size / 2"
-        :y="margin.top - (column.title ? 6 : 8)"
-        :class="column.title ? 'tick' : 'label'"
+        :y="margin.top - (column.title ? 6 : 8) * fontScale"
+        :class="column.title ? 'tick' : 'title'"
         text-anchor="middle"
       >
         {{ sig(c) }}
@@ -64,8 +73,8 @@
           {{ sig(r) }}
         </text>
         <text
-          :transform="`translate(${width - 14}, ${margin.top + gridHeight / 2}) rotate(90)`"
-          class="label"
+          :transform="`translate(${width - offsets.lane}, ${margin.top + gridHeight / 2}) rotate(90)`"
+          class="title facet-title"
           text-anchor="middle"
         >
           {{ row.title }}
@@ -196,7 +205,7 @@
           v-for="v in xTicks"
           :key="v"
           :x="colX(i) + xScale(v)"
-          :y="plotsBottom + 11"
+          :y="plotsBottom + offsets.tick"
           class="tick"
           text-anchor="middle"
         >
@@ -232,18 +241,23 @@
           v-for="v in countTicksY"
           :key="`cy-${v}`"
           :x="marginX + yHistograms[0].xScale(v)"
-          :y="rowY(0) + size + 11"
+          :y="rowY(0) + size + offsets.tick"
           class="tick"
           text-anchor="middle"
         >
           {{ v }}
         </text>
-        <text :x="marginX + side / 2" :y="rowY(0) + size + 29" class="label" text-anchor="middle">
+        <text
+          :x="marginX + side / 2"
+          :y="rowY(0) + size + offsets.countTitle"
+          class="title axis-title"
+          text-anchor="middle"
+        >
           Cell lines
         </text>
         <text
-          :transform="`translate(14, ${leftTitleY.count}) rotate(-90)`"
-          class="label"
+          :transform="`translate(${offsets.lane}, ${leftTitleY.count}) rotate(-90)`"
+          class="title axis-title"
           text-anchor="middle"
         >
           Cell lines
@@ -253,15 +267,15 @@
       <!-- Axis titles -->
       <text
         :x="margin.left + gridWidth / 2"
-        :y="plotsBottom + 31"
-        class="label"
+        :y="plotsBottom + offsets.axisTitle"
+        class="title axis-title"
         text-anchor="middle"
       >
         {{ x.title }}
       </text>
       <text
-        :transform="`translate(14, ${leftTitleY.y}) rotate(-90)`"
-        class="label"
+        :transform="`translate(${offsets.lane}, ${leftTitleY.y}) rotate(-90)`"
+        class="title axis-title"
         text-anchor="middle"
       >
         {{ y.title }}
@@ -270,7 +284,7 @@
       <!-- Color legend: swatches for an ordinal scale, a gradient otherwise -->
       <g
         v-if="color"
-        :transform="`translate(${margin.left + gridWidth / 2 - legendWidth / 2}, ${plotsBottom + 59})`"
+        :transform="`translate(${margin.left + gridWidth / 2 - legendWidth / 2}, ${plotsBottom + legend.top})`"
       >
         <template v-if="ordinal">
           <g
@@ -278,8 +292,8 @@
             :key="`lg-${item.value}`"
             :transform="`translate(${item.x}, 0)`"
           >
-            <rect width="10" height="10" :fill="colorScale(item.value)" />
-            <text x="14" y="9" class="tick">
+            <rect :width="legend.swatch" :height="legend.swatch" :fill="colorScale(item.value)" />
+            <text :x="legend.swatchText" :y="legend.swatch * 0.9" class="tick">
               {{ item.label }}
             </text>
           </g>
@@ -295,19 +309,19 @@
               />
             </linearGradient>
           </defs>
-          <rect :width="legendWidth" height="8" :fill="`url(#${gradientId})`" />
+          <rect :width="legendWidth" :height="legend.bar" :fill="`url(#${gradientId})`" />
           <text
             v-for="v in legendScale.ticks(4)"
             :key="`lg-${v}`"
             :x="legendScale(v)"
-            y="19"
+            :y="legend.tick"
             class="tick"
             text-anchor="middle"
           >
             {{ v }}
           </text>
         </template>
-        <text :x="legendWidth / 2" y="37" class="label" text-anchor="middle">
+        <text :x="legendWidth / 2" :y="legend.title" class="title" text-anchor="middle">
           {{ color.title }}
         </text>
       </g>
@@ -389,11 +403,20 @@
   const ABOVE = '#67a9cf';
   const BELOW = '#ef8a62';
   const SINGLE = '#4c78a8'; // point color when no color scale is given
-  // Rough width of a 16px title in SVG units: narrow glyphs, then capitals and
-  // digits, then everything else
-  const titleWidth = (text) =>
+  // Font sizing (see `fontSize` in the component doc). The tick size is the
+  // one size everything else follows: titles are TITLE_EM of it, and every
+  // text offset below is written for a 12-unit tick and multiplied by
+  // the font scale `k = tick / 12`.
+  const FONT_SIZES = { small: 10, medium: 12, large: 14 };
+  const MIN_SCREEN_PX = 7; // smallest a tick may render on screen
+  const TITLE_EM = 7 / 6; // matches .title in the styles
+  // Rough width of text at a font size, in the units of the size: narrow
+  // glyphs, then capitals, digits and wide letters, then everything else
+  const textWidth = (text, size) =>
+    size *
     [...String(text)].reduce(
-      (w, ch) => w + (/[iljtfrI .,:;'|()[\]-]/.test(ch) ? 4.5 : /[A-Z0-9mw]/.test(ch) ? 11 : 9),
+      (w, ch) =>
+        w + (/[iljtfrI .,:;'|()[\]-]/.test(ch) ? 0.28 : /[A-Z0-9mw]/.test(ch) ? 0.69 : 0.56),
       0,
     );
   const PAD = 8; // inset between a panel's edge and its axis range; covers a selected marker
@@ -404,6 +427,7 @@
   // Label layout: each label sits beside its point and is nudged up or down
   // until clear of the labels placed before it; one with no clear slot is
   // dropped, so labels never overlap. Coordinates are local to `bounds`.
+  // Sizes are for a 12-unit tick and are multiplied by `k`.
   const LABEL_HEIGHT = 11;
   const LABEL_CHAR = 6.2;
   const LABEL_STEPS = [0, 12, 24, 36, 48, 60, 72];
@@ -433,15 +457,15 @@
   // Candidate spots for one label, cheapest first: directly above or below the
   // point, beside it on either side, then nudged up or down in growing steps.
   // `side` penalises the busier side so labels spread away from a cluster.
-  function labelCandidates(item, gap, side) {
+  function labelCandidates(item, gap, side, k) {
     const right = item.cx + gap + 3;
     const left = item.cx - gap - 3;
     const list = [
-      { x: item.cx, y: item.cy - gap - 7, anchor: 'middle', cost: 2 },
-      { x: item.cx, y: item.cy + gap + 7, anchor: 'middle', cost: 2 },
+      { x: item.cx, y: item.cy - gap - 7 * k, anchor: 'middle', cost: 2 },
+      { x: item.cx, y: item.cy + gap + 7 * k, anchor: 'middle', cost: 2 },
     ];
     for (const step of LABEL_STEPS) {
-      for (const dy of step ? [-step, step] : [0]) {
+      for (const dy of step ? [-step * k, step * k] : [0]) {
         list.push({ x: right, y: item.cy + dy, anchor: 'start', cost: step + side.start });
         list.push({ x: left, y: item.cy + dy, anchor: 'end', cost: step + side.end });
       }
@@ -453,8 +477,10 @@
   // their cheapest clear candidate, then refined for a few passes in which
   // each label may move to a cheaper spot given all the others, which untangles
   // connectors. A label with no clear candidate is dropped, so labels never
-  // overlap points or each other. Coordinates are local to `bounds`.
-  function placeLabels(items, bounds, gap) {
+  // overlap points or each other. Coordinates are local to `bounds`; `k` is
+  // the font scale.
+  function placeLabels(items, bounds, gap, k) {
+    const height = LABEL_HEIGHT * k;
     const obstacles = items.map((p) => ({
       key: p.key,
       x0: p.cx - gap,
@@ -480,8 +506,9 @@
     };
     const placement = (item, c, w) => {
       const x0 = c.anchor === 'start' ? c.x : c.anchor === 'end' ? c.x - w : c.x - w / 2;
-      const box = { x0, x1: x0 + w, y0: c.y - LABEL_HEIGHT / 2, y1: c.y + LABEL_HEIGHT / 2 };
-      const nudged = Math.abs(c.y - item.cy) >= LABEL_STEPS[1];
+      const box = { x0, x1: x0 + w, y0: c.y - height / 2, y1: c.y + height / 2 };
+      // Half a unit of slack, as the step was added to cy and subtracted again
+      const nudged = Math.abs(c.y - item.cy) >= LABEL_STEPS[1] * k - 0.5;
       const lx = c.anchor === 'start' ? c.x - 2 : c.x + 2;
       const connector = nudged ? { p: { x: item.cx, y: item.cy }, q: { x: lx, y: c.y } } : null;
       return { key: item.key, box, connector, c };
@@ -510,9 +537,9 @@
       return cost;
     };
     const best = (item, others) => {
-      const w = String(item.text).length * LABEL_CHAR;
+      const w = String(item.text).length * LABEL_CHAR * k;
       let found = null;
-      for (const c of labelCandidates(item, gap, sideFor(item))) {
+      for (const c of labelCandidates(item, gap, sideFor(item), k)) {
         const pl = placement(item, c, w);
         const cost = score(item, pl, others);
         if (cost < (found ? found.cost : Infinity)) found = { ...pl, cost };
@@ -603,6 +630,12 @@
    * `marginals` adds a histogram of x under each column (bars colored by the
    * side of the x threshold they fall on) and a histogram of y, one entry per
    * id, to the right of each row.
+   *
+   * `fontSize` is 'small' | 'medium' (default) | 'large' (ticks of 10, 12 or
+   * 14 SVG units, as in prism-charts) or a tick size in SVG units. Titles are
+   * 7/6 of the tick size, point labels 11/12 of it, and the margins and text
+   * positions grow with it. Since the SVG scales to its container, all text
+   * is enlarged together when ticks would render below 10px on screen.
    */
   export default {
     name: 'ScatterGrid',
@@ -632,15 +665,59 @@
       // different column counts scale to the container by the same factor
       // and their text renders at the same size.
       width: { type: Number, default: 960 },
+      fontSize: {
+        type: [String, Number],
+        default: 'medium',
+        validator: (v) => typeof v === 'number' || v in FONT_SIZES,
+      },
     },
     data() {
       return {
+        // Width the SVG is drawn at in CSS px, measured once mounted
+        renderedWidth: null,
         hover: null,
         selected: [...this.initialSelected],
         gradientId: `scatter-grid-gradient-${++instances}`,
+        SCATTER_PLOT_HINT: 'Hover plot points for details. Click to highlight.',
       };
     },
     computed: {
+      // Tick font size in SVG units: the `fontSize` asked for, raised when it
+      // would render below MIN_SCREEN_PX. Rounded up to half units so resizing
+      // doesn't relayout on every pixel.
+      tick() {
+        const base = typeof this.fontSize === 'number' ? this.fontSize : FONT_SIZES[this.fontSize];
+        const min = this.renderedWidth ? (MIN_SCREEN_PX * this.width) / this.renderedWidth : 0;
+        return Math.ceil(Math.max(base, min) * 2) / 2;
+      },
+      // Font scale: text offsets are written for a 12-unit tick
+      fontScale() {
+        return this.tick / 12;
+      },
+      // Where text sits, in SVG units
+      offsets() {
+        const k = this.fontScale;
+        return {
+          lane: 14 * k, // a title's baseline in from the top, left or right edge
+          tick: 11 * k, // tick baseline below a panel
+          axisTitle: 31 * k, // x title baseline below the plots
+          countTitle: 29 * k, // "Cell lines" baseline below the y histogram
+        };
+      },
+      // The legend's top below the plots, and the sizes and baselines inside it
+      legend() {
+        const k = this.fontScale;
+        return {
+          top: 59 * k,
+          swatch: 10 * k,
+          swatchText: 14 * k, // label's x from its swatch's left edge
+          itemGap: 14 * k,
+          bar: 8 * k, // gradient height
+          barWidth: 160 * k,
+          tick: 19 * k,
+          title: 37 * k,
+        };
+      },
       ids() {
         return [...new Set(this.points.map((p) => p.id))].sort();
       },
@@ -744,14 +821,18 @@
       side() {
         return this.marginals ? this.size * 0.55 : 0;
       },
-      // Side margins hold the tick labels plus a rotated 16px title; widths are
-      // estimated from the longest label at the 13px tick font.
+      // Side margins hold the widest tick label plus a rotated title. The top
+      // holds the column title and labels; the bottom holds x ticks and title,
+      // plus the legend when there is a color scale.
       margin() {
-        const longest = (labels) => Math.max(0, ...labels.map((l) => String(l).length)) * 8.5;
-        const left = longest(this.yTicks) + 34;
-        const right = this.row ? longest(this.rows.map(this.sig)) + 34 : 8;
-        // The bottom holds x ticks and title, plus the legend when there is a color scale
-        return { top: 40, right, bottom: this.color ? 114 : 51, left };
+        const { tick, fontScale: k } = this;
+        const lane = (labels) => Math.max(0, ...labels.map((s) => textWidth(s, tick))) + 34 * k;
+        return {
+          top: 40 * k,
+          right: this.row ? lane(this.rows.map(this.sig)) : 8,
+          bottom: (this.color ? 114 : 51) * k,
+          left: lane(this.yTicks),
+        };
       },
       // Centers of the rotated titles on the left edge: the y title beside the
       // rows and, with marginals, "Cell lines" beside the x histograms. Each is
@@ -762,12 +843,10 @@
         if (!this.marginals) return { y: rows };
         const boundary = this.histY - this.gap / 2;
         const clearance = 6;
+        const half = (title) => textWidth(title, this.tick * TITLE_EM) / 2;
         return {
-          y: Math.min(rows, boundary - clearance - titleWidth(this.y.title) / 2),
-          count: Math.max(
-            this.histY + this.side / 2,
-            boundary + clearance + titleWidth('Cell lines') / 2,
-          ),
+          y: Math.min(rows, boundary - clearance - half(this.y.title)),
+          count: Math.max(this.histY + this.side / 2, boundary + clearance + half('Cell lines')),
         };
       },
       gridWidth() {
@@ -862,18 +941,20 @@
       // Ordinal legend: swatch plus label per category, laid out in a row
       legendItems() {
         if (!this.ordinal) return [];
+        const { swatchText, itemGap } = this.legend;
         let x = 0;
         return this.colorScale.domain().map((value) => {
           const label = this.sig(value);
-          const item = { value, label, x };
-          x += 14 + label.length * 7.5 + 14;
+          const w = swatchText + textWidth(label, this.tick);
+          const item = { value, label, x, w };
+          x += w + itemGap;
           return item;
         });
       },
       legendWidth() {
-        if (!this.ordinal) return 160;
+        if (!this.ordinal) return this.legend.barWidth;
         const last = this.legendItems[this.legendItems.length - 1];
-        return last ? last.x + 14 + last.label.length * 7.5 : 0;
+        return last ? last.x + last.w : 0;
       },
       legendScale() {
         if (!this.color || this.ordinal) return null;
@@ -908,7 +989,7 @@
             })
             .filter(Boolean);
           const bounds = { width: this.size, height: this.size };
-          return placeLabels(items, bounds, this.pointRadius + 2.2).map((l) => ({
+          return placeLabels(items, bounds, this.pointRadius + 2.2, this.fontScale).map((l) => ({
             ...l,
             x: panel.x + l.x,
             y: panel.y + l.y,
@@ -921,6 +1002,17 @@
           }));
         });
       },
+    },
+    mounted() {
+      // The viewBox scales text with the container, so track the drawn width
+      // to keep text from rendering below MIN_SCREEN_PX
+      this.resizeObserver = new ResizeObserver(([entry]) => {
+        this.renderedWidth = entry.contentRect.width || null;
+      });
+      this.resizeObserver.observe(this.$refs.svg);
+    },
+    beforeUnmount() {
+      this.resizeObserver?.disconnect();
     },
     methods: {
       // Checking adds the default ids to the selection; unchecking removes them
@@ -1010,11 +1102,15 @@
   }
   .scatter-grid__search {
     flex: 1 1 280px;
-    max-width: 480px;
+    max-width: 580px;
+  }
+  .scatter-grid__hint {
+    flex: 1 0 100%;
+    font-size: 0.8125rem;
+    color: rgba(0, 0, 0, 0.6);
   }
   .scatter-grid__toggle {
     flex: 0 0 auto;
-    margin-left: auto;
   }
   .scatter-grid__toggle :deep(.v-label) {
     font-size: 0.8125rem;
@@ -1063,7 +1159,7 @@
     pointer-events: none;
   }
   .point-label {
-    font-size: 11px;
+    font-size: calc(11em / 12);
     font-weight: 600;
     fill: #222;
     paint-order: stroke;
@@ -1072,14 +1168,18 @@
     stroke-linejoin: round;
     pointer-events: none;
   }
+  /* Text sizes are relative to the svg's font size, which is the tick size
+     (in SVG units) set from the fontSize prop. Ticks inherit it as is. */
   .tick,
-  .label {
-    font-size: 12px;
+  .title {
     fill: currentColor;
     pointer-events: none;
   }
-  .label {
-    font-size: 16px;
+  /* TITLE_EM in the script. Facet titles (top, right) and axis titles
+     (bottom, left) also carry .facet-title or .axis-title, unstyled for now,
+     so they can be styled apart. */
+  .title {
+    font-size: calc(7em / 6);
   }
   .scatter-grid__tooltip {
     position: absolute;
@@ -1092,5 +1192,12 @@
     border-radius: 4px;
     pointer-events: none;
     white-space: nowrap;
+  }
+  /* mobile phone size */
+  @media (max-width: 600px) {
+    .box-plot__search {
+      flex: 1 1 280px;
+      max-width: 450px;
+    }
   }
 </style>

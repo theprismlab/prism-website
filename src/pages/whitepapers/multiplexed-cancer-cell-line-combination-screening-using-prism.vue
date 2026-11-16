@@ -27,7 +27,7 @@
     <article class="whitepaper-body">
       <section id="introduction">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Introduction</h2>
+          <h2 class="prism-text-headline-large">Introduction</h2>
           <p class="prism-text-body-large">
             Combination therapies are routinely used in cancer care, and patient cure is almost
             never achieved by monotherapy<sup>1</sup>. However, which combinations will benefit
@@ -53,9 +53,9 @@
         </app-container>
       </section>
 
-      <section>
+      <section id="analysis-of-combination-data">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Analysis of combination data</h2>
+          <h2 class="prism-text-headline-large">Analysis of combination data</h2>
           <p class="prism-text-body-large">
             Experimental combinations are generally benchmarked by comparing the effects of two (or
             more) agents to the corresponding single-agent activities, using established metrics to
@@ -79,12 +79,11 @@
             caption="Fig.2. Classifications of combination effects"
           />
         </app-container>
-        <app-container> </app-container>
       </section>
 
-      <section>
+      <section id="considerations-for-dose-selection">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Considerations for dose selection</h2>
+          <h2 class="prism-text-headline-large">Considerations for dose selection</h2>
           <p class="prism-text-body-large">
             The ideal dose range for the single-agent components in combination screening would span
             at least one concentration with no effect on cell line viability but evidence for
@@ -121,7 +120,7 @@
 
       <section>
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Results</h2>
+          <h2 class="prism-text-headline-large">Results</h2>
           <h3 class="prism-text-headline-small">Selection of test combinations</h3>
           <p class="prism-text-body-large">
             To test the suitability of PRISM for pooled cell line combination screening, we selected
@@ -201,7 +200,6 @@
             screened in nearly 900 cancer cell lines using standard PRISM conditions and data
             processing [<a href="https://github.com/cmap/dockerized_mts" target="_blank">link</a>].
           </p>
-
           <div class="combo-grid">
             <div v-for="combo in combinations" :key="combo.title" class="combo-figure">
               <div class="combo-figure__text">
@@ -214,9 +212,9 @@
                 </dl>
               </div>
 
-              <div class="combo-figure__card">
-                <div class="combo-figure__card-header">
-                  <h5 class="prism-text-title-medium combo-figure__card-title">
+              <div class="combo-figure__plots">
+                <div class="combo-figure__plots-header">
+                  <h5 class="prism-text-title-medium combo-figure__plots-title">
                     Sensitivity across doses
                   </h5>
                   <!-- One color scale for all three heatmaps of the combination -->
@@ -227,10 +225,19 @@
                     log
                   />
                 </div>
-                <div v-if="combo.cells" class="combo-figure__panels">
-                  <div class="combo-figure__panel">
-                    <p class="prism-text-title-small combo-figure__label">Single agent</p>
-                    <div class="combo-figure__strips">
+                <!-- Two cards, styled as the page's other figure cards: the
+                     single-agent strips and the combination heatmap -->
+                <figure-cards
+                  v-if="combo.cells"
+                  :items="comboCards"
+                  align="start"
+                  border
+                  shaded-title
+                  center-title
+                  class="combo-figure__cards"
+                >
+                  <template #media="{ item }">
+                    <div v-if="item.key === 'single'" class="combo-figure__strips">
                       <heatmap
                         :data="combo.cells.x"
                         :x-title="`${combo.x.name} (µM)`"
@@ -248,10 +255,8 @@
                         log
                       />
                     </div>
-                  </div>
-                  <div class="combo-figure__panel">
-                    <p class="prism-text-title-small combo-figure__label">Combination</p>
                     <heatmap
+                      v-else
                       :data="combo.cells.xy"
                       :x-title="`${combo.x.name} (µM)`"
                       :y-title="`${combo.y.name} (µM)`"
@@ -260,13 +265,13 @@
                       :size="heatmapCellSize"
                       log
                     />
-                  </div>
-                </div>
+                  </template>
+                </figure-cards>
               </div>
             </div>
           </div>
 
-          <figure-caption>
+          <figure-caption class="mb-6">
             <template #title>Fig.4. Combinations tested and their dosing schemes.</template>
             The dosing schemes of the three combinations tested were determined based on the
             described procedure. Thus, temozolomide + O6 Benzylguanine and ML210 + Ferrostatin were
@@ -275,7 +280,7 @@
             format for the AZD5991 + A-1331852 combination. A cell line was classified as “killed”
             if its viability (relative to vehicle control) was &lt; 0.3.
           </figure-caption>
-          <p class="prism-text-body-large mt-6">
+          <p class="prism-text-body-large">
             We calculated a synergy score for combination effects at each dose combination using
             both the Highest Single Agent (HSA) and Bliss models to generate a null expectation for
             the viability at the combination dose (see figure 2 Eqs. 1,2). In the HSA model, the
@@ -327,7 +332,7 @@
 
       <section>
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Synergy by dose</h2>
+          <h2 class="prism-text-headline-large">Synergy by dose</h2>
           <h3 class="prism-text-headline-small">Temozolomide + O6-benzylguanine</h3>
           <p class="prism-text-body-large">
             In the presence of O6-benzylguanine, cell lines that expressed MGMT were sensitized to
@@ -476,7 +481,7 @@
 
       <section>
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Conclusion</h2>
+          <h2 class="prism-text-headline-large">Conclusion</h2>
           <p class="prism-text-body-large">
             Combination screening is a challenging scientific, analytical, and logistical endeavor.
             As studies to date have suggested combination partner interactions are difficult to
@@ -553,7 +558,7 @@
 
       <section id="citations">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Citations</h2>
+          <h2 class="prism-text-headline-large">Citations</h2>
           <ol>
             <li>
               Eder, J. P. & Hafez, N. Principles of dose, schedule, and combination therapy.
@@ -643,7 +648,7 @@
       </section>
       <section id="appendix">
         <app-container narrow>
-          <h2 class="prism-text-headline-medium">Appendix</h2>
+          <h2 class="prism-text-headline-large">Appendix</h2>
           <p>
             For each cell line, we generate median viability values (replicates) for a mock
             treatment condition using the median viability from 3 randomly selected vehicle-control
@@ -810,6 +815,11 @@
         // Fig. 4 cell size in px. The figure's two panels have about 330px
         // of room each in the narrow text column, so anything up to 40 fits
         heatmapCellSize: 26,
+        // The two cards of each combination in Fig. 4
+        comboCards: [
+          { key: 'single', title: 'Single agent' },
+          { key: 'combination', title: 'Combination' },
+        ],
         // Fig. 4: one CSV per combination. x is the library compound (dose1),
         // y the anchor (dose2). `cells` is filled in once the CSV loads.
         // `dosing` is the text listed beside each compound's name.
@@ -968,12 +978,10 @@
     margin-inline: auto;
   }
 
-  /* Fig. 4: one block per combination: its title and dosing text, then a
-     card with the single-agent strips and the combination heatmap side by
-     side. The cards are all the same width and split into equal halves, so the
-     panels line up down the page. */
+  /* Fig. 4: one block per combination: its title and dosing text, then the
+     plots' title and shared color scale over two figure cards, one with the
+     single-agent strips and one with the combination heatmap. */
   .combo-grid {
-    --combo-rule: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     display: flex;
     flex-direction: column;
     gap: 48px;
@@ -1002,54 +1010,36 @@
     margin: 0;
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   }
-  /* The card: a header strip, tinted like the page's shaded term list, over
-     two panels divided by a rule. The strip holds the card's title and the
-     color scale the panels share; the scale wraps under the title when the
-     strip is too narrow for both. */
-  .combo-figure__card {
-    border: var(--combo-rule);
-    border-radius: var(--prism-radius-lg);
-  }
-  .combo-figure__card-header {
+  /* The plots' title and the color scale the cards share, in a row above the
+     cards; the scale wraps under the title when the row is too narrow for both */
+  .combo-figure__plots-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 8px 24px;
-    padding: 10px 20px;
-    background: rgba(var(--v-theme-on-surface), 0.025);
-    /* Inside the card's 1px border */
-    border-radius: calc(var(--prism-radius-lg) - 1px) calc(var(--prism-radius-lg) - 1px) 0 0;
+    margin-bottom: 10px;
   }
-  .combo-figure__card-title {
+  .combo-figure__plots-title {
     margin: 0;
+    font-weight: bold;
   }
-  .combo-figure__panels {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    border-top: var(--combo-rule);
+  /* The header above already spaces the cards from the text */
+  .combo-figure .combo-figure__cards {
+    margin-top: 0;
   }
-  .combo-figure__panel {
-    padding: 16px 20px 20px;
-  }
-  .combo-figure__panel + .combo-figure__panel {
-    border-left: var(--combo-rule);
-  }
-  .combo-figure__label {
-    margin: 0 0 8px;
-  }
+  /* The two strips are stacked and centered on each other */
   .combo-figure__strips {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
   }
   /* Never scale the SVGs down: label sizes must match from block to block */
   .combo-figure :deep(.heatmap__svg) {
     max-width: none;
   }
-  /* Phones: the two panels stack, and each dose series sits under its
-     compound's name */
+  /* Phones: each dose series sits under its compound's name */
   @media (max-width: 599.98px) {
     .combo-figure__dosing {
       grid-template-columns: minmax(0, 1fr);
@@ -1057,19 +1047,6 @@
     }
     .combo-figure__dosing dd + dt {
       margin-top: 8px;
-    }
-    .combo-figure__card-header {
-      padding-inline: 16px;
-    }
-    .combo-figure__panels {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    .combo-figure__panel {
-      padding: 16px;
-    }
-    .combo-figure__panel + .combo-figure__panel {
-      border-top: var(--combo-rule);
-      border-left: 0;
     }
   }
 
