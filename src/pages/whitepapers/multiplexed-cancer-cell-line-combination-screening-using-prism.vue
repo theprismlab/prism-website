@@ -212,9 +212,9 @@
                 </dl>
               </div>
 
-              <div class="combo-figure__card">
-                <div class="combo-figure__card-header">
-                  <h5 class="prism-text-title-medium combo-figure__card-title">
+              <div class="combo-figure__plots">
+                <div class="combo-figure__plots-header">
+                  <h5 class="prism-text-title-medium combo-figure__plots-title">
                     Sensitivity across doses
                   </h5>
                   <!-- One color scale for all three heatmaps of the combination -->
@@ -225,10 +225,19 @@
                     log
                   />
                 </div>
-                <div v-if="combo.cells" class="combo-figure__panels">
-                  <div class="combo-figure__panel">
-                    <h6 class="prism-text-title-small combo-figure__label mb-4">Single agent</h6>
-                    <div class="combo-figure__strips">
+                <!-- Two cards, styled as the page's other figure cards: the
+                     single-agent strips and the combination heatmap -->
+                <figure-cards
+                  v-if="combo.cells"
+                  :items="comboCards"
+                  align="start"
+                  border
+                  shaded-title
+                  center-title
+                  class="combo-figure__cards"
+                >
+                  <template #media="{ item }">
+                    <div v-if="item.key === 'single'" class="combo-figure__strips">
                       <heatmap
                         :data="combo.cells.x"
                         :x-title="`${combo.x.name} (µM)`"
@@ -246,11 +255,8 @@
                         log
                       />
                     </div>
-                  </div>
-                  <div class="combo-figure__panel">
-                    <h6 class="prism-text-title-small combo-figure__label mb-4">Combination</h6>
-
                     <heatmap
+                      v-else
                       :data="combo.cells.xy"
                       :x-title="`${combo.x.name} (µM)`"
                       :y-title="`${combo.y.name} (µM)`"
@@ -259,8 +265,8 @@
                       :size="heatmapCellSize"
                       log
                     />
-                  </div>
-                </div>
+                  </template>
+                </figure-cards>
               </div>
             </div>
           </div>
@@ -809,6 +815,11 @@
         // Fig. 4 cell size in px. The figure's two panels have about 330px
         // of room each in the narrow text column, so anything up to 40 fits
         heatmapCellSize: 26,
+        // The two cards of each combination in Fig. 4
+        comboCards: [
+          { key: 'single', title: 'Single agent' },
+          { key: 'combination', title: 'Combination' },
+        ],
         // Fig. 4: one CSV per combination. x is the library compound (dose1),
         // y the anchor (dose2). `cells` is filled in once the CSV loads.
         // `dosing` is the text listed beside each compound's name.
@@ -967,12 +978,10 @@
     margin-inline: auto;
   }
 
-  /* Fig. 4: one block per combination: its title and dosing text, then a
-     card with the single-agent strips and the combination heatmap side by
-     side. The cards are all the same width and split into equal halves, so the
-     panels line up down the page. */
+  /* Fig. 4: one block per combination: its title and dosing text, then the
+     plots' title and shared color scale over two figure cards, one with the
+     single-agent strips and one with the combination heatmap. */
   .combo-grid {
-    --combo-rule: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     display: flex;
     flex-direction: column;
     gap: 48px;
@@ -1001,57 +1010,36 @@
     margin: 0;
     color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   }
-  /* The card: a header strip, tinted like the page's shaded term list, over
-     two panels divided by a rule. The strip holds the card's title and the
-     color scale the panels share; the scale wraps under the title when the
-     strip is too narrow for both. */
-  .combo-figure__card {
-    border: var(--combo-rule);
-    border-radius: var(--prism-radius-lg);
-  }
-  .combo-figure__card-header {
+  /* The plots' title and the color scale the cards share, in a row above the
+     cards; the scale wraps under the title when the row is too narrow for both */
+  .combo-figure__plots-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 8px 24px;
-    padding: 10px 20px;
-    background: rgba(var(--v-theme-on-surface), 0.025);
-    /* Inside the card's 1px border */
-    border-radius: calc(var(--prism-radius-lg) - 1px) calc(var(--prism-radius-lg) - 1px) 0 0;
+    margin-bottom: 10px;
   }
-  .combo-figure__card-title {
+  .combo-figure__plots-title {
     margin: 0;
+    font-weight: bold;
   }
-  .combo-figure__panels {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    border-top: var(--combo-rule);
+  /* The header above already spaces the cards from the text */
+  .combo-figure .combo-figure__cards {
+    margin-top: 0;
   }
-  .combo-figure__panel {
-    padding: 16px 20px 20px;
-  }
-  .combo-figure__panel + .combo-figure__panel {
-    border-left: var(--combo-rule);
-  }
-  .combo-figure__label {
-    font-weight: 700;
-  }
-  /* The two strips are centered on each other; the pair stays at the panel's
-     left edge, under its label */
+  /* The two strips are stacked and centered on each other */
   .combo-figure__strips {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: fit-content;
     gap: 12px;
   }
   /* Never scale the SVGs down: label sizes must match from block to block */
   .combo-figure :deep(.heatmap__svg) {
     max-width: none;
   }
-  /* Phones: the two panels stack, and each dose series sits under its
-     compound's name */
+  /* Phones: each dose series sits under its compound's name */
   @media (max-width: 599.98px) {
     .combo-figure__dosing {
       grid-template-columns: minmax(0, 1fr);
@@ -1059,19 +1047,6 @@
     }
     .combo-figure__dosing dd + dt {
       margin-top: 8px;
-    }
-    .combo-figure__card-header {
-      padding-inline: 16px;
-    }
-    .combo-figure__panels {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    .combo-figure__panel {
-      padding: 16px;
-    }
-    .combo-figure__panel + .combo-figure__panel {
-      border-top: var(--combo-rule);
-      border-left: 0;
     }
   }
 

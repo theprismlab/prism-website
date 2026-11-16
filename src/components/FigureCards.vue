@@ -25,26 +25,29 @@
           </p>
         </div>
         <div class="figure-card__media">
-          <img
-            v-if="item.image"
-            :src="item.image"
-            :alt="item.alt || item.title"
-            class="figure-card__img"
-            :style="imageStyle"
-          />
-          <!-- No image yet: a labeled placeholder of the same width -->
-          <div
-            v-else
-            class="figure-card__placeholder"
-            :style="imageStyle"
-            role="img"
-            :aria-label="`${item.title} (image to come)`"
-          >
-            <v-icon icon="mdi-image-outline" size="32" />
-            <span v-if="item.placeholder" class="prism-text-body-small">{{
-              item.placeholder
-            }}</span>
-          </div>
+          <!-- The `media` slot replaces the image, e.g. with a live chart -->
+          <slot name="media" :item="item">
+            <img
+              v-if="item.image"
+              :src="item.image"
+              :alt="item.alt || item.title"
+              class="figure-card__img"
+              :style="imageStyle"
+            />
+            <!-- No image yet: a labeled placeholder of the same width -->
+            <div
+              v-else
+              class="figure-card__placeholder"
+              :style="imageStyle"
+              role="img"
+              :aria-label="`${item.title} (image to come)`"
+            >
+              <v-icon icon="mdi-image-outline" size="32" />
+              <span v-if="item.placeholder" class="prism-text-body-small">{{
+                item.placeholder
+              }}</span>
+            </div>
+          </slot>
         </div>
       </v-card>
     </div>
@@ -79,6 +82,10 @@
    * An item with `subtitle` shows it in smaller, muted text under the title.
    * An item without `image` shows a placeholder box, with `placeholder` as its
    * text, so a figure can be laid out before its artwork exists.
+   *
+   * The `media` slot, given the `item`, replaces a card's image with any
+   * content, such as a chart component:
+   *   <figure-cards :items="panels"><template #media="{ item }">…</template></figure-cards>
    */
   export default {
     name: 'FigureCards',
