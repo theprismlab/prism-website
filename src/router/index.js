@@ -184,7 +184,6 @@ const redirects = [
     redirect: (to) => `/submission-hub/${[].concat(to.params.pathMatch).join('/')}`,
   },
   { path: '/submission-hub', redirect: '/submission-hub/overview' },
-  { path: '/oncology-reference', redirect: '/oncology-reference/nominations' },
   { path: '/research/white-papers', redirect: '/publications' },
   { path: '/research/conference-abstracts', redirect: '/publications' },
   { path: '/research/publications', redirect: '/publications' },
