@@ -83,7 +83,7 @@
             copy number, metabolomics, proteomics, genome-wide RNAi and CRISPR dependencies) of each
             cell line to interpret viability profiles, enabling identification of drivers of
             differential sensitivity and potential biomarkers of response. Visit our
-            <a href="/consortium-screens/assays" target="_blank">Assays page</a>
+            <a :href="ASSAYS_URL" target="_blank">Assays page</a>
             to learn more.
             <br /><br />
             The full collection of PRISM cell lines contains over 900 barcoded cell lines
@@ -104,9 +104,7 @@
           <p class="prism-text-body-large">
             Within each cell set, cell lines are pooled in groups of 20-25 based on their growth
             rates. Visit our
-            <a href="/consortium-screens/cell-line-collection" target="_blank"
-              >Cell Line Collection page</a
-            >
+            <a :href="CELL_LINE_COLLECTION_URL" target="_blank">Cell Line Collection page</a>
             to learn more.
           </p>
 
@@ -453,11 +451,9 @@
             antigen-expressing cells within and across cell pools is particularly relevant for ADCs
             with bystander activity. Prior to submitting ADCs for screening in PRISM, we recommend
             investigators review the
-            <a :href="cellLineInventoryLink" target="_blank"
-              >PRISM cell line inventory and pooling information</a
-            >
+            <a :href="CELL_LINE_COLLECTION_URL" target="_blank">Cell Line Collection page</a>
             and cross reference the
-            <a :href="depmapExplorerLink" target="_blank">DepMap Data Explorer</a>
+            <a :href="DEPMAP_EXPLORER_URL" target="_blank">DepMap Data Explorer</a>
             for relevant genetic features to estimate the number of target and non-target cell lines
             across PRISM pools. In addition, we strongly suggest using this information to carry out
             preliminary experiments to gain an understanding of potential ADC bystander activity. A
@@ -653,9 +649,7 @@
     'SKOV3',
     'TE4',
   ];
-  const depmapExplorerLink = 'https://depmap.org/portal/interactive/';
-  const cellLineInventoryLink =
-    'https://docs.google.com/spreadsheets/d/1PcxxZ0O6U20megXtVs6BL10Jr-qnIZPbKk_MXKwz_BI/edit?gid=1926592753#gid=1926592753';
+
   const dataPath = import.meta.env.BASE_URL + 'data/2023_07_adc/';
   const imagePath = import.meta.env.BASE_URL + 'images/white-paper-adc/';
 
@@ -689,6 +683,9 @@
     name: 'WhitepaperAntibodyDrugConjugates',
     data() {
       return {
+        CELL_LINE_COLLECTION_URL: '/consortium-screens/cell-line-collection',
+        ASSAYS_URL: '/consortium-screens/assays',
+        DEPMAP_EXPLORER_URL: 'https://depmap.org/portal/interactive/',
         paper: {
           author:
             'Jillian N. Eskra, Ellen Nguyen, Aydin Golabi, Shiker Nair, Antonella Masciotti, Nashielli Diaz, Anthony Fazio, Lia Petronio, Mustafa Kocak, Melissa Ronan, Matthew G. Rees, Jennifer A. Roth',
