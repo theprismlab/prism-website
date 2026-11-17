@@ -66,12 +66,35 @@ const routes = [
     component: () => import('@/pages/publications.vue'),
   },
   {
-    path: '/oncology-reference/nominations',
-    component: () => import('@/pages/oncology-reference/nominations.vue'),
+    path: '/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism',
+    component: () =>
+      import('@/pages/white-papers/multiplexed-cancer-cell-line-combination-screening-using-prism.vue'),
     meta: {
-      // breadcrumbs: () => [{ title: 'Oncology Reference' }, { title: 'Nominations' }],
+      breadcrumbs: () => [{ title: 'Publications', to: '/publications' }, { title: 'White Paper' }],
     },
   },
+  {
+    path: '/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets',
+    component: () =>
+      import('@/pages/white-papers/prism-high-throughput-screening-of-antibody-drug-conjugates-uncovers-clinically-relevant-targets.vue'),
+    meta: {
+      breadcrumbs: () => [{ title: 'Publications', to: '/publications' }, { title: 'White Paper' }],
+    },
+  },
+  {
+    path: '/oncology-reference/nominations',
+    component: () => import('@/pages/oncology-reference/nominations.vue'),
+    // meta: {
+    //   breadcrumbs: () => [
+    //     { title: 'Oncology Reference', to: '/oncology-reference' },
+    //     { title: 'Nominations' },
+    //   ],
+    // },
+  },
+  // {
+  //   path: '/oncology-reference',
+  //   component: () => import('@/pages/oncology-reference/manuscript.vue'),
+  // },
 
   // ─── Submissions layout ───────────────────────────────────────────────────
   {
@@ -79,7 +102,6 @@ const routes = [
     component: () => import('@/submissions/index.vue'),
     meta: {
       layout: submissionsLayout,
-      // breadcrumbs: () => [{ title: 'Submissions' }],
     },
   },
   {
@@ -93,7 +115,6 @@ const routes = [
       // ],
     },
   },
-
   {
     path: '/submission-hub/instructions',
     component: () => import('@/submissions/instructions/index.vue'),

@@ -63,6 +63,10 @@ export function stripSeqSuffix(type) {
 //   return authedGet(apiUrl, path);
 // }
 
+export async function getCellLines(apiURL) {
+  return authedGet(apiURL, 'cell-db/cell-lines');
+}
+
 export async function getSubbmissionScreenInfo(apiURL, submission_type) {
   let path = 'prism_screens/submission-screen-info';
   if (submission_type) {
